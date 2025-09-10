@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { useSidebar } from '@/contexts/SidebarContext'
+import Image from 'next/image'
 import { 
   MapIcon, 
   HomeIcon, 
@@ -35,23 +36,43 @@ export function Sidebar() {
 
   return (
     <div className={cn(
-      "flex h-full flex-col bg-white border-r border-gray-200 transition-all duration-300",
+      "flex h-full flex-col bg-white border-r border-gray-200 transition-all duration-300 relative group",
       isCollapsed ? "w-16" : "w-64"
     )}>
-      <div className="flex h-16 items-center justify-between px-6 border-b border-gray-200">
-        {!isCollapsed && <h1 className="text-xl font-bold text-gray-900">CX Studio</h1>}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
-          title={isCollapsed ? "Expandera meny" : "Minimera meny"}
-        >
-          {isCollapsed ? (
-            <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+      <div className={cn(
+        "flex items-center justify-center border-b border-gray-200",
+        isCollapsed ? "h-20 px-2" : "h-16 px-6"
+      )}>
+        <div className="flex items-center justify-center flex-1">
+          {!isCollapsed ? (
+            <img 
+              src="/Nava blue text.png" 
+              alt="Nava" 
+              className="h-24 w-auto object-contain max-w-[300px]"
+            />
           ) : (
-            <ChevronLeftIcon className="h-5 w-5 text-gray-500" />
+            <img 
+              src="/nava small.png" 
+              alt="Nava" 
+              className="h-16 w-12 object-contain"
+            />
           )}
-        </button>
+        </div>
       </div>
+      
+      {/* Collapse/Expand Button - appears on hover as a circle */}
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="absolute top-1/2 -translate-y-1/2 -right-2 w-6 h-6 bg-white border-2 border-gray-300 rounded-full hover:border-gray-500 transition-all duration-200 shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100"
+        title={isCollapsed ? "Expandera meny" : "Minimera meny"}
+        style={{ zIndex: 10 }}
+      >
+        {isCollapsed ? (
+          <ChevronRightIcon className="h-3 w-3 text-gray-600" />
+        ) : (
+          <ChevronLeftIcon className="h-3 w-3 text-gray-600" />
+        )}
+      </button>
       
       <nav className="flex-1 px-4 py-6">
         <ul className="space-y-2">

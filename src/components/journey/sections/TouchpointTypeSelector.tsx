@@ -4,7 +4,7 @@ import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { 
   PlusIcon,
-  TemplateIcon,
+  BookTemplateIcon,
   FileIcon,
   LayersIcon
 } from 'lucide-react'

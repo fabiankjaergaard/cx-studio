@@ -87,12 +87,12 @@ const mockTouchpoints: Touchpoint[] = [
 
 const mockJourney: CustomerJourney = {
   id: '1',
-  title: 'E-commerce Köpresa',
-  description: 'En typisk kundresa för e-commerce kunder',
-  persona: 'Digital-savvy konsument',
+  title: 'Ny Customer Journey',
+  description: 'En tom journey redo att fyllas med dina egna touchpoints',
+  persona: '',
   createdAt: new Date(),
   updatedAt: new Date(),
-  touchpoints: mockTouchpoints,
+  touchpoints: [],
   stages: mockStages,
   connections: []
 }

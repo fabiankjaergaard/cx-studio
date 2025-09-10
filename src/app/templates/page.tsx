@@ -116,7 +116,7 @@ export default function TemplatesPage() {
         {/* Filter/Search Section */}
         <div className="mb-8 flex items-center justify-between">
           <div className="flex space-x-4">
-            <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+            <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900">
               <option value="">Alla branscher</option>
               <option value="e-commerce">E-commerce</option>
               <option value="teknologi">Teknologi</option>
@@ -125,7 +125,7 @@ export default function TemplatesPage() {
               <option value="finans">Finans</option>
               <option value="hälsovård">Hälsovård</option>
             </select>
-            <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+            <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900">
               <option value="">Sortera efter</option>
               <option value="name">Namn</option>
               <option value="industry">Bransch</option>

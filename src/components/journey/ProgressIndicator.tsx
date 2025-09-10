@@ -27,7 +27,8 @@ export function ProgressIndicator({ journey }: ProgressIndicatorProps) {
       <div className="flex space-x-2">
         {journey.stages.map((stage, index) => {
           const stageCount = touchpointsByStage[stage.id] || 0
-          const completion = totalTouchpoints > 0 ? (stageCount / totalTouchpoints) * 100 : 0
+          const hasProgress = stageCount > 0
+          const progressPercentage = totalTouchpoints > 0 ? (stageCount / totalTouchpoints) * 100 : 0
           
           return (
             <div key={stage.id} className="flex-1">
@@ -36,13 +37,15 @@ export function ProgressIndicator({ journey }: ProgressIndicatorProps) {
                 <span className="text-xs text-gray-500">{stageCount}</span>
               </div>
               <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full transition-all duration-500 rounded-full"
-                  style={{ 
-                    width: `${Math.min(completion, 100)}%`,
-                    backgroundColor: stage.color 
-                  }}
-                />
+                {hasProgress && (
+                  <div
+                    className="h-full transition-all duration-500 rounded-full"
+                    style={{ 
+                      width: `${progressPercentage}%`,
+                      backgroundColor: stage.color
+                    }}
+                  />
+                )}
               </div>
             </div>
           )
