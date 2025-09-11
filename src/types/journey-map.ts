@@ -13,10 +13,18 @@ export interface JourneyMapRow {
   cells: JourneyMapCell[]
 }
 
+export interface JourneyMapPhase {
+  id: string
+  name: string
+  color: string
+  description?: string
+}
+
 export interface JourneyMapStage {
   id: string
   name: string
   description?: string
+  phaseId: string
 }
 
 export interface JourneyMapPersona {
@@ -31,6 +39,7 @@ export interface JourneyMapData {
   name: string
   description?: string
   persona: JourneyMapPersona | null
+  phases: JourneyMapPhase[]
   stages: JourneyMapStage[]
   rows: JourneyMapRow[]
   createdAt: string
@@ -125,31 +134,58 @@ export const ROW_COLORS = [
   { id: 'bg-indigo-50', name: 'Indigo', class: 'bg-indigo-50' }
 ]
 
+// Default phases for journey maps
+export const DEFAULT_JOURNEY_PHASES = [
+  {
+    id: 'before',
+    name: 'Before',
+    color: 'bg-blue-50',
+    description: 'Pre-interaction phase'
+  },
+  {
+    id: 'during',
+    name: 'During',
+    color: 'bg-green-50',
+    description: 'Active interaction phase'
+  },
+  {
+    id: 'after',
+    name: 'After',
+    color: 'bg-purple-50',
+    description: 'Post-interaction phase'
+  }
+]
+
 // Default stages for journey maps
 export const DEFAULT_JOURNEY_STAGES = [
   {
     id: 'awareness',
     name: 'Awareness',
-    description: 'Customer becomes aware of the need or problem'
+    description: 'Customer becomes aware of the need or problem',
+    phaseId: 'before'
   },
   {
     id: 'consideration',
     name: 'Consideration',
-    description: 'Customer evaluates different alternatives and solutions'
+    description: 'Customer evaluates different alternatives and solutions',
+    phaseId: 'before'
   },
   {
     id: 'purchase',
     name: 'Purchase/Decision',
-    description: 'Customer makes decision and takes action'
+    description: 'Customer makes decision and takes action',
+    phaseId: 'during'
   },
   {
     id: 'usage',
     name: 'Usage',
-    description: 'Customer uses the product or service'
+    description: 'Customer uses the product or service',
+    phaseId: 'during'
   },
   {
     id: 'advocacy',
     name: 'Advocacy',
-    description: 'Customer becomes ambassador and recommends to others'
+    description: 'Customer becomes ambassador and recommends to others',
+    phaseId: 'after'
   }
 ]

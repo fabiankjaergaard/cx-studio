@@ -17,7 +17,7 @@ import {
   EditIcon
 } from 'lucide-react'
 import Link from 'next/link'
-import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES } from '@/types/journey-map'
+import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES } from '@/types/journey-map'
 import { JourneyMapCell as JourneyMapCellComponent } from '@/components/journey-map/JourneyMapCell'
 import { RowEditor } from '@/components/journey-map/RowEditor'
 
@@ -61,6 +61,9 @@ export default function JourneyMapBuilderPage() {
   const [isRowEditorOpen, setIsRowEditorOpen] = useState(false)
   const [editingRow, setEditingRow] = useState<JourneyMapRow | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [isDraggingPhase, setIsDraggingPhase] = useState(false)
+  const [dragStartX, setDragStartX] = useState(0)
+  const [dragBoundaryIndex, setDragBoundaryIndex] = useState<number | null>(null)
 
   // Initialize journey map data
   useEffect(() => {
@@ -71,6 +74,7 @@ export default function JourneyMapBuilderPage() {
         name: 'Ny Journey Map',
         description: '',
         persona: null,
+        phases: DEFAULT_JOURNEY_PHASES,
         stages: DEFAULT_JOURNEY_STAGES.slice(0, 4), // Start with 4 stages
         rows: DEFAULT_JOURNEY_CATEGORIES.map(category => ({
           id: category.id,
@@ -101,6 +105,7 @@ export default function JourneyMapBuilderPage() {
           avatar: 'A',
           description: 'Produktchef, 32 år, Stockholm'
         },
+        phases: DEFAULT_JOURNEY_PHASES,
         stages: DEFAULT_JOURNEY_STAGES.slice(0, 5),
         rows: DEFAULT_JOURNEY_CATEGORIES.map(category => ({
           id: category.id,
@@ -147,8 +152,9 @@ export default function JourneyMapBuilderPage() {
     const newStageId = `stage-${Date.now()}`
     const newStage: JourneyMapStage = {
       id: newStageId,
-      name: `Steg ${journeyMap.stages.length + 1}`,
-      description: ''
+      name: `Stage ${journeyMap.stages.length + 1}`,
+      description: '',
+      phaseId: 'after' // Default to 'after' phase
     }
     
     setJourneyMap({
@@ -161,6 +167,93 @@ export default function JourneyMapBuilderPage() {
           content: row.type === 'emoji' ? '😐' : '' 
         }]
       })),
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  // Handle phase boundary dragging
+  const handlePhaseResizeStart = (e: React.MouseEvent, boundaryIndex: number) => {
+    e.preventDefault()
+    setIsDraggingPhase(true)
+    setDragStartX(e.clientX)
+    setDragBoundaryIndex(boundaryIndex)
+  }
+
+  const handlePhaseResize = (e: React.MouseEvent) => {
+    if (!isDraggingPhase || dragBoundaryIndex === null || !journeyMap) return
+    
+    e.preventDefault()
+    const deltaX = e.clientX - dragStartX
+    const stageWidth = 256 // min-w-64 = 256px
+    const stagesMoved = Math.round(deltaX / stageWidth)
+    
+    if (stagesMoved === 0) return
+    
+    // Find the stage to move between phases
+    const phases = journeyMap.phases
+    let stageToMoveIndex = -1
+    
+    if (stagesMoved > 0) {
+      // Moving boundary right - move stages from next phase to current phase
+      const nextPhase = phases[dragBoundaryIndex + 1]
+      if (nextPhase) {
+        const nextPhaseStages = journeyMap.stages.filter(stage => stage.phaseId === nextPhase.id)
+        if (nextPhaseStages.length > 0) {
+          stageToMoveIndex = journeyMap.stages.findIndex(stage => stage.id === nextPhaseStages[0].id)
+        }
+      }
+    } else {
+      // Moving boundary left - move stages from current phase to next phase  
+      const currentPhase = phases[dragBoundaryIndex]
+      if (currentPhase) {
+        const currentPhaseStages = journeyMap.stages.filter(stage => stage.phaseId === currentPhase.id)
+        if (currentPhaseStages.length > 0) {
+          stageToMoveIndex = journeyMap.stages.findIndex(stage => stage.id === currentPhaseStages[currentPhaseStages.length - 1].id)
+        }
+      }
+    }
+    
+    if (stageToMoveIndex >= 0) {
+      const targetPhaseId = stagesMoved > 0 
+        ? phases[dragBoundaryIndex].id 
+        : phases[dragBoundaryIndex + 1].id
+        
+      const updatedStages = journeyMap.stages.map((stage, index) => 
+        index === stageToMoveIndex 
+          ? { ...stage, phaseId: targetPhaseId }
+          : stage
+      )
+      
+      setJourneyMap({
+        ...journeyMap,
+        stages: updatedStages,
+        updatedAt: new Date().toISOString()
+      })
+    }
+    
+    setDragStartX(e.clientX)
+  }
+
+  const handlePhaseResizeEnd = () => {
+    setIsDraggingPhase(false)
+    setDragBoundaryIndex(null)
+    setDragStartX(0)
+  }
+
+  const handleAddPhase = () => {
+    if (!journeyMap) return
+    
+    const phaseNumber = journeyMap.phases.length + 1
+    const newPhase: JourneyMapPhase = {
+      id: `phase-${Date.now()}`,
+      name: `Phase ${phaseNumber}`,
+      color: `bg-gray-50`, // Default color
+      description: `Custom phase ${phaseNumber}`
+    }
+    
+    setJourneyMap({
+      ...journeyMap,
+      phases: [...journeyMap.phases, newPhase],
       updatedAt: new Date().toISOString()
     })
   }
@@ -359,8 +452,63 @@ export default function JourneyMapBuilderPage() {
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
-                {/* Header Row */}
+                {/* Phase Header Row */}
                 <thead>
+                  {/* Phases Row */}
+                  <tr 
+                    className="bg-gray-100 border-b border-gray-300"
+                    onMouseMove={handlePhaseResize}
+                    onMouseUp={handlePhaseResizeEnd}
+                    onMouseLeave={handlePhaseResizeEnd}
+                  >
+                    <th className="w-48 p-2 text-left text-xs font-semibold text-gray-600 border-r border-gray-200">
+                      Phases
+                    </th>
+                    {journeyMap.phases.map((phase, phaseIndex) => {
+                      // Count stages in this phase
+                      const stagesInPhase = journeyMap.stages.filter(stage => stage.phaseId === phase.id).length
+                      
+                      // Show empty phases with a minimum width
+                      const colSpan = stagesInPhase === 0 ? 1 : stagesInPhase
+                      
+                      return (
+                        <th 
+                          key={phase.id} 
+                          className={`relative p-2 text-center text-sm font-semibold text-gray-700 border-r border-gray-200 ${phase.color} ${stagesInPhase === 0 ? 'min-w-32' : ''}`}
+                          colSpan={colSpan}
+                        >
+                          <div className="font-bold">{phase.name}</div>
+                          <div className="text-xs font-normal text-gray-600 mt-1">
+                            {stagesInPhase === 0 ? 'Drag stages here' : phase.description}
+                          </div>
+                          
+                          {/* Drag handle on the right edge (except for last phase) */}
+                          {phaseIndex < journeyMap.phases.length - 1 && (
+                            <div
+                              className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize bg-gray-400 opacity-0 hover:opacity-100 transition-opacity z-10 flex items-center justify-center"
+                              onMouseDown={(e) => handlePhaseResizeStart(e, phaseIndex)}
+                              title="Drag to resize phase"
+                            >
+                              <div className="w-0.5 h-8 bg-gray-600 rounded"></div>
+                            </div>
+                          )}
+                        </th>
+                      )
+                    })}
+                    <th className="w-12 p-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAddPhase}
+                        className="w-8 h-8 p-0"
+                        title="Add new phase"
+                      >
+                        <PlusIcon className="h-4 w-4" />
+                      </Button>
+                    </th>
+                  </tr>
+                  
+                  {/* Stages Header Row */}
                   <tr className="bg-slate-50 border-b border-gray-200">
                     <th className="w-48 p-4 text-left text-sm font-medium text-gray-900 border-r border-gray-200">
                       Journey Kategorier
