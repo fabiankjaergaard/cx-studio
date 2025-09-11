@@ -28,8 +28,8 @@ const navigation = [
   { name: 'Templates', href: '/templates', icon: BookTemplateIcon },
   { name: 'Analytics', href: '/analytics', icon: BarChart3Icon },
   { name: 'Personas', href: '/personas', icon: UsersIcon },
-  { name: 'Kundinsikter', href: '/insights', icon: ClipboardListIcon },
-  { name: 'Begreppslexikon', href: '/glossary', icon: BookOpenIcon },
+  { name: 'Insights', href: '/insights', icon: ClipboardListIcon },
+  { name: 'Glossary', href: '/glossary', icon: BookOpenIcon },
   { name: 'Settings', href: '/settings', icon: SettingsIcon },
 ]
 
@@ -69,7 +69,7 @@ export function Sidebar() {
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute top-1/2 -translate-y-1/2 -right-2 w-6 h-6 bg-white border-2 border-gray-300 rounded-full hover:border-gray-500 transition-all duration-200 shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100"
-        title={isCollapsed ? "Expandera meny" : "Minimera meny"}
+        title={isCollapsed ? "Expand menu" : "Minimize menu"}
         style={{ zIndex: 10 }}
       >
         {isCollapsed ? (
@@ -129,7 +129,7 @@ export function Sidebar() {
               {!isCollapsed && (
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-700 truncate">{userName}</p>
-                  <p className="text-xs text-gray-500 truncate">Inloggad</p>
+                  <p className="text-xs text-gray-500 truncate">Logged in</p>
                 </div>
               )}
             </div>
@@ -141,13 +141,13 @@ export function Sidebar() {
                 "w-full flex items-center rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900",
                 isCollapsed ? "px-2 py-2 justify-center" : "px-3 py-2"
               )}
-              title={isCollapsed ? "Logga ut" : undefined}
+              title={isCollapsed ? "Log out" : undefined}
             >
               <LogOutIcon className={cn(
                 "h-5 w-5 text-gray-400",
                 isCollapsed ? "mx-auto" : "mr-3"
               )} />
-              {!isCollapsed && "Logga ut"}
+              {!isCollapsed && "Log out"}
             </button>
           </div>
         ) : (
@@ -158,13 +158,13 @@ export function Sidebar() {
               "w-full flex items-center rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900",
               isCollapsed ? "px-2 py-2 justify-center" : "px-3 py-2"
             )}
-            title={isCollapsed ? "Logga in" : undefined}
+            title={isCollapsed ? "Log in" : undefined}
           >
             <UserIcon className={cn(
               "h-5 w-5 text-gray-400",
               isCollapsed ? "mx-auto" : "mr-3"
             )} />
-            {!isCollapsed && "Logga in"}
+            {!isCollapsed && "Log in"}
           </button>
         )}
       </div>

@@ -8,7 +8,7 @@ export interface JourneyMapRow {
   id: string
   category: string
   description: string
-  type: 'text' | 'emoji' | 'number' | 'rating' | 'status'
+  type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics'
   color: string
   cells: JourneyMapCell[]
 }
@@ -59,43 +59,43 @@ export interface JourneyMapTemplate {
 export const DEFAULT_JOURNEY_CATEGORIES = [
   {
     id: 'actions',
-    name: 'Åtgärder',
-    description: 'Vad gör kunden i detta steg?',
+    name: 'Actions',
+    description: 'What does the customer do in this step?',
     type: 'text' as const,
     color: 'bg-slate-50'
   },
   {
     id: 'touchpoints',
-    name: 'Kontaktpunkter',
-    description: 'Vilka kanaler och system interagerar kunden med?',
+    name: 'Touchpoints',
+    description: 'Which channels and systems does the customer interact with?',
     type: 'text' as const,
     color: 'bg-slate-50'
   },
   {
     id: 'emotions',
-    name: 'Känslor',
-    description: 'Hur känner sig kunden? Vilka emotioner upplevs?',
+    name: 'Emotions',
+    description: 'How does the customer feel? What emotions are experienced?',
     type: 'emoji' as const,
     color: 'bg-blue-50'
   },
   {
     id: 'pain-points',
-    name: 'Smärtpunkter',
-    description: 'Vilka problem och frustrationer har kunden?',
+    name: 'Pain Points',
+    description: 'What problems and frustrations does the customer have?',
     type: 'text' as const,
     color: 'bg-red-50'
   },
   {
     id: 'opportunities',
-    name: 'Möjligheter',
-    description: 'Var finns förbättrings- och innovationsmöjligheter?',
+    name: 'Opportunities',
+    description: 'Where are the improvement and innovation opportunities?',
     type: 'text' as const,
     color: 'bg-green-50'
   },
   {
     id: 'backstage',
-    name: 'Bakom kulisserna',
-    description: 'Vilka interna processer och system stödjer denna fas?',
+    name: 'Backstage',
+    description: 'What internal processes and systems support this phase?',
     type: 'text' as const,
     color: 'bg-slate-50'
   }
@@ -103,22 +103,25 @@ export const DEFAULT_JOURNEY_CATEGORIES = [
 
 // Available row types
 export const ROW_TYPES = [
-  { id: 'text', name: 'Text', description: 'Vanlig textinmatning' },
-  { id: 'emoji', name: 'Emoji', description: 'Emojis för känslor och reaktioner' },
-  { id: 'number', name: 'Nummer', description: 'Numeriska värden' },
-  { id: 'rating', name: 'Betyg', description: 'Stjärnbetyg 1-5' },
-  { id: 'status', name: 'Status', description: 'Status-indikatorer' }
+  { id: 'text', name: 'Text', description: 'Regular text input' },
+  { id: 'emoji', name: 'Emoji', description: 'Emojis for emotions and reactions' },
+  { id: 'number', name: 'Number', description: 'Numeric values' },
+  { id: 'rating', name: 'Rating', description: 'Star rating 1-5' },
+  { id: 'status', name: 'Status', description: 'Status indicators' },
+  { id: 'pain-points', name: 'Pain Points', description: 'Visual pain point intensity tracking' },
+  { id: 'opportunities', name: 'Opportunities', description: 'Opportunity priority visualization' },
+  { id: 'metrics', name: 'Metrics', description: 'KPI and metrics visualization' }
 ]
 
 // Available row colors
 export const ROW_COLORS = [
-  { id: 'bg-slate-50', name: 'Grå', class: 'bg-slate-50' },
-  { id: 'bg-blue-50', name: 'Blå', class: 'bg-blue-50' },
-  { id: 'bg-green-50', name: 'Grön', class: 'bg-green-50' },
-  { id: 'bg-red-50', name: 'Röd', class: 'bg-red-50' },
-  { id: 'bg-yellow-50', name: 'Gul', class: 'bg-yellow-50' },
-  { id: 'bg-purple-50', name: 'Lila', class: 'bg-purple-50' },
-  { id: 'bg-pink-50', name: 'Rosa', class: 'bg-pink-50' },
+  { id: 'bg-slate-50', name: 'Gray', class: 'bg-slate-50' },
+  { id: 'bg-blue-50', name: 'Blue', class: 'bg-blue-50' },
+  { id: 'bg-green-50', name: 'Green', class: 'bg-green-50' },
+  { id: 'bg-red-50', name: 'Red', class: 'bg-red-50' },
+  { id: 'bg-yellow-50', name: 'Yellow', class: 'bg-yellow-50' },
+  { id: 'bg-purple-50', name: 'Purple', class: 'bg-purple-50' },
+  { id: 'bg-pink-50', name: 'Pink', class: 'bg-pink-50' },
   { id: 'bg-indigo-50', name: 'Indigo', class: 'bg-indigo-50' }
 ]
 
@@ -126,27 +129,27 @@ export const ROW_COLORS = [
 export const DEFAULT_JOURNEY_STAGES = [
   {
     id: 'awareness',
-    name: 'Medvetenhet',
-    description: 'Kunden blir medveten om behovet eller problemet'
+    name: 'Awareness',
+    description: 'Customer becomes aware of the need or problem'
   },
   {
     id: 'consideration',
-    name: 'Överväger',
-    description: 'Kunden utvärderar olika alternativ och lösningar'
+    name: 'Consideration',
+    description: 'Customer evaluates different alternatives and solutions'
   },
   {
     id: 'purchase',
-    name: 'Köp/Beslut',
-    description: 'Kunden fattar beslut och genomför åtgärden'
+    name: 'Purchase/Decision',
+    description: 'Customer makes decision and takes action'
   },
   {
     id: 'usage',
-    name: 'Användning',
-    description: 'Kunden använder produkten eller tjänsten'
+    name: 'Usage',
+    description: 'Customer uses the product or service'
   },
   {
     id: 'advocacy',
-    name: 'Rekommendation',
-    description: 'Kunden blir ambassador och rekommenderar andra'
+    name: 'Advocacy',
+    description: 'Customer becomes ambassador and recommends to others'
   }
 ]

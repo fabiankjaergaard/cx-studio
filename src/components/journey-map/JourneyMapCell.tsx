@@ -3,23 +3,26 @@
 import { useState } from 'react'
 import { StarIcon } from 'lucide-react'
 import { EmotionCurve } from './EmotionCurve'
+import { PainPointsVisualization } from './PainPointsVisualization'
+import { OpportunitiesVisualization } from './OpportunitiesVisualization'
+import { MetricsVisualization } from './MetricsVisualization'
 
 interface JourneyMapCellProps {
   content: string
-  type: 'text' | 'emoji' | 'number' | 'rating' | 'status'
+  type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics'
   onChange: (content: string) => void
   placeholder?: string
   stageCount?: number
   isEmotionCurveCell?: boolean
 }
 
-const STATUS_OPTIONS = ['✅ Bra', '⚠️ OK', '❌ Dåligt', '🔄 Pågående', '⏸️ Pausad']
+const STATUS_OPTIONS = ['✅ Good', '⚠️ OK', '❌ Bad', '🔄 Ongoing', '⏸️ Paused']
 
 export function JourneyMapCell({ 
   content, 
   type, 
   onChange, 
-  placeholder = 'Klicka för att redigera...', 
+  placeholder = 'Click to edit...', 
   stageCount = 4,
   isEmotionCurveCell = false
 }: JourneyMapCellProps) {
@@ -37,8 +40,8 @@ export function JourneyMapCell({
   switch (type) {
     case 'emoji':
       if (isEmotionCurveCell) {
-        // Parse emotions from content (comma separated)
-        const emotions = content ? content.split(',').map(e => e.trim()).filter(e => e) : []
+        // Parse emotions from content (comma separated), preserving empty slots
+        const emotions = content ? content.split(',').map(e => e.trim()) : []
         
         return (
           <EmotionCurve
@@ -51,6 +54,36 @@ export function JourneyMapCell({
         // Return empty cell for non-curve emoji cells
         return <div className="w-full min-h-20"></div>
       }
+
+    case 'pain-points':
+      const painPoints = content ? content.split(',').map(e => e.trim()) : []
+      return (
+        <PainPointsVisualization
+          painPoints={painPoints}
+          onChange={(newPainPoints) => onChange(newPainPoints.join(','))}
+          stageCount={stageCount}
+        />
+      )
+
+    case 'opportunities':
+      const opportunities = content ? content.split(',').map(e => e.trim()) : []
+      return (
+        <OpportunitiesVisualization
+          opportunities={opportunities}
+          onChange={(newOpportunities) => onChange(newOpportunities.join(','))}
+          stageCount={stageCount}
+        />
+      )
+
+    case 'metrics':
+      const metrics = content ? content.split(',').map(e => e.trim()) : []
+      return (
+        <MetricsVisualization
+          metrics={metrics}
+          onChange={(newMetrics) => onChange(newMetrics.join(','))}
+          stageCount={stageCount}
+        />
+      )
 
     case 'number':
       return (
@@ -90,7 +123,7 @@ export function JourneyMapCell({
             className="w-full min-h-20 p-2 text-sm border border-gray-200 rounded cursor-pointer hover:border-slate-400 bg-white flex items-center justify-center"
             onClick={() => setIsStatusPickerOpen(!isStatusPickerOpen)}
           >
-            {content || <span className="text-gray-400">Välj status</span>}
+            {content || <span className="text-gray-400">Select status</span>}
           </div>
           {isStatusPickerOpen && (
             <div className="absolute top-full left-0 z-10 bg-white border border-gray-200 rounded-lg shadow-lg py-1 mt-1 min-w-32">
@@ -108,7 +141,7 @@ export function JourneyMapCell({
                   onClick={() => onChange('')}
                   className="text-xs text-red-600 hover:text-red-800 px-1"
                 >
-                  Rensa
+                  Clear
                 </button>
               </div>
             </div>

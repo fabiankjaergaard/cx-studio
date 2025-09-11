@@ -110,7 +110,7 @@ export default function JourneyMapBuilderPage() {
           color: category.color,
           cells: DEFAULT_JOURNEY_STAGES.slice(0, 5).map(stage => ({
             id: `${category.id}-${stage.id}`,
-            content: category.id === 'actions' ? 'Exempel innehåll...' : category.id === 'emotions' ? '😊 😐' : ''
+            content: category.id === 'actions' ? 'Example content...' : ''
           }))
         })),
         createdAt: '2024-01-15T10:00:00Z',
@@ -300,7 +300,7 @@ export default function JourneyMapBuilderPage() {
               onClick={() => setIsSettingsModalOpen(true)}
             >
               <SettingsIcon className="mr-2 h-4 w-4" />
-              Inställningar
+              Settings
             </Button>
             <Button 
               variant="primary"
@@ -415,8 +415,8 @@ export default function JourneyMapBuilderPage() {
                           <p className="text-xs text-gray-400 capitalize">{row.type}</p>
                         </div>
                       </td>
-                      {row.type === 'emoji' ? (
-                        // For emotion curve, create one cell spanning all stages
+                      {(row.type === 'emoji' || row.type === 'pain-points' || row.type === 'opportunities' || row.type === 'metrics') ? (
+                        // For visualization components, create one cell spanning all stages
                         <td 
                           key={`${row.id}-emotion-curve`} 
                           className={`p-2 align-top ${row.color}`}
@@ -426,7 +426,7 @@ export default function JourneyMapBuilderPage() {
                             content={row.cells.map(c => c.content).join(',')}
                             type={row.type}
                             onChange={(content) => {
-                              const emotions = content.split(',').filter(e => e.trim())
+                              const emotions = content.split(',').map(e => e.trim())
                               
                               // Update the journey map state correctly
                               setJourneyMap(prevMap => {
@@ -438,7 +438,7 @@ export default function JourneyMapBuilderPage() {
                                     if (r.id === row.id) {
                                       const updatedCells = r.cells.map((cell, index) => ({
                                         ...cell,
-                                        content: emotions[index] || '😐'
+                                        content: emotions[index] || ''
                                       }))
                                       return { ...r, cells: updatedCells }
                                     }
@@ -448,9 +448,9 @@ export default function JourneyMapBuilderPage() {
                                 }
                               })
                             }}
-                            placeholder="Sätt känslokurva..."
+                            placeholder="Set emotion curve..."
                             stageCount={journeyMap.stages.length}
-                            isEmotionCurveCell={true}
+                            isEmotionCurveCell={row.type === 'emoji'}
                           />
                         </td>
                       ) : (
@@ -478,7 +478,7 @@ export default function JourneyMapBuilderPage() {
                     >
                       <div className="flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors">
                         <PlusIcon className="h-5 w-5 mr-2" />
-                        <span className="text-sm font-medium">Lägg till rad</span>
+                        <span className="text-sm font-medium">Add row</span>
                       </div>
                     </td>
                     {journeyMap.stages.map((stage) => (
@@ -540,7 +540,7 @@ export default function JourneyMapBuilderPage() {
       <Modal 
         isOpen={isSettingsModalOpen} 
         onClose={() => setIsSettingsModalOpen(false)}
-        title="Journey Map Inställningar"
+        title="Journey Map Settings"
       >
         <div className="space-y-6">
           <div>

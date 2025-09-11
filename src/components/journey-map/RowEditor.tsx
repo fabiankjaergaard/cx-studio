@@ -50,25 +50,25 @@ export function RowEditor({ isOpen, onClose, row, onSave, onDelete, isNewRow = f
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isNewRow ? 'Lägg till ny rad' : 'Redigera rad'}
+      title={isNewRow ? 'Add new row' : 'Edit row'}
     >
       <div className="space-y-6">
         <Input
-          label="Radnamn"
+          label="Row name"
           value={formData.category}
           onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-          placeholder="t.ex. Kundens känslor"
+          placeholder="e.g. Customer emotions"
           required
         />
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Beskrivning
+            Description
           </label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            placeholder="Beskriv vad denna rad ska innehålla..."
+            placeholder="Describe what this row should contain..."
             className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
             rows={2}
           />
@@ -76,7 +76,7 @@ export function RowEditor({ isOpen, onClose, row, onSave, onDelete, isNewRow = f
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Radtyp
+            Row type
           </label>
           <div className="space-y-2">
             {ROW_TYPES.map((type) => (
@@ -100,7 +100,7 @@ export function RowEditor({ isOpen, onClose, row, onSave, onDelete, isNewRow = f
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Radfärg
+            Row color
           </label>
           <div className="grid grid-cols-4 gap-2">
             {ROW_COLORS.map((color) => (
@@ -123,17 +123,17 @@ export function RowEditor({ isOpen, onClose, row, onSave, onDelete, isNewRow = f
         {/* Preview */}
         <div className="border-t pt-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Förhandsvisning
+            Preview
           </label>
           <div className={`p-3 rounded-lg border ${formData.color}`}>
             <div className="font-medium text-gray-900 mb-1">
-              {formData.category || 'Radnamn'}
+              {formData.category || 'Row name'}
             </div>
             <div className="text-sm text-gray-600">
-              {formData.description || 'Beskrivning av raden'}
+              {formData.description || 'Row description'}
             </div>
             <div className="text-xs text-gray-500 mt-2">
-              Typ: {selectedRowType?.name}
+              Type: {selectedRowType?.name}
             </div>
           </div>
         </div>
@@ -146,20 +146,20 @@ export function RowEditor({ isOpen, onClose, row, onSave, onDelete, isNewRow = f
                 onClick={handleDelete}
                 className="text-red-600 border-red-200 hover:bg-red-50"
               >
-                Ta bort rad
+                Delete row
               </Button>
             )}
           </div>
           <div className="flex space-x-3">
             <Button variant="outline" onClick={onClose}>
-              Avbryt
+              Cancel
             </Button>
             <Button 
               variant="primary" 
               onClick={handleSave}
               disabled={!formData.category.trim()}
             >
-              {isNewRow ? 'Lägg till' : 'Spara ändringar'}
+              {isNewRow ? 'Add' : 'Save changes'}
             </Button>
           </div>
         </div>
