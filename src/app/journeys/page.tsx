@@ -10,9 +10,11 @@ import { PlusIcon, SaveIcon, ShareIcon, DownloadIcon } from 'lucide-react'
 export default function JourneysPage() {
   const { 
     currentJourney, 
+    journeys,
     selectedTouchpointId, 
     setSelectedTouchpoint 
   } = useJourneyStore()
+
 
   if (!currentJourney) {
     return (

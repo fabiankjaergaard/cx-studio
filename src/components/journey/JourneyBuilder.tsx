@@ -7,6 +7,7 @@ import { PlusIcon } from 'lucide-react'
 import { SectionSelector } from './sections/SectionSelector'
 import { TouchpointTypeSelector } from './sections/TouchpointTypeSelector'
 import { TemplateSelector, TouchpointTemplate } from './sections/TemplateSelector'
+import { EditTouchpointModal } from './EditTouchpointModal'
 import { useJourneyStore } from '@/store/journey-store'
 import { TouchpointSection } from './sections/TouchpointSection'
 import { PersonaSection } from './sections/PersonaSection'
@@ -28,12 +29,20 @@ interface JourneyBuilderProps {
 
 export function JourneyBuilder({ journey }: JourneyBuilderProps) {
   const { isCollapsed } = useSidebar()
-  const [sections, setSections] = useState<JourneySection[]>([])
+  const [sections, setSections] = useState<JourneySection[]>(() => {
+    // Auto-add a touchpoints section for new journeys
+    return [{
+      id: 'touchpoints-default',
+      type: 'touchpoints',
+      subType: 'blank'
+    }]
+  })
   const [isSectionSelectorOpen, setIsSectionSelectorOpen] = useState(false)
   const [isTouchpointTypeSelectorOpen, setIsTouchpointTypeSelectorOpen] = useState(false)
   const [isTemplateSelectorOpen, setIsTemplateSelectorOpen] = useState(false)
+  const [isEditTouchpointModalOpen, setIsEditTouchpointModalOpen] = useState(false)
   const [insertAfterIndex, setInsertAfterIndex] = useState(-1)
-  const { createBlankJourney } = useJourneyStore()
+  const { createBlankJourney, journeys } = useJourneyStore()
 
   // Section data states
   const [personas, setPersonas] = useState<any>({})
@@ -101,8 +110,9 @@ export function JourneyBuilder({ journey }: JourneyBuilderProps) {
   }
 
   const handleTouchpointEdit = () => {
-    // TODO: Implement edit functionality
-    console.log('Edit touchpoint:', selectedTouchpointId)
+    if (selectedTouchpointId) {
+      setIsEditTouchpointModalOpen(true)
+    }
   }
 
   const renderSection = (section: JourneySection, index: number) => {
@@ -253,6 +263,13 @@ export function JourneyBuilder({ journey }: JourneyBuilderProps) {
         isOpen={isTemplateSelectorOpen}
         onClose={() => setIsTemplateSelectorOpen(false)}
         onSelectTemplate={handleSelectTemplate}
+      />
+
+      {/* Edit Touchpoint Modal */}
+      <EditTouchpointModal
+        isOpen={isEditTouchpointModalOpen}
+        onClose={() => setIsEditTouchpointModalOpen(false)}
+        touchpoint={journey.touchpoints.find(tp => tp.id === selectedTouchpointId) || null}
       />
     </div>
   )

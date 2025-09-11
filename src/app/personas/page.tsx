@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import { PlusIcon, UserIcon, MapPinIcon, BriefcaseIcon, HeartIcon, AlertTriangleIcon, EditIcon, TrashIcon } from 'lucide-react'
+import Link from 'next/link'
 
 interface Persona {
   id: string
@@ -34,7 +35,7 @@ const samplePersonas: Persona[] = [
     age: '32',
     location: 'Stockholm',
     occupation: 'Produktchef',
-    avatar: '👩‍💼',
+    avatar: '',
     goals: ['Effektivisera arbetsprocesser', 'Utveckla karriären', 'Balansera work-life'],
     painPoints: ['För många möten', 'Svår att hitta rätt verktyg', 'Tidsbrist'],
     description: 'Anna är en driven produktchef som arbetar på ett tech-företag. Hon värdesätter effektivitet och söker alltid sätt att förbättra processer.',
@@ -52,7 +53,7 @@ const samplePersonas: Persona[] = [
     age: '28',
     location: 'Göteborg',
     occupation: 'Freelance Designer',
-    avatar: '👨‍🎨',
+    avatar: '',
     goals: ['Hitta fler kunder', 'Förbättra portfolio', 'Öka intäkterna'],
     painPoints: ['Osäker inkomst', 'Ensamt arbete', 'Administrativt krångel'],
     description: 'Erik är en kreativ freelancer som specialiserar sig på webdesign och branding. Han söker stabilitet och tillväxt i sin verksamhet.',
@@ -70,7 +71,7 @@ const samplePersonas: Persona[] = [
     age: '45',
     location: 'Malmö',
     occupation: 'Verksamhetschef',
-    avatar: '👩‍💼',
+    avatar: '',
     goals: ['Digitalisera processer', 'Leda teamet effektivt', 'Öka lönsamheten'],
     painPoints: ['Motstånd mot förändring', 'Budget begränsningar', 'Komplexa beslut'],
     description: 'Maria leder ett traditionellt företag genom digital transformation. Hon behöver balansera innovation med stabilitet.',
@@ -132,7 +133,7 @@ export default function PersonasPage() {
         age: '',
         location: '',
         occupation: '',
-        avatar: '👤',
+        avatar: '',
         goals: [''],
         painPoints: [''],
         description: '',
@@ -172,13 +173,20 @@ export default function PersonasPage() {
         title="Personas" 
         description="Skapa och hantera kundpersonas för dina journey maps"
         actions={
-          <Button 
-            variant="primary"
-            onClick={() => setIsNewPersonaModalOpen(true)}
-          >
-            <PlusIcon className="mr-2 h-4 w-4" />
-            Ny Persona
-          </Button>
+          <div className="flex space-x-2">
+            <Link href="/personas/guide">
+              <Button variant="outline">
+                Guide till personas
+              </Button>
+            </Link>
+            <Button 
+              variant="primary"
+              onClick={() => setIsNewPersonaModalOpen(true)}
+            >
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Ny Persona
+            </Button>
+          </div>
         }
       />
       
@@ -190,7 +198,12 @@ export default function PersonasPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="text-3xl">{persona.avatar}</div>
+                    {persona.avatar && <div className="text-3xl">{persona.avatar}</div>}
+                    {!persona.avatar && (
+                      <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-medium">
+                        {persona.name.charAt(0)}
+                      </div>
+                    )}
                     <div>
                       <CardTitle className="text-lg">{persona.name}</CardTitle>
                       <div className="flex items-center text-sm text-gray-500 mt-1">
@@ -233,13 +246,13 @@ export default function PersonasPage() {
                     {persona.goals.length > 0 && (
                       <div>
                         <div className="flex items-center text-xs font-medium text-gray-700 mb-2">
-                          <HeartIcon className="h-3 w-3 mr-1 text-green-600" />
+                          <HeartIcon className="h-3 w-3 mr-1 text-slate-600" />
                           Mål ({persona.goals.length})
                         </div>
                         <div className="space-y-1">
                           {persona.goals.slice(0, 2).map((goal, index) => (
                             <div key={index} className="text-xs text-gray-600 flex items-start">
-                              <span className="text-green-500 mr-1">•</span>
+                              <span className="text-slate-500 mr-1">•</span>
                               {goal}
                             </div>
                           ))}
@@ -253,13 +266,13 @@ export default function PersonasPage() {
                     {persona.painPoints.length > 0 && (
                       <div>
                         <div className="flex items-center text-xs font-medium text-gray-700 mb-2">
-                          <AlertTriangleIcon className="h-3 w-3 mr-1 text-red-600" />
+                          <AlertTriangleIcon className="h-3 w-3 mr-1 text-slate-600" />
                           Utmaningar ({persona.painPoints.length})
                         </div>
                         <div className="space-y-1">
                           {persona.painPoints.slice(0, 2).map((pain, index) => (
                             <div key={index} className="text-xs text-gray-600 flex items-start">
-                              <span className="text-red-500 mr-1">•</span>
+                              <span className="text-slate-500 mr-1">•</span>
                               {pain}
                             </div>
                           ))}
@@ -342,7 +355,7 @@ export default function PersonasPage() {
               value={newPersona.description || ''}
               onChange={(e) => updateNewPersonaField('description', e.target.value)}
               placeholder="Beskriv personas bakgrund, beteenden och motivationer..."
-              className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               rows={3}
             />
           </div>
@@ -422,7 +435,12 @@ export default function PersonasPage() {
         {selectedPersona && (
           <div className="space-y-6">
             <div className="flex items-center space-x-4">
-              <div className="text-4xl">{selectedPersona.avatar}</div>
+              {selectedPersona.avatar && <div className="text-4xl">{selectedPersona.avatar}</div>}
+              {!selectedPersona.avatar && (
+                <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-medium text-xl">
+                  {selectedPersona.name.charAt(0)}
+                </div>
+              )}
               <div>
                 <h3 className="text-xl font-semibold">{selectedPersona.name}</h3>
                 <div className="flex items-center text-gray-600 mt-1">
@@ -443,13 +461,13 @@ export default function PersonasPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h4 className="font-medium text-gray-900 mb-3 flex items-center">
-                  <HeartIcon className="h-4 w-4 mr-2 text-green-600" />
+                  <HeartIcon className="h-4 w-4 mr-2 text-slate-600" />
                   Mål & Behov
                 </h4>
                 <ul className="space-y-2">
                   {selectedPersona.goals.map((goal, index) => (
                     <li key={index} className="text-sm text-gray-600 flex items-start">
-                      <span className="text-green-500 mr-2">•</span>
+                      <span className="text-slate-500 mr-2">•</span>
                       {goal}
                     </li>
                   ))}
@@ -458,13 +476,13 @@ export default function PersonasPage() {
               
               <div>
                 <h4 className="font-medium text-gray-900 mb-3 flex items-center">
-                  <AlertTriangleIcon className="h-4 w-4 mr-2 text-red-600" />
+                  <AlertTriangleIcon className="h-4 w-4 mr-2 text-slate-600" />
                   Utmaningar
                 </h4>
                 <ul className="space-y-2">
                   {selectedPersona.painPoints.map((pain, index) => (
                     <li key={index} className="text-sm text-gray-600 flex items-start">
-                      <span className="text-red-500 mr-2">•</span>
+                      <span className="text-slate-500 mr-2">•</span>
                       {pain}
                     </li>
                   ))}
@@ -478,7 +496,7 @@ export default function PersonasPage() {
                 <ul className="space-y-2">
                   {selectedPersona.behaviors.map((behavior, index) => (
                     <li key={index} className="text-sm text-gray-600 flex items-start">
-                      <span className="text-blue-500 mr-2">•</span>
+                      <span className="text-slate-500 mr-2">•</span>
                       {behavior}
                     </li>
                   ))}

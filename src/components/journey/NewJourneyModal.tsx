@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -26,11 +27,14 @@ export function NewJourneyModal({ isOpen, onClose }: NewJourneyModalProps) {
   const [persona, setPersona] = useState('')
   const [isCreating, setIsCreating] = useState(false)
   
+  const router = useRouter()
   const { addJourney, setCurrentJourney } = useJourneyStore()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!title.trim()) return
+    if (!title.trim()) {
+      return
+    }
 
     setIsCreating(true)
     
@@ -57,7 +61,7 @@ export function NewJourneyModal({ isOpen, onClose }: NewJourneyModalProps) {
       onClose()
       
       // Navigate to journeys page
-      window.location.href = '/journeys'
+      router.push('/journeys')
     } catch (error) {
       console.error('Error creating journey:', error)
     } finally {
@@ -101,7 +105,7 @@ export function NewJourneyModal({ isOpen, onClose }: NewJourneyModalProps) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Beskriv denna customer journey..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             rows={3}
           />
         </div>
@@ -136,6 +140,9 @@ export function NewJourneyModal({ isOpen, onClose }: NewJourneyModalProps) {
             type="submit"
             variant="primary"
             disabled={!title.trim() || isCreating}
+            onClick={(e) => {
+              // Let the form submit handle the rest
+            }}
           >
             {isCreating ? 'Skapar...' : 'Skapa Journey Map'}
           </Button>

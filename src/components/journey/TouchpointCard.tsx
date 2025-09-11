@@ -268,7 +268,7 @@ export function TouchpointCard({ touchpoint, isSelected, onClick, onEdit }: Touc
             <div
               onMouseDown={handleConnectionMouseDown}
               className={cn(
-                "w-4 h-4 border-2 rounded-full bg-white cursor-pointer transition-all duration-200 shadow-md flex items-center justify-center select-none",
+                "w-4 h-4 border rounded-full bg-white cursor-pointer transition-all duration-200 shadow-md flex items-center justify-center select-none",
                 isConnecting && connectionStart === touchpoint.id 
                   ? "border-orange-500 bg-orange-50 hover:border-orange-600" 
                   : "border-slate-400 hover:border-slate-600 hover:bg-slate-50"
@@ -291,10 +291,26 @@ export function TouchpointCard({ touchpoint, isSelected, onClick, onEdit }: Touc
                   e.stopPropagation()
                   onEdit?.()
                 }}
-                className="w-4 h-4 border-2 border-blue-400 rounded-full bg-white cursor-pointer hover:border-blue-600 hover:bg-blue-50 transition-all duration-200 shadow-md flex items-center justify-center"
+                className="w-4 h-4 border border-slate-400 rounded-full bg-white cursor-pointer hover:border-slate-600 hover:bg-slate-50 transition-all duration-200 shadow-md flex items-center justify-center"
                 title="Redigera"
               >
-                <EditIcon className="w-2 h-2 text-blue-500" />
+                <EditIcon className="w-2 h-2 text-slate-500" />
+              </div>
+            )}
+            
+            {/* Delete Dot - Only when selected */}
+            {isSelected && (
+              <div
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (confirm('Är du säker på att du vill ta bort denna touchpoint?')) {
+                    deleteTouchpoint(touchpoint.id)
+                  }
+                }}
+                className="w-4 h-4 border border-slate-400 rounded-full bg-white cursor-pointer hover:border-slate-600 hover:bg-slate-50 transition-all duration-200 shadow-md flex items-center justify-center"
+                title="Ta bort"
+              >
+                <TrashIcon className="w-2 h-2 text-slate-500" />
               </div>
             )}
           </div>

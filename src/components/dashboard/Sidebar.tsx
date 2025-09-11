@@ -13,18 +13,23 @@ import {
   BarChart3Icon,
   UsersIcon,
   SettingsIcon,
+  BookOpenIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   UserIcon,
-  LogOutIcon
+  LogOutIcon,
+  ClipboardListIcon,
+  RouteIcon
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: HomeIcon },
-  { name: 'Journey Maps', href: '/journeys', icon: MapIcon },
+  { name: 'Journey Maps', href: '/journey-maps', icon: RouteIcon },
   { name: 'Templates', href: '/templates', icon: BookTemplateIcon },
   { name: 'Analytics', href: '/analytics', icon: BarChart3Icon },
   { name: 'Personas', href: '/personas', icon: UsersIcon },
+  { name: 'Kundinsikter', href: '/insights', icon: ClipboardListIcon },
+  { name: 'Begreppslexikon', href: '/glossary', icon: BookOpenIcon },
   { name: 'Settings', href: '/settings', icon: SettingsIcon },
 ]
 
