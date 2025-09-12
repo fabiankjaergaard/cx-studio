@@ -52,13 +52,12 @@ export default function Home() {
         title="Dashboard" 
         description="Översikt av dina customer experience projekt"
         actions={
-          <Button 
-            variant="primary"
-            onClick={() => setIsNewJourneyModalOpen(true)}
-          >
-            <PlusIcon className="mr-2 h-4 w-4" />
-            Ny Journey Map
-          </Button>
+          <Link href="/journey-maps/new">
+            <Button variant="primary">
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Start New Journey Map
+            </Button>
+          </Link>
         }
       />
       

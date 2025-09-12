@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/dashboard/Sidebar";
-import { SidebarProvider } from "@/contexts/SidebarContext";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,6 +17,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "CX Studio - Customer Experience Tools",
   description: "Professional customer experience tools for creating journey maps and improving customer experiences",
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/icon-192x192.png',
+  },
+  manifest: '/manifest.json',
+  themeColor: '#1e293b',
+  viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
 };
 
 export default function RootLayout({
@@ -29,12 +36,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
       >
-        <SidebarProvider>
-          <div className="flex h-screen bg-gray-50">
-            <Sidebar />
-            <main className="flex-1 overflow-hidden bg-gray-50 transition-all duration-300">{children}</main>
-          </div>
-        </SidebarProvider>
+        <AuthProvider>
+          <ConditionalLayout>
+            {children}
+          </ConditionalLayout>
+        </AuthProvider>
       </body>
     </html>
   );

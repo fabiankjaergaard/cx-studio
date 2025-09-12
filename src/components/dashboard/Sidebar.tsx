@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { useSidebar } from '@/contexts/SidebarContext'
+import { useAuth } from '@/contexts/AuthContext'
 import Image from 'next/image'
 import { 
   MapIcon, 
@@ -36,8 +37,7 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname()
   const { isCollapsed, setIsCollapsed } = useSidebar()
-  const [isLoggedIn, setIsLoggedIn] = useState(true) // Mock login state
-  const [userName] = useState('John Doe') // Mock user name
+  const { user, signOut } = useAuth()
 
   return (
     <div className={cn(
@@ -115,7 +115,7 @@ export function Sidebar() {
       
       {/* User Section */}
       <div className="border-t border-gray-200 p-4">
-        {isLoggedIn ? (
+        {user ? (
           <div className="space-y-2">
             {/* User Info */}
             <div className={cn(
@@ -128,7 +128,9 @@ export function Sidebar() {
               )} />
               {!isCollapsed && (
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-700 truncate">{userName}</p>
+                  <p className="text-sm font-medium text-gray-700 truncate">
+                    {user.email?.split('@')[0] || 'User'}
+                  </p>
                   <p className="text-xs text-gray-500 truncate">Logged in</p>
                 </div>
               )}
@@ -136,7 +138,7 @@ export function Sidebar() {
             
             {/* Logout Button */}
             <button
-              onClick={() => setIsLoggedIn(false)}
+              onClick={signOut}
               className={cn(
                 "w-full flex items-center rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900",
                 isCollapsed ? "px-2 py-2 justify-center" : "px-3 py-2"
@@ -152,8 +154,8 @@ export function Sidebar() {
           </div>
         ) : (
           /* Login Button */
-          <button
-            onClick={() => setIsLoggedIn(true)}
+          <Link
+            href="/auth/login"
             className={cn(
               "w-full flex items-center rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900",
               isCollapsed ? "px-2 py-2 justify-center" : "px-3 py-2"
@@ -165,7 +167,7 @@ export function Sidebar() {
               isCollapsed ? "mx-auto" : "mr-3"
             )} />
             {!isCollapsed && "Log in"}
-          </button>
+          </Link>
         )}
       </div>
     </div>

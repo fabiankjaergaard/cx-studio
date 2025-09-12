@@ -60,8 +60,8 @@ export function NewJourneyModal({ isOpen, onClose }: NewJourneyModalProps) {
       setPersona('')
       onClose()
       
-      // Navigate to journeys page
-      router.push('/journeys')
+      // Navigate directly to the new journey map for editing
+      router.push('/journey-maps/new')
     } catch (error) {
       console.error('Error creating journey:', error)
     } finally {
