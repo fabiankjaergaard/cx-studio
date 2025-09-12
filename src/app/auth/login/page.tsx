@@ -48,21 +48,28 @@ export default function LoginPage() {
     
     setIsSubmitting(true)
     setError('')
-    setDebugInfo('Starting login...')
+    
+    // Enhanced debug logging for environment variables
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    setDebugInfo(`Environment Check:
+    - URL: ${supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'MISSING'}
+    - Key: ${supabaseKey ? `${supabaseKey.substring(0, 20)}...` : 'MISSING'}
+    - Origin: ${typeof window !== 'undefined' ? window.location.origin : 'server'}`)
 
     try {
-      setDebugInfo('Calling signIn...')
+      setDebugInfo(prev => prev + '\nCalling signIn...')
       const result = await signIn(email, password)
-      setDebugInfo(`SignIn result: ${result.error ? 'ERROR' : 'SUCCESS'}`)
+      setDebugInfo(prev => prev + `\nSignIn result: ${result.error ? 'ERROR' : 'SUCCESS'}`)
       
       if (result.error) {
         setError(`Login failed: ${result.error.message}`)
-        setDebugInfo(`Error: ${result.error.message}`)
+        setDebugInfo(prev => prev + `\nError details: ${result.error.message}`)
       } else {
-        setDebugInfo('Login successful, redirecting...')
+        setDebugInfo(prev => prev + '\nLogin successful, redirecting...')
         // Redirect to dashboard
         const url = `${window.location.origin}/`
-        setDebugInfo(`Redirecting to: ${url}`)
+        setDebugInfo(prev => prev + `\nRedirecting to: ${url}`)
         setTimeout(() => {
           window.location.assign(url)
         }, 100)
@@ -71,7 +78,7 @@ export default function LoginPage() {
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error'
       setError(`Login failed: ${errorMsg}`)
-      setDebugInfo(`Exception: ${errorMsg}`)
+      setDebugInfo(prev => prev + `\nException: ${errorMsg}`)
     }
     
     setIsSubmitting(false)

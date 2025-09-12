@@ -19,7 +19,7 @@ import {
   ChevronRightIcon,
   UserIcon,
   LogOutIcon,
-  ClipboardListIcon,
+  ClipboardIcon,
   RouteIcon
 } from 'lucide-react'
 
@@ -29,7 +29,7 @@ const navigation = [
   { name: 'Templates', href: '/templates', icon: BookTemplateIcon },
   { name: 'Analytics', href: '/analytics', icon: BarChart3Icon },
   { name: 'Personas', href: '/personas', icon: UsersIcon },
-  { name: 'Insights', href: '/insights', icon: ClipboardListIcon },
+  { name: 'Insights', href: '/insights', icon: ClipboardIcon },
   { name: 'Glossary', href: '/glossary', icon: BookOpenIcon },
   { name: 'Settings', href: '/settings', icon: SettingsIcon },
 ]

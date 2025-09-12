@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { 
   BarChart3Icon, 
-  ClipboardListIcon, 
+  ClipboardIcon, 
   MessageSquareIcon, 
   UsersIcon, 
   TrendingUpIcon,
@@ -37,7 +37,7 @@ const quantitativeMethods = [
   {
     title: 'CES-enkäter',
     description: 'Mät kundansträngning och identifiera friktion',
-    icon: ClipboardListIcon,
+    icon: ClipboardIcon,
     color: 'bg-slate-50 text-slate-600',
     href: '/insights/ces',
     features: ['Enkelhetsindex', 'Pain point-identifiering', 'Process-optimering', 'ROI-beräkning']

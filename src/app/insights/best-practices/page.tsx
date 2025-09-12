@@ -14,7 +14,8 @@ import {
   TrendingUpIcon,
   TargetIcon,
   ArrowRightIcon,
-  BookOpenIcon
+  BookOpenIcon,
+  ClipboardIcon
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -58,7 +59,7 @@ const bestPractices = [
   },
   {
     category: 'Datainsamling',
-    icon: ClipboardListIcon,
+    icon: ClipboardIcon,
     color: 'text-green-600 bg-green-100',
     practices: [
       {

@@ -4,6 +4,7 @@ import { Header } from '@/components/dashboard/Header'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { NewJourneyModal } from '@/components/journey/NewJourneyModal'
+import { AuthGuard } from '@/components/auth/AuthGuard'
 import { PlusIcon, MapIcon, BookTemplateIcon, TrendingUpIcon, UsersIcon, ClockIcon, PlusCircleIcon } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
@@ -47,7 +48,8 @@ export default function Home() {
   }, [journeys])
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <AuthGuard>
+      <div className="h-full flex flex-col bg-gray-50">
       <Header 
         title="Dashboard" 
         description="Översikt av dina customer experience projekt"
@@ -226,6 +228,7 @@ export default function Home() {
         isOpen={isNewJourneyModalOpen}
         onClose={() => setIsNewJourneyModalOpen(false)}
       />
-    </div>
+      </div>
+    </AuthGuard>
   )
 }

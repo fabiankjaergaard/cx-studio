@@ -10,7 +10,7 @@ import {
   TrendingUpIcon,
   BarChart3Icon,
   MessageSquareIcon,
-  ClipboardListIcon,
+  ClipboardIcon,
   UsersIcon,
   MicIcon,
   EyeIcon,
@@ -93,7 +93,7 @@ const methodGuide = [
       },
       {
         name: "CES-enkäter",
-        icon: ClipboardListIcon,
+        icon: ClipboardIcon,
         when: "Du vill identifiera friktion i processer",
         frequency: "Efter komplexa processer eller när problem rapporteras",
         sample: "100+ för att identifiera förbättringsområden",
