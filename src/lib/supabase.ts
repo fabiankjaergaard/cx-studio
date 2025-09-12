@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
+// Trim whitespace and newlines from environment variables (defensive)
+const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co').trim()
+const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key').trim()
 
 // Debug logging for environment variables
 if (typeof window !== 'undefined') {
@@ -10,7 +11,9 @@ if (typeof window !== 'undefined') {
     key: supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'MISSING',
     hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
     hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    isPlaceholder: supabaseUrl.includes('placeholder')
+    isPlaceholder: supabaseUrl.includes('placeholder'),
+    urlLength: supabaseUrl.length,
+    keyLength: supabaseAnonKey.length
   })
 }
 
