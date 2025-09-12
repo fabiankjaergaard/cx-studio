@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { 
   PlusIcon, 
   RouteIcon, 
@@ -29,11 +30,11 @@ interface JourneyMap {
   status: 'draft' | 'completed' | 'in-review'
 }
 
-const sampleJourneyMaps: JourneyMap[] = [
+const getSampleJourneyMaps = (t: (key: string) => string): JourneyMap[] => [
   {
     id: '1',
-    name: 'E-handelskund Journey',
-    description: 'Kundresan för online-shopping från upptäckt till återköp',
+    name: t('journeyMaps.sampleData.ecommerce.name'),
+    description: t('journeyMaps.sampleData.ecommerce.description'),
     persona: 'Anna Andersson',
     lastModified: '2024-01-15',
     createdBy: 'John Doe',
@@ -42,8 +43,8 @@ const sampleJourneyMaps: JourneyMap[] = [
   },
   {
     id: '2',
-    name: 'B2B Försäljningsprocess',
-    description: 'Kundresan för företagskunder genom försäljningscykeln',
+    name: t('journeyMaps.sampleData.b2b.name'),
+    description: t('journeyMaps.sampleData.b2b.description'),
     persona: 'Maria Johansson',
     lastModified: '2024-01-12',
     createdBy: 'Jane Smith',
@@ -52,8 +53,8 @@ const sampleJourneyMaps: JourneyMap[] = [
   },
   {
     id: '3',
-    name: 'Kundservice Journey',
-    description: 'Supportärende från rapportering till lösning',
+    name: t('journeyMaps.sampleData.support.name'),
+    description: t('journeyMaps.sampleData.support.description'),
     persona: 'Erik Nilsson',
     lastModified: '2024-01-10',
     createdBy: 'John Doe',
@@ -68,14 +69,16 @@ const statusColors = {
   'in-review': 'bg-slate-100 text-slate-700'
 }
 
-const statusLabels = {
-  draft: 'Utkast',
-  completed: 'Slutförd',
-  'in-review': 'Under granskning'
-}
+const getStatusLabels = (t: (key: string) => string) => ({
+  draft: t('journeyMaps.status.draft'),
+  completed: t('journeyMaps.status.completed'),
+  'in-review': t('journeyMaps.status.inReview')
+})
 
 export default function JourneyMapsPage() {
-  const [journeyMaps, setJourneyMaps] = useState<JourneyMap[]>(sampleJourneyMaps)
+  const { t, language } = useLanguage()
+  const [journeyMaps, setJourneyMaps] = useState<JourneyMap[]>(getSampleJourneyMaps(t))
+  const statusLabels = getStatusLabels(t)
   const [isNewMapModalOpen, setIsNewMapModalOpen] = useState(false)
   const [newMapName, setNewMapName] = useState('')
   const [newMapDescription, setNewMapDescription] = useState('')
@@ -88,7 +91,7 @@ export default function JourneyMapsPage() {
         description: newMapDescription.trim(),
         persona: '',
         lastModified: new Date().toISOString().split('T')[0],
-        createdBy: 'Nuvarande användare',
+        createdBy: t('journeyMaps.currentUser'),
         stages: 4,
         status: 'draft'
       }
@@ -107,7 +110,7 @@ export default function JourneyMapsPage() {
     const duplicatedMap: JourneyMap = {
       ...map,
       id: Date.now().toString(),
-      name: `${map.name} (Kopia)`,
+      name: `${map.name} (${t('journeyMaps.copy')})`,
       lastModified: new Date().toISOString().split('T')[0],
       status: 'draft'
     }
@@ -117,15 +120,15 @@ export default function JourneyMapsPage() {
   return (
     <div className="h-full flex flex-col">
       <Header 
-        title="Journey Maps" 
-        description="Skapa och hantera customer journey maps för att visualisera kundupplevelsen"
+        title={t('journeyMaps.title')} 
+        description={t('journeyMaps.subtitle')}
         actions={
           <Button 
             variant="primary"
             onClick={() => setIsNewMapModalOpen(true)}
           >
             <PlusIcon className="mr-2 h-4 w-4" />
-            Ny Journey Map
+            {t('journeyMaps.createNew')}
           </Button>
         }
       />
@@ -152,7 +155,7 @@ export default function JourneyMapsPage() {
                       size="sm"
                       onClick={() => handleDuplicateJourneyMap(journeyMap)}
                       className="p-2"
-                      title="Duplicera"
+                      title={t('journeyMaps.actions.duplicate')}
                     >
                       <CopyIcon className="h-3 w-3" />
                     </Button>
@@ -161,7 +164,7 @@ export default function JourneyMapsPage() {
                       size="sm"
                       onClick={() => handleDeleteJourneyMap(journeyMap.id)}
                       className="p-2 text-red-600 hover:text-red-700"
-                      title="Ta bort"
+                      title={t('journeyMaps.actions.delete')}
                     >
                       <TrashIcon className="h-3 w-3" />
                     </Button>
@@ -179,19 +182,19 @@ export default function JourneyMapsPage() {
                   
                   <div className="flex items-center text-sm text-gray-600">
                     <CalendarIcon className="h-4 w-4 mr-2" />
-                    Senast ändrad: {new Date(journeyMap.lastModified).toLocaleDateString('sv-SE')}
+                    {t('journeyMaps.lastModified')}: {new Date(journeyMap.lastModified).toLocaleDateString(language === 'sv' ? 'sv-SE' : 'en-US')}
                   </div>
                   
                   <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span>{journeyMap.stages} steg</span>
-                    <span>Av: {journeyMap.createdBy}</span>
+                    <span>{journeyMap.stages} {t('journeyMaps.stages')}</span>
+                    <span>{t('journeyMaps.createdBy')}: {journeyMap.createdBy}</span>
                   </div>
                   
                   <div className="flex space-x-2 pt-2">
                     <Link href={`/journey-maps/${journeyMap.id}`} className="flex-1">
                       <Button variant="primary" size="sm" className="w-full">
                         <EditIcon className="h-3 w-3 mr-1" />
-                        Redigera
+                        {t('journeyMaps.actions.edit')}
                       </Button>
                     </Link>
                     <Link href={`/journey-maps/${journeyMap.id}/view`}>
@@ -213,10 +216,10 @@ export default function JourneyMapsPage() {
             <CardContent className="p-8 text-center">
               <RouteIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Skapa ny Journey Map
+                {t('journeyMaps.createNewCard.title')}
               </h3>
               <p className="text-gray-500">
-                Visualisera kundresan från första kontakt till mål
+                {t('journeyMaps.createNewCard.description')}
               </p>
             </CardContent>
           </Card>
@@ -228,18 +231,17 @@ export default function JourneyMapsPage() {
             <CardContent className="p-8 text-center">
               <RouteIcon className="mx-auto h-16 w-16 text-gray-400 mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Kom igång med Journey Maps
+                {t('journeyMaps.gettingStarted.title')}
               </h3>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                Journey Maps hjälper dig att visualisera och förstå hela kundupplevelsen från första 
-                kontakt till slutmål. Identifiera pain points, möjligheter och förbättringsområden.
+                {t('journeyMaps.gettingStarted.description')}
               </p>
               <Button 
                 variant="primary"
                 onClick={() => setIsNewMapModalOpen(true)}
               >
                 <PlusIcon className="mr-2 h-4 w-4" />
-                Skapa din första Journey Map
+                {t('journeyMaps.gettingStarted.createFirst')}
               </Button>
             </CardContent>
           </Card>
@@ -250,25 +252,25 @@ export default function JourneyMapsPage() {
       <Modal 
         isOpen={isNewMapModalOpen} 
         onClose={() => setIsNewMapModalOpen(false)}
-        title="Skapa ny Journey Map"
+        title={t('journeyMaps.modal.createTitle')}
       >
         <div className="space-y-6">
           <Input
-            label="Namn på Journey Map"
+            label={t('journeyMaps.modal.nameLabel')}
             value={newMapName}
             onChange={(e) => setNewMapName(e.target.value)}
-            placeholder="E-handelskund Journey"
+            placeholder={t('journeyMaps.modal.namePlaceholder')}
             required
           />
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Beskrivning (valfri)
+              {t('journeyMaps.modal.descriptionLabel')}
             </label>
             <textarea
               value={newMapDescription}
               onChange={(e) => setNewMapDescription(e.target.value)}
-              placeholder="Beskriv vad denna journey map kommer att fokusera på..."
+              placeholder={t('journeyMaps.modal.descriptionPlaceholder')}
               className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               rows={3}
             />
@@ -279,14 +281,14 @@ export default function JourneyMapsPage() {
               variant="outline" 
               onClick={() => setIsNewMapModalOpen(false)}
             >
-              Avbryt
+              {t('common.cancel')}
             </Button>
             <Button 
               variant="primary" 
               onClick={handleCreateJourneyMap}
               disabled={!newMapName.trim()}
             >
-              Skapa Journey Map
+              {t('journeyMaps.modal.create')}
             </Button>
           </div>
         </div>
