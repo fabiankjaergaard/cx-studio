@@ -55,14 +55,14 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
         <div className="p-8">
           {/* Video Placeholder */}
           <div className="mb-6">
-            <div className="aspect-video bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
+            <div className="h-48 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
               <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
-                  <svg className="w-8 h-8 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
+                <div className="w-12 h-12 mx-auto mb-3 bg-slate-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z"/>
                   </svg>
                 </div>
-                <p className="text-gray-500 font-medium">Introduktionsvideo</p>
+                <p className="text-gray-500 font-medium text-sm">Introduktionsvideo</p>
               </div>
             </div>
           </div>
