@@ -5,16 +5,17 @@ import { Header } from '@/components/dashboard/Header'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { glossaryTerms, GlossaryTerm } from '@/data/glossary'
+import { getGlossaryTerms, GlossaryTerm } from '@/data/glossary'
 import { SearchIcon, BookOpenIcon, TagIcon, FilterIcon } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
-const categoryLabels = {
-  general: 'Allmänt',
-  journey: 'Kundresa',
-  touchpoint: 'Touchpoints',
-  emotion: 'Känslor',
-  metrics: 'Mätningar'
-}
+const getCategoryLabels = (t: (key: string) => string) => ({
+  general: t('glossary.categoryGeneral'),
+  journey: t('glossary.categoryJourney'),
+  touchpoint: t('glossary.categoryTouchpoint'),
+  emotion: t('glossary.categoryEmotion'),
+  metrics: t('glossary.categoryMetrics')
+})
 
 const categoryColors = {
   general: 'bg-blue-100 text-blue-800',
@@ -25,9 +26,13 @@ const categoryColors = {
 }
 
 export default function GlossaryPage() {
+  const { t } = useLanguage()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [expandedTerms, setExpandedTerms] = useState<Set<string>>(new Set())
+
+  const glossaryTerms = useMemo(() => getGlossaryTerms(t), [t])
+  const categoryLabels = useMemo(() => getCategoryLabels(t), [t])
 
   const filteredTerms = useMemo(() => {
     return glossaryTerms.filter(term => {
@@ -72,8 +77,8 @@ export default function GlossaryPage() {
   return (
     <div className="h-full flex flex-col">
       <Header 
-        title="Begreppslexikon" 
-        description="Lär dig viktiga begrepp inom Customer Experience"
+        title={t('glossary.title')} 
+        description={t('glossary.subtitle')}
       />
       
       <div className="flex-1 p-8 overflow-auto bg-gray-50">
@@ -84,12 +89,12 @@ export default function GlossaryPage() {
               {/* Search */}
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Sök i lexikonet
+                  {t('glossary.searchLabel')}
                 </label>
                 <div className="relative">
                   <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <Input
-                    placeholder="Sök efter begrepp eller definitioner..."
+                    placeholder={t('glossary.searchPlaceholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-11 h-11"
@@ -100,7 +105,7 @@ export default function GlossaryPage() {
               {/* Category Filter */}
               <div className="lg:w-64">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Kategori
+                  {t('glossary.categoryLabel')}
                 </label>
                 <div className="relative">
                   <FilterIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -109,7 +114,7 @@ export default function GlossaryPage() {
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     className="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   >
-                    <option value="all">Alla kategorier</option>
+                    <option value="all">{t('glossary.allCategories')}</option>
                     {categories.map(category => (
                       <option key={category} value={category}>
                         {categoryLabels[category]}
@@ -123,7 +128,7 @@ export default function GlossaryPage() {
             {/* Results info */}
             <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
               <p className="text-sm text-gray-600">
-                Visar <span className="font-medium">{filteredTerms.length}</span> av <span className="font-medium">{glossaryTerms.length}</span> begrepp
+                {t('glossary.resultsShowing', { filtered: filteredTerms.length, total: glossaryTerms.length })}
               </p>
               
               {/* Category badges */}
@@ -176,7 +181,7 @@ export default function GlossaryPage() {
                   <div className="px-6 pb-6 border-t border-gray-100">
                     {term.examples && (
                       <div className="mb-4">
-                        <h4 className="font-semibold text-gray-900 mb-2">Exempel:</h4>
+                        <h4 className="font-semibold text-gray-900 mb-2">{t('glossary.examplesLabel')}</h4>
                         <ul className="list-disc list-inside text-gray-600 space-y-1">
                           {term.examples.map((example, index) => (
                             <li key={index}>{example}</li>
@@ -187,7 +192,7 @@ export default function GlossaryPage() {
 
                     {term.relatedTerms && term.relatedTerms.length > 0 && (
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">Relaterade begrepp:</h4>
+                        <h4 className="font-semibold text-gray-900 mb-2">{t('glossary.relatedTermsLabel')}</h4>
                         <div className="flex flex-wrap gap-2">
                           {term.relatedTerms.map((relatedId) => {
                             const relatedTerm = glossaryTerms.find(t => t.id === relatedId)
@@ -216,8 +221,8 @@ export default function GlossaryPage() {
           <Card>
             <CardContent className="text-center py-12">
               <BookOpenIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Inga begrepp hittades</h3>
-              <p className="text-gray-500 mb-4">Prova att söka efter något annat eller välj en annan kategori.</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('glossary.noTermsFound')}</h3>
+              <p className="text-gray-500 mb-4">{t('glossary.noTermsFoundDesc')}</p>
               <Button 
                 variant="outline"
                 onClick={() => {
@@ -225,7 +230,7 @@ export default function GlossaryPage() {
                   setSelectedCategory('all')
                 }}
               >
-                Rensa filter
+                {t('glossary.clearFilters')}
               </Button>
             </CardContent>
           </Card>

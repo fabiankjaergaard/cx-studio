@@ -2,69 +2,70 @@
 
 import { useEffect, useState } from 'react'
 import { driver } from 'driver.js'
+import { useLanguage } from '@/contexts/LanguageContext'
 
-const tourSteps = [
+const getTourSteps = (t: (key: string) => string) => [
   {
     element: '[data-tour="dashboard"]',
     popover: {
-      title: 'Dashboard',
-      description: 'Här får du en snabb översikt över din Customer Experience data och viktiga insights.',
+      title: t('tour.dashboard'),
+      description: t('tour.dashboardDesc'),
       position: 'bottom'
     }
   },
   {
     element: '[data-tour="journey-maps"]',
     popover: {
-      title: 'Journey Maps',
-      description: 'Skapa och hantera dina customer journey maps för att förstå hela kundupplevelsen.',
+      title: t('tour.journeyMaps'),
+      description: t('tour.journeyMapsDesc'),
       position: 'bottom'
     }
   },
   {
     element: '[data-tour="templates"]',
     popover: {
-      title: 'Mallar',
-      description: 'Använd färdiga mallar för att snabbt komma igång med dina CX-projekt.',
+      title: t('tour.templates'),
+      description: t('tour.templatesDesc'),
       position: 'bottom'
     }
   },
   {
     element: '[data-tour="analytics"]',
     popover: {
-      title: 'Analytics',
-      description: 'Analysera dina CX-data och få värdefulla insikter om kundupplevelsen.',
+      title: t('tour.analytics'),
+      description: t('tour.analyticsDesc'),
       position: 'bottom'
     }
   },
   {
     element: '[data-tour="personas"]',
     popover: {
-      title: 'Personas',
-      description: 'Definiera och hantera dina kundpersonas för bättre målgruppsförståelse.',
+      title: t('tour.personas'),
+      description: t('tour.personasDesc'),
       position: 'bottom'
     }
   },
   {
     element: '[data-tour="insights"]',
     popover: {
-      title: 'Insights',
-      description: 'Samla in kundinsikter genom enkäter, intervjuer och andra metoder.',
+      title: t('tour.insights'),
+      description: t('tour.insightsDesc'),
       position: 'bottom'
     }
   },
   {
     element: '[data-tour="glossary"]',
     popover: {
-      title: 'Glossary',
-      description: 'En ordlista med viktiga begrepp och definitioner inom Customer Experience.',
+      title: t('tour.glossary'),
+      description: t('tour.glossaryDesc'),
       position: 'bottom'
     }
   },
   {
     element: '[data-tour="settings"]',
     popover: {
-      title: 'Inställningar',
-      description: 'Anpassa dina kontoinställningar och preferenser här.',
+      title: t('tour.settings'),
+      description: t('tour.settingsDesc'),
       position: 'bottom'
     }
   }
@@ -72,15 +73,18 @@ const tourSteps = [
 
 export function useGuidedTour() {
   const [isActive, setIsActive] = useState(false)
+  const { t } = useLanguage()
 
   useEffect(() => {
+    const tourSteps = getTourSteps(t)
+    
     // Initialize driver with default buttons
     const driverObj = driver({
       showProgress: true,
       showButtons: ['next', 'previous'],
-      nextBtnText: 'Nästa',
-      prevBtnText: 'Föregående',
-      progressText: 'Steg {{current}} av {{total}}',
+      nextBtnText: t('tour.next'),
+      prevBtnText: t('tour.previous'),
+      progressText: t('tour.step'),
       steps: tourSteps,
       popoverClass: 'guided-tour-popover',
       onHighlighted: (element, step, options) => {
@@ -105,7 +109,7 @@ export function useGuidedTour() {
         driverObj.destroy()
       }
     }
-  }, [])
+  }, [t])
 
   const startTour = () => {
     setIsActive(true)

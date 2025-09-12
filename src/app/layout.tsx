@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
+import { HtmlLangUpdater } from "@/components/layout/HtmlLangUpdater";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,11 +33,14 @@ export default function RootLayout({
       <body
         className={`${inter.variable} antialiased bg-gray-50`}
       >
-        <AuthProvider>
-          <ConditionalLayout>
-            {children}
-          </ConditionalLayout>
-        </AuthProvider>
+        <LanguageProvider>
+          <HtmlLangUpdater />
+          <AuthProvider>
+            <ConditionalLayout>
+              {children}
+            </ConditionalLayout>
+          </AuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

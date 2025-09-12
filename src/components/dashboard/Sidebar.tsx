@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { useSidebar } from '@/contexts/SidebarContext'
 import { useAuth } from '@/contexts/AuthContext'
+import { useGuidedTour } from '@/hooks/useGuidedTour'
+import { useLanguage } from '@/contexts/LanguageContext'
 import Image from 'next/image'
 import { 
   MapIcon, 
@@ -20,24 +22,29 @@ import {
   UserIcon,
   LogOutIcon,
   ClipboardIcon,
-  RouteIcon
+  RouteIcon,
+  HelpCircleIcon
 } from 'lucide-react'
 
-const navigation = [
-  { name: 'Dashboard', href: '/', icon: HomeIcon, tourId: 'dashboard' },
-  { name: 'Journey Maps', href: '/journey-maps', icon: RouteIcon, tourId: 'journey-maps' },
-  { name: 'Templates', href: '/templates', icon: BookTemplateIcon, tourId: 'templates' },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3Icon, tourId: 'analytics' },
-  { name: 'Personas', href: '/personas', icon: UsersIcon, tourId: 'personas' },
-  { name: 'Insights', href: '/insights', icon: ClipboardIcon, tourId: 'insights' },
-  { name: 'Glossary', href: '/glossary', icon: BookOpenIcon, tourId: 'glossary' },
-  { name: 'Settings', href: '/settings', icon: SettingsIcon, tourId: 'settings' },
+const getNavigation = (t: (key: string) => string) => [
+  { name: t('nav.dashboard'), href: '/', icon: HomeIcon, tourId: 'dashboard' },
+  { name: t('nav.journeyMaps'), href: '/journey-maps', icon: RouteIcon, tourId: 'journey-maps' },
+  { name: t('nav.templates'), href: '/templates', icon: BookTemplateIcon, tourId: 'templates' },
+  { name: t('nav.analytics'), href: '/analytics', icon: BarChart3Icon, tourId: 'analytics' },
+  { name: t('nav.personas'), href: '/personas', icon: UsersIcon, tourId: 'personas' },
+  { name: t('nav.insights'), href: '/insights', icon: ClipboardIcon, tourId: 'insights' },
+  { name: t('nav.glossary'), href: '/glossary', icon: BookOpenIcon, tourId: 'glossary' },
+  { name: t('nav.settings'), href: '/settings', icon: SettingsIcon, tourId: 'settings' },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
   const { isCollapsed, setIsCollapsed } = useSidebar()
   const { user, signOut } = useAuth()
+  const { startTour } = useGuidedTour()
+  const { t } = useLanguage()
+  
+  const navigation = getNavigation(t)
 
   return (
     <div className={cn(
@@ -132,10 +139,26 @@ export function Sidebar() {
                   <p className="text-sm font-medium text-gray-700 truncate">
                     {user.email?.split('@')[0] || 'User'}
                   </p>
-                  <p className="text-xs text-gray-500 truncate">Logged in</p>
+                  <p className="text-xs text-gray-500 truncate">{t('common.loggedIn')}</p>
                 </div>
               )}
             </div>
+            
+            {/* Help Button */}
+            <button
+              onClick={startTour}
+              className={cn(
+                "w-full flex items-center rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900",
+                isCollapsed ? "px-2 py-2 justify-center" : "px-3 py-2"
+              )}
+              title={isCollapsed ? t('nav.help') : undefined}
+            >
+              <HelpCircleIcon className={cn(
+                "h-5 w-5 text-gray-400",
+                isCollapsed ? "mx-auto" : "mr-3"
+              )} />
+              {!isCollapsed && t('nav.help')}
+            </button>
             
             {/* Logout Button */}
             <button
@@ -144,13 +167,13 @@ export function Sidebar() {
                 "w-full flex items-center rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900",
                 isCollapsed ? "px-2 py-2 justify-center" : "px-3 py-2"
               )}
-              title={isCollapsed ? "Log out" : undefined}
+              title={isCollapsed ? t('nav.logout') : undefined}
             >
               <LogOutIcon className={cn(
                 "h-5 w-5 text-gray-400",
                 isCollapsed ? "mx-auto" : "mr-3"
               )} />
-              {!isCollapsed && "Log out"}
+              {!isCollapsed && t('nav.logout')}
             </button>
           </div>
         ) : (
@@ -161,13 +184,13 @@ export function Sidebar() {
               "w-full flex items-center rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900",
               isCollapsed ? "px-2 py-2 justify-center" : "px-3 py-2"
             )}
-            title={isCollapsed ? "Log in" : undefined}
+            title={isCollapsed ? t('nav.login') : undefined}
           >
             <UserIcon className={cn(
               "h-5 w-5 text-gray-400",
               isCollapsed ? "mx-auto" : "mr-3"
             )} />
-            {!isCollapsed && "Log in"}
+            {!isCollapsed && t('nav.login')}
           </Link>
         )}
       </div>

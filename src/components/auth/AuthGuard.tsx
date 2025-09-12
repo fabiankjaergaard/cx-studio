@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useGuidedTour } from '@/hooks/useGuidedTour'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { WelcomeOnboarding } from '@/components/onboarding/WelcomeOnboarding'
 
 interface AuthGuardProps {
@@ -16,6 +17,7 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
   const { user, loading, isFirstLogin, setFirstLogin } = useAuth()
   const { isOnboardingCompleted, isLoading: isOnboardingLoading } = useOnboarding()
   const { startTour, isActive } = useGuidedTour()
+  const { t } = useLanguage()
   const router = useRouter()
   const [shouldRedirect, setShouldRedirect] = useState(false)
   const [showWelcomeOnboarding, setShowWelcomeOnboarding] = useState(false)
@@ -77,7 +79,7 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
             alt="Nava" 
             className="h-16 w-auto mx-auto mb-4"
           />
-          <div className="text-sm text-gray-500">Loading...</div>
+          <div className="text-sm text-gray-500">{t('common.loading')}</div>
         </div>
       </div>
     )
@@ -93,7 +95,7 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
             alt="Nava" 
             className="h-16 w-auto mx-auto mb-4"
           />
-          <div className="text-sm text-gray-500">Redirecting to login...</div>
+          <div className="text-sm text-gray-500">{t('common.redirecting')}</div>
         </div>
       </div>
     )

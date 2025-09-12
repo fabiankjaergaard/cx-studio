@@ -9,10 +9,12 @@ import { PlusIcon, MapIcon, BookTemplateIcon, TrendingUpIcon, UsersIcon, ClockIc
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useJourneyStore } from '@/store/journey-store'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function Home() {
   const [isNewJourneyModalOpen, setIsNewJourneyModalOpen] = useState(false)
   const { journeys } = useJourneyStore()
+  const { t, language } = useLanguage()
   
   // Calculate real stats from journey store
   const stats = useMemo(() => {
@@ -21,28 +23,28 @@ export default function Home() {
     
     return [
       {
-        title: 'Aktiva Journey Maps',
+        title: t('dashboard.activeJourneyMaps'),
         value: journeys.length.toString(),
         icon: MapIcon,
-        change: journeys.length === 0 ? 'Skapa din första journey' : `${journeys.length} total`
+        change: journeys.length === 0 ? t('dashboard.createFirstJourney') : `${journeys.length} ${t('dashboard.total')}`
       },
       {
-        title: 'Customer Touchpoints',
+        title: t('dashboard.customerTouchpoints'),
         value: totalTouchpoints.toString(),
         icon: TrendingUpIcon,
-        change: totalTouchpoints === 0 ? 'Inga touchpoints än' : `Fördelat över ${journeys.length} journeys`
+        change: totalTouchpoints === 0 ? t('dashboard.noTouchpoints') : t('dashboard.distributedOver', { count: journeys.length })
       },
       {
-        title: 'Personas',
+        title: t('dashboard.personas'),
         value: uniquePersonas.toString(),
         icon: UsersIcon,
-        change: uniquePersonas === 0 ? 'Lägg till personas' : `${uniquePersonas} unika personas`
+        change: uniquePersonas === 0 ? t('dashboard.addPersonasDesc') : t('dashboard.uniquePersonas', { count: uniquePersonas })
       },
       {
-        title: 'Templates',
+        title: t('dashboard.templates'),
         value: '6',
         icon: BookTemplateIcon,
-        change: 'Tillgängliga mallar'
+        change: t('dashboard.availableTemplates')
       }
     ]
   }, [journeys])
@@ -51,13 +53,13 @@ export default function Home() {
     <AuthGuard>
       <div className="h-full flex flex-col bg-gray-50">
       <Header 
-        title="Dashboard" 
-        description="Översikt av dina customer experience projekt"
+        title={t('dashboard.title')} 
+        description={t('dashboard.subtitle')}
         actions={
           <Link href="/journey-maps/new">
             <Button variant="primary">
               <PlusIcon className="mr-2 h-4 w-4" />
-              Start New Journey Map
+              {t('common.startNewJourneyMap')}
             </Button>
           </Link>
         }
@@ -95,7 +97,7 @@ export default function Home() {
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
                 <MapIcon className="mr-2 h-5 w-5 text-slate-600" />
-                Senaste Journey Maps
+                {t('dashboard.recentJourneyMaps')}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
@@ -109,12 +111,12 @@ export default function Home() {
                         (new Date().getTime() - new Date(journey.updatedAt).getTime()) / (1000 * 60 * 60 * 24)
                       )
                       const timeAgo = daysSinceUpdate === 0 
-                        ? 'Idag' 
+                        ? t('dashboard.today')
                         : daysSinceUpdate === 1 
-                        ? '1 dag sedan' 
-                        : `${daysSinceUpdate} dagar sedan`
+                        ? t('dashboard.dayAgo')
+                        : t('dashboard.daysAgo', { days: daysSinceUpdate })
                       
-                      const status = journey.touchpoints.length === 0 ? 'Tom' : 'Aktiv'
+                      const status = journey.touchpoints.length === 0 ? t('dashboard.empty') : t('dashboard.active')
                       const completionPercentage = Math.min((journey.touchpoints.length / 10) * 100, 100) // Assume 10 touchpoints = 100%
                       
                       return (
@@ -136,12 +138,12 @@ export default function Home() {
                             </div>
                             <div className="flex flex-col items-end ml-4">
                               <span className={`px-3 py-1 rounded-full text-xs font-medium mb-2 ${
-                                status === 'Aktiv' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'
+                                status === t('dashboard.active') ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'
                               }`}>
                                 {status}
                               </span>
                               <span className="text-xs text-gray-400">
-                                {journey.touchpoints.length} touchpoints
+                                {journey.touchpoints.length} {t('dashboard.touchpoints')}
                               </span>
                             </div>
                           </div>
@@ -151,8 +153,8 @@ export default function Home() {
                 ) : (
                   <div className="text-center py-8 text-gray-500">
                     <MapIcon className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-                    <p className="text-sm">Inga journey maps än</p>
-                    <p className="text-xs text-gray-400 mt-1">Skapa din första för att komma igång</p>
+                    <p className="text-sm">{t('dashboard.noJourneyMaps')}</p>
+                    <p className="text-xs text-gray-400 mt-1">{t('dashboard.createFirstJourney')}</p>
                   </div>
                 )}
               </div>
@@ -163,7 +165,7 @@ export default function Home() {
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
                 <PlusCircleIcon className="mr-2 h-5 w-5 text-slate-600" />
-                Snabbstart
+                {t('dashboard.quickStart')}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
@@ -174,18 +176,18 @@ export default function Home() {
                   onClick={() => setIsNewJourneyModalOpen(true)}
                 >
                   <PlusIcon className="mr-3 h-4 w-4" />
-                  Skapa ny Journey Map
+                  {t('dashboard.createJourneyMap')}
                 </Button>
                 <Link href="/templates">
                   <Button variant="outline" className="w-full justify-start hover:bg-slate-50 hover:border-slate-300 transition-colors">
                     <BookTemplateIcon className="mr-3 h-4 w-4" />
-                    Använd en mall
+                    {t('dashboard.useEmail')}
                   </Button>
                 </Link>
                 <Link href="/personas">
                   <Button variant="outline" className="w-full justify-start hover:bg-slate-50 hover:border-slate-300 transition-colors">
                     <UsersIcon className="mr-3 h-4 w-4" />
-                    Lägg till personas
+                    {t('dashboard.addPersonas')}
                   </Button>
                 </Link>
               </div>
@@ -197,7 +199,7 @@ export default function Home() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <ClockIcon className="mr-2 h-4 w-4 text-gray-500" />
-                Senaste Aktivitet
+                {t('dashboard.recentActivity')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -212,10 +214,11 @@ export default function Home() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-sm text-gray-900">
-                            Journey "<span className="font-medium">{journey.title}</span>" skapades
+                            {t('dashboard.journeyCreated', { title: journey.title })}
                           </p>
                           <p className="text-xs text-gray-500 mt-1">
-                            {new Date(journey.createdAt).toLocaleDateString('sv-SE', {
+                            {new Date(journey.createdAt).toLocaleDateString(
+                              language === 'sv' ? 'sv-SE' : 'en-US', {
                               day: 'numeric',
                               month: 'short',
                               hour: '2-digit',
@@ -228,7 +231,7 @@ export default function Home() {
                 ) : (
                   <div className="text-center py-6 text-gray-500">
                     <ClockIcon className="mx-auto h-8 w-8 text-gray-300 mb-2" />
-                    <p className="text-sm">Ingen aktivitet än</p>
+                    <p className="text-sm">{t('dashboard.noActivity')}</p>
                   </div>
                 )}
               </div>

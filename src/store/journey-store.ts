@@ -1,6 +1,15 @@
 import { create } from 'zustand'
 import { CustomerJourney, Touchpoint, CustomerJourneyStage, TouchpointConnection } from '@/types'
 
+// Helper function to get translations - these will be initialized by components
+let getTranslation: ((key: string) => string) | null = null
+
+export const initializeStoreTranslations = (t: (key: string) => string) => {
+  getTranslation = t
+}
+
+const t = (key: string) => getTranslation ? getTranslation(key) : key
+
 interface JourneyStore {
   journeys: CustomerJourney[]
   currentJourney: CustomerJourney | null
@@ -28,76 +37,81 @@ interface JourneyStore {
   stopDragging: () => void
 }
 
-// Mock data for development
-const mockStages: CustomerJourneyStage[] = [
-  { id: '1', name: 'Medvetenhet', description: 'Kunden blir medveten om behov', color: '#3B82F6' },
-  { id: '2', name: 'Övervägande', description: 'Kunden utvärderar alternativ', color: '#8B5CF6' },
-  { id: '3', name: 'Köp', description: 'Kunden fattar köpbeslut', color: '#10B981' },
-  { id: '4', name: 'Användning', description: 'Kunden använder produkten/tjänsten', color: '#F59E0B' },
-  { id: '5', name: 'Lojalitet', description: 'Kunden blir lojal och rekommenderar', color: '#EF4444' }
+// Mock data for development - now uses translations
+const getMockStages = (): CustomerJourneyStage[] => [
+  { id: '1', name: t('journey.stages.awareness'), description: t('journey.stages.awarenessDesc'), color: '#3B82F6' },
+  { id: '2', name: t('journey.stages.consideration'), description: t('journey.stages.considerationDesc'), color: '#8B5CF6' },
+  { id: '3', name: t('journey.stages.purchase'), description: t('journey.stages.purchaseDesc'), color: '#10B981' },
+  { id: '4', name: t('journey.stages.usage'), description: t('journey.stages.usageDesc'), color: '#F59E0B' },
+  { id: '5', name: t('journey.stages.loyalty'), description: t('journey.stages.loyaltyDesc'), color: '#EF4444' }
 ]
 
-const mockTouchpoints: Touchpoint[] = [
-  {
-    id: '1',
-    title: 'Söker på Google',
-    description: 'Kunden söker efter lösningar online',
-    channel: 'online',
-    emotion: 'neutral',
-    position: { x: 0, y: 0 },
-    stage: mockStages[0]
-  },
-  {
-    id: '2',
-    title: 'Läser recensioner',
-    description: 'Kunden läser vad andra kunder tycker',
-    channel: 'online',
-    emotion: 'positive',
-    position: { x: 0, y: 1 },
-    stage: mockStages[1]
-  },
-  {
-    id: '3',
-    title: 'Kontaktar kundtjänst',
-    description: 'Kunden ringer för att få mer information',
-    channel: 'phone',
-    emotion: 'positive',
-    position: { x: 0, y: 2 },
-    stage: mockStages[1]
-  },
-  {
-    id: '4',
-    title: 'Genomför köp online',
-    description: 'Kunden köper produkten via webshop',
-    channel: 'online',
-    emotion: 'positive',
-    position: { x: 0, y: 3 },
-    stage: mockStages[2]
-  },
-  {
-    id: '5',
-    title: 'Får leverans',
-    description: 'Produkten levereras hem till kunden',
-    channel: 'offline',
-    emotion: 'neutral',
-    position: { x: 0, y: 4 },
-    stage: mockStages[3]
-  }
-]
+const getMockTouchpoints = (): Touchpoint[] => {
+  const stages = getMockStages()
+  return [
+    {
+      id: '1',
+      title: t('journey.touchpoints.googleSearch'),
+      description: t('journey.touchpoints.googleSearchDesc'),
+      channel: 'online',
+      emotion: 'neutral',
+      position: { x: 0, y: 0 },
+      stage: stages[0]
+    },
+    {
+      id: '2',
+      title: t('journey.touchpoints.readReviews'),
+      description: t('journey.touchpoints.readReviewsDesc'),
+      channel: 'online',
+      emotion: 'positive',
+      position: { x: 0, y: 1 },
+      stage: stages[1]
+    },
+    {
+      id: '3',
+      title: t('journey.touchpoints.contactSupport'),
+      description: t('journey.touchpoints.contactSupportDesc'),
+      channel: 'phone',
+      emotion: 'positive',
+      position: { x: 0, y: 2 },
+      stage: stages[1]
+    },
+    {
+      id: '4',
+      title: t('journey.touchpoints.makePurchase'),
+      description: t('journey.touchpoints.makePurchaseDesc'),
+      channel: 'online',
+      emotion: 'positive',
+      position: { x: 0, y: 3 },
+      stage: stages[2]
+    },
+    {
+      id: '5',
+      title: t('journey.touchpoints.receiveProduct'),
+      description: t('journey.touchpoints.receiveProductDesc'),
+      channel: 'offline',
+      emotion: 'neutral',
+      position: { x: 0, y: 4 },
+      stage: stages[3]
+    }
+  ]
+}
 
-const mockJourney: CustomerJourney = {
+const getMockJourney = (): CustomerJourney => ({
   id: '1',
-  title: 'Ny Customer Journey',
-  description: 'En tom journey redo att fyllas med dina egna touchpoints',
+  title: t('journey.newJourneyTitle'),
+  description: t('journey.newJourneyDesc'),
   persona: '',
   createdAt: new Date(),
   updatedAt: new Date(),
   touchpoints: [],
-  stages: mockStages,
+  stages: getMockStages(),
   connections: []
-}
+})
 
-export const useJourneyStore = create<JourneyStore>((set, get) => ({
+export const useJourneyStore = create<JourneyStore>((set, get) => {
+  const mockJourney = getMockJourney()
+  return {
   journeys: [mockJourney],
   currentJourney: mockJourney,
   selectedTouchpointId: null,
@@ -190,13 +204,13 @@ export const useJourneyStore = create<JourneyStore>((set, get) => ({
   createBlankJourney: () => {
     const blankJourney: CustomerJourney = {
       id: crypto.randomUUID(),
-      title: 'Ny Customer Journey',
-      description: 'En tom journey redo att fyllas med dina egna touchpoints',
+      title: t('journey.blankJourneyTitle'),
+      description: t('journey.blankJourneyDesc'),
       persona: '',
       createdAt: new Date(),
       updatedAt: new Date(),
       touchpoints: [], // Tom array - inga förifyllda touchpoints
-      stages: mockStages, // Behåll stages för strukturen
+      stages: getMockStages(), // Behåll stages för strukturen
       connections: []
     }
 
@@ -293,4 +307,4 @@ export const useJourneyStore = create<JourneyStore>((set, get) => ({
       )
     })
   }
-}))
+}})

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { X, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface WelcomeOnboardingProps {
   isOpen: boolean
@@ -12,6 +13,8 @@ interface WelcomeOnboardingProps {
 }
 
 export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: WelcomeOnboardingProps) {
+  const { t } = useLanguage()
+  
   if (!isOpen) return null
 
   const handleStartTour = () => {
@@ -43,10 +46,10 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
               />
             </div>
             <h1 className="text-3xl font-bold mb-2">
-              Välkommen till Nava{userName ? `, ${userName.split('@')[0]}` : ''}! 🎉
+              {t('onboarding.welcome')}{userName ? `, ${userName.split('@')[0]}` : ''}! 🎉
             </h1>
             <p className="text-slate-200 text-lg">
-              Din plattform för Customer Experience Excellence
+              {t('onboarding.subtitle')}
             </p>
           </div>
         </div>
@@ -62,7 +65,7 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
                     <path d="M8 5v14l11-7z"/>
                   </svg>
                 </div>
-                <p className="text-gray-500 font-medium text-sm">Introduktionsvideo</p>
+                <p className="text-gray-500 font-medium text-sm">{t('onboarding.introVideo')}</p>
               </div>
             </div>
           </div>
@@ -70,7 +73,7 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
           {/* Description */}
           <div className="text-center mb-8">
             <p className="text-gray-600 text-lg leading-relaxed">
-              Lär dig hur du använder Nava för att skapa exceptionella kundupplevelser
+              {t('onboarding.description')}
             </p>
           </div>
 
@@ -80,7 +83,7 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
               onClick={handleStartTour}
               className="w-full flex items-center justify-center px-6 py-3 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors font-medium"
             >
-              Starta guidad rundtur
+              {t('onboarding.startTour')}
               <ChevronRight className="w-5 h-5 ml-2" />
             </button>
             
@@ -88,7 +91,7 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
               onClick={onClose}
               className="w-full px-6 py-3 text-gray-500 hover:text-gray-700 transition-colors font-medium text-sm"
             >
-              Hoppa över rundturen
+              {t('onboarding.skipTour')}
             </button>
           </div>
         </div>
