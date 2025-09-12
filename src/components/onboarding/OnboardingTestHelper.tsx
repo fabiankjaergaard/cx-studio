@@ -2,13 +2,20 @@
 
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useAuth } from '@/contexts/AuthContext'
+import { useGuidedTour } from '@/hooks/useGuidedTour'
 import { Button } from '@/components/ui/Button'
 
 export function OnboardingTestHelper() {
   const { resetOnboarding } = useOnboarding()
   const { setFirstLogin } = useAuth()
+  const { startTour } = useGuidedTour()
 
-  const handleTestOnboarding = () => {
+  const handleTestGuidedTour = () => {
+    console.log('Starting guided tour directly...')
+    startTour()
+  }
+
+  const handleTestOnboardingReset = () => {
     console.log('Testing onboarding - resetting status...')
     // Reset onboarding status
     resetOnboarding()
@@ -25,13 +32,20 @@ export function OnboardingTestHelper() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4 z-50 space-y-2">
       <Button 
         variant="outline" 
-        onClick={handleTestOnboarding}
-        className="bg-white border border-gray-300 shadow-lg"
+        onClick={handleTestGuidedTour}
+        className="bg-blue-500 text-white border border-blue-600 shadow-lg hover:bg-blue-600 block w-full"
       >
-        Test Onboarding
+        🧭 Start Tour
+      </Button>
+      <Button 
+        variant="outline" 
+        onClick={handleTestOnboardingReset}
+        className="bg-white border border-gray-300 shadow-lg block w-full"
+      >
+        🔄 Reset & Test
       </Button>
     </div>
   )

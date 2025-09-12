@@ -64,34 +64,42 @@ export default function Home() {
         }
       />
       
-      <div className="flex-1 p-8 overflow-auto bg-gray-50">
+      <div className="flex-1 p-6 overflow-auto bg-gray-50">
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {stats.map((stat) => (
-            <Card key={stat.title} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                    {stat.title}
-                  </CardTitle>
-                  <stat.icon className="h-5 w-5 text-gray-400" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {stats.map((stat, index) => (
+            <Card key={stat.title} className="relative overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50 group-hover:from-gray-50 group-hover:to-gray-100 transition-all duration-300"></div>
+              <CardContent className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-3 rounded-full bg-slate-100 group-hover:bg-slate-200 transition-colors">
+                    <stat.icon className="h-6 w-6 text-slate-600" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="text-3xl font-light text-gray-900 mb-2">{stat.value}</div>
-                <p className="text-sm text-gray-500 leading-relaxed">{stat.change}</p>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">
+                    {stat.title}
+                  </h3>
+                  <p className="text-sm text-gray-500 leading-relaxed">{stat.change}</p>
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
         {/* Recent Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Senaste Journey Maps</CardTitle>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
+                <MapIcon className="mr-2 h-5 w-5 text-slate-600" />
+                Senaste Journey Maps
+              </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-0">
               <div className="space-y-3">
                 {journeys.length > 0 ? (
                   journeys
@@ -112,23 +120,25 @@ export default function Home() {
                       
                       return (
                         <Link key={journey.id} href="/journeys">
-                          <div className="flex items-center justify-between py-3 hover:bg-gray-50 px-2 -mx-2 rounded cursor-pointer transition-colors">
+                          <div className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg cursor-pointer transition-all duration-200 group border border-transparent hover:border-slate-200">
                             <div className="min-w-0 flex-1">
                               <p className="font-medium text-gray-900 truncate">{journey.title}</p>
                               <p className="text-sm text-gray-500">{timeAgo}</p>
                               {journey.persona && (
                                 <p className="text-xs text-gray-400 mt-1">{journey.persona}</p>
                               )}
-                              {/* Minimal Progress Bar */}
-                              <div className="w-full bg-gray-100 rounded-full h-1 mt-2">
+                              {/* Progress Bar */}
+                              <div className="w-full bg-slate-100 rounded-full h-2 mt-3">
                                 <div 
-                                  className="bg-gray-400 h-1 rounded-full transition-all duration-300"
+                                  className="bg-slate-500 h-2 rounded-full transition-all duration-300"
                                   style={{ width: `${completionPercentage}%` }}
                                 ></div>
                               </div>
                             </div>
                             <div className="flex flex-col items-end ml-4">
-                              <span className="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-600 mb-1">
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium mb-2 ${
+                                status === 'Aktiv' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'
+                              }`}>
                                 {status}
                               </span>
                               <span className="text-xs text-gray-400">
@@ -150,29 +160,32 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Snabbstart</CardTitle>
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
+                <PlusCircleIcon className="mr-2 h-5 w-5 text-slate-600" />
+                Snabbstart
+              </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-0">
               <div className="space-y-3">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start"
+                  className="w-full justify-start hover:bg-slate-50 hover:border-slate-300 transition-colors"
                   onClick={() => setIsNewJourneyModalOpen(true)}
                 >
-                  <PlusIcon className="mr-2 h-4 w-4" />
+                  <PlusIcon className="mr-3 h-4 w-4" />
                   Skapa ny Journey Map
                 </Button>
                 <Link href="/templates">
-                  <Button variant="outline" className="w-full justify-start">
-                    <BookTemplateIcon className="mr-2 h-4 w-4" />
+                  <Button variant="outline" className="w-full justify-start hover:bg-slate-50 hover:border-slate-300 transition-colors">
+                    <BookTemplateIcon className="mr-3 h-4 w-4" />
                     Använd en mall
                   </Button>
                 </Link>
                 <Link href="/personas">
-                  <Button variant="outline" className="w-full justify-start">
-                    <UsersIcon className="mr-2 h-4 w-4" />
+                  <Button variant="outline" className="w-full justify-start hover:bg-slate-50 hover:border-slate-300 transition-colors">
+                    <UsersIcon className="mr-3 h-4 w-4" />
                     Lägg till personas
                   </Button>
                 </Link>
@@ -230,8 +243,6 @@ export default function Home() {
         onClose={() => setIsNewJourneyModalOpen(false)}
       />
       
-      {/* Temporarily add test helper for onboarding */}
-      <OnboardingTestHelper />
       </div>
     </AuthGuard>
   )

@@ -24,14 +24,14 @@ import {
 } from 'lucide-react'
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: HomeIcon },
-  { name: 'Journey Maps', href: '/journey-maps', icon: RouteIcon },
-  { name: 'Templates', href: '/templates', icon: BookTemplateIcon },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3Icon },
-  { name: 'Personas', href: '/personas', icon: UsersIcon },
-  { name: 'Insights', href: '/insights', icon: ClipboardIcon },
-  { name: 'Glossary', href: '/glossary', icon: BookOpenIcon },
-  { name: 'Settings', href: '/settings', icon: SettingsIcon },
+  { name: 'Dashboard', href: '/', icon: HomeIcon, tourId: 'dashboard' },
+  { name: 'Journey Maps', href: '/journey-maps', icon: RouteIcon, tourId: 'journey-maps' },
+  { name: 'Templates', href: '/templates', icon: BookTemplateIcon, tourId: 'templates' },
+  { name: 'Analytics', href: '/analytics', icon: BarChart3Icon, tourId: 'analytics' },
+  { name: 'Personas', href: '/personas', icon: UsersIcon, tourId: 'personas' },
+  { name: 'Insights', href: '/insights', icon: ClipboardIcon, tourId: 'insights' },
+  { name: 'Glossary', href: '/glossary', icon: BookOpenIcon, tourId: 'glossary' },
+  { name: 'Settings', href: '/settings', icon: SettingsIcon, tourId: 'settings' },
 ]
 
 export function Sidebar() {
@@ -87,6 +87,7 @@ export function Sidebar() {
               <li key={item.name}>
                 <Link
                   href={item.href}
+                  data-tour={item.tourId}
                   className={cn(
                     'group flex items-center rounded-lg text-sm font-medium transition-colors',
                     isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',

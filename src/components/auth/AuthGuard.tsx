@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useOnboarding } from '@/hooks/useOnboarding'
-import { OnboardingModal } from '@/components/onboarding/OnboardingModal'
+import { useGuidedTour } from '@/hooks/useGuidedTour'
+import { WelcomeOnboarding } from '@/components/onboarding/WelcomeOnboarding'
 
 interface AuthGuardProps {
   children: React.ReactNode
@@ -14,9 +15,10 @@ interface AuthGuardProps {
 export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardProps) {
   const { user, loading, isFirstLogin, setFirstLogin } = useAuth()
   const { isOnboardingCompleted, isLoading: isOnboardingLoading } = useOnboarding()
+  const { startTour, isActive } = useGuidedTour()
   const router = useRouter()
   const [shouldRedirect, setShouldRedirect] = useState(false)
-  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showWelcomeOnboarding, setShowWelcomeOnboarding] = useState(false)
 
   useEffect(() => {
     if (!loading && !isOnboardingLoading) {
@@ -29,34 +31,39 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
     }
   }, [user, loading, isOnboardingLoading, router, redirectTo])
 
-  // Separate effect for handling onboarding modal
+  // Separate effect for handling welcome onboarding
   useEffect(() => {
     if (!loading && !isOnboardingLoading && user) {
       console.log('AuthGuard onboarding check:', { 
         isFirstLogin, 
-        isOnboardingCompleted, 
-        showOnboarding,
+        isOnboardingCompleted,
         user: !!user 
       })
       
-      if (isFirstLogin && !isOnboardingCompleted && !showOnboarding) {
-        console.log('Setting showOnboarding to true')
-        setShowOnboarding(true)
-      } else if (!isFirstLogin || isOnboardingCompleted) {
-        console.log('Setting showOnboarding to false')
-        setShowOnboarding(false)
+      if (isFirstLogin) {
+        console.log('Showing welcome onboarding for first-time user')
+        // Reset onboarding completion for new user to ensure they see the new welcome flow
+        localStorage.removeItem('cx-studio-onboarding-completed')
+        // Show welcome onboarding after a short delay
+        setTimeout(() => {
+          setShowWelcomeOnboarding(true)
+        }, 500)
       }
     }
-  }, [loading, isOnboardingLoading, user, isFirstLogin, isOnboardingCompleted, showOnboarding])
+  }, [loading, isOnboardingLoading, user, isFirstLogin, isOnboardingCompleted])
 
-  const handleOnboardingComplete = () => {
-    setShowOnboarding(false)
-    setFirstLogin(false)
+  const handleWelcomeClose = () => {
+    setShowWelcomeOnboarding(false)
+    setFirstLogin(false) // Mark first login as completed
   }
 
-  const handleOnboardingClose = () => {
-    setShowOnboarding(false)
-    setFirstLogin(false)
+  const handleStartTour = () => {
+    setShowWelcomeOnboarding(false)
+    setFirstLogin(false) // Mark first login as completed
+    // Start guided tour after modal closes
+    setTimeout(() => {
+      startTour()
+    }, 300)
   }
 
   // Show loading while checking auth or onboarding
@@ -94,12 +101,11 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
   return (
     <>
       {children}
-      
-      {/* Show onboarding modal if needed */}
-      <OnboardingModal
-        isOpen={showOnboarding}
-        onClose={handleOnboardingClose}
-        onComplete={handleOnboardingComplete}
+      <WelcomeOnboarding
+        isOpen={showWelcomeOnboarding}
+        onClose={handleWelcomeClose}
+        onStartTour={handleStartTour}
+        userName={user?.email}
       />
     </>
   )
