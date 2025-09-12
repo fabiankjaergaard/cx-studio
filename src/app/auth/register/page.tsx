@@ -76,7 +76,7 @@ export default function RegisterPage() {
               Check your email
             </h2>
             <p className="text-sm text-gray-600 mb-8">
-              We've sent you a confirmation link at <span className="font-medium">{email}</span>
+              We&apos;ve sent you a confirmation link at <span className="font-medium">{email}</span>
             </p>
             <Link href="/auth/login">
               <Button variant="primary" className="w-full">
