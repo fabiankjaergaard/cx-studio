@@ -31,7 +31,7 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
     }
   }, [user, loading, isOnboardingLoading, router, redirectTo])
 
-  // Separate effect for handling welcome onboarding
+  // Separate effect for handling welcome onboarding - FORCE SHOW FOR ALL FIRST TIME USERS
   useEffect(() => {
     if (!loading && !isOnboardingLoading && user) {
       console.log('AuthGuard onboarding check:', { 
@@ -40,17 +40,18 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
         user: !!user 
       })
       
+      // Always show welcome onboarding for first login, regardless of other flags
       if (isFirstLogin) {
-        console.log('Showing welcome onboarding for first-time user')
-        // Reset onboarding completion for new user to ensure they see the new welcome flow
+        console.log('🔥 FORCING welcome onboarding for first-time user')
+        // Clear ALL old onboarding data
         localStorage.removeItem('cx-studio-onboarding-completed')
-        // Show welcome onboarding after a short delay
-        setTimeout(() => {
-          setShowWelcomeOnboarding(true)
-        }, 500)
+        localStorage.removeItem('onboarding-completed') 
+        sessionStorage.removeItem('onboarding-completed')
+        // Show welcome onboarding immediately
+        setShowWelcomeOnboarding(true)
       }
     }
-  }, [loading, isOnboardingLoading, user, isFirstLogin, isOnboardingCompleted])
+  }, [loading, isOnboardingLoading, user, isFirstLogin])
 
   const handleWelcomeClose = () => {
     setShowWelcomeOnboarding(false)
