@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { NewJourneyModal } from '@/components/journey/NewJourneyModal'
 import { AuthGuard } from '@/components/auth/AuthGuard'
+import { OnboardingTestHelper } from '@/components/onboarding/OnboardingTestHelper'
 import { PlusIcon, MapIcon, BookTemplateIcon, TrendingUpIcon, UsersIcon, ClockIcon, PlusCircleIcon } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
@@ -228,6 +229,9 @@ export default function Home() {
         isOpen={isNewJourneyModalOpen}
         onClose={() => setIsNewJourneyModalOpen(false)}
       />
+      
+      {/* Temporarily add test helper for onboarding */}
+      <OnboardingTestHelper />
       </div>
     </AuthGuard>
   )

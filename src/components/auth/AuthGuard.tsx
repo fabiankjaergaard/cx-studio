@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import { useOnboarding } from '@/hooks/useOnboarding'
+import { OnboardingModal } from '@/components/onboarding/OnboardingModal'
 
 interface AuthGuardProps {
   children: React.ReactNode
@@ -10,12 +12,14 @@ interface AuthGuardProps {
 }
 
 export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardProps) {
-  const { user, loading } = useAuth()
+  const { user, loading, isFirstLogin, setFirstLogin } = useAuth()
+  const { isOnboardingCompleted, isLoading: isOnboardingLoading } = useOnboarding()
   const router = useRouter()
   const [shouldRedirect, setShouldRedirect] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && !isOnboardingLoading) {
       if (!user) {
         setShouldRedirect(true)
         router.push(redirectTo)
@@ -23,10 +27,40 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
         setShouldRedirect(false)
       }
     }
-  }, [user, loading, router, redirectTo])
+  }, [user, loading, isOnboardingLoading, router, redirectTo])
 
-  // Show loading while checking auth
-  if (loading) {
+  // Separate effect for handling onboarding modal
+  useEffect(() => {
+    if (!loading && !isOnboardingLoading && user) {
+      console.log('AuthGuard onboarding check:', { 
+        isFirstLogin, 
+        isOnboardingCompleted, 
+        showOnboarding,
+        user: !!user 
+      })
+      
+      if (isFirstLogin && !isOnboardingCompleted && !showOnboarding) {
+        console.log('Setting showOnboarding to true')
+        setShowOnboarding(true)
+      } else if (!isFirstLogin || isOnboardingCompleted) {
+        console.log('Setting showOnboarding to false')
+        setShowOnboarding(false)
+      }
+    }
+  }, [loading, isOnboardingLoading, user, isFirstLogin, isOnboardingCompleted, showOnboarding])
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false)
+    setFirstLogin(false)
+  }
+
+  const handleOnboardingClose = () => {
+    setShowOnboarding(false)
+    setFirstLogin(false)
+  }
+
+  // Show loading while checking auth or onboarding
+  if (loading || isOnboardingLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -57,5 +91,16 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
     )
   }
 
-  return <>{children}</>
+  return (
+    <>
+      {children}
+      
+      {/* Show onboarding modal if needed */}
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onClose={handleOnboardingClose}
+        onComplete={handleOnboardingComplete}
+      />
+    </>
+  )
 }

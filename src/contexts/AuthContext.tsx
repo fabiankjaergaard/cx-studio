@@ -7,9 +7,11 @@ import { supabase } from '@/lib/supabase'
 interface AuthContextType {
   user: User | null
   loading: boolean
+  isFirstLogin: boolean
   signIn: (email: string, password: string) => Promise<{ error: any }>
   signUp: (email: string, password: string) => Promise<{ error: any }>
   signOut: () => Promise<void>
+  setFirstLogin: (value: boolean) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -17,6 +19,18 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isFirstLogin, setIsFirstLogin] = useState(false)
+
+  // Initialize isFirstLogin from sessionStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedFirstLogin = sessionStorage.getItem('cx-studio-first-login')
+      if (savedFirstLogin === 'true') {
+        setIsFirstLogin(true)
+        console.log('Restored first login flag from sessionStorage')
+      }
+    }
+  }, [])
 
   useEffect(() => {
     // Skip if Supabase credentials are not configured
@@ -55,6 +69,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
     })
+    
+    // If login was successful, check if this is their first time logging in
+    if (!error) {
+      // For now, we'll use localStorage to determine if this is a first login
+      // In a production app, you might store this in user metadata
+      const hasLoggedInBefore = localStorage.getItem('cx-studio-has-logged-in')
+      if (!hasLoggedInBefore) {
+        setIsFirstLogin(true)
+        localStorage.setItem('cx-studio-has-logged-in', 'true')
+      }
+    }
+    
     return { error }
   }
 
@@ -64,10 +90,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: { message: 'Supabase credentials not configured' } }
     }
     
+    // Use environment variable for site URL in production, fallback to current origin in development
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+    
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${siteUrl}/auth/callback`
+      }
     })
+    
+    // Note: We don't set first login here because the user needs to confirm their email first
+    // The first login flag will be set in the callback page after email confirmation
+    
     return { error }
   }
 
@@ -84,12 +120,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.location.href = loginUrl
   }
 
+  const setFirstLogin = (value: boolean) => {
+    setIsFirstLogin(value)
+    // Save to sessionStorage to persist across page reloads
+    if (typeof window !== 'undefined') {
+      if (value) {
+        sessionStorage.setItem('cx-studio-first-login', 'true')
+        console.log('Saved first login flag to sessionStorage')
+      } else {
+        sessionStorage.removeItem('cx-studio-first-login')
+        console.log('Removed first login flag from sessionStorage')
+      }
+    }
+  }
+
   const value = {
     user,
     loading,
+    isFirstLogin,
     signIn,
     signUp,
     signOut,
+    setFirstLogin,
   }
 
   return (
