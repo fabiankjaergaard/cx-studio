@@ -1,6 +1,7 @@
 'use client'
 
 import { Header } from '@/components/dashboard/Header'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { 
@@ -18,10 +19,10 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-const focusGroupPhases = [
+const getFocusGroupPhases = (t: (key: string) => string) => [
   {
-    phase: "Planering",
-    duration: "2-3 veckor",
+    phase: t('focusGroups.planningPhase'),
+    duration: t('focusGroups.planningDuration'),
     icon: TargetIcon,
     tasks: [
       "Definiera syfte och forskningsfrågor",
@@ -32,8 +33,8 @@ const focusGroupPhases = [
     ]
   },
   {
-    phase: "Genomförande", 
-    duration: "1.5-2 timmar",
+    phase: t('focusGroups.implementationPhase'), 
+    duration: t('focusGroups.implementationDuration'),
     icon: PlayIcon,
     tasks: [
       "Välkomna deltagare och introduktion",
@@ -44,8 +45,8 @@ const focusGroupPhases = [
     ]
   },
   {
-    phase: "Analys",
-    duration: "1-2 veckor", 
+    phase: t('focusGroups.analysisPhase'),
+    duration: t('focusGroups.analysisDuration'), 
     icon: LightbulbIcon,
     tasks: [
       "Transkribera inspelningar",
@@ -170,15 +171,18 @@ const discussionGuideTemplate = [
 ]
 
 export default function FocusGroupsPage() {
+  const { t } = useLanguage()
+  const focusGroupPhases = getFocusGroupPhases(t)
+  
   return (
     <div className="h-full flex flex-col">
       <Header 
-        title="Fokusgrupper" 
-        description="Djupgående gruppinsikter genom strukturerade diskussioner"
+        title={t('focusGroups.title')} 
+        description={t('focusGroups.description')}
         actions={
           <Link href="/insights">
             <Button variant="outline">
-              Tillbaka till översikt
+              {t('focusGroups.backToOverview')}
             </Button>
           </Link>
         }

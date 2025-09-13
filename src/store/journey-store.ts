@@ -110,10 +110,9 @@ const getMockJourney = (): CustomerJourney => ({
 })
 
 export const useJourneyStore = create<JourneyStore>((set, get) => {
-  const mockJourney = getMockJourney()
   return {
-  journeys: [mockJourney],
-  currentJourney: mockJourney,
+  journeys: [],
+  currentJourney: null,
   selectedTouchpointId: null,
   isConnecting: false,
   connectionStart: null,

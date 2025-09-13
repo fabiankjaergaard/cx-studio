@@ -19,11 +19,25 @@ import {
   BookOpenIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
   UserIcon,
   LogOutIcon,
   ClipboardIcon,
   RouteIcon,
-  HelpCircleIcon
+  HelpCircleIcon,
+  TrendingUpIcon,
+  StarIcon,
+  MessageSquareIcon,
+  MicIcon,
+  EyeIcon,
+  WrenchIcon,
+  FileTextIcon,
+  PieChartIcon,
+  DatabaseIcon,
+  BookIcon,
+  LightbulbIcon,
+  PlusIcon
 } from 'lucide-react'
 
 const getNavigation = (t: (key: string) => string) => [
@@ -31,8 +45,78 @@ const getNavigation = (t: (key: string) => string) => [
   { name: t('nav.journeyMaps'), href: '/journey-maps', icon: RouteIcon, tourId: 'journey-maps' },
   { name: t('nav.templates'), href: '/templates', icon: BookTemplateIcon, tourId: 'templates' },
   { name: t('nav.analytics'), href: '/analytics', icon: BarChart3Icon, tourId: 'analytics' },
-  { name: t('nav.personas'), href: '/personas', icon: UsersIcon, tourId: 'personas' },
-  { name: t('nav.insights'), href: '/insights', icon: ClipboardIcon, tourId: 'insights' },
+  { 
+    name: t('nav.personas'), 
+    icon: UsersIcon, 
+    tourId: 'personas',
+    isExpandable: true,
+    children: [
+      {
+        name: t('nav.createManage'),
+        children: [
+          { name: t('nav.createPersona'), href: '/personas/create', icon: PlusIcon },
+          { name: t('nav.personaTemplates'), href: '/personas/templates', icon: BookTemplateIcon },
+          { name: t('nav.importPersona'), href: '/personas/import', icon: DatabaseIcon }
+        ]
+      },
+      {
+        name: t('nav.managePersonas'),
+        children: [
+          { name: t('nav.allPersonas'), href: '/personas', icon: UsersIcon },
+          { name: t('nav.personaGroups'), href: '/personas/groups', icon: UsersIcon },
+          { name: t('nav.archivedPersonas'), href: '/personas/archived', icon: DatabaseIcon }
+        ]
+      },
+      {
+        name: t('nav.personaGuides'),
+        children: [
+          { name: t('nav.personaGuide'), href: '/personas/guide', icon: BookIcon },
+          { name: t('nav.personaBestPractices'), href: '/personas/best-practices', icon: BookOpenIcon },
+          { name: t('nav.personaTips'), href: '/personas/tips', icon: LightbulbIcon }
+        ]
+      }
+    ]
+  },
+  { 
+    name: t('nav.insights'), 
+    icon: ClipboardIcon, 
+    tourId: 'insights',
+    isExpandable: true,
+    children: [
+      {
+        name: t('nav.quantitativeMethods'),
+        children: [
+          { name: t('nav.npssurveys'), href: '/insights/nps', icon: TrendingUpIcon },
+          { name: t('nav.csatSurveys'), href: '/insights/csat', icon: StarIcon },
+          { name: t('nav.cesSurveys'), href: '/insights/ces', icon: BarChart3Icon }
+        ]
+      },
+      {
+        name: t('nav.qualitativeMethods'),
+        children: [
+          { name: t('nav.interviews'), href: '/insights/interviews', icon: MicIcon },
+          { name: t('nav.focusGroups'), href: '/insights/focus-groups', icon: UsersIcon },
+          { name: t('nav.observation'), href: '/insights/observation', icon: EyeIcon }
+        ]
+      },
+      {
+        name: t('nav.toolsTemplates'),
+        children: [
+          { name: t('nav.surveyBuilder'), href: '/insights/survey-builder', icon: WrenchIcon },
+          { name: t('nav.researchPlanner'), href: '/insights/research-planner', icon: FileTextIcon },
+          { name: t('nav.dataDashboard'), href: '/insights/dashboard', icon: PieChartIcon },
+          { name: t('nav.insightsLibrary'), href: '/insights/library', icon: DatabaseIcon }
+        ]
+      },
+      {
+        name: t('nav.guides'),
+        children: [
+          { name: t('nav.gettingStarted'), href: '/insights/getting-started', icon: BookIcon },
+          { name: t('nav.bestPractices'), href: '/insights/best-practices', icon: BookOpenIcon }
+        ]
+      }
+    ]
+  },
   { name: t('nav.glossary'), href: '/glossary', icon: BookOpenIcon, tourId: 'glossary' },
   { name: t('nav.settings'), href: '/settings', icon: SettingsIcon, tourId: 'settings' },
 ]
@@ -43,8 +127,26 @@ export function Sidebar() {
   const { user, signOut } = useAuth()
   const { startTour } = useGuidedTour()
   const { t } = useLanguage()
+  const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({})
+  const [expandedCategories, setExpandedCategories] = useState<{[key: string]: boolean}>({})
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
+  const [hoveredSection, setHoveredSection] = useState<string | null>(null)
   
   const navigation = getNavigation(t)
+  
+  const toggleSection = (sectionName: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionName]: !prev[sectionName]
+    }))
+  }
+  
+  const toggleCategory = (categoryName: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [categoryName]: !prev[categoryName]
+    }))
+  }
 
   return (
     <div className={cn(
@@ -58,8 +160,8 @@ export function Sidebar() {
         <div className="flex items-center justify-center flex-1">
           {!isCollapsed ? (
             <img 
-              src="/Nava blue text.png" 
-              alt="Nava" 
+              src="/Kustra.png" 
+              alt="Kustra" 
               className="h-24 w-auto object-contain max-w-[300px]"
             />
           ) : (
@@ -90,6 +192,123 @@ export function Sidebar() {
         <ul className="space-y-2">
           {navigation.map((item) => {
             const isActive = pathname === item.href
+            
+            // Handle expandable items (like Insights)
+            if (item.isExpandable && item.children) {
+              const isExpanded = expandedSections[item.name]
+              
+              return (
+                <li key={item.name}>
+                  {/* Main expandable button */}
+                  <button
+                    onClick={() => toggleSection(item.name)}
+                    onMouseEnter={() => setHoveredSection(item.name)}
+                    onMouseLeave={() => setHoveredSection(null)}
+                    data-tour={item.tourId}
+                    className={cn(
+                      'w-full flex items-center rounded-lg text-sm font-medium transition-colors',
+                      isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
+                      'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                    )}
+                    title={isCollapsed ? item.name : undefined}
+                  >
+                    <item.icon
+                      className={cn(
+                        'h-5 w-5 transition-colors',
+                        isCollapsed ? 'mx-auto' : 'mr-3',
+                        'text-gray-400 hover:text-gray-500'
+                      )}
+                    />
+                    {!isCollapsed && (
+                      <>
+                        <span className="flex-1 text-left">{item.name}</span>
+                        <div className="w-4 h-4 flex items-center justify-center">
+                          {isExpanded ? (
+                            <ChevronUpIcon className={cn(
+                              "h-4 w-4 text-gray-400 transition-opacity",
+                              hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                            )} />
+                          ) : (
+                            <ChevronDownIcon className={cn(
+                              "h-4 w-4 text-gray-400 transition-opacity",
+                              hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                            )} />
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </button>
+                  
+                  {/* Expandable content - Level 1: Main categories */}
+                  {!isCollapsed && isExpanded && (
+                    <div className="mt-2 ml-4 space-y-1">
+                      {item.children.map((category) => {
+                        const isCategoryExpanded = expandedCategories[category.name]
+                        return (
+                          <div key={category.name}>
+                            {/* Category header - clickable to expand/collapse */}
+                            <button
+                              onClick={() => toggleCategory(category.name)}
+                              onMouseEnter={() => setHoveredCategory(category.name)}
+                              onMouseLeave={() => setHoveredCategory(null)}
+                              className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors"
+                            >
+                              <span className="flex-1 text-left">{category.name}</span>
+                              <div className="w-3 h-3 flex items-center justify-center">
+                                {isCategoryExpanded ? (
+                                  <ChevronUpIcon className={cn(
+                                    "h-3 w-3 text-gray-400 transition-opacity",
+                                    hoveredCategory === category.name ? "opacity-100" : "opacity-0"
+                                  )} />
+                                ) : (
+                                  <ChevronDownIcon className={cn(
+                                    "h-3 w-3 text-gray-400 transition-opacity", 
+                                    hoveredCategory === category.name ? "opacity-100" : "opacity-0"
+                                  )} />
+                                )}
+                              </div>
+                            </button>
+                            
+                            {/* Level 2: Individual pages under each category */}
+                            {isCategoryExpanded && category.children && (
+                              <div className="ml-4 mt-1 space-y-1">
+                                {category.children.map((subItem) => {
+                                  const isSubActive = pathname === subItem.href
+                                  return (
+                                    <Link
+                                      key={subItem.name}
+                                      href={subItem.href}
+                                      className={cn(
+                                        'group flex items-center rounded-lg text-sm font-medium transition-colors px-3 py-2',
+                                        isSubActive
+                                          ? 'bg-slate-100 text-slate-700'
+                                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                      )}
+                                    >
+                                      <subItem.icon
+                                        className={cn(
+                                          'h-4 w-4 transition-colors mr-3',
+                                          isSubActive
+                                            ? 'text-slate-600'
+                                            : 'text-gray-400 group-hover:text-gray-500'
+                                        )}
+                                      />
+                                      {subItem.name}
+                                    </Link>
+                                  )
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </li>
+              )
+            }
+            
+            // Handle regular menu items
             return (
               <li key={item.name}>
                 <Link

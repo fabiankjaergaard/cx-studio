@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -39,363 +40,101 @@ interface Survey {
   template?: string
 }
 
-const questionTypes = [
-  {
-    type: 'nps' as const,
-    name: 'NPS (0-10)',
-    icon: StarIcon,
-    description: 'Net Promoter Score skala'
-  },
-  {
-    type: 'rating' as const,
-    name: 'Betyg (1-5)',
-    icon: StarIcon,
-    description: '5-stjärnig betygsmatris'
-  },
-  {
-    type: 'text' as const,
-    name: 'Fritextsvar',
-    icon: MessageSquareIcon,
-    description: 'Öppen textfråga'
-  },
-  {
-    type: 'single-choice' as const,
-    name: 'Enkelval',
-    icon: CheckSquareIcon,
-    description: 'Välj ett alternativ'
-  },
-  {
-    type: 'multiple-choice' as const,
-    name: 'Flerval',
-    icon: CheckSquareIcon,
-    description: 'Välj flera alternativ'
-  }
-]
 
-const surveyTemplates = [
-  {
-    id: 'nps-standard',
-    name: 'Standard NPS',
-    description: 'Klassisk Net Promoter Score enkät',
-    questions: [
-      {
-        id: '1',
-        type: 'nps' as const,
-        title: 'Hur troligt är det att du rekommenderar oss till en vän eller kollega?',
-        description: 'Skala från 0 (inte alls troligt) till 10 (extremt troligt)',
-        required: true
-      },
-      {
-        id: '2',
-        type: 'text' as const,
-        title: 'Vad är den främsta anledningen till ditt betyg?',
-        description: 'Hjälp oss förstå vad som driver ditt betyg',
-        required: false
-      },
-      {
-        id: '3',
-        type: 'text' as const,
-        title: 'Vad skulle få dig att ge oss ett högre betyg?',
-        description: 'Vilka förbättringar skulle vara mest värdefulla för dig?',
-        required: false
-      },
-      {
-        id: '4',
-        type: 'single-choice' as const,
-        title: 'Vilken typ av kund är du?',
-        required: false,
-        options: ['Ny kund (mindre än 6 månader)', 'Etablerad kund (6 månader - 2 år)', 'Långvarig kund (över 2 år)', 'Tidigare kund som kom tillbaka']
-      },
-      {
-        id: '5',
-        type: 'single-choice' as const,
-        title: 'Hur ofta använder du vår produkt/tjänst?',
-        required: false,
-        options: ['Dagligen', 'Flera gånger per vecka', 'Veckovis', 'Månadsvis', 'Mer sällan']
-      }
-    ]
-  },
-  {
-    id: 'csat-touchpoint',
-    name: 'CSAT Touchpoint',
-    description: 'Mät nöjdhet vid specifik touchpoint',
-    questions: [
-      {
-        id: '1',
-        type: 'rating' as const,
-        title: 'Hur nöjd var du med din upplevelse idag?',
-        description: 'Betygsätt från 1 (mycket missnöjd) till 5 (mycket nöjd)',
-        required: true
-      },
-      {
-        id: '2',
-        type: 'text' as const,
-        title: 'Vad kunde vi ha gjort bättre?',
-        description: 'Specifika förbättringsförslag är mycket värdefulla',
-        required: false
-      },
-      {
-        id: '3',
-        type: 'rating' as const,
-        title: 'Hur skulle du betygsätta hastigheten på vår service?',
-        description: 'Från 1 (mycket långsam) till 5 (mycket snabb)',
-        required: false
-      },
-      {
-        id: '4',
-        type: 'rating' as const,
-        title: 'Hur professionell upplevde du vår personal?',
-        description: 'Från 1 (inte alls professionell) till 5 (mycket professionell)',
-        required: false
-      },
-      {
-        id: '5',
-        type: 'single-choice' as const,
-        title: 'Fick du svar på alla dina frågor?',
-        required: false,
-        options: ['Ja, helt och hållet', 'Mestadels', 'Delvis', 'Nej, inte alls']
-      },
-      {
-        id: '6',
-        type: 'single-choice' as const,
-        title: 'Vilken kanal använde du för att kontakta oss?',
-        required: false,
-        options: ['Telefon', 'E-post', 'Chat', 'Besök i butik/kontor', 'Webb-formulär', 'Social media']
-      }
-    ]
-  },
-  {
-    id: 'ces-effort',
-    name: 'CES Ansträngning',
-    description: 'Customer Effort Score enkät',
-    questions: [
-      {
-        id: '1',
-        type: 'rating' as const,
-        title: 'Hur lätt eller svårt var det att få din fråga besvarad idag?',
-        description: 'Från 1 (mycket svårt) till 5 (mycket lätt)',
-        required: true
-      },
-      {
-        id: '2',
-        type: 'text' as const,
-        title: 'Beskriv vad som gjorde processen lätt eller svår',
-        description: 'Specifika exempel hjälper oss förbättra upplevelsen',
-        required: false
-      },
-      {
-        id: '3',
-        type: 'single-choice' as const,
-        title: 'Hur många steg/kontakter krävdes för att lösa ditt ärende?',
-        required: false,
-        options: ['1 kontakt', '2-3 kontakter', '4-5 kontakter', 'Fler än 5 kontakter', 'Ärendet är inte löst än']
-      },
-      {
-        id: '4',
-        type: 'single-choice' as const,
-        title: 'Behövde du upprepa din information flera gånger?',
-        required: false,
-        options: ['Nej, inte alls', 'En gång', '2-3 gånger', 'Fler än 3 gånger']
-      },
-      {
-        id: '5',
-        type: 'rating' as const,
-        title: 'Hur tydlig var informationen du fick?',
-        description: 'Från 1 (mycket otydlig) till 5 (mycket tydlig)',
-        required: false
-      },
-      {
-        id: '6',
-        type: 'text' as const,
-        title: 'Vilka verktyg eller resurser skulle ha gjort processen enklare?',
-        description: 'T.ex. bättre sökfunktion, tydligare instruktioner, direkttelefon',
-        required: false
-      }
-    ]
-  },
-  {
-    id: 'onboarding-feedback',
-    name: 'Onboarding Feedback',
-    description: 'Få feedback på introduktionsprocessen för nya kunder',
-    questions: [
-      {
-        id: '1',
-        type: 'rating' as const,
-        title: 'Hur skulle du betygsätta din övergripande onboarding-upplevelse?',
-        description: 'Från 1 (mycket dålig) till 5 (excellent)',
-        required: true
-      },
-      {
-        id: '2',
-        type: 'rating' as const,
-        title: 'Hur tydliga var instruktionerna under onboarding-processen?',
-        description: 'Från 1 (mycket otydliga) till 5 (mycket tydliga)',
-        required: true
-      },
-      {
-        id: '3',
-        type: 'single-choice' as const,
-        title: 'Hur lång tid tog det att komma igång ordentligt?',
-        required: false,
-        options: ['Mindre än en dag', '1-3 dagar', '1 vecka', '2-4 veckor', 'Mer än en månad', 'Inte klar än']
-      },
-      {
-        id: '4',
-        type: 'multiple-choice' as const,
-        title: 'Vilka resurser var mest hjälpsamma under onboarding?',
-        required: false,
-        options: ['Välkomst-email', 'Video tutorials', 'Personlig kontakt/support', 'Dokumentation/guides', 'Demo/walkthrough', 'FAQ/hjälpcenter']
-      },
-      {
-        id: '5',
-        type: 'text' as const,
-        title: 'Vad var det svåraste att förstå eller genomföra?',
-        required: false
-      },
-      {
-        id: '6',
-        type: 'text' as const,
-        title: 'Vad saknades i onboarding-processen?',
-        description: 'Information, verktyg eller support som skulle ha hjälpt dig',
-        required: false
-      },
-      {
-        id: '7',
-        type: 'rating' as const,
-        title: 'Hur väl förberedd känner du dig för att använda produkten/tjänsten?',
-        description: 'Från 1 (inte alls förberedd) till 5 (mycket väl förberedd)',
-        required: false
-      }
-    ]
-  },
-  {
-    id: 'product-feedback',
-    name: 'Produktfeedback',
-    description: 'Samla in detaljerad feedback om produkten/tjänsten',
-    questions: [
-      {
-        id: '1',
-        type: 'rating' as const,
-        title: 'Hur nöjd är du med produkten/tjänsten överlag?',
-        description: 'Från 1 (mycket missnöjd) till 5 (mycket nöjd)',
-        required: true
-      },
-      {
-        id: '2',
-        type: 'rating' as const,
-        title: 'Hur väl möter produkten dina behov?',
-        description: 'Från 1 (möter inte alls mina behov) till 5 (möter alla mina behov)',
-        required: true
-      },
-      {
-        id: '3',
-        type: 'rating' as const,
-        title: 'Hur enkelt är produkten att använda?',
-        description: 'Från 1 (mycket svår) till 5 (mycket enkel)',
-        required: false
-      },
-      {
-        id: '4',
-        type: 'rating' as const,
-        title: 'Hur skulle du betygsätta produktens tillförlitlighet?',
-        description: 'Från 1 (mycket opålitlig) till 5 (mycket pålitlig)',
-        required: false
-      },
-      {
-        id: '5',
-        type: 'single-choice' as const,
-        title: 'Vilken funktion är mest värdefull för dig?',
-        required: false,
-        options: ['Huvudfunktionalitet', 'Rapporter/Analytics', 'Integration med andra verktyg', 'Mobilapp', 'Support/hjälp', 'Anpassningsmöjligheter']
-      },
-      {
-        id: '6',
-        type: 'text' as const,
-        title: 'Vilken funktion saknar du mest?',
-        description: 'Beskriv funktionalitet som skulle förbättra din upplevelse',
-        required: false
-      },
-      {
-        id: '7',
-        type: 'single-choice' as const,
-        title: 'Hur ofta stöter du på problem eller buggar?',
-        required: false,
-        options: ['Aldrig', 'Sällan (mindre än en gång i månaden)', 'Ibland (1-2 gånger per månad)', 'Ofta (veckovis)', 'Mycket ofta (dagligen)']
-      },
-      {
-        id: '8',
-        type: 'rating' as const,
-        title: 'Hur skulle du betygsätta värdet för pengarna?',
-        description: 'Från 1 (mycket dåligt värde) till 5 (excellent värde)',
-        required: false
-      }
-    ]
-  },
-  {
-    id: 'exit-interview',
-    name: 'Avslutande Kundintervju',
-    description: 'Förstå varför kunder lämnar och hur man kan förbättra',
-    questions: [
-      {
-        id: '1',
-        type: 'single-choice' as const,
-        title: 'Vad är den främsta anledningen till att du lämnar oss?',
-        required: true,
-        options: ['För dyrt', 'Hittade en bättre lösning', 'Behöver inte produkten längre', 'Dålig kundservice', 'Produkten fungerade inte som förväntat', 'Svår att använda', 'Annat (specificera nedan)']
-      },
-      {
-        id: '2',
-        type: 'text' as const,
-        title: 'Om du valde "Annat" ovan, specificera gärna:',
-        required: false
-      },
-      {
-        id: '3',
-        type: 'rating' as const,
-        title: 'Hur nöjd var du med vår produkt/tjänst överlag?',
-        description: 'Från 1 (mycket missnöjd) till 5 (mycket nöjd)',
-        required: true
-      },
-      {
-        id: '4',
-        type: 'rating' as const,
-        title: 'Hur skulle du betygsätta vår kundservice?',
-        description: 'Från 1 (mycket dålig) till 5 (excellent)',
-        required: false
-      },
-      {
-        id: '5',
-        type: 'single-choice' as const,
-        title: 'Vilken konkurrent har du valt istället (om någon)?',
-        required: false,
-        options: ['Konkurrent A', 'Konkurrent B', 'Konkurrent C', 'En mindre/lokal leverantör', 'Bygger egen lösning', 'Ingen, slutar använda denna typ av produkt', 'Vill inte säga']
-      },
-      {
-        id: '6',
-        type: 'text' as const,
-        title: 'Vad skulle ha fått dig att stanna?',
-        description: 'Specifika förändringar eller förbättringar som skulle ha gjort skillnad',
-        required: false
-      },
-      {
-        id: '7',
-        type: 'single-choice' as const,
-        title: 'Skulle du överväga att komma tillbaka i framtiden?',
-        required: false,
-        options: ['Ja, definitivt', 'Ja, möjligtvis', 'Osäker', 'Troligtvis inte', 'Nej, definitivt inte']
-      },
-      {
-        id: '8',
-        type: 'nps' as const,
-        title: 'Trots att du lämnar oss, hur troligt är det att du rekommenderar oss till andra?',
-        description: 'Skala från 0 (inte alls troligt) till 10 (extremt troligt)',
-        required: false
-      }
-    ]
-  }
-]
+// Survey templates will be defined inside the component to access t() function
 
 export default function SurveyBuilderPage() {
+  const { t } = useLanguage()
+  
+  const questionTypes = [
+    {
+      type: 'nps' as const,
+      name: t('surveyBuilder.questionTypes.nps'),
+      icon: StarIcon,
+      description: t('surveyBuilder.questionTypes.npsDesc')
+    },
+    {
+      type: 'rating' as const,
+      name: t('surveyBuilder.questionTypes.rating'),
+      icon: StarIcon,
+      description: t('surveyBuilder.questionTypes.ratingDesc')
+    },
+    {
+      type: 'text' as const,
+      name: t('surveyBuilder.questionTypes.text'),
+      icon: MessageSquareIcon,
+      description: t('surveyBuilder.questionTypes.textDesc')
+    },
+    {
+      type: 'single-choice' as const,
+      name: t('surveyBuilder.questionTypes.singleChoice'),
+      icon: CheckSquareIcon,
+      description: t('surveyBuilder.questionTypes.singleChoiceDesc')
+    },
+    {
+      type: 'multiple-choice' as const,
+      name: t('surveyBuilder.questionTypes.multipleChoice'),
+      icon: CheckSquareIcon,
+      description: t('surveyBuilder.questionTypes.multipleChoiceDesc')
+    }
+  ]
+  
+  const surveyTemplates = [
+    {
+      id: 'nps-standard',
+      name: t('surveyBuilder.templates.npsStandard.name'),
+      description: t('surveyBuilder.templates.npsStandard.desc'),
+      questions: [
+        {
+          id: '1',
+          type: 'nps' as const,
+          title: t('surveyBuilder.templates.npsStandard.q1.title'),
+          description: t('surveyBuilder.templates.npsStandard.q1.desc'),
+          required: true
+        },
+        {
+          id: '2',
+          type: 'text' as const,
+          title: t('surveyBuilder.templates.npsStandard.q2.title'),
+          description: t('surveyBuilder.templates.npsStandard.q2.desc'),
+          required: false
+        },
+        {
+          id: '3',
+          type: 'text' as const,
+          title: t('surveyBuilder.templates.npsStandard.q3.title'),
+          description: t('surveyBuilder.templates.npsStandard.q3.desc'),
+          required: false
+        },
+        {
+          id: '4',
+          type: 'single-choice' as const,
+          title: t('surveyBuilder.templates.npsStandard.q4.title'),
+          required: false,
+          options: [
+            t('surveyBuilder.templates.npsStandard.q4.opt1'),
+            t('surveyBuilder.templates.npsStandard.q4.opt2'),
+            t('surveyBuilder.templates.npsStandard.q4.opt3'),
+            t('surveyBuilder.templates.npsStandard.q4.opt4')
+          ]
+        },
+        {
+          id: '5',
+          type: 'single-choice' as const,
+          title: t('surveyBuilder.templates.npsStandard.q5.title'),
+          required: false,
+          options: [
+            t('surveyBuilder.templates.npsStandard.q5.opt1'),
+            t('surveyBuilder.templates.npsStandard.q5.opt2'),
+            t('surveyBuilder.templates.npsStandard.q5.opt3'),
+            t('surveyBuilder.templates.npsStandard.q5.opt4'),
+            t('surveyBuilder.templates.npsStandard.q5.opt5')
+          ]
+        }
+      ]
+    }
+  ]
+  
   const [survey, setSurvey] = useState<Survey>({
     id: '',
     title: '',
@@ -428,7 +167,7 @@ export default function SurveyBuilderPage() {
       title: '',
       description: '',
       required: true,
-      options: type === 'single-choice' || type === 'multiple-choice' ? ['Alternativ 1', 'Alternativ 2'] : undefined
+      options: type === 'single-choice' || type === 'multiple-choice' ? [t('surveyBuilder.optionPlaceholder', { number: '1' }), t('surveyBuilder.optionPlaceholder', { number: '2' })] : undefined
     }
     
     setSurvey(prev => ({
@@ -483,7 +222,7 @@ export default function SurveyBuilderPage() {
               <span className="text-sm font-medium text-gray-700">
                 {questionTypes.find(t => t.type === question.type)?.name}
               </span>
-              {question.required && <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">Obligatorisk</span>}
+              {question.required && <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">{t('surveyBuilder.required')}</span>}
             </div>
             <div className="flex items-center space-x-2">
               <Button 
@@ -519,7 +258,7 @@ export default function SurveyBuilderPage() {
             </div>
           </div>
           <h4 className="font-medium text-gray-900 mb-1">
-            {question.title || 'Klicka för att redigera fråga'}
+            {question.title || t('surveyBuilder.clickToEdit')}
           </h4>
           {question.description && (
             <p className="text-sm text-gray-600 mb-2">{question.description}</p>
@@ -535,24 +274,24 @@ export default function SurveyBuilderPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Fråga *
+                {t('surveyBuilder.questionTitle')}
               </label>
               <Input
                 value={question.title}
                 onChange={(e) => updateQuestion(question.id, { title: e.target.value })}
-                placeholder="Skriv din fråga här..."
+                placeholder={t('surveyBuilder.questionTitlePlaceholder')}
                 className="w-full"
               />
             </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Beskrivning (valfri)
+                {t('surveyBuilder.questionDescription')}
               </label>
               <Input
                 value={question.description || ''}
                 onChange={(e) => updateQuestion(question.id, { description: e.target.value })}
-                placeholder="Ytterligare instruktioner eller kontext..."
+                placeholder={t('surveyBuilder.questionDescriptionPlaceholder')}
                 className="w-full"
               />
             </div>
@@ -560,7 +299,7 @@ export default function SurveyBuilderPage() {
             {(question.type === 'single-choice' || question.type === 'multiple-choice') && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Svarsalternativ
+                  {t('surveyBuilder.answerOptions')}
                 </label>
                 <div className="space-y-2">
                   {question.options?.map((option, index) => (
@@ -590,12 +329,12 @@ export default function SurveyBuilderPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      const newOptions = [...(question.options || []), `Alternativ ${(question.options?.length || 0) + 1}`]
+                      const newOptions = [...(question.options || []), t('surveyBuilder.optionPlaceholder', { number: (question.options?.length || 0) + 1 })]
                       updateQuestion(question.id, { options: newOptions })
                     }}
                   >
                     <PlusIcon className="h-4 w-4 mr-2" />
-                    Lägg till alternativ
+                    {t('surveyBuilder.addOption')}
                   </Button>
                 </div>
               </div>
@@ -609,12 +348,12 @@ export default function SurveyBuilderPage() {
                   onChange={(e) => updateQuestion(question.id, { required: e.target.checked })}
                   className="rounded border-gray-300"
                 />
-                <span className="text-sm text-gray-700">Obligatorisk fråga</span>
+                <span className="text-sm text-gray-700">{t('surveyBuilder.requiredQuestion')}</span>
               </label>
               
               <div className="flex space-x-2">
                 <Button variant="outline" onClick={() => setEditingQuestion(null)}>
-                  Klar
+                  {t('surveyBuilder.done')}
                 </Button>
               </div>
             </div>
@@ -645,7 +384,7 @@ export default function SurveyBuilderPage() {
           </div>
         )
       case 'text':
-        return <div className="border rounded p-3 bg-gray-50 text-sm text-gray-500">Fritextområde...</div>
+        return <div className="border rounded p-3 bg-gray-50 text-sm text-gray-500">{t('surveyBuilder.freeTextArea')}</div>
       case 'single-choice':
         return (
           <div className="space-y-2">
@@ -676,8 +415,8 @@ export default function SurveyBuilderPage() {
   return (
     <div className="h-full flex flex-col">
       <Header 
-        title="Survey Builder" 
-        description="Skapa professionella enkäter för kundinsikter"
+        title={t('surveyBuilder.title')} 
+        description={t('surveyBuilder.description')}
         actions={
           <div className="flex space-x-2">
             <Button 
@@ -686,11 +425,11 @@ export default function SurveyBuilderPage() {
               disabled={survey.questions.length === 0 || !survey.title}
             >
               <EyeIcon className="mr-2 h-4 w-4" />
-              Förhandsgranska
+              {t('surveyBuilder.preview')}
             </Button>
             <Button variant="primary">
               <SaveIcon className="mr-2 h-4 w-4" />
-              Spara enkät
+              {t('surveyBuilder.save')}
             </Button>
           </div>
         }
@@ -702,8 +441,8 @@ export default function SurveyBuilderPage() {
           {/* Templates */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Mallar</h3>
-              <span className="text-xs text-gray-500">{surveyTemplates.length} mallar</span>
+              <h3 className="text-lg font-semibold text-gray-900">{t('surveyBuilder.templates')}</h3>
+              <span className="text-xs text-gray-500">{t('surveyBuilder.templatesCount', { count: surveyTemplates.length })}</span>
             </div>
             <div className="space-y-3">
               {surveyTemplates
@@ -724,8 +463,8 @@ export default function SurveyBuilderPage() {
                 >
                   <span>
                     {showAllTemplates 
-                      ? `Visa mindre` 
-                      : `Visa ${surveyTemplates.length - 3} fler mallar`}
+                      ? t('surveyBuilder.showLess')
+                      : t('surveyBuilder.showMore', { count: surveyTemplates.length - 3 })}
                   </span>
                   {showAllTemplates ? (
                     <ChevronUpIcon className="h-4 w-4" />
@@ -739,7 +478,7 @@ export default function SurveyBuilderPage() {
 
           {/* Question Types */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Lägg till fråga</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('surveyBuilder.addQuestion')}</h3>
             <div className="space-y-2">
               {questionTypes.map((type) => (
                 <button
@@ -768,24 +507,24 @@ export default function SurveyBuilderPage() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Enkätens titel *
+                    {t('surveyBuilder.surveyTitleRequired')}
                   </label>
                   <Input
                     value={survey.title}
                     onChange={(e) => setSurvey(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="T.ex. 'Kundnöjdhet Q1 2024'"
+                    placeholder={t('surveyBuilder.surveyTitlePlaceholder')}
                     className="text-lg font-semibold"
                   />
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Beskrivning
+                    {t('surveyBuilder.surveyDescription')}
                   </label>
                   <Input
                     value={survey.description}
                     onChange={(e) => setSurvey(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Beskriv syftet med enkäten och vad du kommer att använda svaren till..."
+                    placeholder={t('surveyBuilder.surveyDescriptionPlaceholder')}
                   />
                 </div>
               </div>
@@ -798,15 +537,15 @@ export default function SurveyBuilderPage() {
               <Card className="border-2 border-dashed border-gray-300">
                 <CardContent className="p-12 text-center">
                   <SlidersIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Ingen fråga har lagts till än</h3>
-                  <p className="text-gray-600 mb-4">Välj en mall från vänster panel eller lägg till frågor manuellt</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t('surveyBuilder.noQuestions')}</h3>
+                  <p className="text-gray-600 mb-4">{t('surveyBuilder.noQuestionsDesc')}</p>
                 </CardContent>
               </Card>
             ) : (
               survey.questions.map((question, index) => (
                 <div key={question.id}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-500">Fråga {index + 1}</span>
+                    <span className="text-sm font-medium text-gray-500">{t('surveyBuilder.questionNumber', { number: index + 1 })}</span>
                   </div>
                   {renderQuestionEditor(question)}
                 </div>
@@ -817,7 +556,7 @@ export default function SurveyBuilderPage() {
           {/* Add Question Button */}
           {survey.questions.length > 0 && (
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600 mb-4">Lägg till fler frågor från vänster panel</p>
+              <p className="text-sm text-gray-600 mb-4">{t('surveyBuilder.addMoreQuestions')}</p>
             </div>
           )}
         </div>

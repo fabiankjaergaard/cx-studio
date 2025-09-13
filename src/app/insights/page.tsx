@@ -16,98 +16,131 @@ import {
   SearchIcon
 } from 'lucide-react'
 import Link from 'next/link'
+import { useLanguage } from '@/contexts/LanguageContext'
 
-const quantitativeMethods = [
+const getQuantitativeMethods = (t: (key: string) => string) => [
   {
-    title: 'NPS-enkäter',
-    description: 'Mät kundlojalitet med Net Promoter Score',
+    title: t('insights.nps.title'),
+    description: t('insights.nps.description'),
     icon: TrendingUpIcon,
     color: 'bg-slate-50 text-slate-600',
     href: '/insights/nps',
-    features: ['0-10 skala', 'Automatisk segmentering', 'Trendanalys', 'Benchmarking']
+    features: [
+      t('insights.nps.feature1'),
+      t('insights.nps.feature2'),
+      t('insights.nps.feature3'),
+      t('insights.nps.feature4')
+    ]
   },
   {
-    title: 'CSAT-enkäter',
-    description: 'Mät kundnöjdhet för specifika touchpoints',
+    title: t('insights.csat.title'),
+    description: t('insights.csat.description'),
     icon: BarChart3Icon,
     color: 'bg-slate-50 text-slate-600',
     href: '/insights/csat',
-    features: ['Touchpoint-koppling', 'Realtidsdata', 'Jämförelser', 'Målsättningar']
+    features: [
+      t('insights.csat.feature1'),
+      t('insights.csat.feature2'),
+      t('insights.csat.feature3'),
+      t('insights.csat.feature4')
+    ]
   },
   {
-    title: 'CES-enkäter',
-    description: 'Mät kundansträngning och identifiera friktion',
+    title: t('insights.ces.title'),
+    description: t('insights.ces.description'),
     icon: ClipboardIcon,
     color: 'bg-slate-50 text-slate-600',
     href: '/insights/ces',
-    features: ['Enkelhetsindex', 'Pain point-identifiering', 'Process-optimering', 'ROI-beräkning']
+    features: [
+      t('insights.ces.feature1'),
+      t('insights.ces.feature2'),
+      t('insights.ces.feature3'),
+      t('insights.ces.feature4')
+    ]
   }
 ]
 
-const qualitativeMethods = [
+const getQualitativeMethods = (t: (key: string) => string) => [
   {
-    title: 'Kundintervjuer',
-    description: 'Djupgående förståelse genom personliga samtal',
+    title: t('insights.interviews.title'),
+    description: t('insights.interviews.description'),
     icon: MicIcon,
     color: 'bg-slate-50 text-slate-600',
     href: '/insights/interviews',
-    features: ['Intervjuguider', 'Frågemallar', 'Inspelningsverktyg', 'Analys-templates']
+    features: [
+      t('insights.interviews.feature1'),
+      t('insights.interviews.feature2'),
+      t('insights.interviews.feature3'),
+      t('insights.interviews.feature4')
+    ]
   },
   {
-    title: 'Fokusgrupper',
-    description: 'Samla gruppinsikter och dynamiska diskussioner',
+    title: t('insights.focusGroups.title'),
+    description: t('insights.focusGroups.description'),
     icon: UsersIcon,
     color: 'bg-slate-50 text-slate-600',
     href: '/insights/focus-groups',
-    features: ['Deltagarrekrytering', 'Diskussionsguider', 'Modereringstips', 'Gruppanalys']
+    features: [
+      t('insights.focusGroups.feature1'),
+      t('insights.focusGroups.feature2'),
+      t('insights.focusGroups.feature3'),
+      t('insights.focusGroups.feature4')
+    ]
   },
   {
-    title: 'Användarobservation',
-    description: 'Se hur kunder verkligen beter sig',
+    title: t('insights.observation.title'),
+    description: t('insights.observation.description'),
     icon: EyeIcon,
     color: 'bg-slate-50 text-slate-600',
     href: '/insights/observation',
-    features: ['Observation-protokoll', 'Beteendeanalys', 'Journey shadowing', 'Etnografi']
+    features: [
+      t('insights.observation.feature1'),
+      t('insights.observation.feature2'),
+      t('insights.observation.feature3'),
+      t('insights.observation.feature4')
+    ]
   }
 ]
 
-const tools = [
+const getTools = (t: (key: string) => string) => [
   {
-    title: 'Survey Builder',
-    description: 'Skapa professionella enkäter med mallar',
-    action: 'Skapa enkät',
+    title: t('insights.surveyBuilder.title'),
+    description: t('insights.surveyBuilder.description'),
+    action: t('insights.surveyBuilder.action'),
     href: '/insights/survey-builder'
   },
   {
-    title: 'Research Planner',
-    description: 'Planera och organisera dina kundinsikts-projekt',
-    action: 'Planera projekt',
+    title: t('insights.researchPlanner.title'),
+    description: t('insights.researchPlanner.description'),
+    action: t('insights.researchPlanner.action'),
     href: '/insights/research-planner'
   },
   {
-    title: 'Data Dashboard',
-    description: 'Visualisera och analysera insamlad data',
-    action: 'Visa dashboard',
+    title: t('insights.dataDashboard.title'),
+    description: t('insights.dataDashboard.description'),
+    action: t('insights.dataDashboard.action'),
     href: '/insights/dashboard'
   },
   {
-    title: 'Insights Library',
-    description: 'Samla och organisera alla kundinsikter',
-    action: 'Öppna bibliotek',
+    title: t('insights.insightsLibrary.title'),
+    description: t('insights.insightsLibrary.description'),
+    action: t('insights.insightsLibrary.action'),
     href: '/insights/library'
   }
 ]
 
 export default function InsightsPage() {
+  const { t } = useLanguage()
+  
   return (
     <div className="h-full flex flex-col">
       <Header 
-        title="Kundinsikter" 
-        description="Samla in och analysera kunddata för bättre customer experience"
+        title={t('insights.title')} 
+        description={t('insights.subtitle')}
         actions={
           <Button variant="primary">
             <PlusIcon className="mr-2 h-4 w-4" />
-            Nytt projekt
+            {t('insights.newProject')}
           </Button>
         }
       />
@@ -122,25 +155,23 @@ export default function InsightsPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Varför samla in kundinsikter?
+                  {t('insights.whyCollectInsights')}
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Kundinsikter hjälper dig att förstå vad kunder verkligen tycker, känner och behöver. 
-                  Genom att kombinera kvantitativa mätningar med kvalitativa fördjupningar får du en 
-                  komplett bild som driver data-baserade förbättringar av kundupplevelsen.
+                  {t('insights.whyCollectDescription')}
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">
-                    Identifiera pain points
+                    {t('insights.identifyPainPoints')}
                   </span>
                   <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">
-                    Mät framsteg
+                    {t('insights.measureProgress')}
                   </span>
                   <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">
-                    Validera förändringar
+                    {t('insights.validateChanges')}
                   </span>
                   <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">
-                    Förstå behov
+                    {t('insights.understandNeeds')}
                   </span>
                 </div>
               </div>
@@ -151,11 +182,11 @@ export default function InsightsPage() {
         {/* Quantitative Methods */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Kvantitativa metoder</h2>
-            <span className="text-sm text-gray-500">Mätbara data och siffror</span>
+            <h2 className="text-2xl font-semibold text-gray-900">{t('insights.quantitativeMethods')}</h2>
+            <span className="text-sm text-gray-500">{t('insights.quantitativeDescription')}</span>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {quantitativeMethods.map((method) => (
+            {getQuantitativeMethods(t).map((method) => (
               <Card key={method.title} className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3 mb-3">
@@ -177,7 +208,7 @@ export default function InsightsPage() {
                   </ul>
                   <Link href={method.href}>
                     <Button variant="outline" className="w-full">
-                      Kom igång
+                      {t('insights.getStarted')}
                     </Button>
                   </Link>
                 </CardContent>
@@ -189,11 +220,11 @@ export default function InsightsPage() {
         {/* Qualitative Methods */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Kvalitativa metoder</h2>
-            <span className="text-sm text-gray-500">Fördjupade insikter och förståelse</span>
+            <h2 className="text-2xl font-semibold text-gray-900">{t('insights.qualitativeMethods')}</h2>
+            <span className="text-sm text-gray-500">{t('insights.qualitativeDescription')}</span>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {qualitativeMethods.map((method) => (
+            {getQualitativeMethods(t).map((method) => (
               <Card key={method.title} className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3 mb-3">
@@ -215,7 +246,7 @@ export default function InsightsPage() {
                   </ul>
                   <Link href={method.href}>
                     <Button variant="outline" className="w-full">
-                      Lär dig mer
+                      {t('insights.getStarted')}
                     </Button>
                   </Link>
                 </CardContent>
@@ -227,11 +258,11 @@ export default function InsightsPage() {
         {/* Tools & Templates */}
         <div>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Verktyg & Mallar</h2>
-            <span className="text-sm text-gray-500">Praktiska hjälpmedel för datainsamling</span>
+            <h2 className="text-2xl font-semibold text-gray-900">{t('insights.toolsAndTemplates')}</h2>
+            <span className="text-sm text-gray-500">{t('insights.toolsDescription')}</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {tools.map((tool) => (
+            {getTools(t).map((tool) => (
               <Card key={tool.title} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
@@ -259,21 +290,20 @@ export default function InsightsPage() {
           <CardContent className="p-6">
             <div className="text-center max-w-2xl mx-auto">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Ny inom kundinsikter?
+                {t('insights.gettingStarted.title')}
               </h3>
               <p className="text-gray-600 mb-6">
-                Börja med våra guider för att lära dig när du ska använda vilka metoder 
-                och hur du får mest värde ur din datainsamling.
+                {t('insights.gettingStarted.description')}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/insights/getting-started">
                   <Button variant="primary">
-                    Kom igång-guide
+                    {t('insights.gettingStarted.guideButton')}
                   </Button>
                 </Link>
                 <Link href="/insights/best-practices">
                   <Button variant="outline">
-                    Best practices
+                    {t('insights.gettingStarted.bestPracticesButton')}
                   </Button>
                 </Link>
               </div>

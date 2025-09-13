@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Header } from '@/components/dashboard/Header'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { 
@@ -18,140 +19,146 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-const npsSegments = [
+const getNpsSegments = (t: (key: string) => string) => [
   {
-    type: 'Promoters',
-    score: '9-10',
+    type: t('nps.promoters'),
+    score: t('nps.promotersScore'),
     color: 'text-green-600 bg-green-100',
-    description: 'Lojala entusiaster som kommer att fortsätta köpa och hänvisa andra',
+    description: t('nps.promotersDescription'),
     characteristics: [
-      'Mycket nöjda med produkten/tjänsten',
-      'Troliga att rekommendera till andra',
-      'Lägre churn-risk',
-      'Högre lifetime value'
+      t('nps.promotersChar1'),
+      t('nps.promotersChar2'),
+      t('nps.promotersChar3'),
+      t('nps.promotersChar4')
     ],
     actionItems: [
-      'Be dem om referenser och recensioner',
-      'Involvera dem i case studies',
-      'Erbjud referral-program',
-      'Få feedback på nya produkter'
+      t('nps.promotersAction1'),
+      t('nps.promotersAction2'),
+      t('nps.promotersAction3'),
+      t('nps.promotersAction4')
     ]
   },
   {
-    type: 'Passives',
-    score: '7-8',
+    type: t('nps.passives'),
+    score: t('nps.passivesScore'),
     color: 'text-yellow-600 bg-yellow-100',
-    description: 'Nöjda men inte entusiastiska kunder som är sårbara för konkurrenter',
+    description: t('nps.passivesDescription'),
     characteristics: [
-      'Nöjda men inte engagerade',
-      'Neutral till rekommendationer',
-      'Risk för att växla till konkurrent',
-      'Påverkas av pris och erbjudanden'
+      t('nps.passivesChar1'),
+      t('nps.passivesChar2'),
+      t('nps.passivesChar3'),
+      t('nps.passivesChar4')
     ],
     actionItems: [
-      'Identifiera vad som kan göra dem till Promoters',
-      'Förbättra kundupplevelsen',
-      'Personliga erbjudanden',
-      'Proaktiv kundservice'
+      t('nps.passivesAction1'),
+      t('nps.passivesAction2'),
+      t('nps.passivesAction3'),
+      t('nps.passivesAction4')
     ]
   },
   {
-    type: 'Detractors',
-    score: '0-6',
+    type: t('nps.detractors'),
+    score: t('nps.detractorsScore'),
     color: 'text-red-600 bg-red-100',
-    description: 'Missnöjda kunder som kan skada varumärket genom negativ word-of-mouth',
+    description: t('nps.detractorsDescription'),
     characteristics: [
-      'Missnöjda med upplevelsen',
-      'Risk för negativa recensioner',
-      'Hög churn-sannolikhet',
-      'Kan avråda andra från köp'
+      t('nps.detractorsChar1'),
+      t('nps.detractorsChar2'),
+      t('nps.detractorsChar3'),
+      t('nps.detractorsChar4')
     ],
     actionItems: [
-      'Prioritera att förstå deras problem',
-      'Åtgärda klagomål snabbt',
-      'Erbjud kompensation vid behov',
-      'Förbättra identifierade problem'
+      t('nps.detractorsAction1'),
+      t('nps.detractorsAction2'),
+      t('nps.detractorsAction3'),
+      t('nps.detractorsAction4')
     ]
   }
 ]
 
-const bestPractices = [
+const getBestPractices = (t: (key: string) => string) => [
   {
-    title: 'Timing är avgörande',
-    description: 'Skicka NPS-enkäter när upplevelsen är färsk i kundens minne',
+    title: t('nps.timingTitle'),
+    description: t('nps.timingDescription'),
     tips: [
-      'Direkt efter köp eller leverans',
-      'Efter kundserviceinteraktion',
-      'Vid förnyelse av abonnemang',
-      'Efter viktiga milstolpar i kundresan'
+      t('nps.timingTip1'),
+      t('nps.timingTip2'),
+      t('nps.timingTip3'),
+      t('nps.timingTip4')
     ]
   },
   {
-    title: 'Rätt frekvens',
-    description: 'Undvik enkättrötthet genom att balansera insikt med kundupplevelse',
+    title: t('nps.frequencyTitle'),
+    description: t('nps.frequencyDescription'),
     tips: [
-      'Kvartalsvis för de flesta företag',
-      'Månadsvis för snabbföränderliga branscher',
-      'Efter större produktförändringar',
-      'Max 1 gång per månad per kund'
+      t('nps.frequencyTip1'),
+      t('nps.frequencyTip2'),
+      t('nps.frequencyTip3'),
+      t('nps.frequencyTip4')
     ]
   },
   {
-    title: 'Följ upp med handling',
-    description: 'NPS-värdet är meningslöst utan konkreta förbättringsåtgärder',
+    title: t('nps.followUpTitle'),
+    description: t('nps.followUpDescription'),
     tips: [
-      'Kontakta Detractors inom 24-48 timmar',
-      'Be Promoters om referencias',
-      'Analysera vanliga teman i kommentarer',
-      'Kommunicera förändringar till kunder'
+      t('nps.followUpTip1'),
+      t('nps.followUpTip2'),
+      t('nps.followUpTip3'),
+      t('nps.followUpTip4')
     ]
   }
 ]
 
-const industryBenchmarks = [
-  { industry: 'SaaS/Teknologi', average: 31, top: 72 },
-  { industry: 'E-handel', average: 47, top: 84 },
-  { industry: 'Telekom', average: 31, top: 68 },
-  { industry: 'Banker', average: 34, top: 73 },
-  { industry: 'Försäkring', average: 34, top: 73 },
-  { industry: 'Detaljhandel', average: 39, top: 78 }
+const getIndustryBenchmarks = (t: (key: string) => string) => [
+  { industry: t('nps.saasIndustry'), average: 31, top: 72 },
+  { industry: t('nps.ecommerceIndustry'), average: 47, top: 84 },
+  { industry: t('nps.telecomIndustry'), average: 31, top: 68 },
+  { industry: t('nps.bankingIndustry'), average: 34, top: 73 },
+  { industry: t('nps.insuranceIndustry'), average: 34, top: 73 },
+  { industry: t('nps.retailIndustry'), average: 39, top: 78 }
 ]
 
-const npsTemplate = {
-  title: 'Net Promoter Score Enkät',
-  description: 'Mät kundlojalitet och identifiera ambassadörer',
+const getNpsTemplate = (t: (key: string) => string) => ({
+  title: t('nps.templateTitle'),
+  description: t('nps.templateDescription'),
   questions: [
     {
       type: 'nps',
-      question: 'Hur troligt är det att du rekommenderar [Företagsnamn] till en vän eller kollega?',
-      description: 'Svara på en skala från 0 (inte alls troligt) till 10 (extremt troligt)'
+      question: t('nps.question1'),
+      description: t('nps.question1Description')
     },
     {
       type: 'text',
-      question: 'Vad är den främsta anledningen till ditt betyg?',
-      description: 'Hjälp oss att förstå vad som driver ditt betyg'
+      question: t('nps.question2'),
+      description: t('nps.question2Description')
     },
     {
       type: 'text',
-      question: 'Vad skulle få dig att ge oss ett högre betyg?',
-      description: 'Valfri - men värdeful för våra förbättringsinsatser'
+      question: t('nps.question3'),
+      description: t('nps.question3Description')
     }
   ]
-}
+})
 
 export default function NPSPage() {
+  const { t } = useLanguage()
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null)
+  
+  const npsSegments = getNpsSegments(t)
+  const bestPractices = getBestPractices(t)
+  const industryBenchmarks = getIndustryBenchmarks(t)
+  const npsTemplate = getNpsTemplate(t)
 
   return (
     <div className="h-full flex flex-col">
       <Header 
-        title="Net Promoter Score (NPS)" 
-        description="Mät kundlojalitet och identifiera dina främsta ambassadörer"
+        title={t('nps.title')} 
+        description={t('nps.description')}
         actions={
           <Link href="/insights/survey-builder">
             <Button variant="primary">
               <PlusIcon className="mr-2 h-4 w-4" />
-              Skapa NPS-enkät
+              {t('nps.createButton')}
             </Button>
           </Link>
         }
@@ -167,18 +174,17 @@ export default function NPSPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Vad är Net Promoter Score?
+                  {t('nps.whatIsNps')}
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  NPS är ett enkelt men kraftfullt mått som frågar kunder: "Hur troligt är det att du rekommenderar oss?" 
-                  Svaren delas in i tre grupper som avslöjar din kundbas lojalitet och tillväxtpotential.
+                  {t('nps.whatIsNpsDescription')}
                 </p>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="text-2xl font-bold text-center mb-2">
-                    NPS = % Promoters - % Detractors
+                    {t('nps.formula')}
                   </div>
                   <div className="text-sm text-gray-600 text-center">
-                    Resultat sträcker sig från -100 (alla Detractors) till +100 (alla Promoters)
+                    {t('nps.formulaDescription')}
                   </div>
                 </div>
               </div>
@@ -188,7 +194,7 @@ export default function NPSPage() {
 
         {/* NPS Segments */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">De tre NPS-segmenten</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('nps.threeSegments')}</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {npsSegments.map((segment) => (
               <Card 
@@ -210,7 +216,7 @@ export default function NPSPage() {
                 <CardContent className="pt-0">
                   <div className="space-y-4">
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Egenskaper:</h4>
+                      <h4 className="font-medium text-gray-900 mb-2">{t('nps.characteristics')}</h4>
                       <ul className="space-y-1">
                         {segment.characteristics.map((char, index) => (
                           <li key={index} className="flex items-start text-sm text-gray-600">
@@ -223,7 +229,7 @@ export default function NPSPage() {
                     
                     {selectedSegment === segment.type && (
                       <div className="border-t pt-4">
-                        <h4 className="font-medium text-gray-900 mb-2">Rekommenderade åtgärder:</h4>
+                        <h4 className="font-medium text-gray-900 mb-2">{t('nps.recommendedActions')}</h4>
                         <ul className="space-y-1">
                           {segment.actionItems.map((action, index) => (
                             <li key={index} className="flex items-start text-sm text-gray-600">
@@ -243,7 +249,7 @@ export default function NPSPage() {
 
         {/* Best Practices */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Best Practices för NPS</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('nps.bestPractices')}</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {bestPractices.map((practice, index) => (
               <Card key={index}>
@@ -271,20 +277,19 @@ export default function NPSPage() {
 
         {/* Industry Benchmarks */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Branschgenomsnitt</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('nps.industryBenchmarks')}</h2>
           <Card>
             <CardContent className="p-6">
               <p className="text-gray-600 mb-4">
-                Jämför ditt NPS med andra i din bransch. Kom ihåg att NPS kan variera mycket beroende på 
-                marknad, kundtyp och mätmetod.
+                {t('nps.benchmarkDescription')}
               </p>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-semibold text-gray-900">Bransch</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-900">Genomsnitt</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-900">Topp 25%</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-900">{t('nps.industryColumn')}</th>
+                      <th className="text-center py-3 px-4 font-semibold text-gray-900">{t('nps.averageColumn')}</th>
+                      <th className="text-center py-3 px-4 font-semibold text-gray-900">{t('nps.topColumn')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -312,7 +317,7 @@ export default function NPSPage() {
 
         {/* NPS Template */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">NPS Enkätmall</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('nps.surveyTemplate')}</h2>
           <Card>
             <CardHeader>
               <CardTitle>{npsTemplate.title}</CardTitle>
@@ -340,7 +345,7 @@ export default function NPSPage() {
                         )}
                         {question.type === 'text' && (
                           <div className="mt-3 border border-gray-300 rounded p-3 bg-gray-50 text-sm text-gray-500">
-                            Fritextområde för kundens svar...
+                            {t('nps.textAreaPlaceholder')}
                           </div>
                         )}
                       </div>
@@ -352,11 +357,11 @@ export default function NPSPage() {
               <div className="mt-6 pt-6 border-t text-center">
                 <Link href="/insights/survey-builder">
                   <Button variant="primary" className="mr-3">
-                    Använd denna mall
+                    {t('nps.useTemplate')}
                   </Button>
                 </Link>
                 <Button variant="outline">
-                  Anpassa mall
+                  {t('nps.customizeTemplate')}
                 </Button>
               </div>
             </CardContent>
@@ -368,22 +373,21 @@ export default function NPSPage() {
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Redo att mäta din NPS?
+                {t('nps.readyToMeasure')}
               </h3>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                Kom ihåg: NPS är bara början. Det verkliga värdet kommer från att följa upp 
-                med konkreta åtgärder baserat på vad du lär dig från dina kunder.
+                {t('nps.ctaDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/insights/survey-builder">
                   <Button variant="primary">
                     <PlusIcon className="mr-2 h-4 w-4" />
-                    Skapa NPS-enkät
+                    {t('nps.createButton')}
                   </Button>
                 </Link>
                 <Link href="/insights/getting-started">
                   <Button variant="outline">
-                    Läs mer om genomförande
+                    {t('nps.learnMoreImplementation')}
                   </Button>
                 </Link>
               </div>

@@ -8,58 +8,59 @@ import { useJourneyStore } from '@/store/journey-store'
 import { PlusIcon, EyeIcon, DownloadIcon, BookTemplateIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/contexts/LanguageContext'
 
-const templates = [
+const getTemplates = (t: (key: string) => string) => [
   {
     id: '1',
-    name: 'E-commerce Köpresa',
-    description: 'Komplett kundresa för online shopping från medvetenhet till lojalitet',
-    industry: 'E-commerce',
+    name: t('templates.ecommerce.name'),
+    description: t('templates.ecommerce.description'),
+    industry: t('templates.ecommerce.industry'),
     touchpoints: 8,
     stages: 5,
     preview: '/api/templates/1/preview'
   },
   {
     id: '2', 
-    name: 'SaaS Onboarding',
-    description: 'Användarresa för software-as-a-service onboarding process',
-    industry: 'Teknologi',
+    name: t('templates.saas.name'),
+    description: t('templates.saas.description'),
+    industry: t('templates.saas.industry'),
     touchpoints: 6,
     stages: 4,
     preview: '/api/templates/2/preview'
   },
   {
     id: '3',
-    name: 'Kundtjänst Journey',
-    description: 'Kundresa för support och kundtjänstinteraktioner',
-    industry: 'Service',
+    name: t('templates.customerService.name'),
+    description: t('templates.customerService.description'),
+    industry: t('templates.customerService.industry'),
     touchpoints: 7,
     stages: 5,
     preview: '/api/templates/3/preview'
   },
   {
     id: '4',
-    name: 'Restaurang Upplevelse',
-    description: 'Gästresa från bokning till uppföljning för restauranger',
-    industry: 'Hospitality',
+    name: t('templates.restaurant.name'),
+    description: t('templates.restaurant.description'),
+    industry: t('templates.restaurant.industry'),
     touchpoints: 9,
     stages: 6,
     preview: '/api/templates/4/preview'
   },
   {
     id: '5',
-    name: 'Bank & Finans',
-    description: 'Kundresa för finansiella tjänster och bankprodukter',
-    industry: 'Finans',
+    name: t('templates.banking.name'),
+    description: t('templates.banking.description'),
+    industry: t('templates.banking.industry'),
     touchpoints: 10,
     stages: 5,
     preview: '/api/templates/5/preview'
   },
   {
     id: '6',
-    name: 'Healthcare Journey',
-    description: 'Patientresa från symptom till uppföljning',
-    industry: 'Hälsovård',
+    name: t('templates.healthcare.name'),
+    description: t('templates.healthcare.description'),
+    industry: t('templates.healthcare.industry'),
     touchpoints: 8,
     stages: 6,
     preview: '/api/templates/6/preview'
@@ -67,23 +68,25 @@ const templates = [
 ]
 
 export default function TemplatesPage() {
+  const { t } = useLanguage()
   const [isNewJourneyModalOpen, setIsNewJourneyModalOpen] = useState(false)
   const { addJourney, setCurrentJourney } = useJourneyStore()
   const router = useRouter()
+  const templates = getTemplates(t)
 
   const handleUseTemplate = (template: any) => {
     // Create a journey from template
     const newJourney = {
-      title: `${template.name} (från mall)`,
+      title: `${template.name} (${t('templates.fromTemplate')})`,
       description: template.description,
-      persona: 'Kund från mall',
+      persona: t('templates.customerFromTemplate'),
       touchpoints: [], // Could add template touchpoints here
       stages: [
-        { id: '1', name: 'Medvetenhet', description: 'Kunden blir medveten om behov', color: '#3B82F6' },
-        { id: '2', name: 'Övervägande', description: 'Kunden utvärderar alternativ', color: '#8B5CF6' },
-        { id: '3', name: 'Köp', description: 'Kunden fattar köpbeslut', color: '#10B981' },
-        { id: '4', name: 'Användning', description: 'Kunden använder produkten/tjänsten', color: '#F59E0B' },
-        { id: '5', name: 'Lojalitet', description: 'Kunden blir lojal och rekommenderar', color: '#EF4444' }
+        { id: '1', name: t('templates.stages.awareness'), description: t('templates.stageDescriptions.awareness'), color: '#3B82F6' },
+        { id: '2', name: t('templates.stages.consideration'), description: t('templates.stageDescriptions.consideration'), color: '#8B5CF6' },
+        { id: '3', name: t('templates.stages.purchase'), description: t('templates.stageDescriptions.purchase'), color: '#10B981' },
+        { id: '4', name: t('templates.stages.usage'), description: t('templates.stageDescriptions.usage'), color: '#F59E0B' },
+        { id: '5', name: t('templates.stages.loyalty'), description: t('templates.stageDescriptions.loyalty'), color: '#EF4444' }
       ]
     }
     
@@ -99,15 +102,15 @@ export default function TemplatesPage() {
   return (
     <div className="h-full flex flex-col bg-gray-50">
       <Header 
-        title="Templates" 
-        description="Välj från förbyggda journey map templates för din bransch"
+        title={t('templates.title')} 
+        description={t('templates.subtitle')}
         actions={
           <Button 
             variant="primary"
             onClick={() => setIsNewJourneyModalOpen(true)}
           >
             <PlusIcon className="mr-2 h-4 w-4" />
-            Skapa egen mall
+            {t('templates.createCustom')}
           </Button>
         }
       />
@@ -117,19 +120,19 @@ export default function TemplatesPage() {
         <div className="mb-8 flex items-center justify-between">
           <div className="flex space-x-4">
             <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900">
-              <option value="">Alla branscher</option>
-              <option value="e-commerce">E-commerce</option>
-              <option value="teknologi">Teknologi</option>
-              <option value="service">Service</option>
-              <option value="hospitality">Hospitality</option>
-              <option value="finans">Finans</option>
-              <option value="hälsovård">Hälsovård</option>
+              <option value="">{t('templates.filters.allIndustries')}</option>
+              <option value="e-commerce">{t('templates.filters.ecommerce')}</option>
+              <option value="teknologi">{t('templates.filters.technology')}</option>
+              <option value="service">{t('templates.filters.service')}</option>
+              <option value="hospitality">{t('templates.filters.hospitality')}</option>
+              <option value="finans">{t('templates.filters.finance')}</option>
+              <option value="hälsovård">{t('templates.filters.healthcare')}</option>
             </select>
             <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900">
-              <option value="">Sortera efter</option>
-              <option value="name">Namn</option>
-              <option value="industry">Bransch</option>
-              <option value="touchpoints">Antal touchpoints</option>
+              <option value="">{t('templates.filters.sortBy')}</option>
+              <option value="name">{t('templates.filters.name')}</option>
+              <option value="industry">{t('templates.filters.industry')}</option>
+              <option value="touchpoints">{t('templates.filters.touchpoints')}</option>
             </select>
           </div>
         </div>
@@ -154,14 +157,14 @@ export default function TemplatesPage() {
                 </p>
                 
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                  <span>{template.touchpoints} touchpoints</span>
-                  <span>{template.stages} faser</span>
+                  <span>{template.touchpoints} {t('templates.touchpoints')}</span>
+                  <span>{template.stages} {t('templates.stages')}</span>
                 </div>
 
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm" className="flex-1">
                     <EyeIcon className="mr-1 h-4 w-4" />
-                    Förhandsgranska
+                    {t('templates.actions.preview')}
                   </Button>
                   <Button 
                     variant="primary" 
@@ -170,7 +173,7 @@ export default function TemplatesPage() {
                     onClick={() => handleUseTemplate(template)}
                   >
                     <DownloadIcon className="mr-1 h-4 w-4" />
-                    Använd mall
+                    {t('templates.actions.useTemplate')}
                   </Button>
                 </div>
               </CardContent>
@@ -180,18 +183,18 @@ export default function TemplatesPage() {
 
         {/* Custom Template Section */}
         <div className="mt-12">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Skapa egen mall</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('templates.customSection.title')}</h2>
           <Card className="border-dashed border-2 border-gray-300 hover:border-gray-400 transition-colors">
             <CardContent className="p-8 text-center">
               <PlusIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Bygg din egen journey map mall
+                {t('templates.customSection.cardTitle')}
               </h3>
               <p className="text-gray-500 mb-4">
-                Skapa anpassade mallar för din specifika bransch eller användningsområde
+                {t('templates.customSection.cardDescription')}
               </p>
               <Button variant="primary">
-                Kom igång
+                {t('templates.customSection.getStarted')}
               </Button>
             </CardContent>
           </Card>

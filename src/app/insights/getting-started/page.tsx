@@ -17,149 +17,156 @@ import {
   LightbulbIcon
 } from 'lucide-react'
 import Link from 'next/link'
+import { useLanguage } from '@/contexts/LanguageContext'
 
-const steps = [
+const getSteps = (t: (key: string) => string) => [
   {
     step: 1,
-    title: "Definiera ditt syfte",
-    description: "Vad vill du ta reda på och varför?",
+    title: t('gettingStarted.step1.title'),
+    description: t('gettingStarted.step1.description'),
     details: [
-      "Identifiera specifika frågor du vill ha svar på",
-      "Bestäm vilka beslut som kommer att baseras på resultaten", 
-      "Sätt upp tydliga mål och framgångskriterier"
+      t('gettingStarted.step1.detail1'),
+      t('gettingStarted.step1.detail2'),
+      t('gettingStarted.step1.detail3')
     ]
   },
   {
     step: 2,
-    title: "Välj rätt metod",
-    description: "Kvantitativ för 'vad' och 'hur mycket', kvalitativ för 'varför'",
+    title: t('gettingStarted.step2.title'),
+    description: t('gettingStarted.step2.description'),
     details: [
-      "Kvantitativa metoder: NPS, CSAT, CES för mätbara insikter",
-      "Kvalitativa metoder: Intervjuer, observationer för fördjupad förståelse",
-      "Kombinera båda för en heltäckande bild"
+      t('gettingStarted.step2.detail1'),
+      t('gettingStarted.step2.detail2'),
+      t('gettingStarted.step2.detail3')
     ]
   },
   {
     step: 3,
-    title: "Planera datainsamling",
-    description: "Vem ska du fråga, när och hur ofta?",
+    title: t('gettingStarted.step3.title'),
+    description: t('gettingStarted.step3.description'),
     details: [
-      "Definiera din målgrupp och urvalskriterier",
-      "Bestäm sampelstorlek baserat på dina mål",
-      "Planera timing - undvik helger, semestrar, stora förändringar"
+      t('gettingStarted.step3.detail1'),
+      t('gettingStarted.step3.detail2'),
+      t('gettingStarted.step3.detail3')
     ]
   },
   {
     step: 4,
-    title: "Samla in data",
-    description: "Genomför din undersökning professionellt",
+    title: t('gettingStarted.step4.title'),
+    description: t('gettingStarted.step4.description'),
     details: [
-      "Använd tydliga, neutrala frågor utan ledande formuleringar",
-      "Testa dina verktyg innan lansering",
-      "Följ upp för att säkerställa tillräcklig respons"
+      t('gettingStarted.step4.detail1'),
+      t('gettingStarted.step4.detail2'),
+      t('gettingStarted.step4.detail3')
     ]
   },
   {
     step: 5,
-    title: "Analysera & agera",
-    description: "Omvandla data till handlingsbara insikter",
+    title: t('gettingStarted.step5.title'),
+    description: t('gettingStarted.step5.description'),
     details: [
-      "Identifiera mönster och trender i datan",
-      "Koppla insikterna till specifika touchpoints i kundresan",
-      "Skapa konkreta handlingsplaner baserat på resultaten"
+      t('gettingStarted.step5.detail1'),
+      t('gettingStarted.step5.detail2'),
+      t('gettingStarted.step5.detail3')
     ]
   }
 ]
 
-const methodGuide = [
+const getMethodGuide = (t: (key: string) => string) => [
   {
-    category: "När ska jag använda...",
+    category: t('gettingStarted.methodGuide.category'),
     methods: [
       {
-        name: "NPS-enkäter",
+        name: t('gettingStarted.methods.nps.name'),
         icon: TrendingUpIcon,
-        when: "Du vill mäta kundlojalitet över tid",
-        frequency: "Kvartalsvis eller efter viktiga milstolpar",
-        sample: "200+ respondenter för statistisk säkerhet",
+        when: t('gettingStarted.methods.nps.when'),
+        frequency: t('gettingStarted.methods.nps.frequency'),
+        sample: t('gettingStarted.methods.nps.sample'),
         color: "text-blue-600"
       },
       {
-        name: "CSAT-enkäter", 
+        name: t('gettingStarted.methods.csat.name'), 
         icon: BarChart3Icon,
-        when: "Du vill mäta nöjdhet med specifika interaktioner",
-        frequency: "Efter varje transaktion eller kontakt",
-        sample: "50+ per touchpoint för tillförlitliga resultat",
+        when: t('gettingStarted.methods.csat.when'),
+        frequency: t('gettingStarted.methods.csat.frequency'),
+        sample: t('gettingStarted.methods.csat.sample'),
         color: "text-green-600"
       },
       {
-        name: "CES-enkäter",
+        name: t('gettingStarted.methods.ces.name'),
         icon: ClipboardIcon,
-        when: "Du vill identifiera friktion i processer",
-        frequency: "Efter komplexa processer eller när problem rapporteras",
-        sample: "100+ för att identifiera förbättringsområden",
+        when: t('gettingStarted.methods.ces.when'),
+        frequency: t('gettingStarted.methods.ces.frequency'),
+        sample: t('gettingStarted.methods.ces.sample'),
         color: "text-purple-600"
       },
       {
-        name: "Kundintervjuer",
+        name: t('gettingStarted.methods.interviews.name'),
         icon: MicIcon,
-        when: "Du behöver djupförståelse för beteenden och motivationer",
-        frequency: "Månadsvis eller innan större förändringar",
-        sample: "8-12 intervjuer per målgrupp för mättnad",
+        when: t('gettingStarted.methods.interviews.when'),
+        frequency: t('gettingStarted.methods.interviews.frequency'),
+        sample: t('gettingStarted.methods.interviews.sample'),
         color: "text-orange-600"
       },
       {
-        name: "Fokusgrupper",
+        name: t('gettingStarted.methods.focusGroups.name'),
         icon: UsersIcon,
-        when: "Du vill utforska nya idéer eller koncept",
-        frequency: "Vid produktutveckling eller strategiska beslut",
-        sample: "2-3 grupper med 6-8 deltagare vardera",
+        when: t('gettingStarted.methods.focusGroups.when'),
+        frequency: t('gettingStarted.methods.focusGroups.frequency'),
+        sample: t('gettingStarted.methods.focusGroups.sample'),
         color: "text-pink-600"
       },
       {
-        name: "Observation",
+        name: t('gettingStarted.methods.observation.name'),
         icon: EyeIcon,
-        when: "Du vill se vad kunder verkligen gör (inte bara säger)",
-        frequency: "Vid större förändringar eller problemlösning",
-        sample: "10-20 observationer för mönsteridentifiering",
+        when: t('gettingStarted.methods.observation.when'),
+        frequency: t('gettingStarted.methods.observation.frequency'),
+        sample: t('gettingStarted.methods.observation.sample'),
         color: "text-indigo-600"
       }
     ]
   }
 ]
 
-const commonMistakes = [
+const getCommonMistakes = (t: (key: string) => string) => [
   {
-    mistake: "För långa enkäter",
-    solution: "Håll enkäter under 5 minuter. Fokusera på det viktigaste."
+    mistake: t('gettingStarted.commonMistakes.mistake1'),
+    solution: t('gettingStarted.commonMistakes.solution1')
   },
   {
-    mistake: "Ledande frågor",
-    solution: "Använd neutrala formuleringar. Testa frågor innan lansering."
+    mistake: t('gettingStarted.commonMistakes.mistake2'),
+    solution: t('gettingStarted.commonMistakes.solution2')
   },
   {
-    mistake: "Dålig timing",
-    solution: "Skicka enkäter när upplevelsen är färsk i minnet."
+    mistake: t('gettingStarted.commonMistakes.mistake3'),
+    solution: t('gettingStarted.commonMistakes.solution3')
   },
   {
-    mistake: "Inget uppföljning",
-    solution: "Kommunicera tillbaka vad du lärt dig och vilka ändringar du gör."
+    mistake: t('gettingStarted.commonMistakes.mistake4'),
+    solution: t('gettingStarted.commonMistakes.solution4')
   },
   {
-    mistake: "Data utan handling",
-    solution: "Skapa konkreta handlingsplaner för varje viktig insikt."
+    mistake: t('gettingStarted.commonMistakes.mistake5'),
+    solution: t('gettingStarted.commonMistakes.solution5')
   }
 ]
 
 export default function GettingStartedPage() {
+  const { t } = useLanguage()
+  
+  const steps = getSteps(t)
+  const methodGuide = getMethodGuide(t)
+  const commonMistakes = getCommonMistakes(t)
+
   return (
     <div className="h-full flex flex-col">
       <Header 
-        title="Kom igång med kundinsikter" 
-        description="En steg-för-steg guide för att samla in och använda kunddata effektivt"
+        title={t('gettingStarted.pageTitle')} 
+        description={t('gettingStarted.pageDescription')}
         actions={
           <Link href="/insights">
             <Button variant="outline">
-              Tillbaka till översikt
+              {t('gettingStarted.backToOverview')}
             </Button>
           </Link>
         }
@@ -175,11 +182,10 @@ export default function GettingStartedPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Framgångsrik datainsamling i 5 steg
+                  {t('gettingStarted.successfulDataCollection')}
                 </h3>
                 <p className="text-gray-700">
-                  Följ denna guide för att säkerställa att du samlar in rätt data, på rätt sätt, 
-                  från rätt personer - och mest viktigt, att du faktiskt använder insikterna för att förbättra kundupplevelsen.
+                  {t('gettingStarted.introDescription')}
                 </p>
               </div>
             </div>
@@ -188,7 +194,7 @@ export default function GettingStartedPage() {
 
         {/* Process Steps */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Processen steg för steg</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('gettingStarted.processStepByStep')}</h2>
           <div className="space-y-6">
             {steps.map((step, index) => (
               <Card key={step.step} className="border-l-4 border-l-blue-500">
@@ -227,7 +233,7 @@ export default function GettingStartedPage() {
 
         {/* Method Selection Guide */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Metodval - när ska jag använda vad?</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('gettingStarted.methodGuide.title')}</h2>
           <div className="space-y-6">
             {methodGuide.map((section) => (
               <Card key={section.category}>
@@ -244,15 +250,15 @@ export default function GettingStartedPage() {
                         </div>
                         <div className="space-y-2 text-sm">
                           <div>
-                            <span className="font-medium text-gray-700">När:</span>
+                            <span className="font-medium text-gray-700">{t('gettingStarted.methods.when')}</span>
                             <span className="text-gray-600 ml-1">{method.when}</span>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">Frekvens:</span>
+                            <span className="font-medium text-gray-700">{t('gettingStarted.methods.frequency')}</span>
                             <span className="text-gray-600 ml-1">{method.frequency}</span>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">Sampel:</span>
+                            <span className="font-medium text-gray-700">{t('gettingStarted.methods.sample')}</span>
                             <span className="text-gray-600 ml-1">{method.sample}</span>
                           </div>
                         </div>
@@ -267,7 +273,7 @@ export default function GettingStartedPage() {
 
         {/* Common Mistakes */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Vanliga misstag att undvika</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('gettingStarted.commonMistakes.title')}</h2>
           <Card>
             <CardContent className="p-6">
               <div className="space-y-4">
@@ -292,20 +298,20 @@ export default function GettingStartedPage() {
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Redo att börja?
+                {t('gettingStarted.nextSteps.title')}
               </h3>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                Nu när du förstår grunderna, dags att välja din första metod och börja samla in kundinsikter.
+                {t('gettingStarted.nextSteps.description')}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/insights/survey-builder">
                   <Button variant="primary">
-                    Skapa din första enkät
+                    {t('gettingStarted.nextSteps.createSurvey')}
                   </Button>
                 </Link>
                 <Link href="/insights/best-practices">
                   <Button variant="outline">
-                    Läs best practices
+                    {t('gettingStarted.nextSteps.bestPractices')}
                   </Button>
                 </Link>
               </div>

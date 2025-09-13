@@ -3,6 +3,7 @@
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { 
   CheckCircleIcon, 
   AlertTriangleIcon,
@@ -19,230 +20,239 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-const bestPractices = [
+// Define the structure but move content to component for translation
+const getBestPractices = (t: any) => [
   {
-    category: 'Planering & Design',
+    category: t('bestPractices.planningDesign'),
     icon: TargetIcon,
     color: 'text-blue-600 bg-blue-100',
     practices: [
       {
-        title: 'Börja med tydliga mål',
-        description: 'Definiera specifikt vad du vill ta reda på innan du börjar',
+        title: t('bestPractices.clearGoalsTitle'),
+        description: t('bestPractices.clearGoalsDescription'),
         dos: [
-          'Skriv ner konkreta frågeställningar',
-          'Bestäm vilka beslut som ska baseras på resultaten',
-          'Sätt upp mätbara framgångskriterier',
-          'Identifiera målgrupp och segment'
+          t('bestPractices.clearGoalsDo1'),
+          t('bestPractices.clearGoalsDo2'),
+          t('bestPractices.clearGoalsDo3'),
+          t('bestPractices.clearGoalsDo4')
         ],
         donts: [
-          'Samla data "för att vi borde"',
-          'Skapa för breda eller vaga mål',
-          'Glömma att planera för uppföljning'
+          t('bestPractices.clearGoalsDont1'),
+          t('bestPractices.clearGoalsDont2'),
+          t('bestPractices.clearGoalsDont3')
         ]
       },
       {
-        title: 'Välj rätt metod för rätt syfte',
-        description: 'Kvantitativ för "vad" och "hur mycket", kvalitativ för "varför" och "hur"',
+        title: t('bestPractices.rightMethodTitle'),
+        description: t('bestPractices.rightMethodDescription'),
         dos: [
-          'Använd enkäter för att mäta och jämföra',
-          'Använd intervjuer för att förstå djupare',
-          'Kombinera metoder för heltäckande bild',
-          'Börja kvalitativt, validera kvantitativt'
+          t('bestPractices.rightMethodDo1'),
+          t('bestPractices.rightMethodDo2'),
+          t('bestPractices.rightMethodDo3'),
+          t('bestPractices.rightMethodDo4')
         ],
         donts: [
-          'Använda bara en metod för komplexa frågor',
-          'Försöka kvantifiera allt',
-          'Ignorera kostnads-nyttoförhållandet'
+          t('bestPractices.rightMethodDont1'),
+          t('bestPractices.rightMethodDont2'),
+          t('bestPractices.rightMethodDont3')
         ]
       }
     ]
   },
   {
-    category: 'Datainsamling',
+    category: t('bestPractices.dataCollection'),
     icon: ClipboardIcon,
     color: 'text-green-600 bg-green-100',
     practices: [
       {
-        title: 'Timing är avgörande',
-        description: 'Rätt tidpunkt avgör kvaliteten på svaren',
+        title: t('bestPractices.timingTitle'),
+        description: t('bestPractices.timingDescription'),
         dos: [
-          'Skicka enkäter när upplevelsen är färsk',
-          'Undvik helger och semesterperioder',
-          'Testa timing med små grupper först',
-          'Följ upp påminnelser strategiskt'
+          t('bestPractices.timingDo1'),
+          t('bestPractices.timingDo2'),
+          t('bestPractices.timingDo3'),
+          t('bestPractices.timingDo4')
         ],
         donts: [
-          'Skicka enkäter månader efter upplevelsen',
-          'Bombardera kunder med för många enkäter',
-          'Ignorera tidszoner och arbetstider'
+          t('bestPractices.timingDont1'),
+          t('bestPractices.timingDont2'),
+          t('bestPractices.timingDont3')
         ]
       },
       {
-        title: 'Skriv bra frågor',
-        description: 'Neutrala, tydliga frågor ger tillförlitliga svar',
+        title: t('bestPractices.goodQuestionsTitle'),
+        description: t('bestPractices.goodQuestionsDescription'),
         dos: [
-          'Använd enkelt, vardagligt språk',
-          'Ställ en fråga i taget',
-          'Testa frågor innan lansering',
-          'Var specifik och konkret'
+          t('bestPractices.goodQuestionsDo1'),
+          t('bestPractices.goodQuestionsDo2'),
+          t('bestPractices.goodQuestionsDo3'),
+          t('bestPractices.goodQuestionsDo4')
         ],
         donts: [
-          'Använda ledande eller vinklade frågor',
-          'Inkludera branschspecifika termer',
-          'Skapa dubbel-negationer eller komplexa meningar'
+          t('bestPractices.goodQuestionsDont1'),
+          t('bestPractices.goodQuestionsDont2'),
+          t('bestPractices.goodQuestionsDont3')
         ]
       }
     ]
   },
   {
-    category: 'Analys & Åtgärder',
+    category: t('bestPractices.analysisActions'),
     icon: TrendingUpIcon,
     color: 'text-purple-600 bg-purple-100',
     practices: [
       {
-        title: 'Från data till insikt',
-        description: 'Omvandla rådata till handlingsbara insikter',
+        title: t('bestPractices.dataToInsightTitle'),
+        description: t('bestPractices.dataToInsightDescription'),
         dos: [
-          'Leta efter mönster och trender',
-          'Segmentera data för djupare förståelse',
-          'Korskoppla olika datakällor',
-          'Prioritera insikter baserat på påverkan'
+          t('bestPractices.dataToInsightDo1'),
+          t('bestPractices.dataToInsightDo2'),
+          t('bestPractices.dataToInsightDo3'),
+          t('bestPractices.dataToInsightDo4')
         ],
         donts: [
-          'Dra slutsatser från för liten data',
-          'Ignorera avvikande eller oväntade resultat',
-          'Presentera bara beskrivande statistik'
+          t('bestPractices.dataToInsightDont1'),
+          t('bestPractices.dataToInsightDont2'),
+          t('bestPractices.dataToInsightDont3')
         ]
       },
       {
-        title: 'Agera på insikterna',
-        description: 'Värdet skapas genom handling, inte genom data',
+        title: t('bestPractices.actOnInsightsTitle'),
+        description: t('bestPractices.actOnInsightsDescription'),
         dos: [
-          'Skapa konkreta handlingsplaner',
-          'Prioritera förbättringsområden',
-          'Kommunicera förändringar till kunder',
-          'Mät effekten av förbättringar'
+          t('bestPractices.actOnInsightsDo1'),
+          t('bestPractices.actOnInsightsDo2'),
+          t('bestPractices.actOnInsightsDo3'),
+          t('bestPractices.actOnInsightsDo4')
         ],
         donts: [
-          'Låta insikter "ligga på hyllan"',
-          'Göra för många förändringar samtidigt',
-          'Glömma att följa upp resultaten'
+          t('bestPractices.actOnInsightsDont1'),
+          t('bestPractices.actOnInsightsDont2'),
+          t('bestPractices.actOnInsightsDont3')
         ]
       }
     ]
   }
 ]
 
-const commonMistakes = [
+const getCommonMistakes = (t: any) => [
   {
-    mistake: 'För långa enkäter',
-    impact: 'Låg svarsfrekvens och sämre datakvalitet',
-    solution: 'Håll enkäter under 5 minuter. Fokusera på det viktigaste.',
-    prevention: 'Testa enkätlängd med kollegor innan lansering'
+    mistake: t('bestPractices.mistake1Title'),
+    impact: t('bestPractices.mistake1Impact'),
+    solution: t('bestPractices.mistake1Solution'),
+    prevention: t('bestPractices.mistake1Prevention')
   },
   {
-    mistake: 'Ingen uppföljning till respondenterna',
-    impact: 'Kunder känner sig ignorerade och svarar mindre nästa gång',
-    solution: 'Kommunicera vad du lärt dig och vilka förändringar du gör',
-    prevention: 'Planera kommunikation som en del av enkätprocessen'
+    mistake: t('bestPractices.mistake2Title'),
+    impact: t('bestPractices.mistake2Impact'),
+    solution: t('bestPractices.mistake2Solution'),
+    prevention: t('bestPractices.mistake2Prevention')
   },
   {
-    mistake: 'Samla data utan handlingsplan',
-    impact: 'Slöseri med resurser och missade förbättringsmöjligheter',
-    solution: 'Definiera hur du kommer att använda resultaten innan datainsamling',
-    prevention: 'Skapa en "så här agerar vi"-plan för olika scenarier'
+    mistake: t('bestPractices.mistake3Title'),
+    impact: t('bestPractices.mistake3Impact'),
+    solution: t('bestPractices.mistake3Solution'),
+    prevention: t('bestPractices.mistake3Prevention')
   },
   {
-    mistake: 'Fel målgrupp eller sampling',
-    impact: 'Missvisande resultat som leder till felaktiga beslut',
-    solution: 'Definiera tydligt vem du vill nå och använd rätt urvalsmetoder',
-    prevention: 'Validera att ditt urval representerar din målgrupp'
+    mistake: t('bestPractices.mistake4Title'),
+    impact: t('bestPractices.mistake4Impact'),
+    solution: t('bestPractices.mistake4Solution'),
+    prevention: t('bestPractices.mistake4Prevention')
   },
   {
-    mistake: 'Ledande eller vinklade frågor',
-    impact: 'Partiska svar som bekräftar förväntningar istället för verklighet',
-    solution: 'Använd neutrala formuleringar och testa med kollegor',
-    prevention: 'Låt någon annan granska dina frågor innan lansering'
+    mistake: t('bestPractices.mistake5Title'),
+    impact: t('bestPractices.mistake5Impact'),
+    solution: t('bestPractices.mistake5Solution'),
+    prevention: t('bestPractices.mistake5Prevention')
   }
 ]
 
-const methodSpecificTips = [
+const getMethodSpecificTips = (t: any) => [
   {
-    method: 'NPS-enkäter',
+    method: t('bestPractices.npsMethod'),
     icon: TrendingUpIcon,
     tips: [
-      'Ställ uppföljningsfrågan "Varför?" för att förstå betyget',
-      'Segmentera resultat för att hitta specifika förbättringsområden',
-      'Kontakta Detractors inom 24-48 timmar',
-      'Be Promoters om referenser och recensioner'
+      t('bestPractices.npsTip1'),
+      t('bestPractices.npsTip2'),
+      t('bestPractices.npsTip3'),
+      t('bestPractices.npsTip4')
     ]
   },
   {
-    method: 'CSAT-enkäter',
+    method: t('bestPractices.csatMethod'),
     icon: BarChart3Icon,
     tips: [
-      'Skicka direkt efter interaktionen för bäst minne',
-      'Anpassa skalan till din bransch (1-5 vs 1-10)',
-      'Inkludera en öppen fråga för kvalitativ feedback',
-      'Jämför resultat mellan olika kanaler och touchpoints'
+      t('bestPractices.csatTip1'),
+      t('bestPractices.csatTip2'),
+      t('bestPractices.csatTip3'),
+      t('bestPractices.csatTip4')
     ]
   },
   {
-    method: 'Kundintervjuer',
+    method: t('bestPractices.interviewsMethod'),
     icon: MessageSquareIcon,
     tips: [
-      'Starta med öppna frågor och gräv djupare med "Varför?"',
-      'Lyssna mer än du pratar (80/20-regeln)',
-      'Spela in (med tillstånd) för att fokusera på samtalet',
-      'Sök efter känslor och motivationer, inte bara fakta'
+      t('bestPractices.interviewsTip1'),
+      t('bestPractices.interviewsTip2'),
+      t('bestPractices.interviewsTip3'),
+      t('bestPractices.interviewsTip4')
     ]
   },
   {
-    method: 'Fokusgrupper',
+    method: t('bestPractices.focusGroupsMethod'),
     icon: UsersIcon,
     tips: [
-      'Blanda inte befintliga och potentiella kunder',
-      'Använd en erfaren moderator för bäst resultat',
-      'Planera för gruppynamik och tysta deltagare',
-      'Komplettera med individuella metoder för djupare insikter'
+      t('bestPractices.focusGroupsTip1'),
+      t('bestPractices.focusGroupsTip2'),
+      t('bestPractices.focusGroupsTip3'),
+      t('bestPractices.focusGroupsTip4')
     ]
   }
 ]
 
-const progressiveDisclosure = [
+const getProgressiveDisclosure = (t: any) => [
   {
-    phase: 'Explorativ fas',
-    description: 'Förstå problemområdet och identifiera frågeställningar',
-    methods: ['Kundintervjuer', 'Observationer', 'Fokusgrupper'],
-    outcome: 'Hypoteser och insiktsfrågor att testa',
-    nextStep: 'Gå till valideringsfas'
+    phase: t('bestPractices.exploratoryPhase'),
+    description: t('bestPractices.exploratoryDescription'),
+    methods: t('bestPractices.exploratoryMethods').split(', '),
+    outcome: t('bestPractices.exploratoryOutcome'),
+    nextStep: t('bestPractices.exploratoryNext')
   },
   {
-    phase: 'Valideringsfas',
-    description: 'Testa hypoteser och mät omfattning av identifierade problem',
-    methods: ['NPS', 'CSAT', 'CES', 'Stora enkäter'],
-    outcome: 'Validerade insikter och prioriterade förbättringsområden',
-    nextStep: 'Gå till optimeringsfas'
+    phase: t('bestPractices.validationPhase'),
+    description: t('bestPractices.validationDescription'),
+    methods: t('bestPractices.validationMethods').split(', '),
+    outcome: t('bestPractices.validationOutcome'),
+    nextStep: t('bestPractices.validationNext')
   },
   {
-    phase: 'Optimeringsfas',
-    description: 'Testa lösningar och mät effekt av förändringar',
-    methods: ['A/B-tester', 'Pilotstudier', 'Före/efter-mätningar'],
-    outcome: 'Bevisade förbättringar och optimerade processer',
-    nextStep: 'Tillbaka till explorativ fas för nya områden'
+    phase: t('bestPractices.optimizationPhase'),
+    description: t('bestPractices.optimizationDescription'),
+    methods: t('bestPractices.optimizationMethods').split(', '),
+    outcome: t('bestPractices.optimizationOutcome'),
+    nextStep: t('bestPractices.optimizationNext')
   }
 ]
 
 export default function BestPracticesPage() {
+  const { t } = useLanguage()
+  
+  // Get translated data
+  const bestPractices = getBestPractices(t)
+  const commonMistakes = getCommonMistakes(t)
+  const methodSpecificTips = getMethodSpecificTips(t)
+  const progressiveDisclosure = getProgressiveDisclosure(t)
+
   return (
     <div className="h-full flex flex-col">
       <Header 
-        title="Best Practices för Kundinsikter" 
-        description="Professionella råd för att maximera värdet av din datainsamling"
+        title={t('bestPractices.title')} 
+        description={t('bestPractices.description')}
         actions={
           <Link href="/insights">
             <Button variant="outline">
-              Tillbaka till översikt
+              {t('bestPractices.backToOverview')}
             </Button>
           </Link>
         }
@@ -258,11 +268,10 @@ export default function BestPracticesPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Från OK till Excellent
+                  {t('bestPractices.fromOkToExcellent')}
                 </h3>
                 <p className="text-gray-600">
-                  Skillnaden mellan framgångsrika och misslyckade kundinsiktsprojekt ligger ofta i detaljerna. 
-                  Denna guide samlar beprövade metoder som hjälper dig att få tillförlitliga insikter som verkligen driver förbättring.
+                  {t('bestPractices.introDescription')}
                 </p>
               </div>
             </div>
@@ -271,7 +280,7 @@ export default function BestPracticesPage() {
 
         {/* Progressive Approach */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Ett progressivt tillvägagångssätt</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('bestPractices.progressiveApproach')}</h2>
           <div className="space-y-6">
             {progressiveDisclosure.map((phase, index) => (
               <Card key={phase.phase} className="border-l-4 border-l-blue-500">
@@ -286,7 +295,7 @@ export default function BestPracticesPage() {
                       
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-2">Metoder:</h4>
+                          <h4 className="font-medium text-gray-900 mb-2">{t('bestPractices.methods')}</h4>
                           <ul className="text-sm text-gray-600 space-y-1">
                             {phase.methods.map((method, methodIndex) => (
                               <li key={methodIndex} className="flex items-center">
@@ -298,12 +307,12 @@ export default function BestPracticesPage() {
                         </div>
                         
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-2">Resultat:</h4>
+                          <h4 className="font-medium text-gray-900 mb-2">{t('bestPractices.results')}</h4>
                           <p className="text-sm text-gray-600">{phase.outcome}</p>
                         </div>
                         
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-2">Nästa steg:</h4>
+                          <h4 className="font-medium text-gray-900 mb-2">{t('bestPractices.nextStep')}</h4>
                           <div className="flex items-center text-sm text-blue-600">
                             <ArrowRightIcon className="h-4 w-4 mr-1" />
                             {phase.nextStep}
@@ -320,7 +329,7 @@ export default function BestPracticesPage() {
 
         {/* Best Practices by Category */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Best Practices per kategori</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('bestPractices.categoriesTitle')}</h2>
           <div className="space-y-8">
             {bestPractices.map((category, categoryIndex) => (
               <div key={categoryIndex}>
@@ -342,7 +351,7 @@ export default function BestPracticesPage() {
                         <div>
                           <h4 className="flex items-center font-medium text-green-700 mb-3">
                             <CheckCircleIcon className="h-4 w-4 mr-2" />
-                            Gör så här:
+                            {t('bestPractices.doThis')}
                           </h4>
                           <ul className="space-y-1">
                             {practice.dos.map((doItem, doIndex) => (
@@ -357,7 +366,7 @@ export default function BestPracticesPage() {
                         <div>
                           <h4 className="flex items-center font-medium text-red-700 mb-3">
                             <AlertTriangleIcon className="h-4 w-4 mr-2" />
-                            Undvik detta:
+                            {t('bestPractices.avoidThis')}
                           </h4>
                           <ul className="space-y-1">
                             {practice.donts.map((dontItem, dontIndex) => (
@@ -379,7 +388,7 @@ export default function BestPracticesPage() {
 
         {/* Common Mistakes */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Vanliga misstag och hur du undviker dem</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('bestPractices.commonMistakes')}</h2>
           <div className="space-y-4">
             {commonMistakes.map((mistake, index) => (
               <Card key={index} className="border-l-4 border-l-red-200">
@@ -390,15 +399,15 @@ export default function BestPracticesPage() {
                       <h3 className="text-lg font-semibold text-red-800 mb-2">{mistake.mistake}</h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-1">Påverkan:</h4>
+                          <h4 className="font-medium text-gray-900 mb-1">{t('bestPractices.impact')}</h4>
                           <p className="text-gray-600">{mistake.impact}</p>
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-1">Lösning:</h4>
+                          <h4 className="font-medium text-gray-900 mb-1">{t('bestPractices.solution')}</h4>
                           <p className="text-gray-600">{mistake.solution}</p>
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-1">Förebygga:</h4>
+                          <h4 className="font-medium text-gray-900 mb-1">{t('bestPractices.prevention')}</h4>
                           <p className="text-gray-600">{mistake.prevention}</p>
                         </div>
                       </div>
@@ -412,7 +421,7 @@ export default function BestPracticesPage() {
 
         {/* Method-Specific Tips */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Metodspecifika tips</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('bestPractices.methodSpecificTips')}</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {methodSpecificTips.map((methodTip, index) => (
               <Card key={index}>
@@ -442,22 +451,21 @@ export default function BestPracticesPage() {
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Redo att tillämpa best practices?
+                {t('bestPractices.readyToApply')}
               </h3>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                Kom ihåg att framgångsrika kundinsikter handlar om att ställa rätt frågor, 
-                till rätt personer, vid rätt tidpunkt - och sedan agera på svaren.
+                {t('bestPractices.ctaDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/insights/getting-started">
                   <Button variant="primary">
                     <BookOpenIcon className="mr-2 h-4 w-4" />
-                    Kom igång-guide
+                    {t('bestPractices.gettingStartedGuide')}
                   </Button>
                 </Link>
                 <Link href="/insights/survey-builder">
                   <Button variant="outline">
-                    Skapa din första enkät
+                    {t('bestPractices.createFirstSurvey')}
                   </Button>
                 </Link>
               </div>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -20,205 +21,207 @@ import Link from 'next/link'
 
 const observationTypes = [
   {
-    type: "Naturalistisk observation",
+    typeKey: "observation.types.naturalistic.title",
     icon: EyeIcon,
-    description: "Observera i naturlig miljö utan inblandning",
-    duration: "2-4 timmar per session",
-    when: "För att förstå spontant beteende och naturliga arbetssätt",
-    pros: ["Autentiskt beteende", "Oväntade upptäckter", "Kontext och miljöfaktorer"],
-    cons: ["Svårt att kontrollera", "Etiska överväganden", "Kan vara tidskrävande"],
-    examples: ["Observera kunder i butik", "Följa en användare på jobbet", "Se hur familjer använder produkten hemma"]
+    descriptionKey: "observation.types.naturalistic.description",
+    durationKey: "observation.types.naturalistic.duration",
+    whenKey: "observation.types.naturalistic.when",
+    prosKeys: ["observation.types.naturalistic.pros1", "observation.types.naturalistic.pros2", "observation.types.naturalistic.pros3"],
+    consKeys: ["observation.types.naturalistic.cons1", "observation.types.naturalistic.cons2", "observation.types.naturalistic.cons3"],
+    exampleKeys: ["observation.types.naturalistic.example1", "observation.types.naturalistic.example2", "observation.types.naturalistic.example3"]
   },
   {
-    type: "Strukturerad observation",
+    typeKey: "observation.types.structured.title",
     icon: NotebookIcon,
-    description: "Förutbestämd checklista och fokusområden",
-    duration: "1-2 timmar per session",
-    when: "När du har specifika frågor att besvara",
-    pros: ["Fokuserade insikter", "Enklare att analysera", "Jämförbara data"],
-    cons: ["Kan missa oväntade beteenden", "Mindre flexibel", "Risk för confirmation bias"],
-    examples: ["Usability-tester", "Checkout-process observation", "Onboarding-flow analys"]
+    descriptionKey: "observation.types.structured.description",
+    durationKey: "observation.types.structured.duration",
+    whenKey: "observation.types.structured.when",
+    prosKeys: ["observation.types.structured.pros1", "observation.types.structured.pros2", "observation.types.structured.pros3"],
+    consKeys: ["observation.types.structured.cons1", "observation.types.structured.cons2", "observation.types.structured.cons3"],
+    exampleKeys: ["observation.types.structured.example1", "observation.types.structured.example2", "observation.types.structured.example3"]
   },
   {
-    type: "Participant observation",
+    typeKey: "observation.types.participant.title",
     icon: UserIcon,
-    description: "Forskaren deltar i aktiviteten som observeras",
-    duration: "Flera timmar till dagar",
-    when: "För djup förståelse av komplexa processer",
-    pros: ["Mycket djup förståelse", "Första handsperspektiv", "Bygger stark empati"],
-    cons: ["Mycket tidskrävande", "Risk att påverka utfallet", "Svårt att förbli objektiv"],
-    examples: ["Shadow en säljare hela dagen", "Använda produkten som kund", "Delta i kundmöten"]
+    descriptionKey: "observation.types.participant.description",
+    durationKey: "observation.types.participant.duration",
+    whenKey: "observation.types.participant.when",
+    prosKeys: ["observation.types.participant.pros1", "observation.types.participant.pros2", "observation.types.participant.pros3"],
+    consKeys: ["observation.types.participant.cons1", "observation.types.participant.cons2", "observation.types.participant.cons3"],
+    exampleKeys: ["observation.types.participant.example1", "observation.types.participant.example2", "observation.types.participant.example3"]
   }
 ]
 
 const observationSteps = [
   {
     step: 1,
-    title: "Förberedelse",
+    titleKey: "observation.process.step1.title",
     icon: MapIcon,
-    tasks: [
-      "Definiera vad du vill observera och varför",
-      "Få tillstånd från deltagare och organisation",
-      "Förbered observationsguide/checklista",
-      "Testa inspelningsutrustning",
-      "Planera logistik och access"
+    taskKeys: [
+      "observation.process.step1.task1",
+      "observation.process.step1.task2",
+      "observation.process.step1.task3",
+      "observation.process.step1.task4",
+      "observation.process.step1.task5"
     ]
   },
   {
     step: 2,
-    title: "Genomförande", 
+    titleKey: "observation.process.step2.title", 
     icon: EyeIcon,
-    tasks: [
-      "Introducera dig diskret och neutralt",
-      "Dokumentera beteenden, inte tolkningar",
-      "Notera tid, plats och sammanhang",
-      "Observera både verbala och icke-verbala signaler",
-      "Ställ klargörande frågor vid behov"
+    taskKeys: [
+      "observation.process.step2.task1",
+      "observation.process.step2.task2",
+      "observation.process.step2.task3",
+      "observation.process.step2.task4",
+      "observation.process.step2.task5"
     ]
   },
   {
     step: 3,
-    title: "Dokumentation",
+    titleKey: "observation.process.step3.title",
     icon: CameraIcon,
-    tasks: [
-      "Skriv ut detaljerade fältanteckningar direkt",
-      "Organisera foton och videoklipp",
-      "Notera dina egna reflektioner separat",
-      "Säkerställ konfidentialitet i all dokumentation",
-      "Skapa initial sammanfattning samma dag"
+    taskKeys: [
+      "observation.process.step3.task1",
+      "observation.process.step3.task2",
+      "observation.process.step3.task3",
+      "observation.process.step3.task4",
+      "observation.process.step3.task5"
     ]
   },
   {
     step: 4,
-    title: "Analys",
+    titleKey: "observation.process.step4.title",
     icon: TrendingUpIcon,
-    tasks: [
-      "Identifiera mönster och avvikelser",
-      "Koppla observationer till ursprungliga frågor",
-      "Triangulera med andra datakällor",
-      "Skapa persona-insights och user journeys",
-      "Utveckla handlingsbara rekommendationer"
+    taskKeys: [
+      "observation.process.step4.task1",
+      "observation.process.step4.task2",
+      "observation.process.step4.task3",
+      "observation.process.step4.task4",
+      "observation.process.step4.task5"
     ]
   }
 ]
 
 const whatToObserve = [
   {
-    category: "Beteenden",
-    description: "Vad gör människor faktiskt?",
-    examples: [
-      "Vilka steg tar de för att lösa uppgifter?",
-      "Var pausar eller tvekar de?",
-      "Vilka genvägar eller workarounds använder de?",
-      "Hur hanterar de fel eller problem?",
-      "Vilka verktyg/resurser använder de mest?"
+    categoryKey: "observation.whatToObserve.behaviors.title",
+    descriptionKey: "observation.whatToObserve.behaviors.description",
+    exampleKeys: [
+      "observation.whatToObserve.behaviors.example1",
+      "observation.whatToObserve.behaviors.example2",
+      "observation.whatToObserve.behaviors.example3",
+      "observation.whatToObserve.behaviors.example4",
+      "observation.whatToObserve.behaviors.example5"
     ]
   },
   {
-    category: "Interaktioner",
-    description: "Hur samspelar de med andra och miljön?",
-    examples: [
-      "Vem frågar de när de behöver hjälp?",
-      "Hur kommunicerar de med kollegor/familj?",
-      "Vilka sociala normer följer eller bryter de?",
-      "Hur påverkar omgivningen deras beteende?",
-      "Vilka avbrott eller störningar händer?"
+    categoryKey: "observation.whatToObserve.interactions.title",
+    descriptionKey: "observation.whatToObserve.interactions.description",
+    exampleKeys: [
+      "observation.whatToObserve.interactions.example1",
+      "observation.whatToObserve.interactions.example2",
+      "observation.whatToObserve.interactions.example3",
+      "observation.whatToObserve.interactions.example4",
+      "observation.whatToObserve.interactions.example5"
     ]
   },
   {
-    category: "Känslor & reaktioner",
-    description: "Vad avslöjar kroppsspråk och uttryck?",
-    examples: [
-      "När ser de frustrerade, nöjda eller förvirrade ut?",
-      "Vilka ansiktsuttryck gör de vid olika moment?",
-      "Hur förändras deras energinivå över tid?",
-      "Vilka verbala och icke-verbala tecken på stress?",
-      "När verkar de mest engagerade eller distraherade?"
+    categoryKey: "observation.whatToObserve.emotions.title",
+    descriptionKey: "observation.whatToObserve.emotions.description",
+    exampleKeys: [
+      "observation.whatToObserve.emotions.example1",
+      "observation.whatToObserve.emotions.example2",
+      "observation.whatToObserve.emotions.example3",
+      "observation.whatToObserve.emotions.example4",
+      "observation.whatToObserve.emotions.example5"
     ]
   },
   {
-    category: "Miljö & kontext",
-    description: "Hur påverkar omgivningen beteendet?",
-    examples: [
-      "Vilka fysiska hinder eller möjliggörare finns?",
-      "Hur används rummet/platsen?",
-      "Vilka distraktioner eller störningar förekommer?",
-      "Vilken teknisk miljö arbetar de i?",
-      "Hur påverkas de av tid på dagen/vecka?"
+    categoryKey: "observation.whatToObserve.environment.title",
+    descriptionKey: "observation.whatToObserve.environment.description",
+    exampleKeys: [
+      "observation.whatToObserve.environment.example1",
+      "observation.whatToObserve.environment.example2",
+      "observation.whatToObserve.environment.example3",
+      "observation.whatToObserve.environment.example4",
+      "observation.whatToObserve.environment.example5"
     ]
   }
 ]
 
 const ethicalGuidelines = [
   {
-    principle: "Informerat samtycke",
-    description: "Deltagare ska veta vad som observeras och varför",
-    practices: [
-      "Förklara syftet tydligt innan observation",
-      "Ge rätt att avbryta när som helst",
-      "Tydliggör vad som kommer att spelas in",
-      "Förklara hur data kommer att användas"
+    principleKey: "observation.ethics.consent.title",
+    descriptionKey: "observation.ethics.consent.description",
+    practiceKeys: [
+      "observation.ethics.consent.practice1",
+      "observation.ethics.consent.practice2",
+      "observation.ethics.consent.practice3",
+      "observation.ethics.consent.practice4"
     ]
   },
   {
-    principle: "Konfidentialitet",
-    description: "Skydda deltagarnas integritet och privatliv",
-    practices: [
-      "Anonymisera all dokumentation",
-      "Säker lagring av känslig data",
-      "Begränsa vem som har tillgång till rådata",
-      "Var försiktig med foton som visar ansikten"
+    principleKey: "observation.ethics.confidentiality.title",
+    descriptionKey: "observation.ethics.confidentiality.description",
+    practiceKeys: [
+      "observation.ethics.confidentiality.practice1",
+      "observation.ethics.confidentiality.practice2",
+      "observation.ethics.confidentiality.practice3",
+      "observation.ethics.confidentiality.practice4"
     ]
   },
   {
-    principle: "Minimal påverkan",
-    description: "Störa så lite som möjligt i naturligt beteende",
-    practices: [
-      "Var diskret och icke-påträngande",
-      "Undvik att ställa ledande frågor",
-      "Respektera personliga och professionella gränser",
-      "Anpassa observationsstil efter situation"
+    principleKey: "observation.ethics.minimalImpact.title",
+    descriptionKey: "observation.ethics.minimalImpact.description",
+    practiceKeys: [
+      "observation.ethics.minimalImpact.practice1",
+      "observation.ethics.minimalImpact.practice2",
+      "observation.ethics.minimalImpact.practice3",
+      "observation.ethics.minimalImpact.practice4"
     ]
   }
 ]
 
 const commonChallenges = [
   {
-    challenge: "Observer bias",
-    description: "Att se det du förväntar dig att se",
-    solution: "Använd strukturerade observationsguider och flera observatörer",
-    prevention: "Diskutera förväntningar och bias innan observation"
+    challengeKey: "observation.challenges.observerBias.title",
+    descriptionKey: "observation.challenges.observerBias.description",
+    solutionKey: "observation.challenges.observerBias.solution",
+    preventionKey: "observation.challenges.observerBias.prevention"
   },
   {
-    challenge: "Hawthorne-effekten",
-    description: "Personer beter sig annorlunda när de vet att de observeras",
-    solution: "Långa observationsperioder och diskret närvaro",
-    prevention: "Förklara att du observerar processer, inte bedömer personer"
+    challengeKey: "observation.challenges.hawthorne.title",
+    descriptionKey: "observation.challenges.hawthorne.description",
+    solutionKey: "observation.challenges.hawthorne.solution",
+    preventionKey: "observation.challenges.hawthorne.prevention"
   },
   {
-    challenge: "Confirmation bias",
-    description: "Fokusera på data som bekräftar befintliga teorier",
-    solution: "Aktivt leta efter motbevis och alternativa förklaringar",
-    prevention: "Ha tydliga, neutrala observationskriterier"
+    challengeKey: "observation.challenges.confirmation.title",
+    descriptionKey: "observation.challenges.confirmation.description",
+    solutionKey: "observation.challenges.confirmation.solution",
+    preventionKey: "observation.challenges.confirmation.prevention"
   },
   {
-    challenge: "För mycket data",
-    description: "Överväldigas av mängden observationer",
-    solution: "Fokusera på specifika forskningsfrågor och teman",
-    prevention: "Skapa struktur för vad som ska observeras och dokumenteras"
+    challengeKey: "observation.challenges.tooMuchData.title",
+    descriptionKey: "observation.challenges.tooMuchData.description",
+    solutionKey: "observation.challenges.tooMuchData.solution",
+    preventionKey: "observation.challenges.tooMuchData.prevention"
   }
 ]
 
 export default function ObservationPage() {
+  const { t } = useLanguage()
+  
   return (
     <div className="h-full flex flex-col">
       <Header 
-        title="Användarobservation" 
-        description="Se vad användare verkligen gör, inte bara vad de säger"
+        title={t('observation.page.title')} 
+        description={t('observation.page.description')}
         actions={
           <Link href="/insights">
             <Button variant="outline">
-              Tillbaka till översikt
+              {t('observation.page.backButton')}
             </Button>
           </Link>
         }
@@ -234,20 +237,17 @@ export default function ObservationPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Varför observera användare?
+                  {t('observation.intro.title')}
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Observation avslöjar skillnaden mellan vad människor säger att de gör och vad de 
-                  faktiskt gör. Det ger autentiska insikter om faktiskt beteende, dolda behov och 
-                  oväntade användningsmönster som intervjuer och enkäter missar.
+                  {t('observation.intro.description')}
                 </p>
                 <div className="bg-indigo-50 p-4 rounded-lg">
                   <div className="text-lg font-semibold text-indigo-700 mb-2">
-                    "Actions speak louder than words"
+                    "{t('observation.intro.quote')}"
                   </div>
                   <p className="text-sm text-indigo-600">
-                    Människor är ofta omedvetna om sina egna beteendemönster eller rationaliserar 
-                    dem i efterhand. Observation fångar sanningen i realtid.
+                    {t('observation.intro.quoteDescription')}
                   </p>
                 </div>
               </div>
@@ -257,7 +257,7 @@ export default function ObservationPage() {
 
         {/* Observation Types */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Typer av observation</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('observation.types.title')}</h2>
           <div className="space-y-6">
             {observationTypes.map((type, index) => (
               <Card key={index} className="border-l-4 border-l-indigo-500">
@@ -266,40 +266,40 @@ export default function ObservationPage() {
                     <div className="lg:col-span-1">
                       <div className="flex items-center space-x-3 mb-3">
                         <type.icon className="h-6 w-6 text-indigo-600" />
-                        <h3 className="text-lg font-semibold text-gray-900">{type.type}</h3>
+                        <h3 className="text-lg font-semibold text-gray-900">{t(type.typeKey)}</h3>
                       </div>
-                      <p className="text-sm text-gray-600 mb-3">{type.description}</p>
+                      <p className="text-sm text-gray-600 mb-3">{t(type.descriptionKey)}</p>
                       <div className="flex items-center text-xs text-gray-500">
                         <ClockIcon className="h-4 w-4 mr-1" />
-                        {type.duration}
+                        {t(type.durationKey)}
                       </div>
                       <div className="mt-3">
-                        <h4 className="font-medium text-gray-900 mb-1">När att använda:</h4>
-                        <p className="text-sm text-gray-600">{type.when}</p>
+                        <h4 className="font-medium text-gray-900 mb-1">{t('observation.types.whenToUse')}</h4>
+                        <p className="text-sm text-gray-600">{t(type.whenKey)}</p>
                       </div>
                     </div>
 
                     <div className="lg:col-span-1">
                       <div className="space-y-4">
                         <div>
-                          <h4 className="font-medium text-green-700 mb-2">Fördelar:</h4>
+                          <h4 className="font-medium text-green-700 mb-2">{t('observation.types.pros')}</h4>
                           <ul className="space-y-1">
-                            {type.pros.map((pro, proIndex) => (
+                            {type.prosKeys.map((proKey, proIndex) => (
                               <li key={proIndex} className="text-sm text-gray-600 flex items-start">
                                 <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                                {pro}
+                                {t(proKey)}
                               </li>
                             ))}
                           </ul>
                         </div>
                         
                         <div>
-                          <h4 className="font-medium text-red-700 mb-2">Utmaningar:</h4>
+                          <h4 className="font-medium text-red-700 mb-2">{t('observation.types.challenges')}</h4>
                           <ul className="space-y-1">
-                            {type.cons.map((con, conIndex) => (
+                            {type.consKeys.map((conKey, conIndex) => (
                               <li key={conIndex} className="text-sm text-gray-600 flex items-start">
                                 <AlertTriangleIcon className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
-                                {con}
+                                {t(conKey)}
                               </li>
                             ))}
                           </ul>
@@ -308,11 +308,11 @@ export default function ObservationPage() {
                     </div>
 
                     <div className="lg:col-span-1">
-                      <h4 className="font-medium text-gray-900 mb-2">Exempel:</h4>
+                      <h4 className="font-medium text-gray-900 mb-2">{t('observation.types.examples')}</h4>
                       <ul className="space-y-1">
-                        {type.examples.map((example, exampleIndex) => (
+                        {type.exampleKeys.map((exampleKey, exampleIndex) => (
                           <li key={exampleIndex} className="text-sm text-gray-600 pl-4 border-l-2 border-l-indigo-200">
-                            {example}
+                            {t(exampleKey)}
                           </li>
                         ))}
                       </ul>
@@ -326,7 +326,7 @@ export default function ObservationPage() {
 
         {/* Process Steps */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Observationsprocessen</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('observation.process.title')}</h2>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {observationSteps.map((step, index) => (
               <Card key={index} className="relative border-t-4 border-t-indigo-500">
@@ -335,16 +335,16 @@ export default function ObservationPage() {
                     <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-sm">
                       {step.step}
                     </div>
-                    <CardTitle className="text-base">{step.title}</CardTitle>
+                    <CardTitle className="text-base">{t(step.titleKey)}</CardTitle>
                   </div>
                   <step.icon className="h-6 w-6 text-indigo-600 mt-2" />
                 </CardHeader>
                 <CardContent className="pt-0">
                   <ul className="space-y-2">
-                    {step.tasks.map((task, taskIndex) => (
+                    {step.taskKeys.map((taskKey, taskIndex) => (
                       <li key={taskIndex} className="text-xs text-gray-600 flex items-start">
                         <CheckCircleIcon className="h-3 w-3 text-green-500 mr-1 mt-0.5 flex-shrink-0" />
-                        {task}
+                        {t(taskKey)}
                       </li>
                     ))}
                   </ul>
@@ -365,20 +365,20 @@ export default function ObservationPage() {
 
         {/* What to Observe */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibend text-gray-900 mb-6">Vad ska du observera?</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('observation.whatToObserve.title')}</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {whatToObserve.map((category, index) => (
               <Card key={index}>
                 <CardHeader>
-                  <CardTitle className="text-lg">{category.category}</CardTitle>
-                  <p className="text-gray-600">{category.description}</p>
+                  <CardTitle className="text-lg">{t(category.categoryKey)}</CardTitle>
+                  <p className="text-gray-600">{t(category.descriptionKey)}</p>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2">
-                    {category.examples.map((example, exampleIndex) => (
+                    {category.exampleKeys.map((exampleKey, exampleIndex) => (
                       <li key={exampleIndex} className="text-sm text-gray-700 flex items-start">
                         <EyeIcon className="h-4 w-4 text-indigo-500 mr-2 mt-0.5 flex-shrink-0" />
-                        {example}
+                        {t(exampleKey)}
                       </li>
                     ))}
                   </ul>
@@ -390,23 +390,23 @@ export default function ObservationPage() {
 
         {/* Ethical Guidelines */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Etiska riktlinjer</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('observation.ethics.title')}</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {ethicalGuidelines.map((guideline, index) => (
               <Card key={index} className="border-l-4 border-l-green-500">
                 <CardHeader>
                   <div className="flex items-center space-x-3">
                     <ShieldIcon className="h-6 w-6 text-green-600" />
-                    <CardTitle className="text-lg">{guideline.principle}</CardTitle>
+                    <CardTitle className="text-lg">{t(guideline.principleKey)}</CardTitle>
                   </div>
-                  <p className="text-sm text-gray-600">{guideline.description}</p>
+                  <p className="text-sm text-gray-600">{t(guideline.descriptionKey)}</p>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <ul className="space-y-2">
-                    {guideline.practices.map((practice, practiceIndex) => (
+                    {guideline.practiceKeys.map((practiceKey, practiceIndex) => (
                       <li key={practiceIndex} className="text-sm text-gray-700 flex items-start">
                         <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                        {practice}
+                        {t(practiceKey)}
                       </li>
                     ))}
                   </ul>
@@ -418,7 +418,7 @@ export default function ObservationPage() {
 
         {/* Common Challenges */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Vanliga utmaningar</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('observation.challenges.title')}</h2>
           <div className="space-y-4">
             {commonChallenges.map((challenge, index) => (
               <Card key={index} className="border-l-4 border-l-yellow-500">
@@ -426,19 +426,19 @@ export default function ObservationPage() {
                   <div className="flex items-start space-x-4">
                     <AlertTriangleIcon className="h-6 w-6 text-yellow-500 mt-1 flex-shrink-0" />
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-yellow-800 mb-2">{challenge.challenge}</h3>
+                      <h3 className="text-lg font-semibold text-yellow-800 mb-2">{t(challenge.challengeKey)}</h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-1">Problem:</h4>
-                          <p className="text-gray-600">{challenge.description}</p>
+                          <h4 className="font-medium text-gray-900 mb-1">{t('observation.challenges.problem')}</h4>
+                          <p className="text-gray-600">{t(challenge.descriptionKey)}</p>
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-1">Lösning:</h4>
-                          <p className="text-gray-600">{challenge.solution}</p>
+                          <h4 className="font-medium text-gray-900 mb-1">{t('observation.challenges.solution')}</h4>
+                          <p className="text-gray-600">{t(challenge.solutionKey)}</p>
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-1">Förebygga:</h4>
-                          <p className="text-gray-600">{challenge.prevention}</p>
+                          <h4 className="font-medium text-gray-900 mb-1">{t('observation.challenges.prevention')}</h4>
+                          <p className="text-gray-600">{t(challenge.preventionKey)}</p>
                         </div>
                       </div>
                     </div>
@@ -456,35 +456,35 @@ export default function ObservationPage() {
               <NotebookIcon className="h-8 w-8 text-indigo-600 mt-1" />
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  Tips för effektiv dokumentation
+                  {t('observation.documentation.title')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <ul className="space-y-2">
                     <li className="flex items-start">
                       <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>Notera beteenden, inte tolkningar</strong> - "Användaren klickade 3 gånger" inte "användaren verkade förvirrad"</span>
+                      <span><strong>{t('observation.documentation.tip1')}</strong> - {t('observation.documentation.tip1Detail')}</span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>Använd timestamps</strong> - dokumentera när saker händer för analys</span>
+                      <span><strong>{t('observation.documentation.tip2')}</strong> - {t('observation.documentation.tip2Detail')}</span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>Separera fakta från tolkningar</strong> - ha olika kolumner för varje</span>
+                      <span><strong>{t('observation.documentation.tip3')}</strong> - {t('observation.documentation.tip3Detail')}</span>
                     </li>
                   </ul>
                   <ul className="space-y-2">
                     <li className="flex items-start">
                       <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>Dokumentera omgivning</strong> - fysisk miljö påverkar beteende</span>
+                      <span><strong>{t('observation.documentation.tip4')}</strong> - {t('observation.documentation.tip4Detail')}</span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>Fånga citat</strong> - verbala uttryck ger kontext till beteenden</span>
+                      <span><strong>{t('observation.documentation.tip5')}</strong> - {t('observation.documentation.tip5Detail')}</span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>Skriv ut direkt efter</strong> - minnet försvinner snabbt</span>
+                      <span><strong>{t('observation.documentation.tip6')}</strong> - {t('observation.documentation.tip6Detail')}</span>
                     </li>
                   </ul>
                 </div>
@@ -498,21 +498,20 @@ export default function ObservationPage() {
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Planera din första observation
+                {t('observation.cta.title')}
               </h3>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                Kom ihåg: Observation handlar om att förstå skillnaden mellan vad människor säger 
-                och vad de gör. Var tålmodig, neutral och öppen för överraskningar.
+                {t('observation.cta.description')}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/insights/getting-started">
                   <Button variant="primary">
-                    Kom igång-guide
+                    {t('observation.cta.gettingStarted')}
                   </Button>
                 </Link>
                 <Link href="/insights/interviews">
                   <Button variant="outline">
-                    Kombinera med intervjuer
+                    {t('observation.cta.combineInterviews')}
                   </Button>
                 </Link>
               </div>

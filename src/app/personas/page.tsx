@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Header } from '@/components/dashboard/Header'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -8,6 +8,7 @@ import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import { PlusIcon, UserIcon, MapPinIcon, BriefcaseIcon, HeartIcon, AlertTriangleIcon, EditIcon, TrashIcon } from 'lucide-react'
 import Link from 'next/link'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface Persona {
   id: string
@@ -28,7 +29,7 @@ interface Persona {
   motivations: string[]
 }
 
-const samplePersonas: Persona[] = [
+const getSamplePersonas = (t: (key: string) => string): Persona[] => [
   {
     id: '1',
     name: 'Anna Andersson',
@@ -36,16 +37,32 @@ const samplePersonas: Persona[] = [
     location: 'Stockholm',
     occupation: 'Produktchef',
     avatar: '',
-    goals: ['Effektivisera arbetsprocesser', 'Utveckla karriären', 'Balansera work-life'],
-    painPoints: ['För många möten', 'Svår att hitta rätt verktyg', 'Tidsbrist'],
-    description: 'Anna är en driven produktchef som arbetar på ett tech-företag. Hon värdesätter effektivitet och söker alltid sätt att förbättra processer.',
+    goals: [
+      t('personas.sampleData.anna.goals.0'),
+      t('personas.sampleData.anna.goals.1'),
+      t('personas.sampleData.anna.goals.2')
+    ],
+    painPoints: [
+      t('personas.sampleData.anna.painPoints.0'),
+      t('personas.sampleData.anna.painPoints.1'),
+      t('personas.sampleData.anna.painPoints.2')
+    ],
+    description: t('personas.sampleData.anna.description'),
     demographics: {
       income: '45 000 - 60 000 kr/mån',
       education: 'Högskola/Universitet',
       family: 'Gift, 1 barn'
     },
-    behaviors: ['Använder mobilappen dagligen', 'Läser branschblogs', 'Deltar i networking'],
-    motivations: ['Karriärutveckling', 'Problemlösning', 'Innovation']
+    behaviors: [
+      t('personas.sampleData.anna.behaviors.0'),
+      t('personas.sampleData.anna.behaviors.1'),
+      t('personas.sampleData.anna.behaviors.2')
+    ],
+    motivations: [
+      t('personas.sampleData.anna.motivations.0'),
+      t('personas.sampleData.anna.motivations.1'),
+      t('personas.sampleData.anna.motivations.2')
+    ]
   },
   {
     id: '2',
@@ -54,16 +71,32 @@ const samplePersonas: Persona[] = [
     location: 'Göteborg',
     occupation: 'Freelance Designer',
     avatar: '',
-    goals: ['Hitta fler kunder', 'Förbättra portfolio', 'Öka intäkterna'],
-    painPoints: ['Osäker inkomst', 'Ensamt arbete', 'Administrativt krångel'],
-    description: 'Erik är en kreativ freelancer som specialiserar sig på webdesign och branding. Han söker stabilitet och tillväxt i sin verksamhet.',
+    goals: [
+      t('personas.sampleData.erik.goals.0'),
+      t('personas.sampleData.erik.goals.1'),
+      t('personas.sampleData.erik.goals.2')
+    ],
+    painPoints: [
+      t('personas.sampleData.erik.painPoints.0'),
+      t('personas.sampleData.erik.painPoints.1'),
+      t('personas.sampleData.erik.painPoints.2')
+    ],
+    description: t('personas.sampleData.erik.description'),
     demographics: {
       income: '25 000 - 40 000 kr/mån',
       education: 'Yrkeshögskola',
       family: 'Singel'
     },
-    behaviors: ['Aktiv på sociala medier', 'Använder designverktyg dagligen', 'Nätverkar online'],
-    motivations: ['Kreativ frihet', 'Ekonomisk trygghet', 'Erkännande']
+    behaviors: [
+      t('personas.sampleData.erik.behaviors.0'),
+      t('personas.sampleData.erik.behaviors.1'),
+      t('personas.sampleData.erik.behaviors.2')
+    ],
+    motivations: [
+      t('personas.sampleData.erik.motivations.0'),
+      t('personas.sampleData.erik.motivations.1'),
+      t('personas.sampleData.erik.motivations.2')
+    ]
   },
   {
     id: '3',
@@ -72,24 +105,46 @@ const samplePersonas: Persona[] = [
     location: 'Malmö',
     occupation: 'Verksamhetschef',
     avatar: '',
-    goals: ['Digitalisera processer', 'Leda teamet effektivt', 'Öka lönsamheten'],
-    painPoints: ['Motstånd mot förändring', 'Budget begränsningar', 'Komplexa beslut'],
-    description: 'Maria leder ett traditionellt företag genom digital transformation. Hon behöver balansera innovation med stabilitet.',
+    goals: [
+      t('personas.sampleData.maria.goals.0'),
+      t('personas.sampleData.maria.goals.1'),
+      t('personas.sampleData.maria.goals.2')
+    ],
+    painPoints: [
+      t('personas.sampleData.maria.painPoints.0'),
+      t('personas.sampleData.maria.painPoints.1'),
+      t('personas.sampleData.maria.painPoints.2')
+    ],
+    description: t('personas.sampleData.maria.description'),
     demographics: {
       income: '60 000 - 80 000 kr/mån',
       education: 'Högskola/Universitet + MBA',
       family: 'Gift, 2 vuxna barn'
     },
-    behaviors: ['Läser affärstidningar', 'Deltar i branschkonferenser', 'Använder LinkedIn aktivt'],
-    motivations: ['Ledarskap', 'Företagsutveckling', 'Laganda']
+    behaviors: [
+      t('personas.sampleData.maria.behaviors.0'),
+      t('personas.sampleData.maria.behaviors.1'),
+      t('personas.sampleData.maria.behaviors.2')
+    ],
+    motivations: [
+      t('personas.sampleData.maria.motivations.0'),
+      t('personas.sampleData.maria.motivations.1'),
+      t('personas.sampleData.maria.motivations.2')
+    ]
   }
 ]
 
 export default function PersonasPage() {
-  const [personas, setPersonas] = useState<Persona[]>(samplePersonas)
+  const { t } = useLanguage()
+  const [personas, setPersonas] = useState<Persona[]>(getSamplePersonas(t))
   const [isNewPersonaModalOpen, setIsNewPersonaModalOpen] = useState(false)
   const [editingPersona, setEditingPersona] = useState<Persona | null>(null)
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null)
+
+  // Update sample personas when language changes
+  useEffect(() => {
+    setPersonas(getSamplePersonas(t))
+  }, [t])
 
   const [newPersona, setNewPersona] = useState<Partial<Persona>>({
     name: '',
@@ -170,13 +225,13 @@ export default function PersonasPage() {
   return (
     <div className="h-full flex flex-col bg-gray-50">
       <Header 
-        title="Personas" 
-        description="Skapa och hantera kundpersonas för dina journey maps"
+        title={t('personas.title')} 
+        description={t('personas.subtitle')}
         actions={
           <div className="flex space-x-2">
             <Link href="/personas/guide">
               <Button variant="outline">
-                Guide till personas
+                {t('personas.guideToPersonas')}
               </Button>
             </Link>
             <Button 
@@ -184,7 +239,7 @@ export default function PersonasPage() {
               onClick={() => setIsNewPersonaModalOpen(true)}
             >
               <PlusIcon className="mr-2 h-4 w-4" />
-              Ny Persona
+              {t('personas.newPersona')}
             </Button>
           </div>
         }
@@ -207,7 +262,7 @@ export default function PersonasPage() {
                     <div>
                       <CardTitle className="text-lg">{persona.name}</CardTitle>
                       <div className="flex items-center text-sm text-gray-500 mt-1">
-                        <span className="mr-3">{persona.age} år</span>
+                        <span className="mr-3">{persona.age} {t('personas.years')}</span>
                         <MapPinIcon className="h-3 w-3 mr-1" />
                         <span>{persona.location}</span>
                       </div>
@@ -247,7 +302,7 @@ export default function PersonasPage() {
                       <div>
                         <div className="flex items-center text-xs font-medium text-gray-700 mb-2">
                           <HeartIcon className="h-3 w-3 mr-1 text-slate-600" />
-                          Mål ({persona.goals.length})
+                          {t('personas.goals')} ({persona.goals.length})
                         </div>
                         <div className="space-y-1">
                           {persona.goals.slice(0, 2).map((goal, index) => (
@@ -257,7 +312,7 @@ export default function PersonasPage() {
                             </div>
                           ))}
                           {persona.goals.length > 2 && (
-                            <div className="text-xs text-gray-400">+{persona.goals.length - 2} mer</div>
+                            <div className="text-xs text-gray-400">+{persona.goals.length - 2} {t('personas.more')}</div>
                           )}
                         </div>
                       </div>
@@ -267,7 +322,7 @@ export default function PersonasPage() {
                       <div>
                         <div className="flex items-center text-xs font-medium text-gray-700 mb-2">
                           <AlertTriangleIcon className="h-3 w-3 mr-1 text-slate-600" />
-                          Utmaningar ({persona.painPoints.length})
+                          {t('personas.challenges')} ({persona.painPoints.length})
                         </div>
                         <div className="space-y-1">
                           {persona.painPoints.slice(0, 2).map((pain, index) => (
@@ -277,7 +332,7 @@ export default function PersonasPage() {
                             </div>
                           ))}
                           {persona.painPoints.length > 2 && (
-                            <div className="text-xs text-gray-400">+{persona.painPoints.length - 2} mer</div>
+                            <div className="text-xs text-gray-400">+{persona.painPoints.length - 2} {t('personas.more')}</div>
                           )}
                         </div>
                       </div>
@@ -290,7 +345,7 @@ export default function PersonasPage() {
                     className="w-full mt-4"
                     onClick={() => setSelectedPersona(persona)}
                   >
-                    Visa detaljer
+                    {t('personas.showDetails')}
                   </Button>
                 </div>
               </CardContent>
@@ -305,10 +360,10 @@ export default function PersonasPage() {
             <CardContent className="p-8 text-center">
               <PlusIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Skapa ny persona
+                {t('personas.createNewPersona')}
               </h3>
               <p className="text-gray-500">
-                Definiera en ny kundpersona för dina journey maps
+                {t('personas.defineNewPersona')}
               </p>
             </CardContent>
           </Card>
@@ -319,30 +374,30 @@ export default function PersonasPage() {
       <Modal 
         isOpen={isNewPersonaModalOpen} 
         onClose={() => setIsNewPersonaModalOpen(false)}
-        title="Skapa ny persona"
+        title={t('personas.modal.createTitle')}
       >
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Namn"
+              label={t('personas.modal.name')}
               value={newPersona.name || ''}
               onChange={(e) => updateNewPersonaField('name', e.target.value)}
               placeholder="Anna Andersson"
             />
             <Input
-              label="Ålder"
+              label={t('personas.modal.age')}
               value={newPersona.age || ''}
               onChange={(e) => updateNewPersonaField('age', e.target.value)}
               placeholder="32"
             />
             <Input
-              label="Plats"
+              label={t('personas.modal.location')}
               value={newPersona.location || ''}
               onChange={(e) => updateNewPersonaField('location', e.target.value)}
               placeholder="Stockholm"
             />
             <Input
-              label="Yrke"
+              label={t('personas.modal.occupation')}
               value={newPersona.occupation || ''}
               onChange={(e) => updateNewPersonaField('occupation', e.target.value)}
               placeholder="Produktchef"
@@ -350,11 +405,11 @@ export default function PersonasPage() {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Beskrivning</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('personas.modal.description')}</label>
             <textarea
               value={newPersona.description || ''}
               onChange={(e) => updateNewPersonaField('description', e.target.value)}
-              placeholder="Beskriv personas bakgrund, beteenden och motivationer..."
+              placeholder={t('personas.modal.descriptionPlaceholder')}
               className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               rows={3}
             />
@@ -362,7 +417,7 @@ export default function PersonasPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Mål</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('personas.modal.goalsLabel')}</label>
               <div className="space-y-2">
                 {(newPersona.goals || ['']).map((goal, index) => (
                   <Input
@@ -379,13 +434,13 @@ export default function PersonasPage() {
                   className="w-full border-dashed"
                 >
                   <PlusIcon className="h-3 w-3 mr-1" />
-                  Lägg till mål
+                  {t('personas.modal.addGoal')}
                 </Button>
               </div>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Utmaningar</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('personas.modal.challengesLabel')}</label>
               <div className="space-y-2">
                 {(newPersona.painPoints || ['']).map((pain, index) => (
                   <Input
@@ -402,7 +457,7 @@ export default function PersonasPage() {
                   className="w-full border-dashed"
                 >
                   <PlusIcon className="h-3 w-3 mr-1" />
-                  Lägg till utmaning
+                  {t('personas.modal.addChallenge')}
                 </Button>
               </div>
             </div>
@@ -413,14 +468,14 @@ export default function PersonasPage() {
               variant="outline" 
               onClick={() => setIsNewPersonaModalOpen(false)}
             >
-              Avbryt
+              {t('personas.modal.cancel')}
             </Button>
             <Button 
               variant="primary" 
               onClick={handleCreatePersona}
               disabled={!newPersona.name || !newPersona.age || !newPersona.occupation}
             >
-              Skapa persona
+              {t('personas.modal.create')}
             </Button>
           </div>
         </div>
@@ -444,7 +499,7 @@ export default function PersonasPage() {
               <div>
                 <h3 className="text-xl font-semibold">{selectedPersona.name}</h3>
                 <div className="flex items-center text-gray-600 mt-1">
-                  <span className="mr-4">{selectedPersona.age} år</span>
+                  <span className="mr-4">{selectedPersona.age} {t('personas.years')}</span>
                   <MapPinIcon className="h-4 w-4 mr-1" />
                   <span className="mr-4">{selectedPersona.location}</span>
                   <BriefcaseIcon className="h-4 w-4 mr-1" />
@@ -454,7 +509,7 @@ export default function PersonasPage() {
             </div>
             
             <div>
-              <h4 className="font-medium text-gray-900 mb-2">Beskrivning</h4>
+              <h4 className="font-medium text-gray-900 mb-2">{t('personas.details.description')}</h4>
               <p className="text-gray-600">{selectedPersona.description}</p>
             </div>
             
@@ -462,7 +517,7 @@ export default function PersonasPage() {
               <div>
                 <h4 className="font-medium text-gray-900 mb-3 flex items-center">
                   <HeartIcon className="h-4 w-4 mr-2 text-slate-600" />
-                  Mål & Behov
+                  {t('personas.details.goalsNeeds')}
                 </h4>
                 <ul className="space-y-2">
                   {selectedPersona.goals.map((goal, index) => (
@@ -477,7 +532,7 @@ export default function PersonasPage() {
               <div>
                 <h4 className="font-medium text-gray-900 mb-3 flex items-center">
                   <AlertTriangleIcon className="h-4 w-4 mr-2 text-slate-600" />
-                  Utmaningar
+                  {t('personas.details.challenges')}
                 </h4>
                 <ul className="space-y-2">
                   {selectedPersona.painPoints.map((pain, index) => (
@@ -492,7 +547,7 @@ export default function PersonasPage() {
             
             {selectedPersona.behaviors.length > 0 && (
               <div>
-                <h4 className="font-medium text-gray-900 mb-3">Beteenden</h4>
+                <h4 className="font-medium text-gray-900 mb-3">{t('personas.details.behaviors')}</h4>
                 <ul className="space-y-2">
                   {selectedPersona.behaviors.map((behavior, index) => (
                     <li key={index} className="text-sm text-gray-600 flex items-start">
@@ -510,7 +565,7 @@ export default function PersonasPage() {
                 onClick={() => setSelectedPersona(null)}
                 className="w-full"
               >
-                Stäng
+                {t('personas.details.close')}
               </Button>
             </div>
           </div>

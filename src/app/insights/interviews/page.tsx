@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -19,181 +20,183 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-const interviewTypes = [
-  {
-    type: "Strukturerade intervjuer",
-    icon: FileTextIcon,
-    description: "Förutbestämda frågor i fast ordning",
-    duration: "30-45 min",
-    when: "När du behöver jämförbara svar mellan respondenter",
-    pros: ["Enkla att analysera", "Konsistenta data", "Går snabbt att genomföra"],
-    cons: ["Mindre flexibilitet", "Kan missa oväntade insikter", "Mer ytliga svar"]
-  },
-  {
-    type: "Semi-strukturerade intervjuer",
-    icon: MessageSquareIcon,
-    description: "Grundfrågor med möjlighet att följa upp",
-    duration: "45-60 min", 
-    when: "För balans mellan struktur och flexibilitet (mest vanliga)",
-    pros: ["Flexibel och naturlig", "Djupare insikter", "Följer respondentens fokus"],
-    cons: ["Tar mer tid", "Svårare att jämföra", "Kräver skicklig intervjuare"]
-  },
-  {
-    type: "Ostrukturerade intervjuer",
-    icon: LightbulbIcon,
-    description: "Öppen konversation kring ett ämne",
-    duration: "60-90 min",
-    when: "För explorativ forskning och djup förståelse",
-    pros: ["Maximala insikter", "Oväntade upptäckter", "Respondenten leder"],
-    cons: ["Mycket tidskrävande", "Svår analys", "Kräver expert-intervjuare"]
-  }
-]
-
-const interviewChannels = [
-  {
-    channel: "Fysiska möten",
-    icon: MapPinIcon,
-    pros: ["Bäst för att bygga rapport", "Kan observera kroppsspråk", "Visa fysiska produkter"],
-    cons: ["Tidskrävande att koordinera", "Geografiska begränsningar", "Dyrare"],
-    bestFor: "Känsliga ämnen, nya produkter, B2B-kunder"
-  },
-  {
-    channel: "Videointervjuer", 
-    icon: VideoIcon,
-    pros: ["Ser ansiktsuttryck", "Screen sharing möjlig", "Kan spelas in enkelt"],
-    cons: ["Tekniska problem", "Distraktioner hemma", "Zoom-trötthet"],
-    bestFor: "Remote användare, korta intervjuer, internationella kunder"
-  },
-  {
-    channel: "Telefonintervjuer",
-    icon: PhoneIcon,
-    pros: ["Ingen teknik-stress", "Fokus på röst", "Lätt att schemalägga"],
-    cons: ["Missar visuella ledtrådar", "Svårare att bygga rapport", "Risk för multitasking"],
-    bestFor: "Snabba feedback-samtal, äldre målgrupper, komplexa scheman"
-  }
-]
-
-const interviewGuideTemplate = [
-  {
-    section: "Introduktion (5 min)",
-    purpose: "Bygga rapport och sätta ramarna",
-    questions: [
-      "Tack för att du tar dig tid. Berätta kort om dig själv.",
-      "Har du några frågor innan vi börjar?",
-      "[Förklara syfte, inspelning, konfidentialitet]"
-    ]
-  },
-  {
-    section: "Bakgrundsfrågor (10 min)",
-    purpose: "Förstå kontext och användarens situation", 
-    questions: [
-      "Hur använder du [produkt/tjänst] idag?",
-      "Vad var din första upplevelse med oss?",
-      "Hur löste du [problemet] innan du hittade oss?"
-    ]
-  },
-  {
-    section: "Djupfrågor (30-40 min)",
-    purpose: "Få djupare insikter om behov och motivationer",
-    questions: [
-      "Berätta om senaste gången du använde [produkt]. Vad hände?",
-      "Vad fungerar bra? Vad är frustrerande?",
-      "Om du hade en trollstav - vad skulle du ändra?",
-      "Vilka alternativ övervägde du?",
-      "Vad skulle få dig att sluta använda [produkt]?"
-    ]
-  },
-  {
-    section: "Avslutning (5 min)",
-    purpose: "Sammanfatta och få sista intryck",
-    questions: [
-      "Har vi missat något viktigt?",
-      "Tre ord som beskriver din upplevelse?",
-      "Skulle du rekommendera oss till en vän? Varför/varför inte?"
-    ]
-  }
-]
-
-const goodQuestions = [
-  {
-    category: "Beteende",
-    questions: [
-      "Berätta om senaste gången du...",
-      "Hur ser en typisk dag ut när du använder...?",
-      "Vad gjorde du innan/efter det?"
-    ]
-  },
-  {
-    category: "Motivationer", 
-    questions: [
-      "Vad var viktigast för dig när du valde...?",
-      "Vad fick dig att känna så?",
-      "Vad skulle få dig att ändra åsikt?"
-    ]
-  },
-  {
-    category: "Problem",
-    questions: [
-      "Vad är mest frustrerande med...?",
-      "När fungerar det inte som förväntat?",
-      "Hur löser du det när X händer?"
-    ]
-  },
-  {
-    category: "Fördjupning",
-    questions: [
-      "Kan du ge mig ett exempel på det?",
-      "Vad menar du med...?",
-      "Hur kändes det när det hände?"
-    ]
-  }
-]
-
-const avoidQuestions = [
-  "Vad tycker du om vår hemsida?",
-  "Skulle du använda den här funktionen?", 
-  "Vilka funktioner vill du ha?",
-  "Är du nöjd med vår service?",
-  "Vad tycker du är viktigt?"
-]
-
-const analysisSteps = [
-  {
-    step: 1,
-    title: "Transkribering",
-    description: "Få allt på pränt för analys",
-    tips: ["Spela in med tillstånd", "Använd transkriptionstjänst", "Inkludera pauser och tonfall", "Rensa upp för läsbarhet"]
-  },
-  {
-    step: 2, 
-    title: "Kodning",
-    description: "Identifiera teman och mönster",
-    tips: ["Läs genom allt först", "Märk ut viktiga citat", "Skapa tematiska koder", "Leta efter motmönster"]
-  },
-  {
-    step: 3,
-    title: "Syntes",
-    description: "Omvandla data till insikter",
-    tips: ["Gruppera liknande teman", "Räkna frekvenser", "Hitta kausala samband", "Validera mot andra data"]
-  },
-  {
-    step: 4,
-    title: "Rapportering", 
-    description: "Kommunicera handlingsbara insikter",
-    tips: ["Börja med huvudinsikter", "Använd citat som stöd", "Inkludera rekommendationer", "Presentera för stakeholders"]
-  }
-]
-
 export default function InterviewsPage() {
+  const { t } = useLanguage()
+  
+  const interviewTypes = [
+    {
+      type: t('interviews.types.structured.title'),
+      icon: FileTextIcon,
+      description: t('interviews.types.structured.description'),
+      duration: t('interviews.types.structured.duration'),
+      when: t('interviews.types.structured.when'),
+      pros: [t('interviews.types.structured.pro1'), t('interviews.types.structured.pro2'), t('interviews.types.structured.pro3')],
+      cons: [t('interviews.types.structured.con1'), t('interviews.types.structured.con2'), t('interviews.types.structured.con3')]
+    },
+    {
+      type: t('interviews.types.semiStructured.title'),
+      icon: MessageSquareIcon,
+      description: t('interviews.types.semiStructured.description'),
+      duration: t('interviews.types.semiStructured.duration'),
+      when: t('interviews.types.semiStructured.when'),
+      pros: [t('interviews.types.semiStructured.pro1'), t('interviews.types.semiStructured.pro2'), t('interviews.types.semiStructured.pro3')],
+      cons: [t('interviews.types.semiStructured.con1'), t('interviews.types.semiStructured.con2'), t('interviews.types.semiStructured.con3')]
+    },
+    {
+      type: t('interviews.types.unstructured.title'),
+      icon: LightbulbIcon,
+      description: t('interviews.types.unstructured.description'),
+      duration: t('interviews.types.unstructured.duration'),
+      when: t('interviews.types.unstructured.when'),
+      pros: [t('interviews.types.unstructured.pro1'), t('interviews.types.unstructured.pro2'), t('interviews.types.unstructured.pro3')],
+      cons: [t('interviews.types.unstructured.con1'), t('interviews.types.unstructured.con2'), t('interviews.types.unstructured.con3')]
+    }
+  ]
+
+  const interviewChannels = [
+    {
+      channel: t('interviews.channels.inPerson.title'),
+      icon: MapPinIcon,
+      pros: [t('interviews.channels.inPerson.pro1'), t('interviews.channels.inPerson.pro2'), t('interviews.channels.inPerson.pro3')],
+      cons: [t('interviews.channels.inPerson.con1'), t('interviews.channels.inPerson.con2'), t('interviews.channels.inPerson.con3')],
+      bestFor: t('interviews.channels.inPerson.bestFor')
+    },
+    {
+      channel: t('interviews.channels.video.title'),
+      icon: VideoIcon,
+      pros: [t('interviews.channels.video.pro1'), t('interviews.channels.video.pro2'), t('interviews.channels.video.pro3')],
+      cons: [t('interviews.channels.video.con1'), t('interviews.channels.video.con2'), t('interviews.channels.video.con3')],
+      bestFor: t('interviews.channels.video.bestFor')
+    },
+    {
+      channel: t('interviews.channels.phone.title'),
+      icon: PhoneIcon,
+      pros: [t('interviews.channels.phone.pro1'), t('interviews.channels.phone.pro2'), t('interviews.channels.phone.pro3')],
+      cons: [t('interviews.channels.phone.con1'), t('interviews.channels.phone.con2'), t('interviews.channels.phone.con3')],
+      bestFor: t('interviews.channels.phone.bestFor')
+    }
+  ]
+
+  const interviewGuideTemplate = [
+    {
+      section: t('interviews.guide.intro.title'),
+      purpose: t('interviews.guide.intro.purpose'),
+      questions: [
+        t('interviews.guide.intro.q1'),
+        t('interviews.guide.intro.q2'),
+        t('interviews.guide.intro.q3')
+      ]
+    },
+    {
+      section: t('interviews.guide.background.title'),
+      purpose: t('interviews.guide.background.purpose'),
+      questions: [
+        t('interviews.guide.background.q1'),
+        t('interviews.guide.background.q2'),
+        t('interviews.guide.background.q3')
+      ]
+    },
+    {
+      section: t('interviews.guide.deep.title'),
+      purpose: t('interviews.guide.deep.purpose'),
+      questions: [
+        t('interviews.guide.deep.q1'),
+        t('interviews.guide.deep.q2'),
+        t('interviews.guide.deep.q3'),
+        t('interviews.guide.deep.q4'),
+        t('interviews.guide.deep.q5')
+      ]
+    },
+    {
+      section: t('interviews.guide.closing.title'),
+      purpose: t('interviews.guide.closing.purpose'),
+      questions: [
+        t('interviews.guide.closing.q1'),
+        t('interviews.guide.closing.q2'),
+        t('interviews.guide.closing.q3')
+      ]
+    }
+  ]
+
+  const goodQuestions = [
+    {
+      category: t('interviews.questions.behavior.title'),
+      questions: [
+        t('interviews.questions.behavior.q1'),
+        t('interviews.questions.behavior.q2'),
+        t('interviews.questions.behavior.q3')
+      ]
+    },
+    {
+      category: t('interviews.questions.motivations.title'),
+      questions: [
+        t('interviews.questions.motivations.q1'),
+        t('interviews.questions.motivations.q2'),
+        t('interviews.questions.motivations.q3')
+      ]
+    },
+    {
+      category: t('interviews.questions.problems.title'),
+      questions: [
+        t('interviews.questions.problems.q1'),
+        t('interviews.questions.problems.q2'),
+        t('interviews.questions.problems.q3')
+      ]
+    },
+    {
+      category: t('interviews.questions.deepening.title'),
+      questions: [
+        t('interviews.questions.deepening.q1'),
+        t('interviews.questions.deepening.q2'),
+        t('interviews.questions.deepening.q3')
+      ]
+    }
+  ]
+
+  const avoidQuestions = [
+    t('interviews.questions.avoid1'),
+    t('interviews.questions.avoid2'),
+    t('interviews.questions.avoid3'),
+    t('interviews.questions.avoid4'),
+    t('interviews.questions.avoid5')
+  ]
+
+  const analysisSteps = [
+    {
+      step: 1,
+      title: t('interviews.analysis.step1.title'),
+      description: t('interviews.analysis.step1.description'),
+      tips: [t('interviews.analysis.step1.tip1'), t('interviews.analysis.step1.tip2'), t('interviews.analysis.step1.tip3'), t('interviews.analysis.step1.tip4')]
+    },
+    {
+      step: 2,
+      title: t('interviews.analysis.step2.title'),
+      description: t('interviews.analysis.step2.description'),
+      tips: [t('interviews.analysis.step2.tip1'), t('interviews.analysis.step2.tip2'), t('interviews.analysis.step2.tip3'), t('interviews.analysis.step2.tip4')]
+    },
+    {
+      step: 3,
+      title: t('interviews.analysis.step3.title'),
+      description: t('interviews.analysis.step3.description'),
+      tips: [t('interviews.analysis.step3.tip1'), t('interviews.analysis.step3.tip2'), t('interviews.analysis.step3.tip3'), t('interviews.analysis.step3.tip4')]
+    },
+    {
+      step: 4,
+      title: t('interviews.analysis.step4.title'),
+      description: t('interviews.analysis.step4.description'),
+      tips: [t('interviews.analysis.step4.tip1'), t('interviews.analysis.step4.tip2'), t('interviews.analysis.step4.tip3'), t('interviews.analysis.step4.tip4')]
+    }
+  ]
+
   return (
     <div className="h-full flex flex-col">
       <Header 
-        title="Kundintervjuer" 
-        description="Djupgående en-till-en-samtal för att förstå användarmotivationer"
+        title={t('interviews.pageTitle')} 
+        description={t('interviews.pageDescription')}
         actions={
           <Link href="/insights">
             <Button variant="outline">
-              Tillbaka till översikt
+              {t('interviews.backToOverview')}
             </Button>
           </Link>
         }
@@ -209,25 +212,23 @@ export default function InterviewsPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Varför kundintervjuer?
+                  {t('interviews.intro.title')}
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Intervjuer är den bästa metoden för att förstå "varför" bakom kunders beteenden. 
-                  De ger djupa, nyanserade insikter som enkäter inte kan fånga - motivationer, 
-                  känslor och den fullständiga kontexten bakom användarbeslut.
+                  {t('interviews.intro.description')}
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                   <div className="bg-white p-3 rounded-lg border">
-                    <div className="text-lg font-semibold text-orange-600">8-12</div>
-                    <div className="text-sm text-gray-600">Intervjuer för mönster</div>
+                    <div className="text-lg font-semibold text-orange-600">{t('interviews.intro.stat1.value')}</div>
+                    <div className="text-sm text-gray-600">{t('interviews.intro.stat1.label')}</div>
                   </div>
                   <div className="bg-white p-3 rounded-lg border">
-                    <div className="text-lg font-semibold text-orange-600">45-60 min</div>
-                    <div className="text-sm text-gray-600">Optimal längd</div>
+                    <div className="text-lg font-semibold text-orange-600">{t('interviews.intro.stat2.value')}</div>
+                    <div className="text-sm text-gray-600">{t('interviews.intro.stat2.label')}</div>
                   </div>
                   <div className="bg-white p-3 rounded-lg border">
-                    <div className="text-lg font-semibold text-orange-600">80/20</div>
-                    <div className="text-sm text-gray-600">Lyssna/prata-förhållande</div>
+                    <div className="text-lg font-semibold text-orange-600">{t('interviews.intro.stat3.value')}</div>
+                    <div className="text-sm text-gray-600">{t('interviews.intro.stat3.label')}</div>
                   </div>
                 </div>
               </div>
@@ -237,7 +238,7 @@ export default function InterviewsPage() {
 
         {/* Interview Types */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Typer av intervjuer</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('interviews.types.title')}</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {interviewTypes.map((type, index) => (
               <Card key={index} className="border-t-4 border-t-orange-500">
@@ -254,13 +255,13 @@ export default function InterviewsPage() {
                 </CardHeader>
                 <CardContent className="pt-0 space-y-4">
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-2">När att använda:</h4>
+                    <h4 className="font-medium text-gray-900 mb-2">{t('interviews.types.whenToUse')}</h4>
                     <p className="text-sm text-gray-600">{type.when}</p>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <h5 className="text-xs font-medium text-green-700 mb-2">Fördelar:</h5>
+                      <h5 className="text-xs font-medium text-green-700 mb-2">{t('interviews.types.advantages')}</h5>
                       <ul className="space-y-1">
                         {type.pros.map((pro, proIndex) => (
                           <li key={proIndex} className="text-xs text-gray-600 flex items-start">
@@ -272,7 +273,7 @@ export default function InterviewsPage() {
                     </div>
                     
                     <div>
-                      <h5 className="text-xs font-medium text-red-700 mb-2">Nackdelar:</h5>
+                      <h5 className="text-xs font-medium text-red-700 mb-2">{t('interviews.types.disadvantages')}</h5>
                       <ul className="space-y-1">
                         {type.cons.map((con, conIndex) => (
                           <li key={conIndex} className="text-xs text-gray-600 flex items-start">
@@ -291,7 +292,7 @@ export default function InterviewsPage() {
 
         {/* Interview Channels */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Genomförande-kanaler</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('interviews.channels.title')}</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {interviewChannels.map((channel, index) => (
               <Card key={index}>
@@ -303,7 +304,7 @@ export default function InterviewsPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <h4 className="font-medium text-green-700 mb-2">Fördelar:</h4>
+                    <h4 className="font-medium text-green-700 mb-2">{t('interviews.channels.advantages')}</h4>
                     <ul className="space-y-1">
                       {channel.pros.map((pro, proIndex) => (
                         <li key={proIndex} className="text-sm text-gray-600 flex items-start">
@@ -315,7 +316,7 @@ export default function InterviewsPage() {
                   </div>
                   
                   <div>
-                    <h4 className="font-medium text-red-700 mb-2">Nackdelar:</h4>
+                    <h4 className="font-medium text-red-700 mb-2">{t('interviews.channels.disadvantages')}</h4>
                     <ul className="space-y-1">
                       {channel.cons.map((con, conIndex) => (
                         <li key={conIndex} className="text-sm text-gray-600 flex items-start">
@@ -327,7 +328,7 @@ export default function InterviewsPage() {
                   </div>
                   
                   <div className="pt-2 border-t">
-                    <h4 className="font-medium text-gray-900 mb-1">Bäst för:</h4>
+                    <h4 className="font-medium text-gray-900 mb-1">{t('interviews.channels.bestFor')}</h4>
                     <p className="text-sm text-gray-600">{channel.bestFor}</p>
                   </div>
                 </CardContent>
@@ -338,11 +339,11 @@ export default function InterviewsPage() {
 
         {/* Interview Guide Template */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Mall för intervjuguide</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('interviews.guide.title')}</h2>
           <Card>
             <CardHeader>
-              <CardTitle>Strukturerad intervjuguide</CardTitle>
-              <p className="text-gray-600">Anpassa frågorna till ditt specifika syfte och målgrupp</p>
+              <CardTitle>{t('interviews.guide.subtitle')}</CardTitle>
+              <p className="text-gray-600">{t('interviews.guide.description')}</p>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -369,12 +370,12 @@ export default function InterviewsPage() {
 
         {/* Good vs Bad Questions */}
         <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Frågeteknik</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('interviews.questions.title')}</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Good Questions */}
             <Card className="border-l-4 border-l-green-500">
               <CardHeader>
-                <CardTitle className="text-green-800">Bra frågor som ger djupa svar</CardTitle>
+                <CardTitle className="text-green-800">{t('interviews.questions.good.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -397,12 +398,12 @@ export default function InterviewsPage() {
             {/* Bad Questions */}
             <Card className="border-l-4 border-l-red-500">
               <CardHeader>
-                <CardTitle className="text-red-800">Undvik ledande/vaga frågor</CardTitle>
+                <CardTitle className="text-red-800">{t('interviews.questions.bad.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <p className="text-sm text-gray-600 mb-4">
-                    Dessa frågor leder till ytliga eller partiska svar:
+                    {t('interviews.questions.bad.description')}
                   </p>
                   {avoidQuestions.map((question, index) => (
                     <div key={index} className="flex items-start space-x-3">
@@ -410,11 +411,11 @@ export default function InterviewsPage() {
                       <div>
                         <p className="text-sm text-gray-700 line-through">"{question}"</p>
                         <p className="text-xs text-red-600 mt-1">
-                          {index === 0 && "För generell - be om specifik upplevelse"}
-                          {index === 1 && "Hypotetisk - fråga om faktiskt beteende"}
-                          {index === 2 && "Leder till önskelista - fokusera på problem"}
-                          {index === 3 && "Ja/nej-fråga - be om berättelse"}
-                          {index === 4 && "Abstrakt - fråga om konkret situation"}
+                          {index === 0 && t('interviews.questions.bad.reason1')}
+                          {index === 1 && t('interviews.questions.bad.reason2')}
+                          {index === 2 && t('interviews.questions.bad.reason3')}
+                          {index === 3 && t('interviews.questions.bad.reason4')}
+                          {index === 4 && t('interviews.questions.bad.reason5')}
                         </p>
                       </div>
                     </div>
@@ -422,10 +423,9 @@ export default function InterviewsPage() {
                 </div>
 
                 <div className="mt-6 p-3 bg-red-50 border border-red-200 rounded">
-                  <h5 className="font-medium text-red-800 mb-2">Gyllene regel:</h5>
+                  <h5 className="font-medium text-red-800 mb-2">{t('interviews.questions.goldenRule.title')}</h5>
                   <p className="text-sm text-red-700">
-                    Fråga om vad som <em>hände</em>, inte vad de <em>tycker</em>. 
-                    Be om <em>specifika exempel</em>, inte generella åsikter.
+                    {t('interviews.questions.goldenRule.text')}
                   </p>
                 </div>
               </CardContent>
@@ -435,7 +435,7 @@ export default function InterviewsPage() {
 
         {/* Analysis Process */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Analysprocess</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('interviews.analysis.title')}</h2>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {analysisSteps.map((step, index) => (
               <Card key={index} className="relative">
@@ -479,35 +479,35 @@ export default function InterviewsPage() {
               <HeadphonesIcon className="h-8 w-8 text-orange-600 mt-1" />
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  Intervjutips för framgång
+                  {t('interviews.tips.title')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <ul className="space-y-2">
                     <li className="flex items-start">
                       <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>Lyssna mer än du pratar</strong> - 80/20-regeln</span>
+                      <span><strong>{t('interviews.tips.tip1.title')}</strong> - {t('interviews.tips.tip1.description')}</span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>Använd tystnader</strong> - vänta efter frågor för djupare svar</span>
+                      <span><strong>{t('interviews.tips.tip2.title')}</strong> - {t('interviews.tips.tip2.description')}</span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>Följ upp med "Varför?"</strong> - gräv djupare i svaren</span>
+                      <span><strong>{t('interviews.tips.tip3.title')}</strong> - {t('interviews.tips.tip3.description')}</span>
                     </li>
                   </ul>
                   <ul className="space-y-2">
                     <li className="flex items-start">
                       <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>Spela in</strong> - fokusera på samtalet, inte anteckningar</span>
+                      <span><strong>{t('interviews.tips.tip4.title')}</strong> - {t('interviews.tips.tip4.description')}</span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>Var nyfiken</strong> - visa genuint intresse för deras upplevelse</span>
+                      <span><strong>{t('interviews.tips.tip5.title')}</strong> - {t('interviews.tips.tip5.description')}</span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>Sammanfatta</strong> - "Så du menar att..." för att validera förståelse</span>
+                      <span><strong>{t('interviews.tips.tip6.title')}</strong> - {t('interviews.tips.tip6.description')}</span>
                     </li>
                   </ul>
                 </div>
@@ -521,21 +521,20 @@ export default function InterviewsPage() {
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Starta dina första intervjuer
+                {t('interviews.cta.title')}
               </h3>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                Kom ihåg: Målet är att förstå din kunds värld. Var nyfiken, lyssna aktivt 
-                och låt deras berättelser guida dig till djupare insikter.
+                {t('interviews.cta.description')}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/insights/getting-started">
                   <Button variant="primary">
-                    Kom igång-guide
+                    {t('interviews.cta.gettingStarted')}
                   </Button>
                 </Link>
                 <Link href="/insights/focus-groups">
                   <Button variant="outline">
-                    Jämför med fokusgrupper
+                    {t('interviews.cta.compareFocusGroups')}
                   </Button>
                 </Link>
               </div>
