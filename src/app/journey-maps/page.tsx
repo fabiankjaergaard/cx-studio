@@ -30,38 +30,6 @@ interface JourneyMap {
   status: 'draft' | 'completed' | 'in-review'
 }
 
-const getSampleJourneyMaps = (t: (key: string) => string): JourneyMap[] => [
-  {
-    id: '1',
-    name: t('journeyMaps.sampleData.ecommerce.name'),
-    description: t('journeyMaps.sampleData.ecommerce.description'),
-    persona: 'Anna Andersson',
-    lastModified: '2024-01-15',
-    createdBy: 'John Doe',
-    stages: 5,
-    status: 'completed'
-  },
-  {
-    id: '2',
-    name: t('journeyMaps.sampleData.b2b.name'),
-    description: t('journeyMaps.sampleData.b2b.description'),
-    persona: 'Maria Johansson',
-    lastModified: '2024-01-12',
-    createdBy: 'Jane Smith',
-    stages: 6,
-    status: 'draft'
-  },
-  {
-    id: '3',
-    name: t('journeyMaps.sampleData.support.name'),
-    description: t('journeyMaps.sampleData.support.description'),
-    persona: 'Erik Nilsson',
-    lastModified: '2024-01-10',
-    createdBy: 'John Doe',
-    stages: 4,
-    status: 'in-review'
-  }
-]
 
 const statusColors = {
   draft: 'bg-slate-100 text-slate-700',
@@ -77,7 +45,7 @@ const getStatusLabels = (t: (key: string) => string) => ({
 
 export default function JourneyMapsPage() {
   const { t, language } = useLanguage()
-  const [journeyMaps, setJourneyMaps] = useState<JourneyMap[]>(getSampleJourneyMaps(t))
+  const [journeyMaps, setJourneyMaps] = useState<JourneyMap[]>([])
   const statusLabels = getStatusLabels(t)
   const [isNewMapModalOpen, setIsNewMapModalOpen] = useState(false)
   const [newMapName, setNewMapName] = useState('')
@@ -134,9 +102,10 @@ export default function JourneyMapsPage() {
       />
       
       <div className="flex-1 p-8 overflow-auto bg-gray-50">
-        {/* Journey Maps Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {journeyMaps.map((journeyMap) => (
+        {journeyMaps.length > 0 ? (
+          /* Journey Maps Grid */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {journeyMaps.map((journeyMap) => (
             <Card key={journeyMap.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -206,27 +175,26 @@ export default function JourneyMapsPage() {
                 </div>
               </CardContent>
             </Card>
-          ))}
-          
-          {/* Add New Journey Map Card */}
-          <Card 
-            className="border-dashed border-2 border-gray-300 hover:border-gray-400 transition-colors cursor-pointer"
-            onClick={() => setIsNewMapModalOpen(true)}
-          >
-            <CardContent className="p-8 text-center">
-              <RouteIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {t('journeyMaps.createNewCard.title')}
-              </h3>
-              <p className="text-gray-500">
-                {t('journeyMaps.createNewCard.description')}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+            ))}
 
-        {/* Getting Started Guide */}
-        {journeyMaps.length === 0 && (
+            {/* Add New Journey Map Card */}
+            <Card
+              className="border-dashed border-2 border-gray-300 hover:border-gray-400 transition-colors cursor-pointer"
+              onClick={() => setIsNewMapModalOpen(true)}
+            >
+              <CardContent className="p-8 text-center">
+                <RouteIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  {t('journeyMaps.createNewCard.title')}
+                </h3>
+                <p className="text-gray-500">
+                  {t('journeyMaps.createNewCard.description')}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          /* Getting Started Guide */
           <Card className="mt-8 bg-slate-50 border-slate-200">
             <CardContent className="p-8 text-center">
               <RouteIcon className="mx-auto h-16 w-16 text-gray-400 mb-4" />
