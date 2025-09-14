@@ -18,6 +18,7 @@ import {
   ExternalLinkIcon
 } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface JourneyMap {
   id: string
@@ -45,6 +46,7 @@ const getStatusLabels = (t: (key: string) => string) => ({
 
 export default function JourneyMapsPage() {
   const { t, language } = useLanguage()
+  const router = useRouter()
   const [journeyMaps, setJourneyMaps] = useState<JourneyMap[]>([])
   const statusLabels = getStatusLabels(t)
   const [isNewMapModalOpen, setIsNewMapModalOpen] = useState(false)
@@ -67,6 +69,9 @@ export default function JourneyMapsPage() {
       setIsNewMapModalOpen(false)
       setNewMapName('')
       setNewMapDescription('')
+
+      // Redirect to journey map editor
+      router.push(`/journey-maps/${newMap.id}`)
     }
   }
 
@@ -195,8 +200,9 @@ export default function JourneyMapsPage() {
           </div>
         ) : (
           /* Getting Started Guide */
-          <Card className="mt-8 bg-slate-50 border-slate-200">
-            <CardContent className="p-8 text-center">
+          <div className="flex items-center justify-center h-full">
+            <Card className="bg-slate-50 border-slate-200 max-w-2xl w-full mx-auto">
+              <CardContent className="p-8 text-center">
               <RouteIcon className="mx-auto h-16 w-16 text-gray-400 mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
                 {t('journeyMaps.gettingStarted.title')}
@@ -211,8 +217,9 @@ export default function JourneyMapsPage() {
                 <PlusIcon className="mr-2 h-4 w-4" />
                 {t('journeyMaps.gettingStarted.createFirst')}
               </Button>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         )}
       </div>
       
@@ -239,7 +246,7 @@ export default function JourneyMapsPage() {
               value={newMapDescription}
               onChange={(e) => setNewMapDescription(e.target.value)}
               placeholder={t('journeyMaps.modal.descriptionPlaceholder')}
-              className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
+              className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white text-gray-900 placeholder-gray-500"
               rows={3}
             />
           </div>
