@@ -85,21 +85,21 @@ export const DEFAULT_JOURNEY_CATEGORIES = [
     name: 'Emotions',
     description: 'How does the customer feel? What emotions are experienced?',
     type: 'emoji' as const,
-    color: 'bg-blue-50'
+    color: 'bg-slate-50'
   },
   {
     id: 'pain-points',
     name: 'Pain Points',
     description: 'What problems and frustrations does the customer have?',
     type: 'text' as const,
-    color: 'bg-red-50'
+    color: 'bg-slate-50'
   },
   {
     id: 'opportunities',
     name: 'Opportunities',
     description: 'Where are the improvement and innovation opportunities?',
     type: 'text' as const,
-    color: 'bg-green-50'
+    color: 'bg-slate-50'
   },
   {
     id: 'backstage',
@@ -139,19 +139,19 @@ export const DEFAULT_JOURNEY_PHASES = [
   {
     id: 'before',
     name: 'Before',
-    color: 'bg-blue-50',
+    color: 'bg-gray-100',
     description: 'Pre-interaction phase'
   },
   {
     id: 'during',
     name: 'During',
-    color: 'bg-green-50',
+    color: 'bg-gray-100',
     description: 'Active interaction phase'
   },
   {
     id: 'after',
     name: 'After',
-    color: 'bg-purple-50',
+    color: 'bg-gray-100',
     description: 'Post-interaction phase'
   }
 ]

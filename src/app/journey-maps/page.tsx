@@ -92,18 +92,9 @@ export default function JourneyMapsPage() {
 
   return (
     <div className="h-full flex flex-col">
-      <Header 
-        title={t('journeyMaps.title')} 
+      <Header
+        title={t('journeyMaps.title')}
         description={t('journeyMaps.subtitle')}
-        actions={
-          <Button 
-            variant="primary"
-            onClick={() => setIsNewMapModalOpen(true)}
-          >
-            <PlusIcon className="mr-2 h-4 w-4" />
-            {t('journeyMaps.createNew')}
-          </Button>
-        }
       />
       
       <div className="flex-1 p-8 overflow-auto bg-gray-50">

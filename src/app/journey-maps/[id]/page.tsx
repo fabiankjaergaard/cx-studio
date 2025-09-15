@@ -75,14 +75,14 @@ export default function JourneyMapBuilderPage() {
         description: '',
         persona: null,
         phases: DEFAULT_JOURNEY_PHASES,
-        stages: DEFAULT_JOURNEY_STAGES.slice(0, 4), // Start with 4 stages
+        stages: DEFAULT_JOURNEY_STAGES.slice(0, 3), // Start with 3 stages
         rows: DEFAULT_JOURNEY_CATEGORIES.map(category => ({
           id: category.id,
           category: category.name,
           description: category.description,
           type: category.type,
           color: category.color,
-          cells: DEFAULT_JOURNEY_STAGES.slice(0, 4).map(stage => ({
+          cells: DEFAULT_JOURNEY_STAGES.slice(0, 3).map(stage => ({
             id: `${category.id}-${stage.id}`,
             content: ''
           }))
@@ -106,14 +106,14 @@ export default function JourneyMapBuilderPage() {
           description: 'Produktchef, 32 år, Stockholm'
         },
         phases: DEFAULT_JOURNEY_PHASES,
-        stages: DEFAULT_JOURNEY_STAGES.slice(0, 5),
+        stages: DEFAULT_JOURNEY_STAGES.slice(0, 3),
         rows: DEFAULT_JOURNEY_CATEGORIES.map(category => ({
           id: category.id,
           category: category.name,
           description: category.description,
           type: category.type,
           color: category.color,
-          cells: DEFAULT_JOURNEY_STAGES.slice(0, 5).map(stage => ({
+          cells: DEFAULT_JOURNEY_STAGES.slice(0, 3).map(stage => ({
             id: `${category.id}-${stage.id}`,
             content: category.id === 'actions' ? 'Example content...' : ''
           }))
@@ -242,15 +242,15 @@ export default function JourneyMapBuilderPage() {
 
   const handleAddPhase = () => {
     if (!journeyMap) return
-    
+
     const phaseNumber = journeyMap.phases.length + 1
     const newPhase: JourneyMapPhase = {
       id: `phase-${Date.now()}`,
       name: `Phase ${phaseNumber}`,
-      color: `bg-gray-50`, // Default color
+      color: `bg-gray-100`, // Default color
       description: `Custom phase ${phaseNumber}`
     }
-    
+
     setJourneyMap({
       ...journeyMap,
       phases: [...journeyMap.phases, newPhase],
@@ -364,6 +364,7 @@ export default function JourneyMapBuilderPage() {
     })
   }
 
+
   if (!journeyMap) {
     return (
       <div className="h-full flex items-center justify-center">
@@ -407,51 +408,52 @@ export default function JourneyMapBuilderPage() {
         }
       />
       
-      <div className="flex-1 p-6 overflow-auto bg-gray-50">
-        {/* Persona Section */}
-        <div className="mb-6">
-          <Card className="border-l-4 border-l-slate-500">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  {journeyMap.persona ? (
-                    <>
-                      <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-medium">
-                        {journeyMap.persona.avatar}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{journeyMap.persona.name}</h3>
-                        <p className="text-sm text-gray-600">{journeyMap.persona.description}</p>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="flex items-center space-x-3">
-                      <UserIcon className="h-8 w-8 text-gray-400" />
-                      <div>
-                        <h3 className="font-medium text-gray-900">Ingen persona vald</h3>
-                        <p className="text-sm text-gray-500">Välj en persona för att personalisera journey map</p>
-                      </div>
+      <div className="flex-1 overflow-auto bg-gray-50">
+        <div className="p-6">
+            {/* Persona Section */}
+            <div className="mb-6">
+              <Card className="border-l-4 border-l-slate-500">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      {journeyMap.persona ? (
+                        <>
+                          <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-medium">
+                            {journeyMap.persona.avatar}
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{journeyMap.persona.name}</h3>
+                            <p className="text-sm text-gray-600">{journeyMap.persona.description}</p>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex items-center space-x-3">
+                          <UserIcon className="h-8 w-8 text-gray-400" />
+                          <div>
+                            <h3 className="font-medium text-gray-900">Ingen persona vald</h3>
+                            <p className="text-sm text-gray-500">Välj en persona för att personalisera journey map</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setIsPersonaModalOpen(true)}
-                >
-                  <EditIcon className="h-4 w-4 mr-1" />
-                  {journeyMap.persona ? 'Byt persona' : 'Välj persona'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsPersonaModalOpen(true)}
+                    >
+                      <EditIcon className="h-4 w-4 mr-1" />
+                      {journeyMap.persona ? 'Byt persona' : 'Välj persona'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-        {/* Journey Map Grid */}
-        <Card className="overflow-hidden">
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
+            {/* Journey Map Grid */}
+            <Card className="overflow-hidden">
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
                 {/* Phase Header Row */}
                 <thead>
                   {/* Phases Row */}
@@ -620,7 +622,7 @@ export default function JourneyMapBuilderPage() {
                   
                   {/* Add Row Button */}
                   <tr className="border-b border-gray-200">
-                    <td 
+                    <td
                       className="p-4 border-r border-gray-200 bg-gray-50/50 cursor-pointer hover:bg-gray-100 transition-colors"
                       onClick={handleAddRow}
                     >
@@ -639,6 +641,7 @@ export default function JourneyMapBuilderPage() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
 
       {/* Persona Selection Modal */}

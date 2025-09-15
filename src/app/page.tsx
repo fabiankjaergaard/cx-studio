@@ -3,7 +3,6 @@
 import { Header } from '@/components/dashboard/Header'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
-import { NewJourneyModal } from '@/components/journey/NewJourneyModal'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { PlusIcon, MapIcon, BookTemplateIcon, UsersIcon, BookOpenIcon, LayoutGridIcon, ActivityIcon, BarChart3Icon, ZapIcon, TrendingUpIcon, XIcon } from 'lucide-react'
 import { useState, useEffect } from 'react'
@@ -13,7 +12,6 @@ import { useJourneyStore } from '@/store/journey-store'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function Home() {
-  const [isNewJourneyModalOpen, setIsNewJourneyModalOpen] = useState(false)
   const [showWidgetSelector, setShowWidgetSelector] = useState(false)
   const [enabledWidgets, setEnabledWidgets] = useState<string[]>([])
   const { journeys } = useJourneyStore()
@@ -279,17 +277,16 @@ export default function Home() {
                 <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
               </div>
               <div className="grid grid-cols-2 gap-3 flex-1 content-center">
-                <button
-                  onClick={() => setIsNewJourneyModalOpen(true)}
-                  className="p-3 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer border border-slate-200 hover:border-slate-300"
-                >
-                  <div className="text-center">
-                    <div className="w-8 h-8 mx-auto mb-2 bg-slate-600 rounded-lg flex items-center justify-center hover:bg-slate-700 transition-colors">
-                      <MapIcon className="w-4 h-4 text-white" />
+                <Link href="/journey-maps">
+                  <div className="p-3 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer border border-slate-200 hover:border-slate-300">
+                    <div className="text-center">
+                      <div className="w-8 h-8 mx-auto mb-2 bg-slate-600 rounded-lg flex items-center justify-center hover:bg-slate-700 transition-colors">
+                        <MapIcon className="w-4 h-4 text-white" />
+                      </div>
+                      <p className="text-xs font-medium text-gray-900">Journey Maps</p>
                     </div>
-                    <p className="text-xs font-medium text-gray-900">Ny Journey</p>
                   </div>
-                </button>
+                </Link>
                 <Link href="/personas/create">
                   <div className="p-3 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer border border-slate-200 hover:border-slate-300">
                     <div className="text-center">
@@ -316,14 +313,6 @@ export default function Home() {
         <Header
           title={t('dashboard.title')}
           description={t('dashboard.subtitle')}
-          actions={
-            <Link href="/journey-maps/new">
-              <Button variant="primary">
-                <PlusIcon className="mr-2 h-4 w-4" />
-                {t('common.startNewJourneyMap')}
-              </Button>
-            </Link>
-          }
         />
 
         <div className="flex-1 p-6 overflow-auto bg-gray-50">
@@ -337,24 +326,25 @@ export default function Home() {
                       <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-2xl flex items-center justify-center">
                         <MapIcon className="w-8 h-8 text-slate-400" />
                       </div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">Skapa din första Journey Map</h3>
-                      <p className="text-sm text-gray-500 mb-6">Kartlägg din första kundresa för att komma igång</p>
-                      <Button
-                        onClick={() => setIsNewJourneyModalOpen(true)}
-                        className="bg-slate-900 hover:bg-slate-800"
-                      >
-                        <PlusIcon className="mr-2 h-4 w-4" />
-                        Skapa Journey Map
-                      </Button>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">Inga Journey Maps än</h3>
+                      <p className="text-sm text-gray-500 mb-6">Gå till Journey Maps-sektionen för att skapa din första</p>
+                      <Link href="/journey-maps">
+                        <Button variant="primary">
+                          <MapIcon className="mr-2 h-4 w-4" />
+                          Öppna Journey Maps
+                        </Button>
+                      </Link>
                     </div>
                   ) : (
                     <div className="h-full flex flex-col">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-medium text-gray-900">Mina Journey Maps</h3>
-                        <Button variant="outline" size="sm" onClick={() => setIsNewJourneyModalOpen(true)}>
-                          <PlusIcon className="mr-2 h-4 w-4" />
-                          Ny
-                        </Button>
+                        <Link href="/journey-maps">
+                          <Button variant="outline" size="sm">
+                            <MapIcon className="mr-2 h-4 w-4" />
+                            Visa alla
+                          </Button>
+                        </Link>
                       </div>
                       <div className="space-y-3 flex-1 overflow-y-auto">
                         {journeys.slice(0, 3).map((journey) => (
@@ -460,10 +450,6 @@ export default function Home() {
           </div>
         </div>
 
-        <NewJourneyModal
-          isOpen={isNewJourneyModalOpen}
-          onClose={() => setIsNewJourneyModalOpen(false)}
-        />
       </div>
     </AuthGuard>
   )

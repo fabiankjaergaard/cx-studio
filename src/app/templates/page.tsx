@@ -3,7 +3,6 @@
 import { Header } from '@/components/dashboard/Header'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { NewJourneyModal } from '@/components/journey/NewJourneyModal'
 import { useJourneyStore } from '@/store/journey-store'
 import { PlusIcon, EyeIcon, DownloadIcon, BookTemplateIcon } from 'lucide-react'
 import { useState } from 'react'
@@ -69,7 +68,6 @@ const getTemplates = (t: (key: string) => string) => [
 
 export default function TemplatesPage() {
   const { t } = useLanguage()
-  const [isNewJourneyModalOpen, setIsNewJourneyModalOpen] = useState(false)
   const { addJourney, setCurrentJourney } = useJourneyStore()
   const router = useRouter()
   const templates = getTemplates(t)
@@ -104,15 +102,6 @@ export default function TemplatesPage() {
       <Header 
         title={t('templates.title')} 
         description={t('templates.subtitle')}
-        actions={
-          <Button 
-            variant="primary"
-            onClick={() => setIsNewJourneyModalOpen(true)}
-          >
-            <PlusIcon className="mr-2 h-4 w-4" />
-            {t('templates.createCustom')}
-          </Button>
-        }
       />
       
       <div className="flex-1 p-6 overflow-auto bg-gray-50">
@@ -201,10 +190,6 @@ export default function TemplatesPage() {
         </div>
       </div>
       
-      <NewJourneyModal
-        isOpen={isNewJourneyModalOpen}
-        onClose={() => setIsNewJourneyModalOpen(false)}
-      />
     </div>
   )
 }
