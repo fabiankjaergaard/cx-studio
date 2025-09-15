@@ -20,6 +20,7 @@ import Link from 'next/link'
 import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES } from '@/types/journey-map'
 import { JourneyMapCell as JourneyMapCellComponent } from '@/components/journey-map/JourneyMapCell'
 import { RowEditor } from '@/components/journey-map/RowEditor'
+import { JourneyMapOnboarding } from '@/components/onboarding/JourneyMapOnboarding'
 
 interface Persona {
   id: string
@@ -64,6 +65,7 @@ export default function JourneyMapBuilderPage() {
   const [isDraggingPhase, setIsDraggingPhase] = useState(false)
   const [dragStartX, setDragStartX] = useState(0)
   const [dragBoundaryIndex, setDragBoundaryIndex] = useState<number | null>(null)
+  const [isOnboardingActive, setIsOnboardingActive] = useState(false)
 
   // Initialize journey map data
   useEffect(() => {
@@ -76,7 +78,7 @@ export default function JourneyMapBuilderPage() {
         persona: null,
         phases: DEFAULT_JOURNEY_PHASES,
         stages: DEFAULT_JOURNEY_STAGES.slice(0, 3), // Start with 3 stages
-        rows: DEFAULT_JOURNEY_CATEGORIES.map(category => ({
+        rows: [DEFAULT_JOURNEY_CATEGORIES[0]].map(category => ({
           id: category.id,
           category: category.name,
           description: category.description,
@@ -93,6 +95,8 @@ export default function JourneyMapBuilderPage() {
         status: 'draft'
       }
       setJourneyMap(newJourneyMap)
+      // Start onboarding for new journey maps
+      setIsOnboardingActive(true)
     } else {
       // Load existing journey map (mock data for now)
       const mockJourneyMap: JourneyMapData = {
@@ -457,8 +461,9 @@ export default function JourneyMapBuilderPage() {
                 {/* Phase Header Row */}
                 <thead>
                   {/* Phases Row */}
-                  <tr 
+                  <tr
                     className="bg-gray-100 border-b border-gray-300"
+                    data-onboarding="phases"
                     onMouseMove={handlePhaseResize}
                     onMouseUp={handlePhaseResizeEnd}
                     onMouseLeave={handlePhaseResizeEnd}
@@ -511,7 +516,7 @@ export default function JourneyMapBuilderPage() {
                   </tr>
                   
                   {/* Stages Header Row */}
-                  <tr className="bg-slate-50 border-b border-gray-200">
+                  <tr className="bg-slate-50 border-b border-gray-200" data-onboarding="stages">
                     <th className="w-48 p-4 text-left text-sm font-medium text-gray-900 border-r border-gray-200">
                       Journey Kategorier
                     </th>
@@ -556,7 +561,11 @@ export default function JourneyMapBuilderPage() {
                 <tbody>
                   {journeyMap.rows.map((row, rowIndex) => (
                     <tr key={row.id} className="border-b border-gray-200">
-                      <td className={`p-4 border-r border-gray-200 ${row.color} cursor-pointer hover:opacity-80 transition-opacity`} onClick={() => handleEditRow(row)}>
+                      <td
+                        className={`p-4 border-r border-gray-200 ${row.color} cursor-pointer hover:opacity-80 transition-opacity`}
+                        onClick={() => handleEditRow(row)}
+                        data-onboarding={rowIndex === 0 ? "categories" : undefined}
+                      >
                         <div className="space-y-1">
                           <h4 className="font-medium text-gray-900 text-sm">
                             {row.category}
@@ -606,7 +615,11 @@ export default function JourneyMapBuilderPage() {
                       ) : (
                         // For other types, show individual cells
                         row.cells.map((cell, cellIndex) => (
-                          <td key={cell.id} className={`p-2 border-r border-gray-200 align-top ${row.color}`}>
+                          <td
+                            key={cell.id}
+                            className={`p-2 border-r border-gray-200 align-top ${row.color}`}
+                            data-onboarding={rowIndex === 0 && cellIndex === 0 ? "cells" : undefined}
+                          >
                             <JourneyMapCellComponent
                               content={cell.content}
                               type={row.type}
@@ -734,6 +747,13 @@ export default function JourneyMapBuilderPage() {
         onSave={handleSaveRow}
         onDelete={editingRow ? handleDeleteRow : undefined}
         isNewRow={!editingRow}
+      />
+
+      {/* Onboarding Component */}
+      <JourneyMapOnboarding
+        isActive={isOnboardingActive}
+        onComplete={() => setIsOnboardingActive(false)}
+        onSkip={() => setIsOnboardingActive(false)}
       />
     </div>
   )

@@ -102,12 +102,12 @@ export default function JourneyMapsPage() {
           /* Journey Maps Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {journeyMaps.map((journeyMap) => (
-            <Card key={journeyMap.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between">
+            <Card key={journeyMap.id} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 h-80">
+              <CardContent className="pt-6 h-full flex flex-col">
+                <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
-                      <CardTitle className="text-lg">{journeyMap.name}</CardTitle>
+                      <h3 className="text-lg font-medium text-gray-900">{journeyMap.name}</h3>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[journeyMap.status]}`}>
                         {statusLabels[journeyMap.status]}
                       </span>
@@ -135,79 +135,84 @@ export default function JourneyMapsPage() {
                     </Button>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
+
+                <div className="space-y-3 flex-1">
                   {journeyMap.persona && (
                     <div className="flex items-center text-sm text-gray-600">
                       <UserIcon className="h-4 w-4 mr-2" />
                       {journeyMap.persona}
                     </div>
                   )}
-                  
+
                   <div className="flex items-center text-sm text-gray-600">
                     <CalendarIcon className="h-4 w-4 mr-2" />
                     {t('journeyMaps.lastModified')}: {new Date(journeyMap.lastModified).toLocaleDateString(language === 'sv' ? 'sv-SE' : 'en-US')}
                   </div>
-                  
+
                   <div className="flex items-center justify-between text-sm text-gray-500">
                     <span>{journeyMap.stages} {t('journeyMaps.stages')}</span>
                     <span>{t('journeyMaps.createdBy')}: {journeyMap.createdBy}</span>
                   </div>
-                  
-                  <div className="flex space-x-2 pt-2">
-                    <Link href={`/journey-maps/${journeyMap.id}`} className="flex-1">
-                      <Button variant="primary" size="sm" className="w-full">
-                        <EditIcon className="h-3 w-3 mr-1" />
-                        {t('journeyMaps.actions.edit')}
-                      </Button>
-                    </Link>
-                    <Link href={`/journey-maps/${journeyMap.id}/view`}>
-                      <Button variant="outline" size="sm">
-                        <ExternalLinkIcon className="h-3 w-3" />
-                      </Button>
-                    </Link>
-                  </div>
+                </div>
+
+                <div className="flex space-x-2 pt-4 border-t border-gray-100 mt-4">
+                  <Link href={`/journey-maps/${journeyMap.id}`} className="flex-1">
+                    <Button variant="primary" size="sm" className="w-full">
+                      <EditIcon className="h-3 w-3 mr-1" />
+                      {t('journeyMaps.actions.edit')}
+                    </Button>
+                  </Link>
+                  <Link href={`/journey-maps/${journeyMap.id}/view`}>
+                    <Button variant="outline" size="sm">
+                      <ExternalLinkIcon className="h-3 w-3" />
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
             ))}
 
             {/* Add New Journey Map Card */}
-            <Card
-              className="border-dashed border-2 border-gray-300 hover:border-gray-400 transition-colors cursor-pointer"
-              onClick={() => setIsNewMapModalOpen(true)}
-            >
-              <CardContent className="p-8 text-center">
-                <RouteIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {t('journeyMaps.createNewCard.title')}
-                </h3>
-                <p className="text-gray-500">
-                  {t('journeyMaps.createNewCard.description')}
-                </p>
-              </CardContent>
-            </Card>
+            <Link href="/journey-maps/new">
+              <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-gray-400 hover:shadow-sm transition-all duration-200 h-80 cursor-pointer">
+                <CardContent className="pt-6 h-full flex flex-col">
+                  <div className="text-center py-12 flex-1 flex flex-col justify-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center hover:bg-gray-100 transition-colors">
+                      <RouteIcon className="w-8 h-8 text-gray-400 hover:text-gray-500" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-500 mb-2 hover:text-gray-600">
+                      {t('journeyMaps.createNewCard.title')}
+                    </h3>
+                    <p className="text-sm text-gray-400 hover:text-gray-500">
+                      {t('journeyMaps.createNewCard.description')}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
         ) : (
           /* Getting Started Guide */
           <div className="flex items-center justify-center h-full">
-            <Card className="bg-slate-50 border-slate-200 max-w-2xl w-full mx-auto">
-              <CardContent className="p-8 text-center">
-              <RouteIcon className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {t('journeyMaps.gettingStarted.title')}
-              </h3>
-              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                {t('journeyMaps.gettingStarted.description')}
-              </p>
-              <Button 
-                variant="primary"
-                onClick={() => setIsNewMapModalOpen(true)}
-              >
-                <PlusIcon className="mr-2 h-4 w-4" />
-                {t('journeyMaps.gettingStarted.createFirst')}
-              </Button>
+            <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 max-w-2xl w-full mx-auto">
+              <CardContent className="pt-6 h-full flex flex-col">
+                <div className="text-center py-12 flex-1 flex flex-col justify-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-2xl flex items-center justify-center">
+                    <RouteIcon className="w-8 h-8 text-slate-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    {t('journeyMaps.gettingStarted.title')}
+                  </h3>
+                  <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                    {t('journeyMaps.gettingStarted.description')}
+                  </p>
+                  <Link href="/journey-maps/new">
+                    <Button variant="primary">
+                      <PlusIcon className="mr-2 h-4 w-4" />
+                      {t('journeyMaps.gettingStarted.createFirst')}
+                    </Button>
+                  </Link>
+                </div>
               </CardContent>
             </Card>
           </div>
