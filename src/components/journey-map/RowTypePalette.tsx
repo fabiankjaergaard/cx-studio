@@ -146,25 +146,6 @@ export function RowTypePalette({
           </div>
         </div>
 
-        {/* Instructions */}
-        <div className="pt-4 border-t border-gray-100">
-          <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-            <p className="text-xs text-blue-800 leading-relaxed">
-              💡 <strong>Tip:</strong> Drag any block to the "Add row" area in your journey map to quickly add that type of row.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div className="px-4 py-2 border-t border-gray-100 bg-gray-50">
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <span>Current color:</span>
-          <div className="flex items-center space-x-2">
-            <div className={`w-3 h-3 rounded border ${selectedColorInfo?.class}`} />
-            <span className="font-medium">{selectedColorInfo?.name}</span>
-          </div>
-        </div>
       </div>
     </div>
   )

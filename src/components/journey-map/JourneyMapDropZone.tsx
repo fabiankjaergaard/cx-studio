@@ -44,11 +44,11 @@ export function JourneyMapDropZone({
         className={`
           p-4 border-r border-gray-200 transition-all duration-200 cursor-pointer
           ${isHighlighted
-            ? 'bg-blue-50/30 border-blue-300'
+            ? 'bg-slate-50/30 border-slate-300'
             : 'bg-gray-50/50 hover:bg-gray-100'
           }
           ${isActive
-            ? 'ring-1 ring-blue-300 ring-inset'
+            ? 'ring-1 ring-slate-300 ring-inset'
             : ''
           }
         `}
@@ -60,8 +60,8 @@ export function JourneyMapDropZone({
               <div className={`
                 w-10 h-10 rounded-full flex items-center justify-center transition-colors
                 ${isActive
-                  ? 'bg-blue-200 text-blue-700'
-                  : 'bg-blue-100 text-blue-600'
+                  ? 'bg-slate-200 text-slate-700'
+                  : 'bg-slate-100 text-slate-600'
                 }
               `}>
                 <MousePointer className="w-5 h-5" />
@@ -70,13 +70,13 @@ export function JourneyMapDropZone({
                 <span className={`
                   text-sm font-medium transition-colors
                   ${isActive
-                    ? 'text-blue-800'
-                    : 'text-blue-700'
+                    ? 'text-slate-800'
+                    : 'text-slate-700'
                   }
                 `}>
                   {isActive ? 'Drop to add row' : 'Drop block here'}
                 </span>
-                <p className="text-xs text-blue-600">
+                <p className="text-xs text-slate-600">
                   Release to create new row
                 </p>
               </div>
@@ -100,7 +100,7 @@ export function JourneyMapDropZone({
 
         {/* Drop indicator overlay */}
         {isActive && (
-          <div className="absolute inset-0 border-2 border-dashed border-blue-400 rounded bg-blue-50 bg-opacity-20 pointer-events-none" />
+          <div className="absolute inset-0 border-2 border-dashed border-slate-400 rounded bg-slate-50 bg-opacity-20 pointer-events-none" />
         )}
       </td>
 
@@ -110,13 +110,13 @@ export function JourneyMapDropZone({
           key={`empty-${index}`}
           className={`
             p-2 border-r border-gray-200 transition-colors duration-200
-            ${isHighlighted ? 'bg-blue-50/20' : ''}
+            ${isHighlighted ? 'bg-slate-50/20' : ''}
           `}
         />
       ))}
 
       {/* Empty cell for the last column */}
-      <td className={`p-4 transition-colors duration-200 ${isHighlighted ? 'bg-blue-50/20' : ''}`} />
+      <td className={`p-4 transition-colors duration-200 ${isHighlighted ? 'bg-slate-50/20' : ''}`} />
     </tr>
   )
 }

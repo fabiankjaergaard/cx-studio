@@ -72,7 +72,7 @@ export function RowInsertionZone({
         className={`
           p-1 transition-all duration-100 relative cursor-pointer
           ${isActive
-            ? 'bg-green-100 border-green-300'
+            ? 'bg-slate-100 border-slate-300'
             : 'bg-blue-50/20 hover:bg-blue-50/40'
           }
         `}
@@ -80,7 +80,7 @@ export function RowInsertionZone({
       >
         {/* Drop indicator */}
         {isActive && (
-          <div className="w-full h-1 bg-green-400 rounded-full mx-auto" />
+          <div className="w-full h-1 bg-slate-600 rounded-full mx-auto" />
         )}
         {!isActive && (
           <div className="w-full h-px bg-blue-200/60 mx-auto" />

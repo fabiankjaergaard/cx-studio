@@ -81,14 +81,14 @@ export default function JourneyMapBuilderPage() {
         description: '',
         persona: null,
         phases: DEFAULT_JOURNEY_PHASES,
-        stages: DEFAULT_JOURNEY_STAGES.slice(0, 3), // Start with 3 stages
+        stages: DEFAULT_JOURNEY_STAGES, // Include all default stages
         rows: [DEFAULT_JOURNEY_CATEGORIES[0]].map(category => ({
           id: category.id,
           category: category.name,
           description: category.description,
           type: category.type,
           color: category.color,
-          cells: DEFAULT_JOURNEY_STAGES.slice(0, 3).map(stage => ({
+          cells: DEFAULT_JOURNEY_STAGES.map(stage => ({
             id: `${category.id}-${stage.id}`,
             content: ''
           }))
@@ -114,14 +114,14 @@ export default function JourneyMapBuilderPage() {
           description: 'Produktchef, 32 år, Stockholm'
         },
         phases: DEFAULT_JOURNEY_PHASES,
-        stages: DEFAULT_JOURNEY_STAGES.slice(0, 3),
+        stages: DEFAULT_JOURNEY_STAGES,
         rows: DEFAULT_JOURNEY_CATEGORIES.map(category => ({
           id: category.id,
           category: category.name,
           description: category.description,
           type: category.type,
           color: category.color,
-          cells: DEFAULT_JOURNEY_STAGES.slice(0, 3).map(stage => ({
+          cells: DEFAULT_JOURNEY_STAGES.map(stage => ({
             id: `${category.id}-${stage.id}`,
             content: category.id === 'actions' ? 'Example content...' : ''
           }))
@@ -376,6 +376,18 @@ export default function JourneyMapBuilderPage() {
   const handleEditRow = (row: JourneyMapRow) => {
     setEditingRow(row)
     setIsRowEditorOpen(true)
+  }
+
+  const handleRemoveRow = (rowId: string) => {
+    if (!journeyMap) return
+
+    if (confirm('Är du säker på att du vill ta bort denna rad?')) {
+      setJourneyMap({
+        ...journeyMap,
+        rows: journeyMap.rows.filter(row => row.id !== rowId),
+        updatedAt: new Date().toISOString()
+      })
+    }
   }
 
   const handleSaveRow = (rowData: Partial<JourneyMapRow>) => {
@@ -640,17 +652,31 @@ export default function JourneyMapBuilderPage() {
                     <React.Fragment key={`row-section-${row.id}`}>
                       <tr key={row.id} className="border-b border-gray-100">
                       <td
-                        className={`p-4 border-r border-gray-200 ${row.color} cursor-pointer hover:opacity-80 transition-opacity`}
-                        onClick={() => handleEditRow(row)}
+                        className={`p-4 border-r border-gray-200 ${row.color} group relative`}
                         data-onboarding={rowIndex === 0 ? "categories" : undefined}
                       >
-                        <div className="space-y-1">
+                        <div
+                          className="space-y-1 cursor-pointer hover:opacity-80 transition-opacity"
+                          onClick={() => handleEditRow(row)}
+                        >
                           <h4 className="font-medium text-gray-900 text-sm">
                             {row.category}
                           </h4>
                           <p className="text-xs text-gray-500">{row.description}</p>
                           <p className="text-xs text-gray-400 capitalize">{row.type}</p>
                         </div>
+
+                        {/* Delete button - appears on hover */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleRemoveRow(row.id)
+                          }}
+                          className="absolute top-2 right-2 w-6 h-6 bg-gray-400 hover:bg-gray-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center shadow-sm"
+                          title="Ta bort rad"
+                        >
+                          <TrashIcon className="w-3 h-3" />
+                        </button>
                       </td>
                       {(row.type === 'emoji' || row.type === 'pain-points' || row.type === 'opportunities' || row.type === 'metrics' || row.type === 'channels') ? (
                         // For visualization components, create one cell spanning all stages

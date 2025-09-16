@@ -184,6 +184,12 @@ export const DEFAULT_JOURNEY_STAGES = [
     phaseId: 'during'
   },
   {
+    id: 'support',
+    name: 'Support',
+    description: 'Customer receives ongoing support and service',
+    phaseId: 'after'
+  },
+  {
     id: 'advocacy',
     name: 'Advocacy',
     description: 'Customer becomes ambassador and recommends to others',

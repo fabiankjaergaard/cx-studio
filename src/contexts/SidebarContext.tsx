@@ -1,6 +1,7 @@
 'use client'
 
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 
 interface SidebarContextType {
   isCollapsed: boolean
@@ -16,7 +17,14 @@ export function SidebarProvider({
   children: React.ReactNode
   initialCollapsed?: boolean
 }) {
+  const pathname = usePathname()
   const [isCollapsed, setIsCollapsed] = useState(initialCollapsed)
+
+  // Update collapsed state when route changes
+  useEffect(() => {
+    const isJourneyMapRoute = pathname?.includes('/journey-maps/') && pathname !== '/journey-maps'
+    setIsCollapsed(isJourneyMapRoute)
+  }, [pathname])
 
   return (
     <SidebarContext.Provider value={{ isCollapsed, setIsCollapsed }}>
