@@ -11,8 +11,7 @@ import {
   AlertTriangle,
   TrendingUp,
   BarChart3,
-  Layers,
-  Sticker
+  Layers
 } from 'lucide-react'
 import { ROW_TYPES, ROW_COLORS } from '@/types/journey-map'
 import { useDragContext } from '@/components/journey/DragDropProvider'
@@ -47,8 +46,6 @@ const getRowTypeIcon = (type: string) => {
       return BarChart3
     case 'channels':
       return Layers
-    case 'stickers':
-      return Sticker
     default:
       return Type
   }
