@@ -14,8 +14,7 @@ import {
   UserIcon,
   TrashIcon,
   ArrowLeftIcon,
-  EditIcon,
-  Sticker
+  EditIcon
 } from 'lucide-react'
 import Link from 'next/link'
 import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES } from '@/types/journey-map'
@@ -25,9 +24,6 @@ import { JourneyMapOnboarding } from '@/components/onboarding/JourneyMapOnboardi
 import { DragDropProvider } from '@/components/journey/DragDropProvider'
 import { RowTypePalette } from '@/components/journey-map/RowTypePalette'
 import { RowInsertionZone } from '@/components/journey-map/RowInsertionZone'
-import { FloatingStickerPalette } from '@/components/journey-map/FloatingStickerPalette'
-import { StickerOverlay } from '@/components/journey-map/StickerOverlay'
-import { StickerType } from '@/types/stickers'
 
 interface Persona {
   id: string
@@ -74,9 +70,6 @@ export default function JourneyMapBuilderPage() {
   const [dragBoundaryIndex, setDragBoundaryIndex] = useState<number | null>(null)
   const [isOnboardingActive, setIsOnboardingActive] = useState(false)
   const [isPaletteCollapsed, setIsPaletteCollapsed] = useState(false)
-  const [isStickerPaletteOpen, setIsStickerPaletteOpen] = useState(false)
-  const [selectedSticker, setSelectedSticker] = useState<StickerType | null>(null)
-  const [placedStickers, setPlacedStickers] = useState<any[]>([])
 
   // Initialize journey map data
   useEffect(() => {
@@ -487,14 +480,6 @@ export default function JourneyMapBuilderPage() {
               <SettingsIcon className="mr-2 h-4 w-4" />
               Settings
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => setIsStickerPaletteOpen(!isStickerPaletteOpen)}
-              className={isStickerPaletteOpen ? 'bg-purple-50 border-purple-200' : ''}
-            >
-              <Sticker className="mr-2 h-4 w-4" />
-              Stickers
-            </Button>
             <Button 
               variant="primary"
               onClick={handleSave}
@@ -549,11 +534,10 @@ export default function JourneyMapBuilderPage() {
             </div>
 
             {/* Journey Map Grid */}
-            <div className="relative">
-              <Card className="overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
+            <Card className="overflow-hidden">
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
                 {/* Phase Header Row */}
                 <thead>
                   {/* Phases Row */}
@@ -770,19 +754,10 @@ export default function JourneyMapBuilderPage() {
                     stageCount={journeyMap.stages.length}
                   />
                 </tbody>
-                  </table>
-                </div>
-              </CardContent>
-              </Card>
-
-              {/* Sticker Overlay */}
-              <StickerOverlay
-                stickers={placedStickers}
-                onChange={setPlacedStickers}
-                selectedSticker={selectedSticker}
-                onStickerPlace={() => setSelectedSticker(null)}
-              />
+              </table>
             </div>
+          </CardContent>
+          </Card>
         </div>
       </div>
         </div>
@@ -884,13 +859,6 @@ export default function JourneyMapBuilderPage() {
         isActive={isOnboardingActive}
         onComplete={() => setIsOnboardingActive(false)}
         onSkip={() => setIsOnboardingActive(false)}
-      />
-
-      {/* Floating Sticker Palette */}
-      <FloatingStickerPalette
-        isOpen={isStickerPaletteOpen}
-        onClose={() => setIsStickerPaletteOpen(false)}
-        onStickerSelect={(sticker) => setSelectedSticker(sticker)}
       />
     </DragDropProvider>
   )
