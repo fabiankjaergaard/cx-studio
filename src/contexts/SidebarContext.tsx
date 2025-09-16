@@ -9,8 +9,14 @@ interface SidebarContextType {
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined)
 
-export function SidebarProvider({ children }: { children: React.ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(false)
+export function SidebarProvider({
+  children,
+  initialCollapsed = true
+}: {
+  children: React.ReactNode
+  initialCollapsed?: boolean
+}) {
+  const [isCollapsed, setIsCollapsed] = useState(initialCollapsed)
 
   return (
     <SidebarContext.Provider value={{ isCollapsed, setIsCollapsed }}>

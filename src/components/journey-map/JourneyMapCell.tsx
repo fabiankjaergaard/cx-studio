@@ -6,10 +6,11 @@ import { EmotionCurve } from './EmotionCurve'
 import { PainPointsVisualization } from './PainPointsVisualization'
 import { OpportunitiesVisualization } from './OpportunitiesVisualization'
 import { MetricsVisualization } from './MetricsVisualization'
+import { ChannelsVisualization } from './ChannelsVisualization'
 
 interface JourneyMapCellProps {
   content: string
-  type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics'
+  type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics' | 'channels'
   onChange: (content: string) => void
   placeholder?: string
   stageCount?: number
@@ -81,6 +82,16 @@ export function JourneyMapCell({
         <MetricsVisualization
           metrics={metrics}
           onChange={(newMetrics) => onChange(newMetrics.join(','))}
+          stageCount={stageCount}
+        />
+      )
+
+    case 'channels':
+      const channels = content ? content.split(',').map(e => e.trim()) : []
+      return (
+        <ChannelsVisualization
+          channels={channels}
+          onChange={(newChannels) => onChange(newChannels.join(','))}
           stageCount={stageCount}
         />
       )

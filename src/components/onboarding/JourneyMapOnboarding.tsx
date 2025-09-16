@@ -20,6 +20,20 @@ interface JourneyMapOnboardingProps {
 
 const onboardingSteps: OnboardingStep[] = [
   {
+    id: 'palette',
+    title: 'Block-palette',
+    description: 'Här hittar du alla verktyg för att bygga din journey map. Dra block från paletten för att lägga till nya rader och innehållstyper.',
+    targetSelector: '[data-onboarding="palette"]',
+    position: 'right'
+  },
+  {
+    id: 'persona',
+    title: 'Persona',
+    description: 'Välj eller skapa en persona för din journey map. Detta hjälper dig att fokusera på en specifik målgrupp och deras behov.',
+    targetSelector: '[data-onboarding="persona"]',
+    position: 'bottom'
+  },
+  {
     id: 'phases',
     title: 'Faser',
     description: 'Faser representerar de övergripande etapperna i kundresan. Klicka på fasnamnet för att redigera det.',
@@ -122,16 +136,24 @@ export function JourneyMapOnboarding({ isActive, onComplete, onSkip }: JourneyMa
         style={{
           // Smart positioning with visual alignment
           top: (() => {
-            // For phases and stages (top elements), place below with aligned tops
-            if (currentStepData.id === 'phases' || currentStepData.id === 'stages') {
+            // For palette, center vertically with the highlighted area
+            if (currentStepData.id === 'palette') {
+              return highlightPosition.top + (highlightPosition.height / 2) - 100
+            }
+            // For persona, phases and stages (top elements), place below with aligned tops
+            if (currentStepData.id === 'persona' || currentStepData.id === 'phases' || currentStepData.id === 'stages') {
               return highlightPosition.top + highlightPosition.height + 16
             }
             // For categories and cells, align top edges
             return highlightPosition.top
           })(),
           left: (() => {
-            // For phases and stages (placed below), align left edges
-            if (currentStepData.id === 'phases' || currentStepData.id === 'stages') {
+            // For palette, position to the right
+            if (currentStepData.id === 'palette') {
+              return highlightPosition.left + highlightPosition.width + 24
+            }
+            // For persona, phases and stages (placed below), align left edges
+            if (currentStepData.id === 'persona' || currentStepData.id === 'phases' || currentStepData.id === 'stages') {
               return Math.max(16, highlightPosition.left)
             }
 

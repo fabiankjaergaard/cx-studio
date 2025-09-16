@@ -1,0 +1,91 @@
+'use client'
+
+import { useDrop } from 'react-dnd'
+import { useState, useEffect } from 'react'
+import { PlusIcon } from 'lucide-react'
+import { useDragContext } from '@/components/journey/DragDropProvider'
+
+interface DroppedItem {
+  rowType: string
+  name: string
+  description: string
+  color: string
+}
+
+interface RowInsertionZoneProps {
+  onDropBlock: (item: DroppedItem, insertIndex: number) => void
+  insertIndex: number
+  stageCount: number
+  showAlways?: boolean
+}
+
+export function RowInsertionZone({
+  onDropBlock,
+  insertIndex,
+  stageCount,
+  showAlways = false
+}: RowInsertionZoneProps) {
+  const { isDragging } = useDragContext()
+
+  const [{ isOver, canDrop }, drop] = useDrop(() => ({
+    accept: 'ROW_TYPE_BLOCK',
+    drop: (item: DroppedItem) => {
+      console.log('RowInsertionZone drop triggered:', item, 'at index:', insertIndex)
+      onDropBlock(item, insertIndex)
+      return undefined // Explicitly return undefined to prevent propagation
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+  }), [insertIndex, onDropBlock])
+
+  const isActive = isOver && canDrop
+  const shouldShow = showAlways || (isDragging && (isActive || isOver))
+
+  // Debug logging
+  useEffect(() => {
+    if (isOver || canDrop) {
+      console.log(`Zone ${insertIndex} - isOver: ${isOver}, canDrop: ${canDrop}, isDragging: ${isDragging}`)
+    }
+  }, [isOver, canDrop, isDragging, insertIndex])
+
+  // Single consistent drop target - always visible for easier targeting
+  if (!shouldShow) {
+    return (
+      <tr className="h-2 group relative">
+        <td
+          ref={drop as any}
+          colSpan={stageCount + 2}
+          className="p-0 bg-transparent hover:bg-blue-50/30 transition-colors cursor-pointer relative"
+          title={`Drop zone ${insertIndex}`}
+        />
+      </tr>
+    )
+  }
+
+  return (
+    <tr className="h-6 group relative">
+      <td
+        ref={drop as any}
+        colSpan={stageCount + 2}
+        className={`
+          p-1 transition-all duration-100 relative cursor-pointer
+          ${isActive
+            ? 'bg-green-100 border-green-300'
+            : 'bg-blue-50/20 hover:bg-blue-50/40'
+          }
+        `}
+        title={`Drop zone ${insertIndex}`}
+      >
+        {/* Drop indicator */}
+        {isActive && (
+          <div className="w-full h-1 bg-green-400 rounded-full mx-auto" />
+        )}
+        {!isActive && (
+          <div className="w-full h-px bg-blue-200/60 mx-auto" />
+        )}
+      </td>
+    </tr>
+  )
+}

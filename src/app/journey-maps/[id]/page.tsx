@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -21,6 +21,9 @@ import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, Journey
 import { JourneyMapCell as JourneyMapCellComponent } from '@/components/journey-map/JourneyMapCell'
 import { RowEditor } from '@/components/journey-map/RowEditor'
 import { JourneyMapOnboarding } from '@/components/onboarding/JourneyMapOnboarding'
+import { DragDropProvider } from '@/components/journey/DragDropProvider'
+import { RowTypePalette } from '@/components/journey-map/RowTypePalette'
+import { RowInsertionZone } from '@/components/journey-map/RowInsertionZone'
 
 interface Persona {
   id: string
@@ -66,6 +69,7 @@ export default function JourneyMapBuilderPage() {
   const [dragStartX, setDragStartX] = useState(0)
   const [dragBoundaryIndex, setDragBoundaryIndex] = useState<number | null>(null)
   const [isOnboardingActive, setIsOnboardingActive] = useState(false)
+  const [isPaletteCollapsed, setIsPaletteCollapsed] = useState(false)
 
   // Initialize journey map data
   useEffect(() => {
@@ -316,6 +320,59 @@ export default function JourneyMapBuilderPage() {
     setIsRowEditorOpen(true)
   }
 
+  const handleDropBlock = (item: { rowType: string; name: string; description: string; color: string }) => {
+    if (!journeyMap) return
+
+    const newRowId = `row-${Date.now()}`
+    const newRow: JourneyMapRow = {
+      id: newRowId,
+      category: item.name,
+      description: item.description,
+      type: item.rowType as any,
+      color: item.color,
+      cells: journeyMap.stages.map(stage => ({
+        id: `${newRowId}-${stage.id}`,
+        content: item.rowType === 'emoji' ? '😐' : ''
+      }))
+    }
+
+    setJourneyMap({
+      ...journeyMap,
+      rows: [...journeyMap.rows, newRow],
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleDropBlockAtIndex = (item: { rowType: string; name: string; description: string; color: string }, insertIndex: number) => {
+    if (!journeyMap) return
+
+    console.log('Dropping block:', item, 'at index:', insertIndex)
+
+    const newRowId = `row-${Date.now()}`
+    const newRow: JourneyMapRow = {
+      id: newRowId,
+      category: item.name,
+      description: item.description,
+      type: item.rowType as any,
+      color: item.color,
+      cells: journeyMap.stages.map(stage => ({
+        id: `${newRowId}-${stage.id}`,
+        content: item.rowType === 'emoji' ? '😐' : ''
+      }))
+    }
+
+    // Insert at specific index
+    const newRows = [...journeyMap.rows]
+    newRows.splice(insertIndex, 0, newRow)
+
+    setJourneyMap({
+      ...journeyMap,
+      rows: newRows,
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+
   const handleEditRow = (row: JourneyMapRow) => {
     setEditingRow(row)
     setIsRowEditorOpen(true)
@@ -381,8 +438,19 @@ export default function JourneyMapBuilderPage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <Header 
+    <DragDropProvider>
+      <div className="h-full flex">
+        {/* Left Palette */}
+        <RowTypePalette
+          isCollapsed={isPaletteCollapsed}
+          onToggleCollapse={() => setIsPaletteCollapsed(!isPaletteCollapsed)}
+          className="flex-shrink-0"
+          data-onboarding="palette"
+        />
+
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Header 
         title={journeyMap.name} 
         description={journeyMap.description || 'Redigera din customer journey map'}
         actions={
@@ -412,10 +480,10 @@ export default function JourneyMapBuilderPage() {
         }
       />
       
-      <div className="flex-1 overflow-auto bg-gray-50">
-        <div className="p-6">
+          <div className="flex-1 overflow-auto bg-gray-50">
+            <div className="p-6">
             {/* Persona Section */}
-            <div className="mb-6">
+            <div className="mb-6" data-onboarding="persona">
               <Card className="border-l-4 border-l-slate-500">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
@@ -516,7 +584,7 @@ export default function JourneyMapBuilderPage() {
                   </tr>
                   
                   {/* Stages Header Row */}
-                  <tr className="bg-slate-50 border-b border-gray-200" data-onboarding="stages">
+                  <tr className="bg-slate-50 border-b border-gray-100" data-onboarding="stages">
                     <th className="w-48 p-4 text-left text-sm font-medium text-gray-900 border-r border-gray-200">
                       Journey Kategorier
                     </th>
@@ -559,8 +627,18 @@ export default function JourneyMapBuilderPage() {
                 
                 {/* Content Rows */}
                 <tbody>
+                  {/* Insertion zone at top */}
+                  <RowInsertionZone
+                    key={`insertion-0-${journeyMap.rows.length}`}
+                    onDropBlock={handleDropBlockAtIndex}
+                    insertIndex={0}
+                    stageCount={journeyMap.stages.length}
+                    showAlways={false}
+                  />
+
                   {journeyMap.rows.map((row, rowIndex) => (
-                    <tr key={row.id} className="border-b border-gray-200">
+                    <React.Fragment key={`row-section-${row.id}`}>
+                      <tr key={row.id} className="border-b border-gray-100">
                       <td
                         className={`p-4 border-r border-gray-200 ${row.color} cursor-pointer hover:opacity-80 transition-opacity`}
                         onClick={() => handleEditRow(row)}
@@ -574,7 +652,7 @@ export default function JourneyMapBuilderPage() {
                           <p className="text-xs text-gray-400 capitalize">{row.type}</p>
                         </div>
                       </td>
-                      {(row.type === 'emoji' || row.type === 'pain-points' || row.type === 'opportunities' || row.type === 'metrics') ? (
+                      {(row.type === 'emoji' || row.type === 'pain-points' || row.type === 'opportunities' || row.type === 'metrics' || row.type === 'channels') ? (
                         // For visualization components, create one cell spanning all stages
                         <td 
                           key={`${row.id}-emotion-curve`} 
@@ -629,37 +707,38 @@ export default function JourneyMapBuilderPage() {
                           </td>
                         ))
                       )}
-                      <td className="p-4"></td>
-                    </tr>
+                        <td className="p-4"></td>
+                      </tr>
+
+                      {/* Insertion zone after each row */}
+                      <RowInsertionZone
+                        key={`insertion-${rowIndex + 1}-${journeyMap.rows.length}`}
+                        onDropBlock={handleDropBlockAtIndex}
+                        insertIndex={rowIndex + 1}
+                        stageCount={journeyMap.stages.length}
+                      />
+                    </React.Fragment>
                   ))}
                   
-                  {/* Add Row Button */}
-                  <tr className="border-b border-gray-200">
-                    <td
-                      className="p-4 border-r border-gray-200 bg-gray-50/50 cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={handleAddRow}
-                    >
-                      <div className="flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors">
-                        <PlusIcon className="h-5 w-5 mr-2" />
-                        <span className="text-sm font-medium">Add row</span>
-                      </div>
-                    </td>
-                    {journeyMap.stages.map((stage) => (
-                      <td key={`empty-${stage.id}`} className="p-2 border-r border-gray-200"></td>
-                    ))}
-                    <td className="p-4"></td>
-                  </tr>
+                  {/* Final insertion zone */}
+                  <RowInsertionZone
+                    key={`insertion-final-${journeyMap.rows.length}`}
+                    onDropBlock={handleDropBlockAtIndex}
+                    insertIndex={journeyMap.rows.length}
+                    stageCount={journeyMap.stages.length}
+                  />
                 </tbody>
               </table>
             </div>
           </CardContent>
-        </Card>
+          </Card>
         </div>
       </div>
+        </div>
 
       {/* Persona Selection Modal */}
-      <Modal 
-        isOpen={isPersonaModalOpen} 
+      <Modal
+        isOpen={isPersonaModalOpen}
         onClose={() => setIsPersonaModalOpen(false)}
         title="Välj persona"
       >
@@ -701,15 +780,14 @@ export default function JourneyMapBuilderPage() {
       </Modal>
 
       {/* Settings Modal */}
-      <Modal 
-        isOpen={isSettingsModalOpen} 
+      <Modal
+        isOpen={isSettingsModalOpen}
         onClose={() => setIsSettingsModalOpen(false)}
         title="Journey Map Settings"
       >
         <div className="space-y-6">
           <div>
             <Input
-              label="Namn"
               value={journeyMap.name}
               onChange={(e) => setJourneyMap({ ...journeyMap, name: e.target.value })}
               placeholder="Namn på journey map"
@@ -729,8 +807,8 @@ export default function JourneyMapBuilderPage() {
             <Button variant="outline" onClick={() => setIsSettingsModalOpen(false)}>
               Avbryt
             </Button>
-            <Button 
-              variant="primary" 
+            <Button
+              variant="primary"
               onClick={() => setIsSettingsModalOpen(false)}
             >
               Spara ändringar
@@ -738,6 +816,7 @@ export default function JourneyMapBuilderPage() {
           </div>
         </div>
       </Modal>
+        </div>
 
       {/* Row Editor Modal */}
       <RowEditor
@@ -755,6 +834,6 @@ export default function JourneyMapBuilderPage() {
         onComplete={() => setIsOnboardingActive(false)}
         onSkip={() => setIsOnboardingActive(false)}
       />
-    </div>
+    </DragDropProvider>
   )
 }

@@ -8,7 +8,7 @@ export interface JourneyMapRow {
   id: string
   category: string
   description: string
-  type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics'
+  type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics' | 'channels'
   color: string
   cells: JourneyMapCell[]
 }
@@ -119,7 +119,8 @@ export const ROW_TYPES = [
   { id: 'status', name: 'Status', description: 'Status indicators' },
   { id: 'pain-points', name: 'Pain Points', description: 'Visual pain point intensity tracking' },
   { id: 'opportunities', name: 'Opportunities', description: 'Opportunity priority visualization' },
-  { id: 'metrics', name: 'Metrics', description: 'KPI and metrics visualization' }
+  { id: 'metrics', name: 'Metrics', description: 'KPI and metrics visualization' },
+  { id: 'channels', name: 'Channels', description: 'Visual channel/touchpoint icons' }
 ]
 
 // Available row colors
