@@ -123,7 +123,8 @@ export default function JourneyMapBuilderPage() {
           color: category.color,
           cells: DEFAULT_JOURNEY_STAGES.map(stage => ({
             id: `${category.id}-${stage.id}`,
-            content: category.id === 'actions' ? 'Example content...' : ''
+            content: category.id === 'actions' ? 'Example content...' :
+                    category.id === 'emotions' ? '' : ''
           }))
         })),
         createdAt: '2024-01-15T10:00:00Z',
@@ -170,9 +171,9 @@ export default function JourneyMapBuilderPage() {
       stages: [...journeyMap.stages, newStage],
       rows: journeyMap.rows.map(row => ({
         ...row,
-        cells: [...row.cells, { 
-          id: `${row.id}-${newStageId}`, 
-          content: row.type === 'emoji' ? '😐' : '' 
+        cells: [...row.cells, {
+          id: `${row.id}-${newStageId}`,
+          content: ''
         }]
       })),
       updatedAt: new Date().toISOString()
@@ -332,7 +333,7 @@ export default function JourneyMapBuilderPage() {
       color: item.color,
       cells: journeyMap.stages.map(stage => ({
         id: `${newRowId}-${stage.id}`,
-        content: item.rowType === 'emoji' ? '😐' : ''
+        content: ''
       }))
     }
 
@@ -357,7 +358,7 @@ export default function JourneyMapBuilderPage() {
       color: item.color,
       cells: journeyMap.stages.map(stage => ({
         id: `${newRowId}-${stage.id}`,
-        content: item.rowType === 'emoji' ? '😐' : ''
+        content: ''
       }))
     }
 
