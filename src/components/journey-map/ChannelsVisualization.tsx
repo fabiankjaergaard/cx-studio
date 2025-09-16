@@ -92,7 +92,7 @@ export function ChannelsVisualization({ channels, onChange, stageCount }: Channe
 
                 {/* Channel Selection Dropdown */}
                 {activeStage === stageIndex && (
-                  <div className="absolute top-full left-0 right-0 z-20 bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto">
+                  <div className="absolute bottom-full left-0 right-0 z-20 bg-white border border-gray-200 rounded-lg shadow-lg mb-1 max-h-48 overflow-y-auto">
                     <div className="p-2 space-y-1">
                       {CHANNEL_TYPES.map((channel) => {
                         const isSelected = stageChannels.includes(channel.id)

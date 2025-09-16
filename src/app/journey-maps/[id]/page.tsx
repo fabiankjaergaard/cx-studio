@@ -24,6 +24,7 @@ import { JourneyMapOnboarding } from '@/components/onboarding/JourneyMapOnboardi
 import { DragDropProvider } from '@/components/journey/DragDropProvider'
 import { RowTypePalette } from '@/components/journey-map/RowTypePalette'
 import { RowInsertionZone } from '@/components/journey-map/RowInsertionZone'
+import { InlineEdit } from '@/components/ui/InlineEdit'
 
 interface Persona {
   id: string
@@ -155,6 +156,78 @@ export default function JourneyMapBuilderPage() {
     })
   }
 
+  const handlePhaseNameChange = (phaseId: string, newName: string) => {
+    if (!journeyMap) return
+
+    setJourneyMap({
+      ...journeyMap,
+      phases: journeyMap.phases.map(phase =>
+        phase.id === phaseId ? { ...phase, name: newName } : phase
+      ),
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handlePhaseDescriptionChange = (phaseId: string, newDescription: string) => {
+    if (!journeyMap) return
+
+    setJourneyMap({
+      ...journeyMap,
+      phases: journeyMap.phases.map(phase =>
+        phase.id === phaseId ? { ...phase, description: newDescription } : phase
+      ),
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleStageDescriptionChange = (stageId: string, newDescription: string) => {
+    if (!journeyMap) return
+
+    setJourneyMap({
+      ...journeyMap,
+      stages: journeyMap.stages.map(stage =>
+        stage.id === stageId ? { ...stage, description: newDescription } : stage
+      ),
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleRowCategoryChange = (rowId: string, newCategory: string) => {
+    if (!journeyMap) return
+
+    setJourneyMap({
+      ...journeyMap,
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId ? { ...row, category: newCategory } : row
+      ),
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleRowDescriptionChange = (rowId: string, newDescription: string) => {
+    if (!journeyMap) return
+
+    setJourneyMap({
+      ...journeyMap,
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId ? { ...row, description: newDescription } : row
+      ),
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleStageNameChange = (stageId: string, newName: string) => {
+    if (!journeyMap) return
+
+    setJourneyMap({
+      ...journeyMap,
+      stages: journeyMap.stages.map(stage =>
+        stage.id === stageId ? { ...stage, name: newName } : stage
+      ),
+      updatedAt: new Date().toISOString()
+    })
+  }
+
   const handleAddStage = () => {
     if (!journeyMap) return
     
@@ -277,18 +350,6 @@ export default function JourneyMapBuilderPage() {
         ...row,
         cells: row.cells.filter((_, index) => index !== stageIndex)
       })),
-      updatedAt: new Date().toISOString()
-    })
-  }
-
-  const handleStageNameChange = (stageIndex: number, name: string) => {
-    if (!journeyMap) return
-    
-    setJourneyMap({
-      ...journeyMap,
-      stages: journeyMap.stages.map((stage, index) => 
-        index === stageIndex ? { ...stage, name } : stage
-      ),
       updatedAt: new Date().toISOString()
     })
   }
@@ -565,10 +626,22 @@ export default function JourneyMapBuilderPage() {
                           className={`relative p-2 text-center text-sm font-semibold text-gray-700 border-r border-gray-200 ${phase.color} ${stagesInPhase === 0 ? 'min-w-32' : ''}`}
                           colSpan={colSpan}
                         >
-                          <div className="font-bold">{phase.name}</div>
-                          <div className="text-xs font-normal text-gray-600 mt-1">
-                            {stagesInPhase === 0 ? 'Drag stages here' : phase.description}
-                          </div>
+                          <InlineEdit
+                            value={phase.name}
+                            onChange={(newName) => handlePhaseNameChange(phase.id, newName)}
+                            className="text-center"
+                            inputClassName="text-center w-full"
+                            placeholder="Phase name"
+                            variant="phase-title"
+                          />
+                          <InlineEdit
+                            value={stagesInPhase === 0 ? 'Drag stages here' : (phase.description || '')}
+                            onChange={(newDescription) => handlePhaseDescriptionChange(phase.id, newDescription)}
+                            className="mt-1 text-center"
+                            inputClassName="w-full text-center"
+                            placeholder="Phase description"
+                            variant="description"
+                          />
                           
                           {/* Drag handle on the right edge (except for last phase) */}
                           {phaseIndex < journeyMap.phases.length - 1 && (
@@ -604,10 +677,12 @@ export default function JourneyMapBuilderPage() {
                     {journeyMap.stages.map((stage, index) => (
                       <th key={stage.id} className="min-w-64 p-4 text-left border-r border-gray-200 relative group">
                         <div className="flex items-center justify-between">
-                          <Input
+                          <InlineEdit
                             value={stage.name}
-                            onChange={(e) => handleStageNameChange(index, e.target.value)}
-                            className="font-medium bg-transparent border-none p-0 h-auto focus:bg-white focus:border-gray-300"
+                            onChange={(newName) => handleStageNameChange(stage.id, newName)}
+                            inputClassName="w-full"
+                            placeholder="Stage name"
+                            variant="stage-title"
                           />
                           {journeyMap.stages.length > 2 && (
                             <Button
@@ -621,7 +696,14 @@ export default function JourneyMapBuilderPage() {
                             </Button>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">{stage.description}</p>
+                        <InlineEdit
+                          value={stage.description || ''}
+                          onChange={(newDescription) => handleStageDescriptionChange(stage.id, newDescription)}
+                          className="mt-1"
+                          inputClassName="w-full"
+                          placeholder="Stage description"
+                          variant="description"
+                        />
                       </th>
                     ))}
                     <th className="w-12 p-4">
@@ -656,15 +738,22 @@ export default function JourneyMapBuilderPage() {
                         className={`p-4 border-r border-gray-200 ${row.color} group relative`}
                         data-onboarding={rowIndex === 0 ? "categories" : undefined}
                       >
-                        <div
-                          className="space-y-1 cursor-pointer hover:opacity-80 transition-opacity"
-                          onClick={() => handleEditRow(row)}
-                        >
-                          <h4 className="font-medium text-gray-900 text-sm">
-                            {row.category}
-                          </h4>
-                          <p className="text-xs text-gray-500">{row.description}</p>
-                          <p className="text-xs text-gray-400 capitalize">{row.type}</p>
+                        <div className="space-y-1">
+                          <InlineEdit
+                            value={row.category}
+                            onChange={(newCategory) => handleRowCategoryChange(row.id, newCategory)}
+                            inputClassName="w-full"
+                            placeholder="Row category"
+                            variant="row-header"
+                          />
+                          <InlineEdit
+                            value={row.description}
+                            onChange={(newDescription) => handleRowDescriptionChange(row.id, newDescription)}
+                            inputClassName="w-full"
+                            placeholder="Row description"
+                            multiline={true}
+                            variant="description"
+                          />
                         </div>
 
                         {/* Delete button - appears on hover */}

@@ -138,7 +138,7 @@ export function JourneyMapCell({
             {content || <span className="text-gray-400">Select status</span>}
           </div>
           {isStatusPickerOpen && (
-            <div className="absolute top-full left-0 z-10 bg-white border border-gray-200 rounded-lg shadow-lg py-1 mt-1 min-w-32">
+            <div className="absolute bottom-full left-0 z-10 bg-white border border-gray-200 rounded-lg shadow-lg py-1 mb-1 min-w-32">
               {STATUS_OPTIONS.map((status) => (
                 <button
                   key={status}
