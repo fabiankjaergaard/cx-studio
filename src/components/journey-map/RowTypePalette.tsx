@@ -23,7 +23,7 @@ export function RowTypePalette({
 
   // Group row types by category for better organization
   const basicTypes = ROW_TYPES.filter(type => ['text', 'number', 'status'].includes(type.id))
-  const visualTypes = ROW_TYPES.filter(type => ['emoji', 'rating', 'channels'].includes(type.id))
+  const visualTypes = ROW_TYPES.filter(type => ['emoji', 'rating', 'channels', 'stickers'].includes(type.id))
   const analyticsTypes = ROW_TYPES.filter(type => ['pain-points', 'opportunities', 'metrics'].includes(type.id))
 
   const selectedColorInfo = ROW_COLORS.find(color => color.id === selectedColor)

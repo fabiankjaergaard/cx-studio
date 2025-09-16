@@ -678,7 +678,7 @@ export default function JourneyMapBuilderPage() {
                           <TrashIcon className="w-3 h-3" />
                         </button>
                       </td>
-                      {(row.type === 'emoji' || row.type === 'pain-points' || row.type === 'opportunities' || row.type === 'metrics' || row.type === 'channels') ? (
+                      {(row.type === 'emoji' || row.type === 'pain-points' || row.type === 'opportunities' || row.type === 'metrics' || row.type === 'channels' || row.type === 'stickers') ? (
                         // For visualization components, create one cell spanning all stages
                         <td 
                           key={`${row.id}-emotion-curve`} 

@@ -75,6 +75,7 @@ export function JourneyMapOnboarding({ isActive, onComplete, onSkip }: JourneyMa
       const element = document.querySelector(step.targetSelector) as HTMLElement
 
       if (element) {
+        console.log('Found onboarding element:', element, 'for step:', step.id)
         const rect = element.getBoundingClientRect()
         setHighlightPosition({
           top: rect.top + window.scrollY,
@@ -82,14 +83,28 @@ export function JourneyMapOnboarding({ isActive, onComplete, onSkip }: JourneyMa
           width: rect.width,
           height: rect.height
         })
+      } else {
+        console.log('Element not found for selector:', step.targetSelector, 'step:', step.id)
+        if (step.id === 'palette') {
+          // Fallback for palette if element not found - position at left side
+          console.log('Using fallback position for palette')
+          setHighlightPosition({
+            top: 150,
+            left: 0,
+            width: 320,
+            height: 600
+          })
+        }
       }
     }
 
-    updateHighlight()
+    // Add delay to ensure components are rendered
+    const timer = setTimeout(updateHighlight, 500)
     window.addEventListener('resize', updateHighlight)
     window.addEventListener('scroll', updateHighlight)
 
     return () => {
+      clearTimeout(timer)
       window.removeEventListener('resize', updateHighlight)
       window.removeEventListener('scroll', updateHighlight)
     }
@@ -99,6 +114,11 @@ export function JourneyMapOnboarding({ isActive, onComplete, onSkip }: JourneyMa
 
   const currentStepData = onboardingSteps[currentStep]
   const isLastStep = currentStep === onboardingSteps.length - 1
+
+  // Don't render until we have a valid position
+  if (highlightPosition.width === 0 && highlightPosition.height === 0) {
+    return null
+  }
 
   const handleNext = () => {
     if (isLastStep) {
@@ -148,9 +168,19 @@ export function JourneyMapOnboarding({ isActive, onComplete, onSkip }: JourneyMa
             return highlightPosition.top
           })(),
           left: (() => {
-            // For palette, position to the right
+            // For palette, position to the right with minimum margin from edge
             if (currentStepData.id === 'palette') {
-              return highlightPosition.left + highlightPosition.width + 24
+              const rightPosition = highlightPosition.left + highlightPosition.width + 24
+              const minFromRight = window.innerWidth - 400 // Ensure 400px from right edge
+              const finalLeft = Math.min(rightPosition, minFromRight)
+              console.log('Palette positioning:', {
+                highlightPosition,
+                rightPosition,
+                minFromRight,
+                finalLeft,
+                windowWidth: window.innerWidth
+              })
+              return finalLeft
             }
             // For persona, phases and stages (placed below), align left edges
             if (currentStepData.id === 'persona' || currentStepData.id === 'phases' || currentStepData.id === 'stages') {

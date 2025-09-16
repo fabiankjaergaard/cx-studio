@@ -8,7 +8,7 @@ export interface JourneyMapRow {
   id: string
   category: string
   description: string
-  type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics' | 'channels'
+  type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics' | 'channels' | 'stickers'
   color: string
   cells: JourneyMapCell[]
 }
@@ -120,7 +120,8 @@ export const ROW_TYPES = [
   { id: 'pain-points', name: 'Pain Points', description: 'Visual pain point intensity tracking' },
   { id: 'opportunities', name: 'Opportunities', description: 'Opportunity priority visualization' },
   { id: 'metrics', name: 'Metrics', description: 'KPI and metrics visualization' },
-  { id: 'channels', name: 'Channels', description: 'Visual channel/touchpoint icons' }
+  { id: 'channels', name: 'Channels', description: 'Visual channel/touchpoint icons' },
+  { id: 'stickers', name: 'Stickers', description: 'Decorative stickers and icons for visual enhancement' }
 ]
 
 // Available row colors
@@ -166,12 +167,6 @@ export const DEFAULT_JOURNEY_STAGES = [
     phaseId: 'before'
   },
   {
-    id: 'consideration',
-    name: 'Consideration',
-    description: 'Customer evaluates different alternatives and solutions',
-    phaseId: 'before'
-  },
-  {
     id: 'purchase',
     name: 'Purchase/Decision',
     description: 'Customer makes decision and takes action',
@@ -182,12 +177,6 @@ export const DEFAULT_JOURNEY_STAGES = [
     name: 'Usage',
     description: 'Customer uses the product or service',
     phaseId: 'during'
-  },
-  {
-    id: 'support',
-    name: 'Support',
-    description: 'Customer receives ongoing support and service',
-    phaseId: 'after'
   },
   {
     id: 'advocacy',

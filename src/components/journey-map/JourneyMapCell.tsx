@@ -7,10 +7,11 @@ import { PainPointsVisualization } from './PainPointsVisualization'
 import { OpportunitiesVisualization } from './OpportunitiesVisualization'
 import { MetricsVisualization } from './MetricsVisualization'
 import { ChannelsVisualization } from './ChannelsVisualization'
+import { StickerVisualization } from './StickerVisualization'
 
 interface JourneyMapCellProps {
   content: string
-  type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics' | 'channels'
+  type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics' | 'channels' | 'stickers'
   onChange: (content: string) => void
   placeholder?: string
   stageCount?: number
@@ -93,6 +94,22 @@ export function JourneyMapCell({
           channels={channels}
           onChange={(newChannels) => onChange(newChannels.join(','))}
           stageCount={stageCount}
+        />
+      )
+
+    case 'stickers':
+      // For stickers, we need the stages data to render properly
+      // This will be passed down from the parent component
+      const stages = Array.from({ length: stageCount }, (_, i) => ({
+        id: `stage-${i}`,
+        name: `Stage ${i + 1}`
+      }))
+
+      return (
+        <StickerVisualization
+          content={content}
+          onChange={onChange}
+          stages={stages}
         />
       )
 
