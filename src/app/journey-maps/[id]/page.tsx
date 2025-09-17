@@ -834,7 +834,7 @@ export default function JourneyMapBuilderPage() {
 
                           {/* Dropdown menu */}
                           {activeDropdown === `row-${row.id}` && (
-                            <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-32 z-20">
+                            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-32 z-20">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()
