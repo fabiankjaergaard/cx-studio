@@ -159,17 +159,21 @@ export function Sidebar() {
       )}>
         <div className="flex items-center justify-center flex-1">
           {!isCollapsed ? (
-            <img 
-              src="/Kustra.png" 
-              alt="Kustra" 
-              className="h-24 w-auto object-contain max-w-[300px]"
-            />
+            <Link href="/" className="cursor-pointer">
+              <img
+                src="/Kustra.png"
+                alt="Kustra"
+                className="h-24 w-auto object-contain max-w-[300px] hover:opacity-80 transition-opacity"
+              />
+            </Link>
           ) : (
-            <img
-              src="/nava small.png"
-              alt="Nava Small"
-              className="h-16 w-12 object-contain"
-            />
+            <Link href="/" className="cursor-pointer">
+              <img
+                src="/nava small.png"
+                alt="Nava Small"
+                className="h-16 w-12 object-contain hover:opacity-80 transition-opacity"
+              />
+            </Link>
           )}
         </div>
       </div>

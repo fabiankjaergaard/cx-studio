@@ -3,11 +3,11 @@
 import { Header } from '@/components/dashboard/Header'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { useJourneyStore } from '@/store/journey-store'
 import { PlusIcon, EyeIcon, DownloadIcon, BookTemplateIcon } from 'lucide-react'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { TemplatePreviewModal } from '@/components/templates/TemplatePreviewModal'
 
 const getTemplates = (t: (key: string) => string) => [
   {
@@ -68,34 +68,60 @@ const getTemplates = (t: (key: string) => string) => [
 
 export default function TemplatesPage() {
   const { t } = useLanguage()
-  const { addJourney, setCurrentJourney } = useJourneyStore()
   const router = useRouter()
+  const [selectedIndustry, setSelectedIndustry] = useState('')
+  const [sortBy, setSortBy] = useState('')
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState(null)
   const templates = getTemplates(t)
 
-  const handleUseTemplate = (template: any) => {
-    // Create a journey from template
-    const newJourney = {
-      title: `${template.name} (${t('templates.fromTemplate')})`,
-      description: template.description,
-      persona: t('templates.customerFromTemplate'),
-      touchpoints: [], // Could add template touchpoints here
-      stages: [
-        { id: '1', name: t('templates.stages.awareness'), description: t('templates.stageDescriptions.awareness'), color: '#3B82F6' },
-        { id: '2', name: t('templates.stages.consideration'), description: t('templates.stageDescriptions.consideration'), color: '#8B5CF6' },
-        { id: '3', name: t('templates.stages.purchase'), description: t('templates.stageDescriptions.purchase'), color: '#10B981' },
-        { id: '4', name: t('templates.stages.usage'), description: t('templates.stageDescriptions.usage'), color: '#F59E0B' },
-        { id: '5', name: t('templates.stages.loyalty'), description: t('templates.stageDescriptions.loyalty'), color: '#EF4444' }
-      ]
+  // Filter and sort templates
+  const filteredAndSortedTemplates = React.useMemo(() => {
+    let filtered = templates
+
+    // Filter by industry
+    if (selectedIndustry) {
+      filtered = filtered.filter(template =>
+        template.industry.toLowerCase() === selectedIndustry.toLowerCase()
+      )
     }
-    
-    addJourney(newJourney)
-    
-    // Set as current and navigate
-    const journeys = useJourneyStore.getState().journeys
-    const createdJourney = journeys[journeys.length - 1]
-    setCurrentJourney(createdJourney)
-    
-    router.push('/journeys')
+
+    // Sort templates
+    if (sortBy) {
+      filtered = [...filtered].sort((a, b) => {
+        switch (sortBy) {
+          case 'name':
+            return a.name.localeCompare(b.name)
+          case 'industry':
+            return a.industry.localeCompare(b.industry)
+          case 'touchpoints':
+            return b.touchpoints - a.touchpoints
+          default:
+            return 0
+        }
+      })
+    }
+
+    return filtered
+  }, [templates, selectedIndustry, sortBy])
+
+  const handlePreview = (template: any) => {
+    setSelectedTemplate(template)
+    setIsPreviewOpen(true)
+  }
+
+  const handleCreateCustomTemplate = () => {
+    // Navigate to a blank journey map for creating a custom template
+    router.push('/journey-maps/new?custom=true&name=Anpassad mall')
+  }
+
+  const handleUseTemplate = (template: any) => {
+    // Create journey map ID and navigate directly to new journey map with template data
+    const templateId = template.id
+    const journeyMapId = `template-${templateId}-${Date.now()}`
+
+    // Navigate to journey-maps with template parameter
+    router.push(`/journey-maps/new?template=${templateId}&name=${encodeURIComponent(template.name)}`)
   }
   return (
     <div className="h-full flex flex-col bg-gray-50">
@@ -108,27 +134,38 @@ export default function TemplatesPage() {
         {/* Filter/Search Section */}
         <div className="mb-8 flex items-center justify-between">
           <div className="flex space-x-4">
-            <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900">
+            <select
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              value={selectedIndustry}
+              onChange={(e) => setSelectedIndustry(e.target.value)}
+            >
               <option value="">{t('templates.filters.allIndustries')}</option>
-              <option value="e-commerce">{t('templates.filters.ecommerce')}</option>
-              <option value="teknologi">{t('templates.filters.technology')}</option>
-              <option value="service">{t('templates.filters.service')}</option>
-              <option value="hospitality">{t('templates.filters.hospitality')}</option>
-              <option value="finans">{t('templates.filters.finance')}</option>
-              <option value="hälsovård">{t('templates.filters.healthcare')}</option>
+              <option value="E-commerce">{t('templates.filters.ecommerce')}</option>
+              <option value="Teknologi">{t('templates.filters.technology')}</option>
+              <option value="Service">{t('templates.filters.service')}</option>
+              <option value="Hospitality">{t('templates.filters.hospitality')}</option>
+              <option value="Finans">{t('templates.filters.finance')}</option>
+              <option value="Hälsovård">{t('templates.filters.healthcare')}</option>
             </select>
-            <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900">
+            <select
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
               <option value="">{t('templates.filters.sortBy')}</option>
               <option value="name">{t('templates.filters.name')}</option>
               <option value="industry">{t('templates.filters.industry')}</option>
               <option value="touchpoints">{t('templates.filters.touchpoints')}</option>
             </select>
           </div>
+          <div className="text-sm text-gray-500">
+            {filteredAndSortedTemplates.length} {filteredAndSortedTemplates.length === 1 ? 'mall' : 'mallar'}
+          </div>
         </div>
 
         {/* Templates Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {templates.map((template) => (
+          {filteredAndSortedTemplates.map((template) => (
             <Card key={template.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -151,7 +188,12 @@ export default function TemplatesPage() {
                 </div>
 
                 <div className="flex space-x-2">
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handlePreview(template)}
+                  >
                     <EyeIcon className="mr-1 h-4 w-4" />
                     {t('templates.actions.preview')}
                   </Button>
@@ -182,14 +224,21 @@ export default function TemplatesPage() {
               <p className="text-gray-500 mb-4">
                 {t('templates.customSection.cardDescription')}
               </p>
-              <Button variant="primary">
+              <Button variant="primary" onClick={handleCreateCustomTemplate}>
                 {t('templates.customSection.getStarted')}
               </Button>
             </CardContent>
           </Card>
         </div>
       </div>
-      
+
+      {/* Preview Modal */}
+      <TemplatePreviewModal
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        template={selectedTemplate}
+        onUseTemplate={handleUseTemplate}
+      />
     </div>
   )
 }

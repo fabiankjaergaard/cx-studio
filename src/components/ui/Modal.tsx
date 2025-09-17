@@ -10,18 +10,34 @@ interface ModalProps {
   children: React.ReactNode
   title?: string
   className?: string
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl'
 }
 
-export function Modal({ isOpen, onClose, children, title, className }: ModalProps) {
+export function Modal({ isOpen, onClose, children, title, className, maxWidth = 'md' }: ModalProps) {
   if (!isOpen) return null
+
+  const getMaxWidthClass = (size: string) => {
+    switch (size) {
+      case 'sm': return 'max-w-sm'
+      case 'md': return 'max-w-md'
+      case 'lg': return 'max-w-lg'
+      case 'xl': return 'max-w-xl'
+      case '2xl': return 'max-w-2xl'
+      case '3xl': return 'max-w-3xl'
+      case '4xl': return 'max-w-4xl'
+      case '5xl': return 'max-w-5xl'
+      default: return 'max-w-2xl'
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4">
         <div className="fixed inset-0 bg-gray-900 bg-opacity-20 backdrop-blur-[0.5px]" onClick={onClose} />
-        
+
         <div className={cn(
-          "relative bg-white rounded-xl shadow-lg border border-gray-100 max-w-2xl w-full mx-auto transform transition-all",
+          "relative bg-white rounded-xl shadow-lg border border-gray-100 w-full mx-auto transform transition-all",
+          getMaxWidthClass(maxWidth),
           className
         )}>
           {title && (

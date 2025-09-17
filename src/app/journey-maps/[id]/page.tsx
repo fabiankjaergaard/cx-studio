@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -60,9 +60,500 @@ const samplePersonas: Persona[] = [
   }
 ]
 
+// Function to create journey map from template
+const createJourneyMapFromTemplate = (templateId: string, templateName: string): JourneyMapData => {
+  const baseJourneyMap: JourneyMapData = {
+    id: Date.now().toString(),
+    name: templateName || 'Ny Journey Map från mall',
+    description: 'Skapad från mall',
+    persona: null,
+    phases: DEFAULT_JOURNEY_PHASES,
+    stages: DEFAULT_JOURNEY_STAGES,
+    rows: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    createdBy: 'Nuvarande användare',
+    status: 'draft'
+  }
+
+  // Add template-specific data based on template ID
+  switch (templateId) {
+    case '1': // E-commerce
+      baseJourneyMap.stages = [
+        { id: 'awareness', name: 'Medvetenhet', description: 'Kunden upptäcker behov' },
+        { id: 'purchase', name: 'Köp/Beslut', description: 'Kunden jämför och beslutar' },
+        { id: 'usage', name: 'Användning', description: 'Kunden använder produkten' },
+        { id: 'advocacy', name: 'Lojalitet', description: 'Kunden blir återkommande' }
+      ]
+      baseJourneyMap.rows = [
+        DEFAULT_JOURNEY_CATEGORIES[0], // Actions
+        DEFAULT_JOURNEY_CATEGORIES[2], // Emotions
+        DEFAULT_JOURNEY_CATEGORIES[3], // Pain Points
+        DEFAULT_JOURNEY_CATEGORIES[4], // Opportunities
+      ].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: baseJourneyMap.stages.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: getTemplateContent(templateId, category.id, stage.id)
+        }))
+      }))
+      break
+    case '2': // SaaS
+      baseJourneyMap.stages = [
+        { id: 'awareness', name: 'Medvetenhet', description: 'Upptäcker lösningen' },
+        { id: 'evaluation', name: 'Utvärdering', description: 'Testar och utvärderar' },
+        { id: 'onboarding', name: 'Onboarding', description: 'Kommer igång' },
+        { id: 'usage', name: 'Användning', description: 'Daglig användning' }
+      ]
+      baseJourneyMap.rows = [
+        DEFAULT_JOURNEY_CATEGORIES[0], // Actions
+        DEFAULT_JOURNEY_CATEGORIES[1], // Touchpoints
+        DEFAULT_JOURNEY_CATEGORIES[2], // Emotions
+        DEFAULT_JOURNEY_CATEGORIES[3], // Pain Points
+      ].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: baseJourneyMap.stages.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: getTemplateContent(templateId, category.id, stage.id)
+        }))
+      }))
+      break
+    case '3': // Customer Service
+      baseJourneyMap.stages = [
+        { id: 'contact', name: 'Kontakt', description: 'Kunden söker hjälp' },
+        { id: 'identification', name: 'Identifiering', description: 'Problem identifieras' },
+        { id: 'solution', name: 'Lösning', description: 'Problem löses' },
+        { id: 'followup', name: 'Uppföljning', description: 'Kvalitetssäkring' },
+        { id: 'reflection', name: 'Reflektion', description: 'Utvärdering av upplevelse' }
+      ]
+      baseJourneyMap.rows = [
+        DEFAULT_JOURNEY_CATEGORIES[0], // Actions
+        DEFAULT_JOURNEY_CATEGORIES[2], // Emotions
+        DEFAULT_JOURNEY_CATEGORIES[3], // Pain Points
+        DEFAULT_JOURNEY_CATEGORIES[4], // Opportunities
+      ].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: baseJourneyMap.stages.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: getTemplateContent(templateId, category.id, stage.id)
+        }))
+      }))
+      break
+    case '4': // Restaurant
+      baseJourneyMap.stages = [
+        { id: 'inspiration', name: 'Inspiration', description: 'Får lust att äta ute' },
+        { id: 'search', name: 'Sökning', description: 'Letar efter restaurang' },
+        { id: 'booking', name: 'Bokning', description: 'Reserverar bord' },
+        { id: 'arrival', name: 'Ankomst', description: 'Kommer till restaurangen' },
+        { id: 'meal', name: 'Måltid', description: 'Äter och upplever' },
+        { id: 'departure', name: 'Avslut', description: 'Betalar och lämnar' }
+      ]
+      baseJourneyMap.rows = [
+        DEFAULT_JOURNEY_CATEGORIES[0], // Actions
+        DEFAULT_JOURNEY_CATEGORIES[2], // Emotions
+        DEFAULT_JOURNEY_CATEGORIES[1], // Touchpoints
+        DEFAULT_JOURNEY_CATEGORIES[3], // Pain Points
+        DEFAULT_JOURNEY_CATEGORIES[4], // Opportunities
+      ].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: baseJourneyMap.stages.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: getTemplateContent(templateId, category.id, stage.id)
+        }))
+      }))
+      break
+    case '5': // Banking
+      baseJourneyMap.stages = [
+        { id: 'need', name: 'Behov', description: 'Identifierar finansiellt behov' },
+        { id: 'exploration', name: 'Utforskning', description: 'Undersöker alternativ' },
+        { id: 'application', name: 'Ansökan', description: 'Ansöker om tjänst' },
+        { id: 'approval', name: 'Godkännande', description: 'Väntar på beslut' },
+        { id: 'usage', name: 'Användning', description: 'Använder tjänsten' }
+      ]
+      baseJourneyMap.rows = [
+        DEFAULT_JOURNEY_CATEGORIES[0], // Actions
+        DEFAULT_JOURNEY_CATEGORIES[2], // Emotions
+        DEFAULT_JOURNEY_CATEGORIES[1], // Touchpoints
+        DEFAULT_JOURNEY_CATEGORIES[3], // Pain Points
+        DEFAULT_JOURNEY_CATEGORIES[4], // Opportunities
+      ].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: baseJourneyMap.stages.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: getTemplateContent(templateId, category.id, stage.id)
+        }))
+      }))
+      break
+    case '6': // Healthcare
+      baseJourneyMap.stages = [
+        { id: 'symptoms', name: 'Symptom', description: 'Märker hälsoproblem' },
+        { id: 'assessment', name: 'Bedömning', description: 'Bedömer allvarlighetsgrad' },
+        { id: 'booking', name: 'Bokning', description: 'Bokar tid' },
+        { id: 'visit', name: 'Besök', description: 'Träffar vårdpersonal' },
+        { id: 'treatment', name: 'Behandling', description: 'Får behandling' },
+        { id: 'followup', name: 'Uppföljning', description: 'Följer upp resultat' }
+      ]
+      baseJourneyMap.rows = [
+        DEFAULT_JOURNEY_CATEGORIES[0], // Actions
+        DEFAULT_JOURNEY_CATEGORIES[2], // Emotions
+        DEFAULT_JOURNEY_CATEGORIES[1], // Touchpoints
+        DEFAULT_JOURNEY_CATEGORIES[3], // Pain Points
+        DEFAULT_JOURNEY_CATEGORIES[4], // Opportunities
+      ].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: baseJourneyMap.stages.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: getTemplateContent(templateId, category.id, stage.id)
+        }))
+      }))
+      break
+    default:
+      // Default template with basic categories
+      baseJourneyMap.rows = [DEFAULT_JOURNEY_CATEGORIES[0]].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: DEFAULT_JOURNEY_STAGES.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: ''
+        }))
+      }))
+  }
+
+  return baseJourneyMap
+}
+
+// Function to get template-specific content for cells
+const getTemplateContent = (templateId: string, categoryId: string, stageId: string): string => {
+  // Template 1: E-commerce
+  if (templateId === '1') {
+    if (categoryId === 'actions') {
+      switch (stageId) {
+        case 'awareness': return 'Söker online'
+        case 'purchase': return 'Jämför priser'
+        case 'usage': return 'Genomför köp'
+        case 'advocacy': return 'Delar upplevelse'
+        default: return ''
+      }
+    }
+    if (categoryId === 'emotions') {
+      switch (stageId) {
+        case 'awareness': return '😊 Nyfiken'
+        case 'purchase': return '🤔 Fundersam'
+        case 'usage': return '😍 Nöjd'
+        case 'advocacy': return '😊 Lojal'
+        default: return ''
+      }
+    }
+    if (categoryId === 'pain-points') {
+      switch (stageId) {
+        case 'awareness': return 'Svårt att hitta info'
+        case 'purchase': return 'Komplicerad checkout'
+        case 'usage': return 'Långsam leverans'
+        case 'advocacy': return 'Oklara returer'
+        default: return ''
+      }
+    }
+    if (categoryId === 'opportunities') {
+      switch (stageId) {
+        case 'awareness': return 'Personaliserade rekommendationer'
+        case 'purchase': return 'Smidigare betalning'
+        case 'usage': return 'Snabbare leverans'
+        case 'advocacy': return 'Lojalitetsprogram'
+        default: return ''
+      }
+    }
+  }
+
+  // Template 2: SaaS
+  if (templateId === '2') {
+    if (categoryId === 'actions') {
+      switch (stageId) {
+        case 'awareness': return 'Läser om lösningar'
+        case 'evaluation': return 'Startar trial'
+        case 'onboarding': return 'Skapar konto'
+        case 'usage': return 'Använder dagligen'
+        default: return ''
+      }
+    }
+    if (categoryId === 'touchpoints') {
+      switch (stageId) {
+        case 'awareness': return 'Webbsida'
+        case 'evaluation': return 'Demo'
+        case 'onboarding': return 'Onboarding emails'
+        case 'usage': return 'Support chat'
+        default: return ''
+      }
+    }
+    if (categoryId === 'emotions') {
+      switch (stageId) {
+        case 'awareness': return '😊 Nyfiken'
+        case 'evaluation': return '😐 Osäker'
+        case 'onboarding': return '😅 Överväldigad'
+        case 'usage': return '😊 Kompetent'
+        default: return ''
+      }
+    }
+    if (categoryId === 'pain-points') {
+      switch (stageId) {
+        case 'awareness': return 'Komplex registrering'
+        case 'evaluation': return 'Svår att förstå värde'
+        case 'onboarding': return 'För många funktioner'
+        case 'usage': return 'Bristande support'
+        default: return ''
+      }
+    }
+  }
+
+  // Template 3: Customer Service
+  if (templateId === '3') {
+    if (categoryId === 'actions') {
+      switch (stageId) {
+        case 'contact': return 'Kontaktar support'
+        case 'identification': return 'Förklarar problem'
+        case 'solution': return 'Följer instruktioner'
+        case 'followup': return 'Bekräftar lösning'
+        case 'reflection': return 'Ger feedback'
+        default: return ''
+      }
+    }
+    if (categoryId === 'emotions') {
+      switch (stageId) {
+        case 'contact': return '😰 Frustrerad'
+        case 'identification': return '😔 Bekymrad'
+        case 'solution': return '🤔 Hopeful'
+        case 'followup': return '😊 Lättad'
+        case 'reflection': return '😄 Nöjd'
+        default: return ''
+      }
+    }
+    if (categoryId === 'pain-points') {
+      switch (stageId) {
+        case 'contact': return 'Långa väntetider'
+        case 'identification': return 'Komplicerade menyer'
+        case 'solution': return 'Behöver upprepa info'
+        case 'followup': return 'Otydliga instruktioner'
+        case 'reflection': return 'Ingen uppföljning'
+        default: return ''
+      }
+    }
+    if (categoryId === 'opportunities') {
+      switch (stageId) {
+        case 'contact': return 'Snabb svarstid'
+        case 'identification': return 'Proaktiv kommunikation'
+        case 'solution': return 'Personlig service'
+        case 'followup': return 'Tydliga lösningar'
+        case 'reflection': return 'Automatisk uppföljning'
+        default: return ''
+      }
+    }
+  }
+
+  // Template 4: Restaurant
+  if (templateId === '4') {
+    if (categoryId === 'actions') {
+      switch (stageId) {
+        case 'inspiration': return 'Söker inspiration'
+        case 'search': return 'Läser recensioner'
+        case 'booking': return 'Bokar online'
+        case 'arrival': return 'Kommer i tid'
+        case 'meal': return 'Beställer mat'
+        case 'departure': return 'Betalar notan'
+        default: return ''
+      }
+    }
+    if (categoryId === 'emotions') {
+      switch (stageId) {
+        case 'inspiration': return '😋 Sugen'
+        case 'search': return '🤔 Fundersam'
+        case 'booking': return '😊 Förväntansfull'
+        case 'arrival': return '😍 Imponerad'
+        case 'meal': return '😄 Mätt & nöjd'
+        case 'departure': return '💭 Reflekterande'
+        default: return ''
+      }
+    }
+    if (categoryId === 'touchpoints') {
+      switch (stageId) {
+        case 'inspiration': return 'Sociala medier'
+        case 'search': return 'Google/TripAdvisor'
+        case 'booking': return 'Bokningssystem'
+        case 'arrival': return 'Värd/Personal'
+        case 'meal': return 'Mat & miljö'
+        case 'departure': return 'Betalningssystem'
+        default: return ''
+      }
+    }
+    if (categoryId === 'pain-points') {
+      switch (stageId) {
+        case 'inspiration': return 'Svårt hitta info'
+        case 'search': return 'Komplicerad bokning'
+        case 'booking': return 'Långa väntetider'
+        case 'arrival': return 'Fel beställning'
+        case 'meal': return 'Hög ljudnivå'
+        case 'departure': return 'Långsam service'
+        default: return ''
+      }
+    }
+    if (categoryId === 'opportunities') {
+      switch (stageId) {
+        case 'inspiration': return 'Inspirerande innehåll'
+        case 'search': return 'Smidig bokning'
+        case 'booking': return 'Personlig välkomst'
+        case 'arrival': return 'Överraska positivt'
+        case 'meal': return 'Minnesvärda detaljer'
+        case 'departure': return 'Enkla betalningar'
+        default: return ''
+      }
+    }
+  }
+
+  // Template 5: Banking
+  if (templateId === '5') {
+    if (categoryId === 'actions') {
+      switch (stageId) {
+        case 'need': return 'Identifierar behov'
+        case 'exploration': return 'Jämför banker'
+        case 'application': return 'Skickar ansökan'
+        case 'approval': return 'Väntar på svar'
+        case 'usage': return 'Aktiverar tjänst'
+        default: return ''
+      }
+    }
+    if (categoryId === 'emotions') {
+      switch (stageId) {
+        case 'need': return '🤔 Osäker'
+        case 'exploration': return '😰 Stressad'
+        case 'application': return '🤞 Hoppfull'
+        case 'approval': return '😰 Nervös'
+        case 'usage': return '😊 Trygg'
+        default: return ''
+      }
+    }
+    if (categoryId === 'touchpoints') {
+      switch (stageId) {
+        case 'need': return 'Webbsida'
+        case 'exploration': return 'Bankkontor'
+        case 'application': return 'App/Digital tjänst'
+        case 'approval': return 'Telefonsupport'
+        case 'usage': return 'Email/Brev'
+        default: return ''
+      }
+    }
+    if (categoryId === 'pain-points') {
+      switch (stageId) {
+        case 'need': return 'Komplexa villkor'
+        case 'exploration': return 'Lång handläggningstid'
+        case 'application': return 'Många dokument'
+        case 'approval': return 'Otydlig kommunikation'
+        case 'usage': return 'Tekniska problem'
+        default: return ''
+      }
+    }
+    if (categoryId === 'opportunities') {
+      switch (stageId) {
+        case 'need': return 'Tydlig information'
+        case 'exploration': return 'Snabb handläggning'
+        case 'application': return 'Digital signering'
+        case 'approval': return 'Proaktiv uppdatering'
+        case 'usage': return 'Personlig rådgivning'
+        default: return ''
+      }
+    }
+  }
+
+  // Template 6: Healthcare
+  if (templateId === '6') {
+    if (categoryId === 'actions') {
+      switch (stageId) {
+        case 'symptoms': return 'Märker symptom'
+        case 'assessment': return 'Söker information'
+        case 'booking': return 'Kontaktar vård'
+        case 'visit': return 'Kommer till besök'
+        case 'treatment': return 'Följer behandling'
+        case 'followup': return 'Bokar uppföljning'
+        default: return ''
+      }
+    }
+    if (categoryId === 'emotions') {
+      switch (stageId) {
+        case 'symptoms': return '😟 Orolig'
+        case 'assessment': return '😰 Ängsllig'
+        case 'booking': return '🤞 Hoppfull'
+        case 'visit': return '😌 Trygg'
+        case 'treatment': return '😊 Lättad'
+        case 'followup': return '💪 Stärkt'
+        default: return ''
+      }
+    }
+    if (categoryId === 'touchpoints') {
+      switch (stageId) {
+        case 'symptoms': return '1177.se'
+        case 'assessment': return 'Telefon/App'
+        case 'booking': return 'Vårdcentral'
+        case 'visit': return 'Läkare/Sköterska'
+        case 'treatment': return 'Behandlingsrum'
+        case 'followup': return 'Uppföljningssystem'
+        default: return ''
+      }
+    }
+    if (categoryId === 'pain-points') {
+      switch (stageId) {
+        case 'symptoms': return 'Svårt bedöma allvar'
+        case 'assessment': return 'Långa väntetider'
+        case 'booking': return 'Komplicerad bokning'
+        case 'visit': return 'Otydlig information'
+        case 'treatment': return 'Brist på uppföljning'
+        case 'followup': return 'Tekniska hinder'
+        default: return ''
+      }
+    }
+    if (categoryId === 'opportunities') {
+      switch (stageId) {
+        case 'symptoms': return 'Tydlig självriskbedömning'
+        case 'assessment': return 'Snabb tillgänglighet'
+        case 'booking': return 'Digital support'
+        case 'visit': return 'Empatisk kommunikation'
+        case 'treatment': return 'Integrerad uppföljning'
+        case 'followup': return 'Proaktiv hälsovård'
+        default: return ''
+      }
+    }
+  }
+
+  return ''
+}
+
 export default function JourneyMapBuilderPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const journeyMapId = params.id as string
 
   const [journeyMap, setJourneyMap] = useState<JourneyMapData | null>(null)
@@ -95,33 +586,73 @@ export default function JourneyMapBuilderPage() {
   // Initialize journey map data
   useEffect(() => {
     if (journeyMapId === 'new') {
-      // Create new journey map
-      const newJourneyMap: JourneyMapData = {
-        id: Date.now().toString(),
-        name: 'Ny Journey Map',
-        description: '',
-        persona: null,
-        phases: DEFAULT_JOURNEY_PHASES,
-        stages: DEFAULT_JOURNEY_STAGES, // Include all default stages
-        rows: [DEFAULT_JOURNEY_CATEGORIES[0]].map(category => ({
-          id: category.id,
-          category: category.name,
-          description: category.description,
-          type: category.type,
-          color: category.color,
-          cells: DEFAULT_JOURNEY_STAGES.map(stage => ({
-            id: `${category.id}-${stage.id}`,
-            content: ''
-          }))
-        })),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        createdBy: 'Nuvarande användare',
-        status: 'draft'
+      // Check if creating from template or custom template
+      const templateId = searchParams.get('template')
+      const templateName = searchParams.get('name')
+      const isCustom = searchParams.get('custom')
+
+      let newJourneyMap: JourneyMapData
+
+      if (templateId && templateName) {
+        // Create journey map from template
+        newJourneyMap = createJourneyMapFromTemplate(templateId, decodeURIComponent(templateName))
+      } else if (isCustom && templateName) {
+        // Create custom template with more rows for user to customize
+        newJourneyMap = {
+          id: Date.now().toString(),
+          name: decodeURIComponent(templateName),
+          description: 'Skapa din egen anpassade mall',
+          persona: null,
+          phases: DEFAULT_JOURNEY_PHASES,
+          stages: DEFAULT_JOURNEY_STAGES,
+          rows: DEFAULT_JOURNEY_CATEGORIES.slice(0, 3).map(category => ({
+            id: category.id,
+            category: category.name,
+            description: category.description,
+            type: category.type,
+            color: category.color,
+            cells: DEFAULT_JOURNEY_STAGES.map(stage => ({
+              id: `${category.id}-${stage.id}`,
+              content: ''
+            }))
+          })),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: 'Nuvarande användare',
+          status: 'draft'
+        }
+      } else {
+        // Create blank journey map
+        newJourneyMap = {
+          id: Date.now().toString(),
+          name: 'Ny Journey Map',
+          description: '',
+          persona: null,
+          phases: DEFAULT_JOURNEY_PHASES,
+          stages: DEFAULT_JOURNEY_STAGES,
+          rows: [DEFAULT_JOURNEY_CATEGORIES[0]].map(category => ({
+            id: category.id,
+            category: category.name,
+            description: category.description,
+            type: category.type,
+            color: category.color,
+            cells: DEFAULT_JOURNEY_STAGES.map(stage => ({
+              id: `${category.id}-${stage.id}`,
+              content: ''
+            }))
+          })),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: 'Nuvarande användare',
+          status: 'draft'
+        }
       }
+
       setJourneyMap(newJourneyMap)
-      // Start onboarding for new journey maps
-      setIsOnboardingActive(true)
+      // Start onboarding for new journey maps (skip for templates and custom templates)
+      if (!templateId && !isCustom) {
+        setIsOnboardingActive(true)
+      }
     } else {
       // Load existing journey map (mock data for now)
       const mockJourneyMap: JourneyMapData = {
@@ -155,7 +686,7 @@ export default function JourneyMapBuilderPage() {
       }
       setJourneyMap(mockJourneyMap)
     }
-  }, [journeyMapId])
+  }, [journeyMapId, searchParams])
 
   const handleCellChange = (rowId: string, cellId: string, content: string) => {
     if (!journeyMap) return
