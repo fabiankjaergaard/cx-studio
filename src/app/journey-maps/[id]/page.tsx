@@ -17,7 +17,8 @@ import {
   EditIcon,
   MoreVertical,
   Copy,
-  Move
+  Move,
+  Trash2
 } from 'lucide-react'
 import Link from 'next/link'
 import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES } from '@/types/journey-map'
@@ -639,9 +640,9 @@ export default function JourneyMapBuilderPage() {
                       const colSpan = stagesInPhase === 0 ? 1 : stagesInPhase
                       
                       return (
-                        <th 
-                          key={phase.id} 
-                          className={`relative p-2 text-center text-sm font-semibold text-gray-700 border-r border-gray-200 ${phase.color} ${stagesInPhase === 0 ? 'min-w-32' : ''}`}
+                        <th
+                          key={phase.id}
+                          className={`relative p-2 text-center text-sm font-semibold text-gray-700 border-r border-gray-200 ${phase.color} ${stagesInPhase === 0 ? 'min-w-32' : ''} group`}
                           colSpan={colSpan}
                         >
                           <InlineEdit
@@ -660,7 +661,60 @@ export default function JourneyMapBuilderPage() {
                             placeholder="Phase description"
                             variant="description"
                           />
-                          
+
+                          {/* Phase actions dropdown */}
+                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-200" data-dropdown>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setActiveDropdown(activeDropdown === `phase-${phase.id}` ? null : `phase-${phase.id}`)
+                              }}
+                              className="w-6 h-6 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded flex items-center justify-center"
+                            >
+                              <MoreVertical className="w-3 h-3" />
+                            </button>
+
+                            {activeDropdown === `phase-${phase.id}` && (
+                              <div className="absolute right-0 mt-1 min-w-32 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-20">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    console.log('Duplicate phase:', phase.id)
+                                    setActiveDropdown(null)
+                                  }}
+                                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                                >
+                                  <Copy className="w-3 h-3 mr-2" />
+                                  Duplicate
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    console.log('Move phase:', phase.id)
+                                    setActiveDropdown(null)
+                                  }}
+                                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                                >
+                                  <Move className="w-3 h-3 mr-2" />
+                                  Move
+                                </button>
+                                {journeyMap.phases.length > 2 && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      console.log('Delete phase:', phase.id)
+                                      setActiveDropdown(null)
+                                    }}
+                                    className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
+                                  >
+                                    <Trash2 className="w-3 h-3 mr-2" />
+                                    Delete
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
                           {/* Drag handle on the right edge (except for last phase) */}
                           {phaseIndex < journeyMap.phases.length - 1 && (
                             <div
@@ -689,11 +743,11 @@ export default function JourneyMapBuilderPage() {
                   
                   {/* Stages Header Row */}
                   <tr className="bg-slate-50 border-b border-gray-100" data-onboarding="stages">
-                    <th className="w-48 p-4 text-left text-sm font-medium text-gray-900 border-r border-gray-200">
+                    <th className="w-48 p-4 text-left text-sm font-medium text-gray-900 border-r border-gray-200 hover:bg-white transition-colors">
                       Journey Kategorier
                     </th>
                     {journeyMap.stages.map((stage, index) => (
-                      <th key={stage.id} className="min-w-64 p-4 text-left border-r border-gray-200 relative group">
+                      <th key={stage.id} className="min-w-64 p-4 text-left border-r border-gray-200 relative group hover:bg-white transition-colors">
                         <div className="flex items-center justify-between">
                           <InlineEdit
                             value={stage.name}
@@ -769,7 +823,7 @@ export default function JourneyMapBuilderPage() {
                         />
                       </th>
                     ))}
-                    <th className="w-12 p-4">
+                    <th className="w-12 p-4 bg-slate-50">
                       <Button
                         variant="outline"
                         size="sm"
@@ -798,7 +852,7 @@ export default function JourneyMapBuilderPage() {
                     <React.Fragment key={`row-section-${row.id}`}>
                       <tr key={row.id} className="border-b border-gray-100">
                       <td
-                        className={`p-4 border-r border-gray-200 bg-slate-50 group relative`}
+                        className={`p-4 border-r border-gray-200 bg-slate-50 group relative hover:bg-white transition-colors`}
                         data-onboarding={rowIndex === 0 ? "categories" : undefined}
                       >
                         <div className="space-y-1">
@@ -971,7 +1025,7 @@ export default function JourneyMapBuilderPage() {
                           </td>
                         ))
                       )}
-                        <td className="p-4"></td>
+                        <td className="p-4 bg-slate-50"></td>
                       </tr>
 
                       {/* Insertion zone after each row */}
