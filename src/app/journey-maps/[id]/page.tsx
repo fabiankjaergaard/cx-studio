@@ -13,12 +13,13 @@ import {
   SettingsIcon,
   UserIcon,
   TrashIcon,
-  ArrowLeftIcon,
   EditIcon,
   MoreVertical,
   Copy,
   Move,
-  Trash2
+  Trash2,
+  FileDownIcon,
+  ImageIcon
 } from 'lucide-react'
 import Link from 'next/link'
 import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES } from '@/types/journey-map'
@@ -270,6 +271,421 @@ export default function JourneyMapBuilderPage() {
       })),
       updatedAt: new Date().toISOString()
     })
+  }
+
+  const handleDuplicateStage = (stageId: string, stageIndex: number) => {
+    if (!journeyMap) return
+
+    const stageToDuplicate = journeyMap.stages.find(stage => stage.id === stageId)
+    if (!stageToDuplicate) return
+
+    const newStageId = `stage-${Date.now()}`
+    const newStage: JourneyMapStage = {
+      id: newStageId,
+      name: `${stageToDuplicate.name} (Copy)`,
+      description: stageToDuplicate.description,
+      phaseId: stageToDuplicate.phaseId
+    }
+
+    // Insert the new stage right after the original
+    const newStages = [...journeyMap.stages]
+    newStages.splice(stageIndex + 1, 0, newStage)
+
+    setJourneyMap({
+      ...journeyMap,
+      stages: newStages,
+      rows: journeyMap.rows.map(row => {
+        const originalCell = row.cells[stageIndex]
+        const newCell = {
+          id: `${row.id}-${newStageId}`,
+          content: originalCell ? originalCell.content : ''
+        }
+        const newCells = [...row.cells]
+        newCells.splice(stageIndex + 1, 0, newCell)
+        return {
+          ...row,
+          cells: newCells
+        }
+      }),
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleMoveStage = (stageId: string, currentIndex: number) => {
+    if (!journeyMap) return
+
+    // For simplicity, alternate between moving left and right
+    // If it's near the beginning, move right; if near end, move left
+    const isNearStart = currentIndex < journeyMap.stages.length / 2
+    const newIndex = isNearStart
+      ? Math.min(currentIndex + 1, journeyMap.stages.length - 1)
+      : Math.max(currentIndex - 1, 0)
+
+    if (newIndex === currentIndex) return // No movement needed
+
+    const newStages = [...journeyMap.stages]
+    const stageToMove = newStages[currentIndex]
+
+    // Remove from current position and insert at new position
+    newStages.splice(currentIndex, 1)
+    newStages.splice(newIndex, 0, stageToMove)
+
+    setJourneyMap({
+      ...journeyMap,
+      stages: newStages,
+      rows: journeyMap.rows.map(row => {
+        const newCells = [...row.cells]
+        const cellToMove = newCells[currentIndex]
+
+        // Move the cell to match the stage movement
+        newCells.splice(currentIndex, 1)
+        newCells.splice(newIndex, 0, cellToMove)
+
+        return {
+          ...row,
+          cells: newCells
+        }
+      }),
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleDuplicateRow = (rowId: string, rowIndex: number) => {
+    if (!journeyMap) return
+
+    const rowToDuplicate = journeyMap.rows.find(row => row.id === rowId)
+    if (!rowToDuplicate) return
+
+    const newRowId = `row-${Date.now()}`
+    const newRow: JourneyMapRow = {
+      id: newRowId,
+      category: `${rowToDuplicate.category} (Copy)`,
+      description: rowToDuplicate.description,
+      type: rowToDuplicate.type,
+      color: rowToDuplicate.color,
+      cells: rowToDuplicate.cells.map((cell, index) => ({
+        id: `${newRowId}-${journeyMap.stages[index]?.id || index}`,
+        content: cell.content
+      }))
+    }
+
+    const newRows = [...journeyMap.rows]
+    newRows.splice(rowIndex + 1, 0, newRow)
+
+    setJourneyMap({
+      ...journeyMap,
+      rows: newRows,
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleMoveRow = (rowId: string, currentIndex: number) => {
+    if (!journeyMap) return
+
+    // Simple move: alternate between moving up and down
+    const isUpperHalf = currentIndex < journeyMap.rows.length / 2
+    const newIndex = isUpperHalf
+      ? Math.min(currentIndex + 1, journeyMap.rows.length - 1)
+      : Math.max(currentIndex - 1, 0)
+
+    if (newIndex === currentIndex) return
+
+    const newRows = [...journeyMap.rows]
+    const rowToMove = newRows[currentIndex]
+
+    newRows.splice(currentIndex, 1)
+    newRows.splice(newIndex, 0, rowToMove)
+
+    setJourneyMap({
+      ...journeyMap,
+      rows: newRows,
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleDuplicatePhase = (phaseId: string, phaseIndex: number) => {
+    if (!journeyMap) return
+
+    const phaseToDuplicate = journeyMap.phases.find(phase => phase.id === phaseId)
+    if (!phaseToDuplicate) return
+
+    const newPhaseId = `phase-${Date.now()}`
+    const newPhase: JourneyMapPhase = {
+      id: newPhaseId,
+      name: `${phaseToDuplicate.name} (Copy)`,
+      description: phaseToDuplicate.description,
+      color: phaseToDuplicate.color
+    }
+
+    const newPhases = [...journeyMap.phases]
+    newPhases.splice(phaseIndex + 1, 0, newPhase)
+
+    // Find stages in the original phase and duplicate them
+    const originalPhaseStages = journeyMap.stages.filter(stage => stage.phaseId === phaseId)
+    const newStages = [...journeyMap.stages]
+
+    originalPhaseStages.forEach((stage, index) => {
+      const newStageId = `stage-${Date.now()}-${index}`
+      const newStage: JourneyMapStage = {
+        id: newStageId,
+        name: `${stage.name} (Copy)`,
+        description: stage.description,
+        phaseId: newPhaseId
+      }
+      newStages.push(newStage)
+    })
+
+    setJourneyMap({
+      ...journeyMap,
+      phases: newPhases,
+      stages: newStages,
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleMovePhase = (phaseId: string, currentIndex: number) => {
+    if (!journeyMap) return
+
+    const isFirstHalf = currentIndex < journeyMap.phases.length / 2
+    const newIndex = isFirstHalf
+      ? Math.min(currentIndex + 1, journeyMap.phases.length - 1)
+      : Math.max(currentIndex - 1, 0)
+
+    if (newIndex === currentIndex) return
+
+    const newPhases = [...journeyMap.phases]
+    const phaseToMove = newPhases[currentIndex]
+
+    newPhases.splice(currentIndex, 1)
+    newPhases.splice(newIndex, 0, phaseToMove)
+
+    setJourneyMap({
+      ...journeyMap,
+      phases: newPhases,
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleDeletePhase = (phaseId: string) => {
+    if (!journeyMap || journeyMap.phases.length <= 2) return
+
+    // Move all stages from deleted phase to the first remaining phase
+    const remainingPhases = journeyMap.phases.filter(phase => phase.id !== phaseId)
+    const targetPhaseId = remainingPhases[0]?.id
+
+    if (!targetPhaseId) return
+
+    setJourneyMap({
+      ...journeyMap,
+      phases: remainingPhases,
+      stages: journeyMap.stages.map(stage =>
+        stage.phaseId === phaseId
+          ? { ...stage, phaseId: targetPhaseId }
+          : stage
+      ),
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleCopyCell = async (content: string) => {
+    try {
+      await navigator.clipboard.writeText(content)
+      // Could add a toast notification here in the future
+    } catch (err) {
+      console.error('Failed to copy cell content:', err)
+      // Fallback: create a temporary textarea for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = content
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+    }
+  }
+
+  const handleExportPDF = async () => {
+    if (!journeyMap) {
+      alert('Ingen journey map att exportera')
+      return
+    }
+
+    // Create a simple text-based PDF as a workaround
+    try {
+      console.log('Creating text-based PDF...')
+      const { default: jsPDF } = await import('jspdf')
+
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      })
+
+      const pageWidth = pdf.internal.pageSize.getWidth()
+      let yPosition = 20
+
+      // Add title
+      pdf.setFontSize(16)
+      pdf.text(journeyMap.name, pageWidth / 2, yPosition, { align: 'center' })
+      yPosition += 15
+
+      // Add phases
+      pdf.setFontSize(12)
+      pdf.text('Phases:', 20, yPosition)
+      yPosition += 10
+
+      journeyMap.phases.forEach((phase, index) => {
+        pdf.setFontSize(10)
+        pdf.text(`${index + 1}. ${phase.name}`, 25, yPosition)
+        yPosition += 7
+      })
+
+      yPosition += 10
+
+      // Add stages
+      pdf.text('Stages:', 20, yPosition)
+      yPosition += 10
+
+      journeyMap.stages.forEach((stage, index) => {
+        pdf.setFontSize(10)
+        pdf.text(`${index + 1}. ${stage.name}`, 25, yPosition)
+        yPosition += 7
+      })
+
+      yPosition += 10
+
+      // Add rows
+      journeyMap.rows.forEach((row, rowIndex) => {
+        if (yPosition > 180) {
+          pdf.addPage()
+          yPosition = 20
+        }
+
+        pdf.setFontSize(12)
+        pdf.text(`${row.name}:`, 20, yPosition)
+        yPosition += 10
+
+        row.cells.forEach((cell, cellIndex) => {
+          if (cell.content.trim()) {
+            pdf.setFontSize(9)
+            const stageText = journeyMap.stages[cellIndex]?.name || `Stage ${cellIndex + 1}`
+            pdf.text(`• ${stageText}: ${cell.content}`, 25, yPosition)
+            yPosition += 6
+          }
+        })
+
+        yPosition += 5
+      })
+
+      // Add note about visual export
+      pdf.setFontSize(8)
+      pdf.setTextColor(128, 128, 128)
+      pdf.text('Note: This is a text-based export. Visual export unavailable due to browser limitations.', 20, yPosition + 10)
+
+      const filename = `${journeyMap.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_journey_map_text.pdf`
+      pdf.save(filename)
+
+      alert('PDF exporterad som text! (Visuell export ej tillgänglig p.g.a. browser begränsningar)')
+
+    } catch (error) {
+      console.error('PDF export failed:', error)
+      alert(`Fel vid PDF export: ${error.message}`)
+    }
+  }
+
+  const handleExportPNG = async () => {
+    if (!journeyMap) {
+      alert('Ingen journey map att exportera')
+      return
+    }
+
+    try {
+      console.log('Starting PNG export with style cleanup...')
+
+      // Create a copy of the table with cleaned styles
+      const originalTable = document.querySelector('[data-export="journey-map"] table') as HTMLElement
+      if (!originalTable) {
+        throw new Error('Kunde inte hitta journey map tabellen')
+      }
+
+      // Clone the table
+      const tableClone = originalTable.cloneNode(true) as HTMLElement
+
+      // Clean up all styles to avoid color issues
+      const cleanStyles = (element: HTMLElement) => {
+        element.style.backgroundColor = element.style.backgroundColor || '#ffffff'
+        element.style.color = element.style.color || '#000000'
+        element.style.border = element.style.border || '1px solid #cccccc'
+        element.style.fontFamily = 'Arial, sans-serif'
+
+        // Remove problematic CSS
+        element.style.filter = 'none'
+        element.style.backdropFilter = 'none'
+        element.style.boxShadow = 'none'
+
+        // Clean children
+        Array.from(element.children).forEach(child => {
+          if (child instanceof HTMLElement) {
+            cleanStyles(child)
+          }
+        })
+      }
+
+      cleanStyles(tableClone)
+
+      // Create a temporary container
+      const container = document.createElement('div')
+      container.style.position = 'absolute'
+      container.style.left = '-9999px'
+      container.style.top = '-9999px'
+      container.style.backgroundColor = '#ffffff'
+      container.appendChild(tableClone)
+      document.body.appendChild(container)
+
+      try {
+        const { default: html2canvas } = await import('html2canvas')
+
+        const canvas = await html2canvas(tableClone, {
+          backgroundColor: '#ffffff',
+          scale: 1,
+          useCORS: false,
+          allowTaint: true,
+          logging: false,
+        })
+
+        // Remove temporary container
+        document.body.removeChild(container)
+
+        if (canvas.width === 0 || canvas.height === 0) {
+          throw new Error('Tom canvas skapad')
+        }
+
+        // Download the image
+        const filename = `${journeyMap.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_journey_map.png`
+        const dataURL = canvas.toDataURL('image/png', 0.9)
+
+        const link = document.createElement('a')
+        link.download = filename
+        link.href = dataURL
+        link.style.display = 'none'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        console.log('PNG download completed:', filename)
+        alert('PNG exporterad!')
+
+      } catch (canvasError) {
+        // Remove temporary container on error
+        if (document.body.contains(container)) {
+          document.body.removeChild(container)
+        }
+        throw canvasError
+      }
+
+    } catch (error) {
+      console.error('PNG export failed:', error)
+      alert(`Fel vid PNG export: ${error.message}`)
+    }
   }
 
   // Handle phase boundary dragging
@@ -532,28 +948,48 @@ export default function JourneyMapBuilderPage() {
 
   return (
     <DragDropProvider>
-      <div className="h-full flex">
-        {/* Left Palette */}
-        <RowTypePalette
-          isCollapsed={isPaletteCollapsed}
-          onToggleCollapse={() => setIsPaletteCollapsed(!isPaletteCollapsed)}
-          className="flex-shrink-0"
-          data-onboarding="palette"
-        />
-
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <Header 
-        title={journeyMap.name} 
+      <div className="h-full flex flex-col overflow-hidden">
+          <Header
+        title={journeyMap.name}
         description={journeyMap.description || 'Redigera din customer journey map'}
         actions={
           <div className="flex space-x-2">
-            <Link href="/journey-maps">
-              <Button variant="outline">
-                <ArrowLeftIcon className="mr-2 h-4 w-4" />
-                Tillbaka
+            <div className="relative" data-dropdown>
+              <Button
+                variant="outline"
+                onClick={() => setActiveDropdown(activeDropdown === 'export' ? null : 'export')}
+              >
+                <FileDownIcon className="mr-2 h-4 w-4" />
+                Export
               </Button>
-            </Link>
+
+              {activeDropdown === 'export' && (
+                <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-32 z-20">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleExportPDF()
+                      setActiveDropdown(null)
+                    }}
+                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-900 hover:text-gray-900"
+                  >
+                    <FileDownIcon className="w-3 h-3 text-gray-700" />
+                    Export PDF
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleExportPNG()
+                      setActiveDropdown(null)
+                    }}
+                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-900 hover:text-gray-900"
+                  >
+                    <ImageIcon className="w-3 h-3 text-gray-700" />
+                    Export PNG
+                  </button>
+                </div>
+              )}
+            </div>
             <Button
               variant="outline"
               onClick={() => setIsSettingsModalOpen(true)}
@@ -561,7 +997,7 @@ export default function JourneyMapBuilderPage() {
               <SettingsIcon className="mr-2 h-4 w-4" />
               Settings
             </Button>
-            <Button 
+            <Button
               variant="primary"
               onClick={handleSave}
               disabled={isSaving}
@@ -572,8 +1008,16 @@ export default function JourneyMapBuilderPage() {
           </div>
         }
       />
-      
-          <div className="flex-1 overflow-auto bg-gray-50">
+
+          <div className="flex-1 flex overflow-hidden">
+            {/* Row Types Palette */}
+            <RowTypePalette
+              isCollapsed={isPaletteCollapsed}
+              onToggleCollapse={() => setIsPaletteCollapsed(!isPaletteCollapsed)}
+              data-onboarding="palette"
+            />
+
+            <div className="flex-1 overflow-auto bg-gray-50">
             <div className="p-6">
             {/* Persona Section */}
             <div className="mb-6" data-onboarding="persona">
@@ -615,7 +1059,7 @@ export default function JourneyMapBuilderPage() {
             </div>
 
             {/* Journey Map Grid */}
-            <Card className="overflow-hidden">
+            <Card className="overflow-hidden journey-map-content" data-export="journey-map">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
@@ -679,7 +1123,7 @@ export default function JourneyMapBuilderPage() {
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation()
-                                    console.log('Duplicate phase:', phase.id)
+                                    handleDuplicatePhase(phase.id, phaseIndex)
                                     setActiveDropdown(null)
                                   }}
                                   className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
@@ -690,7 +1134,7 @@ export default function JourneyMapBuilderPage() {
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation()
-                                    console.log('Move phase:', phase.id)
+                                    handleMovePhase(phase.id, phaseIndex)
                                     setActiveDropdown(null)
                                   }}
                                   className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
@@ -702,7 +1146,7 @@ export default function JourneyMapBuilderPage() {
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation()
-                                      console.log('Delete phase:', phase.id)
+                                      handleDeletePhase(phase.id)
                                       setActiveDropdown(null)
                                     }}
                                     className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
@@ -774,10 +1218,10 @@ export default function JourneyMapBuilderPage() {
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation()
-                                    // TODO: Implement duplicate stage
+                                    handleDuplicateStage(stage.id, index)
                                     setActiveDropdown(null)
                                   }}
-                                  className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2"
+                                  className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-900 hover:text-gray-900"
                                 >
                                   <Copy className="w-3 h-3" />
                                   Duplicate
@@ -785,10 +1229,10 @@ export default function JourneyMapBuilderPage() {
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation()
-                                    // TODO: Implement move stage
+                                    handleMoveStage(stage.id, index)
                                     setActiveDropdown(null)
                                   }}
-                                  className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2"
+                                  className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-900 hover:text-gray-900"
                                 >
                                   <Move className="w-3 h-3" />
                                   Move
@@ -839,7 +1283,7 @@ export default function JourneyMapBuilderPage() {
                 
                 {/* Content Rows */}
                 <tbody>
-                  {/* Insertion zone at top */}
+                  {/* Invisible insertion zone at top */}
                   <RowInsertionZone
                     key={`insertion-0-${journeyMap.rows.length}`}
                     onDropBlock={handleDropBlockAtIndex}
@@ -892,10 +1336,10 @@ export default function JourneyMapBuilderPage() {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  // TODO: Implement duplicate row
+                                  handleDuplicateRow(row.id, rowIndex)
                                   setActiveDropdown(null)
                                 }}
-                                className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2"
+                                className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-900 hover:text-gray-900"
                               >
                                 <Copy className="w-3 h-3" />
                                 Duplicate
@@ -903,10 +1347,10 @@ export default function JourneyMapBuilderPage() {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  // TODO: Implement move row
+                                  handleMoveRow(row.id, rowIndex)
                                   setActiveDropdown(null)
                                 }}
-                                className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2"
+                                className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-900 hover:text-gray-900"
                               >
                                 <Move className="w-3 h-3" />
                                 Move
@@ -999,10 +1443,10 @@ export default function JourneyMapBuilderPage() {
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation()
-                                      // TODO: Implement copy cell
+                                      handleCopyCell(cell.content)
                                       setActiveDropdown(null)
                                     }}
-                                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2"
+                                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-900 hover:text-gray-900"
                                   >
                                     <Copy className="w-3 h-3" />
                                     Copy
@@ -1028,7 +1472,7 @@ export default function JourneyMapBuilderPage() {
                         <td className="p-4 bg-slate-50"></td>
                       </tr>
 
-                      {/* Insertion zone after each row */}
+                      {/* Invisible insertion zone after each row */}
                       <RowInsertionZone
                         key={`insertion-${rowIndex + 1}-${journeyMap.rows.length}`}
                         onDropBlock={handleDropBlockAtIndex}
@@ -1038,13 +1482,6 @@ export default function JourneyMapBuilderPage() {
                     </React.Fragment>
                   ))}
                   
-                  {/* Final insertion zone */}
-                  <RowInsertionZone
-                    key={`insertion-final-${journeyMap.rows.length}`}
-                    onDropBlock={handleDropBlockAtIndex}
-                    insertIndex={journeyMap.rows.length}
-                    stageCount={journeyMap.stages.length}
-                  />
                 </tbody>
               </table>
             </div>
@@ -1052,6 +1489,7 @@ export default function JourneyMapBuilderPage() {
           </Card>
         </div>
       </div>
+            </div>
         </div>
 
       {/* Persona Selection Modal */}
@@ -1134,7 +1572,6 @@ export default function JourneyMapBuilderPage() {
           </div>
         </div>
       </Modal>
-        </div>
 
       {/* Row Editor Modal */}
       <RowEditor

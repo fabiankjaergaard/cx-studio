@@ -102,7 +102,7 @@ export function RowTypeBlock({ rowType, color = 'bg-slate-50' }: RowTypeBlockPro
 
       {/* Drag indicator */}
       {isDragging && (
-        <div className="absolute inset-0 border-2 border-dashed border-blue-400 rounded-lg bg-blue-50 bg-opacity-20" />
+        <div className="absolute inset-0 border-2 border-dashed border-slate-600 rounded-lg bg-slate-100 bg-opacity-30" />
       )}
     </div>
   )

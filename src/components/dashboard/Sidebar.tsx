@@ -154,8 +154,8 @@ export function Sidebar() {
       isCollapsed ? "w-16" : "w-64"
     )}>
       <div className={cn(
-        "flex items-center justify-center border-b border-gray-200",
-        isCollapsed ? "h-20 px-2" : "h-16 px-6"
+        "flex items-center justify-center border-b border-gray-200 h-20",
+        isCollapsed ? "px-2" : "px-6"
       )}>
         <div className="flex items-center justify-center flex-1">
           {!isCollapsed ? (

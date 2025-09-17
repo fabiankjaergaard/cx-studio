@@ -2,7 +2,6 @@
 
 import { useDrop } from 'react-dnd'
 import { useState, useEffect } from 'react'
-import { PlusIcon } from 'lucide-react'
 import { useDragContext } from '@/components/journey/DragDropProvider'
 
 interface DroppedItem {
@@ -50,16 +49,17 @@ export function RowInsertionZone({
     }
   }, [isOver, canDrop, isDragging, insertIndex])
 
-  // Single consistent drop target - always visible for easier targeting
+  // Invisible drop target when not dragging
   if (!shouldShow) {
     return (
-      <tr className="h-2 group relative">
+      <tr className="h-1 group relative">
         <td
           ref={drop as any}
           colSpan={stageCount + 2}
-          className="p-0 bg-transparent hover:bg-blue-50/30 transition-colors cursor-pointer relative"
-          title={`Drop zone ${insertIndex}`}
-        />
+          className="bg-transparent"
+          title="Dra och släpp nya rader här"
+        >
+        </td>
       </tr>
     )
   }
