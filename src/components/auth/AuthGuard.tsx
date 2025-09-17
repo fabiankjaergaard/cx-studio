@@ -75,8 +75,8 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <img 
-            src="/Nava blue text.png" 
-            alt="Nava" 
+            src="/Kustra.png" 
+            alt="Kustra" 
             className="h-16 w-auto mx-auto mb-4"
           />
           <div className="text-sm text-gray-500">{t('common.loading')}</div>
@@ -91,8 +91,8 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <img 
-            src="/Nava blue text.png" 
-            alt="Nava" 
+            src="/Kustra.png" 
+            alt="Kustra" 
             className="h-16 w-auto mx-auto mb-4"
           />
           <div className="text-sm text-gray-500">{t('common.redirecting')}</div>

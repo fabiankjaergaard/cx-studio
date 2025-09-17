@@ -39,9 +39,9 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
           
           <div className="text-center">
             <div className="mb-6">
-              <img 
-                src="/Nava blue text.png" 
-                alt="Nava" 
+              <img
+                src="/Kustra.png"
+                alt="Kustra"
                 className="h-16 w-auto mx-auto filter brightness-0 invert"
               />
             </div>

@@ -32,9 +32,9 @@ export default function LoginPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <img 
-            src="/Nava blue text.png" 
-            alt="Nava" 
+          <img
+            src="/Kustra.png"
+            alt="Kustra"
             className="h-16 w-auto mx-auto mb-4"
           />
           <div className="text-sm text-gray-500">Loading...</div>
@@ -90,9 +90,9 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-4">
         {/* Logo */}
         <div className="text-center">
-          <img 
-            src="/Nava blue text.png" 
-            alt="Nava" 
+          <img
+            src="/Kustra.png"
+            alt="Kustra"
             className="h-36 w-auto mx-auto mb-6"
           />
           <h2 className="text-3xl font-light text-gray-900">

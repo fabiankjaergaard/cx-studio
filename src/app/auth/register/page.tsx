@@ -64,9 +64,9 @@ export default function RegisterPage() {
       <div className="flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-4">
           <div className="text-center">
-            <img 
-              src="/Nava blue text.png" 
-              alt="Nava" 
+            <img
+              src="/Kustra.png"
+              alt="Kustra"
               className="h-36 w-auto mx-auto mb-6"
             />
             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
@@ -94,9 +94,9 @@ export default function RegisterPage() {
       <div className="max-w-md w-full space-y-4">
         {/* Logo */}
         <div className="text-center">
-          <img 
-            src="/Nava blue text.png" 
-            alt="Nava" 
+          <img
+            src="/Kustra.png"
+            alt="Kustra"
             className="h-36 w-auto mx-auto mb-6"
           />
           <h2 className="text-3xl font-light text-gray-900">

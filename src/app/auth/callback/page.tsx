@@ -53,9 +53,9 @@ export default function AuthCallback() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="text-center">
-        <img 
-          src="/Nava blue text.png" 
-          alt="Nava" 
+        <img
+          src="/Kustra.png"
+          alt="Kustra"
           className="h-16 w-auto mx-auto mb-6"
         />
         <div className="text-lg text-gray-700 mb-2">Bekräftar din e-post...</div>

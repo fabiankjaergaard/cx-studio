@@ -136,10 +136,10 @@ const translations: Record<Language, Record<string, string>> = {
         'settings.saved': 'Inställningar sparade!',
 
         // Onboarding
-        'onboarding.welcome': 'Välkommen till Nava',
+        'onboarding.welcome': 'Välkommen till Kustra',
         'onboarding.subtitle': 'Din plattform för Customer Experience Excellence',
         'onboarding.introVideo': 'Introduktionsvideo',
-        'onboarding.description': 'Lär dig hur du använder Nava för att skapa exceptionella kundupplevelser',
+        'onboarding.description': 'Lär dig hur du använder Kustra för att skapa exceptionella kundupplevelser',
         'onboarding.startTour': 'Starta guidad rundtur',
         'onboarding.skipTour': 'Hoppa över rundturen',
 
@@ -2067,10 +2067,10 @@ const translations: Record<Language, Record<string, string>> = {
         'settings.saved': 'Settings saved!',
 
         // Onboarding
-        'onboarding.welcome': 'Welcome to Nava',
+        'onboarding.welcome': 'Welcome to Kustra',
         'onboarding.subtitle': 'Your platform for Customer Experience Excellence',
         'onboarding.introVideo': 'Introduction video',
-        'onboarding.description': 'Learn how to use Nava to create exceptional customer experiences',
+        'onboarding.description': 'Learn how to use Kustra to create exceptional customer experiences',
         'onboarding.startTour': 'Start guided tour',
         'onboarding.skipTour': 'Skip the tour',
 
@@ -3862,7 +3862,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         // Load saved language from localStorage
-        const savedLanguage = localStorage.getItem('nava-language') as Language
+        const savedLanguage = localStorage.getItem('kustra-language') as Language
         if (savedLanguage && (savedLanguage === 'sv' || savedLanguage === 'en')) {
             setLanguageState(savedLanguage)
         }
@@ -3875,7 +3875,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     const setLanguage = (lang: Language) => {
         setLanguageState(lang)
-        localStorage.setItem('nava-language', lang)
+        localStorage.setItem('kustra-language', lang)
     }
 
     const t = (key: string, variables?: Record<string, string | number>): string => {

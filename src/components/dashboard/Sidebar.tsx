@@ -165,9 +165,9 @@ export function Sidebar() {
               className="h-24 w-auto object-contain max-w-[300px]"
             />
           ) : (
-            <img 
-              src="/nava small.png" 
-              alt="Nava" 
+            <img
+              src="/kustra-logo.png"
+              alt="Kustra"
               className="h-16 w-12 object-contain"
             />
           )}
