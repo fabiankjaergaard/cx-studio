@@ -14,7 +14,10 @@ import {
   UserIcon,
   TrashIcon,
   ArrowLeftIcon,
-  EditIcon
+  EditIcon,
+  MoreVertical,
+  Copy,
+  Move
 } from 'lucide-react'
 import Link from 'next/link'
 import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES } from '@/types/journey-map'
@@ -69,8 +72,23 @@ export default function JourneyMapBuilderPage() {
   const [isDraggingPhase, setIsDraggingPhase] = useState(false)
   const [dragStartX, setDragStartX] = useState(0)
   const [dragBoundaryIndex, setDragBoundaryIndex] = useState<number | null>(null)
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isOnboardingActive, setIsOnboardingActive] = useState(false)
   const [isPaletteCollapsed, setIsPaletteCollapsed] = useState(false)
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (activeDropdown && !(event.target as Element).closest('[data-dropdown]')) {
+        setActiveDropdown(null)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [activeDropdown])
 
   // Initialize journey map data
   useEffect(() => {
@@ -684,17 +702,62 @@ export default function JourneyMapBuilderPage() {
                             placeholder="Stage name"
                             variant="stage-title"
                           />
-                          {journeyMap.stages.length > 2 && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleRemoveStage(index)}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-6 w-6 ml-2"
-                              title="Ta bort steg"
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-2" data-dropdown>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setActiveDropdown(activeDropdown === `stage-${stage.id}` ? null : `stage-${stage.id}`)
+                              }}
+                              className="w-6 h-6 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded flex items-center justify-center"
+                              title="Stage actions"
                             >
-                              <TrashIcon className="h-3 w-3" />
-                            </Button>
-                          )}
+                              <MoreVertical className="w-3 h-3" />
+                            </button>
+
+                            {/* Stage dropdown menu */}
+                            {activeDropdown === `stage-${stage.id}` && (
+                              <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-32 z-20">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    // TODO: Implement duplicate stage
+                                    setActiveDropdown(null)
+                                  }}
+                                  className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2"
+                                >
+                                  <Copy className="w-3 h-3" />
+                                  Duplicate
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    // TODO: Implement move stage
+                                    setActiveDropdown(null)
+                                  }}
+                                  className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2"
+                                >
+                                  <Move className="w-3 h-3" />
+                                  Move
+                                </button>
+                                {journeyMap.stages.length > 2 && (
+                                  <>
+                                    <div className="border-t mx-2 my-1"></div>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleRemoveStage(index)
+                                        setActiveDropdown(null)
+                                      }}
+                                      className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm text-red-600 flex items-center gap-2"
+                                    >
+                                      <TrashIcon className="w-3 h-3" />
+                                      Delete
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                         <InlineEdit
                           value={stage.description || ''}
@@ -756,17 +819,59 @@ export default function JourneyMapBuilderPage() {
                           />
                         </div>
 
-                        {/* Delete button - appears on hover */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleRemoveRow(row.id)
-                          }}
-                          className="absolute top-2 right-2 w-6 h-6 bg-gray-400 hover:bg-gray-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center shadow-sm"
-                          title="Ta bort rad"
-                        >
-                          <TrashIcon className="w-3 h-3" />
-                        </button>
+                        {/* Row actions dropdown - appears on hover */}
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-200" data-dropdown>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setActiveDropdown(activeDropdown === `row-${row.id}` ? null : `row-${row.id}`)
+                            }}
+                            className="w-6 h-6 bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center shadow-sm"
+                            title="Row actions"
+                          >
+                            <MoreVertical className="w-3 h-3" />
+                          </button>
+
+                          {/* Dropdown menu */}
+                          {activeDropdown === `row-${row.id}` && (
+                            <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-32 z-20">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  // TODO: Implement duplicate row
+                                  setActiveDropdown(null)
+                                }}
+                                className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2"
+                              >
+                                <Copy className="w-3 h-3" />
+                                Duplicate
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  // TODO: Implement move row
+                                  setActiveDropdown(null)
+                                }}
+                                className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2"
+                              >
+                                <Move className="w-3 h-3" />
+                                Move
+                              </button>
+                              <div className="border-t mx-2 my-1"></div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleRemoveRow(row.id)
+                                  setActiveDropdown(null)
+                                }}
+                                className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm text-red-600 flex items-center gap-2"
+                              >
+                                <TrashIcon className="w-3 h-3" />
+                                Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </td>
                       {(row.type === 'emoji' || row.type === 'pain-points' || row.type === 'opportunities' || row.type === 'metrics' || row.type === 'channels') ? (
                         // For visualization components, create one cell spanning all stages
@@ -811,7 +916,7 @@ export default function JourneyMapBuilderPage() {
                         row.cells.map((cell, cellIndex) => (
                           <td
                             key={cell.id}
-                            className={`p-2 border-r border-gray-200 align-top ${row.color}`}
+                            className={`p-2 border-r border-gray-200 align-top ${row.color} group relative`}
                             data-onboarding={rowIndex === 0 && cellIndex === 0 ? "cells" : undefined}
                           >
                             <JourneyMapCellComponent
@@ -820,6 +925,49 @@ export default function JourneyMapBuilderPage() {
                               onChange={(content) => handleCellChange(row.id, cell.id, content)}
                               placeholder="Klicka för att redigera..."
                             />
+
+                            {/* Cell actions dropdown - appears on hover */}
+                            <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-all duration-200" data-dropdown>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setActiveDropdown(activeDropdown === `cell-${cell.id}` ? null : `cell-${cell.id}`)
+                                }}
+                                className="w-5 h-5 bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center shadow-sm"
+                                title="Cell actions"
+                              >
+                                <MoreVertical className="w-2.5 h-2.5" />
+                              </button>
+
+                              {/* Dropdown menu */}
+                              {activeDropdown === `cell-${cell.id}` && (
+                                <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-28 z-20">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      // TODO: Implement copy cell
+                                      setActiveDropdown(null)
+                                    }}
+                                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-xs flex items-center gap-2"
+                                  >
+                                    <Copy className="w-3 h-3" />
+                                    Copy
+                                  </button>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      // Clear cell content
+                                      handleCellChange(row.id, cell.id, '')
+                                      setActiveDropdown(null)
+                                    }}
+                                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-xs text-red-600 flex items-center gap-2"
+                                  >
+                                    <TrashIcon className="w-3 h-3" />
+                                    Clear
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           </td>
                         ))
                       )}
