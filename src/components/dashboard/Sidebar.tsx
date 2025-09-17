@@ -166,8 +166,8 @@ export function Sidebar() {
             />
           ) : (
             <img
-              src="/kustra-logo.png"
-              alt="Kustra"
+              src="/nava small.png"
+              alt="Nava Small"
               className="h-16 w-12 object-contain"
             />
           )}
