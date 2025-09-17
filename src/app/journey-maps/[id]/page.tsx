@@ -970,7 +970,7 @@ export default function JourneyMapBuilderPage() {
                         row.cells.map((cell, cellIndex) => (
                           <td
                             key={cell.id}
-                            className={`p-2 border-r border-gray-200 align-top ${row.color} group relative`}
+                            className={`p-2 border-r border-gray-200 align-middle ${row.color} group relative`}
                             data-onboarding={rowIndex === 0 && cellIndex === 0 ? "cells" : undefined}
                           >
                             <JourneyMapCellComponent
