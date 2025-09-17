@@ -826,7 +826,7 @@ export default function JourneyMapBuilderPage() {
                               e.stopPropagation()
                               setActiveDropdown(activeDropdown === `row-${row.id}` ? null : `row-${row.id}`)
                             }}
-                            className="w-6 h-6 bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center shadow-sm"
+                            className="w-6 h-6 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded flex items-center justify-center"
                             title="Row actions"
                           >
                             <MoreVertical className="w-3 h-3" />
@@ -933,22 +933,22 @@ export default function JourneyMapBuilderPage() {
                                   e.stopPropagation()
                                   setActiveDropdown(activeDropdown === `cell-${cell.id}` ? null : `cell-${cell.id}`)
                                 }}
-                                className="w-5 h-5 bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center shadow-sm"
+                                className="w-6 h-6 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded flex items-center justify-center"
                                 title="Cell actions"
                               >
-                                <MoreVertical className="w-2.5 h-2.5" />
+                                <MoreVertical className="w-3 h-3" />
                               </button>
 
                               {/* Dropdown menu */}
                               {activeDropdown === `cell-${cell.id}` && (
-                                <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-28 z-20">
+                                <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-32 z-20">
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation()
                                       // TODO: Implement copy cell
                                       setActiveDropdown(null)
                                     }}
-                                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-xs flex items-center gap-2"
+                                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2"
                                   >
                                     <Copy className="w-3 h-3" />
                                     Copy
