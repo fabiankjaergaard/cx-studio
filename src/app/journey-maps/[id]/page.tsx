@@ -798,7 +798,7 @@ export default function JourneyMapBuilderPage() {
                     <React.Fragment key={`row-section-${row.id}`}>
                       <tr key={row.id} className="border-b border-gray-100">
                       <td
-                        className={`p-4 border-r border-gray-200 ${row.color} group relative`}
+                        className={`p-4 border-r border-gray-200 bg-slate-50 group relative`}
                         data-onboarding={rowIndex === 0 ? "categories" : undefined}
                       >
                         <div className="space-y-1">
