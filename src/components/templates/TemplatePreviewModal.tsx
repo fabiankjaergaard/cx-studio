@@ -4,6 +4,8 @@ import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { DownloadIcon, XIcon } from 'lucide-react'
+import { useRef, useEffect } from 'react'
+import twemoji from 'twemoji'
 
 interface TemplatePreviewModalProps {
   isOpen: boolean
@@ -17,6 +19,33 @@ interface TemplatePreviewModalProps {
     stages: number
   } | null
   onUseTemplate: (template: any) => void
+}
+
+// Component to render Twemoji
+function TwemojiEmoji({ emoji, size = 18 }: { emoji: string; size?: number }) {
+  const ref = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    if (ref.current) {
+      const html = twemoji.parse(emoji, {
+        folder: 'svg',
+        ext: '.svg',
+        base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'
+      })
+      ref.current.innerHTML = html
+
+      // Set size for the generated img elements
+      const imgs = ref.current.querySelectorAll('img')
+      imgs.forEach(img => {
+        img.style.width = `${size}px`
+        img.style.height = `${size}px`
+        img.style.display = 'inline-block'
+        img.style.verticalAlign = 'middle'
+      })
+    }
+  }, [emoji, size])
+
+  return <span ref={ref} style={{ display: 'inline-block', lineHeight: 1 }}></span>
 }
 
 export function TemplatePreviewModal({
@@ -45,7 +74,7 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Känslor',
-              examples: ['😊 Nyfiken', '🤔 Fundersam', '😍 Nöjd', '😊 Lojal']
+              examples: ['😊', '🤔', '😍', '😊']
             },
             {
               name: 'Smärtpunkter',
@@ -76,7 +105,7 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Känslor',
-              examples: ['😊 Nyfiken', '😐 Osäker', '😅 Överväldigad', '😊 Kompetent']
+              examples: ['😊', '😐', '😅', '😊']
             },
             {
               name: 'Smärtpunkter',
@@ -100,7 +129,7 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Känslor',
-              examples: ['😰 Frustrerad', '😔 Bekymrad', '🤔 Hopeful', '😊 Lättad', '😄 Nöjd']
+              examples: ['😰', '😔', '🤔', '😊', '😄']
             },
             {
               name: 'Smärtpunkter',
@@ -129,7 +158,7 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Känslor',
-              examples: ['😋 Sugen', '🤔 Fundersam', '😊 Förväntansfull', '😍 Imponerad', '😄 Mätt & nöjd', '💭 Reflekterande']
+              examples: ['😋', '🤔', '😊', '😍', '😄', '😊']
             },
             {
               name: 'Touchpoints',
@@ -161,7 +190,7 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Känslor',
-              examples: ['🤔 Osäker', '😰 Stressad', '🤞 Hoppfull', '😰 Nervös', '😊 Trygg']
+              examples: ['🤔', '😰', '🤞', '😰', '😊']
             },
             {
               name: 'Touchpoints',
@@ -194,7 +223,7 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Känslor',
-              examples: ['😟 Orolig', '😰 Ängsllig', '🤞 Hoppfull', '😌 Trygg', '😊 Lättad', '💪 Stärkt']
+              examples: ['😟', '😰', '🤞', '😌', '😊', '😄']
             },
             {
               name: 'Touchpoints',
@@ -251,6 +280,7 @@ export function TemplatePreviewModal({
           </div>
         </div>
 
+
         {/* Preview Grid */}
         <div className="border rounded-lg overflow-hidden">
           <table className="w-full">
@@ -277,7 +307,11 @@ export function TemplatePreviewModal({
                   </td>
                   {category.examples.map((example, exampleIndex) => (
                     <td key={exampleIndex} className="p-3 text-sm text-gray-600">
-                      {example}
+                      {category.name === 'Känslor' ? (
+                        <TwemojiEmoji emoji={example} size={20} />
+                      ) : (
+                        example
+                      )}
                     </td>
                   ))}
                   {/* Fill remaining cells if needed */}

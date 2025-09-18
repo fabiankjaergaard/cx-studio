@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+import twemoji from 'twemoji'
 
 interface EmotionCurveProps {
   emotions: string[]
@@ -8,49 +9,147 @@ interface EmotionCurveProps {
   stageCount: number
 }
 
-// Simple emotion mapping (1-5 scale)
+interface EmotionPosition {
+  emoji: string
+  yPercent: number
+}
+
+// Twemoji emotion mapping - real emoji faces
 const EMOTIONS = [
+  { emoji: '😭', name: 'Crying', value: 1 },
   { emoji: '😢', name: 'Sad', value: 1 },
+  { emoji: '😰', name: 'Anxious', value: 1 },
+  { emoji: '😡', name: 'Angry', value: 1 },
   { emoji: '😞', name: 'Disappointed', value: 2 },
+  { emoji: '😔', name: 'Dejected', value: 2 },
+  { emoji: '😟', name: 'Worried', value: 2 },
+  { emoji: '😕', name: 'Slightly Frowning', value: 2 },
   { emoji: '😐', name: 'Neutral', value: 3 },
+  { emoji: '😶', name: 'Blank', value: 3 },
+  { emoji: '🤔', name: 'Thinking', value: 3 },
+  { emoji: '😑', name: 'Expressionless', value: 3 },
   { emoji: '😊', name: 'Happy', value: 4 },
-  { emoji: '😍', name: 'Very Happy', value: 5 }
+  { emoji: '😌', name: 'Relieved', value: 4 },
+  { emoji: '🙂', name: 'Slightly Smiling', value: 4 },
+  { emoji: '😏', name: 'Smirking', value: 4 },
+  { emoji: '😍', name: 'Heart Eyes', value: 5 },
+  { emoji: '🤩', name: 'Star Eyes', value: 5 },
+  { emoji: '😄', name: 'Grinning', value: 5 },
+  { emoji: '🥰', name: 'Loving', value: 5 },
+  { emoji: '😻', name: 'Cat Heart Eyes', value: 5 },
+  { emoji: '🎉', name: 'Celebrating', value: 5 }
 ]
+
+// Component to render Twemoji
+function TwemojiEmoji({ emoji, size = 18 }: { emoji: string; size?: number }) {
+  const ref = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    if (ref.current) {
+      const html = twemoji.parse(emoji, {
+        folder: 'svg',
+        ext: '.svg',
+        base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'
+      })
+      ref.current.innerHTML = html
+
+      // Apply size to the img element
+      const img = ref.current.querySelector('img')
+      if (img) {
+        img.style.width = `${size}px`
+        img.style.height = `${size}px`
+        img.style.display = 'inline-block'
+      }
+    }
+  }, [emoji, size])
+
+  return <span ref={ref} style={{ display: 'inline-block', lineHeight: 1 }}></span>
+}
 
 export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurveProps) {
   const [editingStage, setEditingStage] = useState<number | null>(null)
   const [hoverPosition, setHoverPosition] = useState<{ x: number; y: number } | null>(null)
   const [showAddButton, setShowAddButton] = useState(false)
+  const [hoveredEmoji, setHoveredEmoji] = useState<string | null>(null)
+  const [dragState, setDragState] = useState<{
+    isDragging: boolean
+    stageIndex: number
+    startY: number
+    startYPercent: number
+  } | null>(null)
 
-  // Get current emotions, only keeping actual selections (no padding)
-  const getCurrentEmotions = () => {
-    // Return emotions as-is, without any padding or filling
-    return emotions.slice() // Just a copy of the original array
+  // Handle click outside to close emoji picker
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      if (editingStage !== null && !target.closest('.emoji-picker-container')) {
+        setEditingStage(null)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [editingStage])
+
+  // Parse emotions from the stored format: "emoji:yPercent,emoji:yPercent,..."
+  const parseEmotions = (): (EmotionPosition | null)[] => {
+    const result: (EmotionPosition | null)[] = []
+
+    emotions.forEach((emotionStr, index) => {
+      if (!emotionStr || emotionStr.trim() === '') {
+        result[index] = null
+        return
+      }
+
+      // Check if it contains position data (format: "emoji:yPercent")
+      if (emotionStr.includes(':')) {
+        const [emoji, yPercentStr] = emotionStr.split(':')
+        const yPercent = parseFloat(yPercentStr) || 50
+        result[index] = { emoji: emoji.trim(), yPercent }
+      } else {
+        // Legacy format - just emoji, calculate default position based on emotion value
+        const emotion = EMOTIONS.find(e => e.emoji === emotionStr.trim()) || EMOTIONS[10] // default to thinking
+        const yPercent = ((5 - emotion.value) / 4) * 60 + 20
+        result[index] = { emoji: emotion.emoji, yPercent }
+      }
+    })
+
+    return result
   }
 
-  const currentEmotions = getCurrentEmotions()
+  const currentEmotions = parseEmotions()
 
   const handleEmotionSelect = (stageIndex: number, emoji: string) => {
-    console.log('handleEmotionSelect called:', { stageIndex, emoji, currentEmotions })
-    
-    // Create array that only contains the emotions that actually exist
-    const newEmotions = [...currentEmotions]
-    
-    // Ensure the array is long enough to hold the new emotion
-    while (newEmotions.length <= stageIndex) {
-      newEmotions.push('')
+    const newEmotionsData = [...currentEmotions]
+
+    // Ensure the array is long enough
+    while (newEmotionsData.length <= stageIndex) {
+      newEmotionsData.push(null)
     }
-    
-    // Set the new emotion at the specific index
-    newEmotions[stageIndex] = emoji
-    
-    // Remove trailing empty strings to avoid unnecessary data
-    while (newEmotions.length > 0 && newEmotions[newEmotions.length - 1] === '') {
-      newEmotions.pop()
+
+    if (emoji === '') {
+      // Remove emotion
+      newEmotionsData[stageIndex] = null
+    } else {
+      // Add new emotion with default position based on its emotion value
+      const emotionDef = EMOTIONS.find(e => e.emoji === emoji)
+      const defaultYPercent = emotionDef ? ((5 - emotionDef.value) / 4) * 60 + 20 : 50
+      newEmotionsData[stageIndex] = { emoji, yPercent: defaultYPercent }
     }
-    
-    console.log('Sending new emotions:', newEmotions)
-    onChange(newEmotions)
+
+    // Convert back to string format for storage
+    const emotionStrings = newEmotionsData.map(emotionPos =>
+      emotionPos ? `${emotionPos.emoji}:${emotionPos.yPercent}` : ''
+    )
+
+    // Remove trailing empty strings
+    while (emotionStrings.length > 0 && emotionStrings[emotionStrings.length - 1] === '') {
+      emotionStrings.pop()
+    }
+
+    onChange(emotionStrings)
     setEditingStage(null)
   }
 
@@ -90,22 +189,20 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
   // Calculate positions for all stages, including empty ones
   const getEmotionPositions = () => {
     const positions = []
-    
+
     for (let i = 0; i < stageCount; i++) {
-      const emoji = currentEmotions[i] || '' // Get emoji at this position or empty string
-      const emotion = EMOTIONS.find(e => e.emoji === emoji) || EMOTIONS[2] // default to neutral for calculation
+      const emotionPos = currentEmotions[i]
       const xPercent = (i + 0.5) * (100 / stageCount) // Center in each column
-      const yPercent = emoji ? ((5 - emotion.value) / 4) * 60 + 20 : 50 // Center if empty, otherwise emotion-based
-      
-      positions.push({ 
-        x: xPercent, 
-        y: yPercent, 
-        emoji, 
-        value: emotion.value, 
-        isEmpty: !emoji 
+      const yPercent = emotionPos ? (100 - emotionPos.yPercent) : 50 // Invert y-axis: higher emotion value = higher position
+
+      positions.push({
+        x: xPercent,
+        y: yPercent,
+        emoji: emotionPos?.emoji || '',
+        isEmpty: !emotionPos
       })
     }
-    
+
     return positions
   }
 
@@ -156,8 +253,53 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
     return path
   }
 
+  // Handle drag operations
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!dragState || !dragState.isDragging) return
+
+    e.preventDefault()
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const deltaY = e.clientY - dragState.startY
+    const deltaPercent = (deltaY / rect.height) * 100
+
+    let newYPercent = dragState.startYPercent + deltaPercent
+    newYPercent = Math.max(10, Math.min(90, newYPercent)) // Constrain to 10-90%
+
+    // Update the position in real-time
+    const newEmotionsData = [...currentEmotions]
+    if (newEmotionsData[dragState.stageIndex]) {
+      newEmotionsData[dragState.stageIndex] = {
+        ...newEmotionsData[dragState.stageIndex],
+        yPercent: newYPercent
+      }
+    }
+
+    // Convert back to string format
+    const emotionStrings = newEmotionsData.map(emotionPos =>
+      emotionPos ? `${emotionPos.emoji}:${emotionPos.yPercent}` : ''
+    )
+
+    // Remove trailing empty strings
+    while (emotionStrings.length > 0 && emotionStrings[emotionStrings.length - 1] === '') {
+      emotionStrings.pop()
+    }
+
+    onChange(emotionStrings)
+  }
+
+  const handleMouseUp = () => {
+    if (dragState) {
+      setDragState(null)
+    }
+  }
+
   return (
-    <div className="relative w-full h-32 bg-white border border-gray-200 rounded-lg overflow-visible">
+    <div
+      className="emotion-curve-container relative w-full h-32 bg-white border border-gray-200 rounded-lg overflow-visible"
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       {/* SVG for the connecting line */}
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
         {/* Invisible thicker line for hover detection */}
@@ -206,9 +348,9 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
       {/* Emotion points positioned based on emotion values */}
       <div className="absolute inset-0">
         {positions.map((position, index) => (
-          <div 
-            key={index} 
-            className="absolute transform -translate-x-1/2 -translate-y-1/2"
+          <div
+            key={index}
+            className="group absolute transform -translate-x-1/2 -translate-y-1/2"
             style={{
               left: `${position.x}%`,
               top: `${position.y}%`
@@ -216,36 +358,74 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
           >
             {/* Emoji or empty dot with plus */}
             <button
-              onClick={() => setEditingStage(editingStage === index ? null : index)}
+              onClick={(e) => {
+                if (!dragState) {
+                  setEditingStage(editingStage === index ? null : index)
+                }
+              }}
+              onMouseDown={(e) => {
+                if (!position.isEmpty) {
+                  e.preventDefault()
+                  setDragState({
+                    isDragging: true,
+                    stageIndex: index,
+                    startY: e.clientY,
+                    startYPercent: position.y
+                  })
+                }
+              }}
               className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-all duration-200 shadow-sm ${
-                position.isEmpty 
-                  ? 'bg-gray-100 border-gray-300 hover:border-gray-400 hover:bg-gray-200 hover:shadow-md' 
-                  : 'bg-white border-gray-200 hover:border-gray-400 hover:scale-110 hover:shadow-lg'
-              }`}
+                position.isEmpty
+                  ? 'bg-gray-100 border-gray-300 hover:border-gray-400 hover:bg-gray-200 hover:shadow-md'
+                  : 'bg-white border-gray-200 hover:border-gray-400 hover:scale-110 hover:shadow-lg cursor-move'
+              } ${dragState?.stageIndex === index ? 'ring-2 ring-blue-400 scale-110' : ''}`}
             >
               {position.isEmpty ? (
                 <span className="text-gray-400 text-sm font-bold">+</span>
               ) : (
-                <span className="text-lg">{position.emoji}</span>
+                <TwemojiEmoji emoji={position.emoji} size={18} />
               )}
             </button>
             
+            {/* Hover tooltip for existing emojis */}
+            {!position.isEmpty && !editingStage && (
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-40">
+                {EMOTIONS.find(e => e.emoji === position.emoji)?.name || 'Unknown'} • Dra för att ändra position
+              </div>
+            )}
+
             {/* Emotion picker popup */}
             {editingStage === index && (
-              <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 rounded-lg shadow-lg p-3 z-30 min-w-max">
-                <div className="flex space-x-2">
-                  {EMOTIONS.map((emotion) => (
-                    <button
-                      key={emotion.emoji}
-                      onClick={() => handleEmotionSelect(index, emotion.emoji)}
-                      className={`p-3 text-xl hover:bg-gray-100 rounded-lg transition-colors ${
-                        position.emoji === emotion.emoji ? 'bg-blue-100 ring-2 ring-blue-300' : ''
-                      }`}
-                      title={emotion.name}
-                    >
-                      {emotion.emoji}
-                    </button>
-                  ))}
+              <div className="emoji-picker-container absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 rounded-lg shadow-lg p-3 z-30 w-80">
+                <div className="text-xs text-gray-600 mb-2 text-center font-medium">
+                  Välj en känsla <span className="text-gray-500">(du kan sedan dra den för att ändra position)</span>
+                </div>
+                <div className="grid grid-cols-6 gap-1 max-h-48 overflow-y-auto">
+                  {EMOTIONS.map((emotion, emotionIndex) => {
+                    // Check if this emotion is in the top row (first 6 emotions)
+                    const isTopRow = emotionIndex < 6
+                    return (
+                      <button
+                        key={emotion.emoji}
+                        onClick={() => handleEmotionSelect(index, emotion.emoji)}
+                        onMouseEnter={() => setHoveredEmoji(emotion.emoji)}
+                        onMouseLeave={() => setHoveredEmoji(null)}
+                        className={`relative p-3 hover:bg-gray-100 rounded-lg transition-colors ${
+                          position.emoji === emotion.emoji ? 'bg-blue-100 ring-2 ring-blue-300' : ''
+                        }`}
+                      >
+                        <TwemojiEmoji emoji={emotion.emoji} size={20} />
+                        {/* Individual hover tooltip - position based on row */}
+                        {hoveredEmoji === emotion.emoji && (
+                          <div className={`absolute left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded pointer-events-none whitespace-nowrap z-50 ${
+                            isTopRow ? 'top-full mt-1' : 'bottom-full mb-1'
+                          }`}>
+                            {emotion.name}
+                          </div>
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
                 {!position.isEmpty && (
                   <div className="text-center mt-2 pt-2 border-t">
@@ -253,13 +433,13 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
                       onClick={() => handleEmotionSelect(index, '')}
                       className="text-xs text-red-500 hover:text-red-700 mr-4"
                     >
-                      Remove
+                      Ta bort
                     </button>
                     <button
                       onClick={() => setEditingStage(null)}
                       className="text-xs text-gray-500 hover:text-gray-700"
                     >
-                      Close
+                      Stäng
                     </button>
                   </div>
                 )}
@@ -269,7 +449,7 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
                       onClick={() => setEditingStage(null)}
                       className="text-xs text-gray-500 hover:text-gray-700"
                     >
-                      Close
+                      Stäng
                     </button>
                   </div>
                 )}

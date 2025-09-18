@@ -264,10 +264,10 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'awareness': return '😊 Nyfiken'
-        case 'purchase': return '🤔 Fundersam'
-        case 'usage': return '😍 Nöjd'
-        case 'advocacy': return '😊 Lojal'
+        case 'awareness': return '😊:75'    // Happy, positioned at 75% (positive)
+        case 'purchase': return '🤔:45'     // Thinking, positioned at 45% (below neutral)
+        case 'usage': return '😍:90'       // Heart eyes, positioned at 90% (very positive)
+        case 'advocacy': return '😊:80'    // Happy, positioned at 80% (very positive)
         default: return ''
       }
     }
@@ -313,10 +313,10 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'awareness': return '😊 Nyfiken'
-        case 'evaluation': return '😐 Osäker'
-        case 'onboarding': return '😅 Överväldigad'
-        case 'usage': return '😊 Kompetent'
+        case 'awareness': return '😊:70'    // Curious, positioned at 70% (positive)
+        case 'evaluation': return '😐:50'   // Neutral, positioned at 50% (neutral)
+        case 'onboarding': return '😅:40'   // Overwhelmed, positioned at 40% (below neutral)
+        case 'usage': return '😊:80'       // Competent, positioned at 80% (very positive)
         default: return ''
       }
     }
@@ -345,11 +345,11 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'contact': return '😰 Frustrerad'
-        case 'identification': return '😔 Bekymrad'
-        case 'solution': return '🤔 Hopeful'
-        case 'followup': return '😊 Lättad'
-        case 'reflection': return '😄 Nöjd'
+        case 'contact': return '😰:20'        // Frustrated, positioned at 20% (very negative)
+        case 'identification': return '😔:25' // Worried, positioned at 25% (negative)
+        case 'solution': return '🤔:55'       // Hopeful, positioned at 55% (slightly positive)
+        case 'followup': return '😊:80'       // Relieved, positioned at 80% (very positive)
+        case 'reflection': return '😄:90'     // Satisfied, positioned at 90% (extremely positive)
         default: return ''
       }
     }
@@ -390,12 +390,12 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'inspiration': return '😋 Sugen'
-        case 'search': return '🤔 Fundersam'
-        case 'booking': return '😊 Förväntansfull'
-        case 'arrival': return '😍 Imponerad'
-        case 'meal': return '😄 Mätt & nöjd'
-        case 'departure': return '💭 Reflekterande'
+        case 'inspiration': return '😋:75'     // Hungry/excited, positioned at 75% (positive)
+        case 'search': return '🤔:50'         // Thoughtful, positioned at 50% (neutral)
+        case 'booking': return '😊:70'        // Expectant, positioned at 70% (positive)
+        case 'arrival': return '😍:85'        // Impressed, positioned at 85% (very positive)
+        case 'meal': return '😄:90'          // Satisfied, positioned at 90% (extremely positive)
+        case 'departure': return '😊:75'      // Content, positioned at 75% (positive)
         default: return ''
       }
     }
@@ -448,11 +448,11 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'need': return '🤔 Osäker'
-        case 'exploration': return '😰 Stressad'
-        case 'application': return '🤞 Hoppfull'
-        case 'approval': return '😰 Nervös'
-        case 'usage': return '😊 Trygg'
+        case 'need': return '🤔:45'           // Uncertain, positioned at 45% (below neutral)
+        case 'exploration': return '😰:25'    // Stressed, positioned at 25% (negative)
+        case 'application': return '🤞:60'    // Hopeful, positioned at 60% (positive)
+        case 'approval': return '😰:30'       // Nervous, positioned at 30% (negative)
+        case 'usage': return '😊:80'         // Secure, positioned at 80% (very positive)
         default: return ''
       }
     }
@@ -503,12 +503,12 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'symptoms': return '😟 Orolig'
-        case 'assessment': return '😰 Ängsllig'
-        case 'booking': return '🤞 Hoppfull'
-        case 'visit': return '😌 Trygg'
-        case 'treatment': return '😊 Lättad'
-        case 'followup': return '💪 Stärkt'
+        case 'symptoms': return '😟:30'       // Worried, positioned at 30% (negative)
+        case 'assessment': return '😰:20'     // Anxious, positioned at 20% (very negative)
+        case 'booking': return '🤞:60'        // Hopeful, positioned at 60% (positive)
+        case 'visit': return '😌:70'         // Secure, positioned at 70% (positive)
+        case 'treatment': return '😊:80'      // Relieved, positioned at 80% (very positive)
+        case 'followup': return '😊:85'       // Strengthened, positioned at 85% (very positive)
         default: return ''
       }
     }
