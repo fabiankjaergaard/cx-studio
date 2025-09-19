@@ -231,6 +231,164 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string):
         }))
       }))
       break
+    case '7': // B2B Sales
+      baseJourneyMap.stages = [
+        { id: 'prospecting', name: 'Prospektering', description: 'Identifiering av potentiella kunder' },
+        { id: 'qualification', name: 'Kvalificering', description: 'Bedömning av kundens behov' },
+        { id: 'proposal', name: 'Förslag', description: 'Presentation av lösning' },
+        { id: 'negotiation', name: 'Förhandling', description: 'Pris och villkorsförhandling' },
+        { id: 'decision', name: 'Beslut', description: 'Slutligt köpbeslut' },
+        { id: 'implementation', name: 'Implementering', description: 'Uppsättning av lösning' },
+        { id: 'relationship', name: 'Relation', description: 'Långsiktig kundrelation' }
+      ]
+      baseJourneyMap.rows = [
+        DEFAULT_JOURNEY_CATEGORIES[0], // Actions
+        DEFAULT_JOURNEY_CATEGORIES[2], // Emotions
+        DEFAULT_JOURNEY_CATEGORIES[1], // Touchpoints
+        DEFAULT_JOURNEY_CATEGORIES[3], // Pain Points
+        DEFAULT_JOURNEY_CATEGORIES[4], // Opportunities
+      ].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: baseJourneyMap.stages.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: getTemplateContent(templateId, category.id, stage.id)
+        }))
+      }))
+      break
+    case '8': // E-learning
+      baseJourneyMap.stages = [
+        { id: 'discovery', name: 'Upptäckt', description: 'Hittar utbildningen' },
+        { id: 'registration', name: 'Registrering', description: 'Skapar konto och registrerar' },
+        { id: 'learning', name: 'Lärande', description: 'Genomför kurser' },
+        { id: 'assessment', name: 'Bedömning', description: 'Tar prov och uppgifter' },
+        { id: 'completion', name: 'Slutförande', description: 'Får certifikat' }
+      ]
+      baseJourneyMap.rows = [
+        DEFAULT_JOURNEY_CATEGORIES[0], // Actions
+        DEFAULT_JOURNEY_CATEGORIES[2], // Emotions
+        DEFAULT_JOURNEY_CATEGORIES[1], // Touchpoints
+        DEFAULT_JOURNEY_CATEGORIES[3], // Pain Points
+        DEFAULT_JOURNEY_CATEGORIES[4], // Opportunities
+      ].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: baseJourneyMap.stages.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: getTemplateContent(templateId, category.id, stage.id)
+        }))
+      }))
+      break
+    case '9': // Mobile App Onboarding
+      baseJourneyMap.stages = [
+        { id: 'download', name: 'Nedladdning', description: 'Laddar ner appen' },
+        { id: 'signup', name: 'Registrering', description: 'Skapar konto' },
+        { id: 'onboarding', name: 'Introduktion', description: 'Genomgår onboarding' },
+        { id: 'firstuse', name: 'Första användning', description: 'Använder appen första gången' }
+      ]
+      baseJourneyMap.rows = [
+        DEFAULT_JOURNEY_CATEGORIES[0], // Actions
+        DEFAULT_JOURNEY_CATEGORIES[2], // Emotions
+        DEFAULT_JOURNEY_CATEGORIES[1], // Touchpoints
+        DEFAULT_JOURNEY_CATEGORIES[3], // Pain Points
+        DEFAULT_JOURNEY_CATEGORIES[4], // Opportunities
+      ].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: baseJourneyMap.stages.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: getTemplateContent(templateId, category.id, stage.id)
+        }))
+      }))
+      break
+    case '10': // Event Management
+      baseJourneyMap.stages = [
+        { id: 'planning', name: 'Planering', description: 'Planerar att delta i event' },
+        { id: 'registration', name: 'Anmälan', description: 'Anmäler sig till eventet' },
+        { id: 'preparation', name: 'Förberedelse', description: 'Förbereder inför eventet' },
+        { id: 'arrival', name: 'Ankomst', description: 'Kommer till eventplatsen' },
+        { id: 'participation', name: 'Deltagande', description: 'Deltar aktivt i eventet' },
+        { id: 'followup', name: 'Efterföljning', description: 'Följer upp efter eventet' }
+      ]
+      baseJourneyMap.rows = [
+        DEFAULT_JOURNEY_CATEGORIES[0], // Actions
+        DEFAULT_JOURNEY_CATEGORIES[2], // Emotions
+        DEFAULT_JOURNEY_CATEGORIES[1], // Touchpoints
+        DEFAULT_JOURNEY_CATEGORIES[3], // Pain Points
+        DEFAULT_JOURNEY_CATEGORIES[4], // Opportunities
+      ].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: baseJourneyMap.stages.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: getTemplateContent(templateId, category.id, stage.id)
+        }))
+      }))
+      break
+    case '11': // Recruitment Process
+      baseJourneyMap.stages = [
+        { id: 'discovery', name: 'Upptäckt', description: 'Hittar jobbannonsen' },
+        { id: 'application', name: 'Ansökan', description: 'Skickar in ansökan' },
+        { id: 'screening', name: 'Gallring', description: 'Första urval och screening' },
+        { id: 'interview', name: 'Intervju', description: 'Intervjuprocessen' },
+        { id: 'decision', name: 'Beslut', description: 'Väntar på och får besked' }
+      ]
+      baseJourneyMap.rows = [
+        DEFAULT_JOURNEY_CATEGORIES[0], // Actions
+        DEFAULT_JOURNEY_CATEGORIES[2], // Emotions
+        DEFAULT_JOURNEY_CATEGORIES[1], // Touchpoints
+        DEFAULT_JOURNEY_CATEGORIES[3], // Pain Points
+        DEFAULT_JOURNEY_CATEGORIES[4], // Opportunities
+      ].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: baseJourneyMap.stages.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: getTemplateContent(templateId, category.id, stage.id)
+        }))
+      }))
+      break
+    case '12': // Insurance Claim
+      baseJourneyMap.stages = [
+        { id: 'incident', name: 'Incident', description: 'Skadan inträffar' },
+        { id: 'reporting', name: 'Anmälan', description: 'Anmäler skadan' },
+        { id: 'documentation', name: 'Dokumentation', description: 'Samlar in underlag' },
+        { id: 'assessment', name: 'Bedömning', description: 'Försäkringsbolaget bedömer' },
+        { id: 'resolution', name: 'Avslut', description: 'Ärendet avslutas' }
+      ]
+      baseJourneyMap.rows = [
+        DEFAULT_JOURNEY_CATEGORIES[0], // Actions
+        DEFAULT_JOURNEY_CATEGORIES[2], // Emotions
+        DEFAULT_JOURNEY_CATEGORIES[1], // Touchpoints
+        DEFAULT_JOURNEY_CATEGORIES[3], // Pain Points
+        DEFAULT_JOURNEY_CATEGORIES[4], // Opportunities
+      ].map(category => ({
+        id: category.id,
+        category: category.name,
+        description: category.description,
+        type: category.type,
+        color: category.color,
+        cells: baseJourneyMap.stages.map(stage => ({
+          id: `${category.id}-${stage.id}`,
+          content: getTemplateContent(templateId, category.id, stage.id)
+        }))
+      }))
+      break
     default:
       // Default template with basic categories
       baseJourneyMap.rows = [DEFAULT_JOURNEY_CATEGORIES[0]].map(category => ({
@@ -547,6 +705,340 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
   }
 
+  // Template 7: B2B Sales
+  if (templateId === '7') {
+    if (categoryId === 'actions') {
+      switch (stageId) {
+        case 'prospecting': return 'Identifierar leads'
+        case 'qualification': return 'Bedömer behov'
+        case 'proposal': return 'Presenterar lösning'
+        case 'negotiation': return 'Förhandlar villkor'
+        case 'decision': return 'Fattar köpbeslut'
+        case 'implementation': return 'Implementerar lösning'
+        case 'relationship': return 'Bygger partnerskap'
+        default: return ''
+      }
+    }
+    if (categoryId === 'emotions') {
+      switch (stageId) {
+        case 'prospecting': return '🤔:45'     // Uncertain, positioned at 45%
+        case 'qualification': return '😊:65'   // Interested, positioned at 65%
+        case 'proposal': return '😮:70'       // Impressed, positioned at 70%
+        case 'negotiation': return '😰:40'    // Stressed, positioned at 40%
+        case 'decision': return '🤞:55'       // Hopeful, positioned at 55%
+        case 'implementation': return '😌:75' // Confident, positioned at 75%
+        case 'relationship': return '😊:85'   // Satisfied, positioned at 85%
+        default: return ''
+      }
+    }
+    if (categoryId === 'touchpoints') {
+      switch (stageId) {
+        case 'prospecting': return 'LinkedIn, Email'
+        case 'qualification': return 'Telefonsamtal'
+        case 'proposal': return 'Presentation, Demo'
+        case 'negotiation': return 'Förhandlingsmöten'
+        case 'decision': return 'Kontrakt, Juridik'
+        case 'implementation': return 'Projektteam'
+        case 'relationship': return 'Account Manager'
+        default: return ''
+      }
+    }
+    if (categoryId === 'pain-points') {
+      switch (stageId) {
+        case 'prospecting': return 'Svårt att komma i kontakt'
+        case 'qualification': return 'Oklara krav'
+        case 'proposal': return 'Komplex lösning'
+        case 'negotiation': return 'Prispress'
+        case 'decision': return 'Lång beslutsprocess'
+        case 'implementation': return 'Tekniska utmaningar'
+        case 'relationship': return 'Ändrade behov'
+        default: return ''
+      }
+    }
+    if (categoryId === 'opportunities') {
+      switch (stageId) {
+        case 'prospecting': return 'Personaliserad approach'
+        case 'qualification': return 'Djup behovsanalys'
+        case 'proposal': return 'Skräddarsydd lösning'
+        case 'negotiation': return 'Flexibla paket'
+        case 'decision': return 'Tydlig ROI'
+        case 'implementation': return 'Dedikerat stöd'
+        case 'relationship': return 'Kontinuerlig utveckling'
+        default: return ''
+      }
+    }
+  }
+
+  // Template 8: E-learning
+  if (templateId === '8') {
+    if (categoryId === 'actions') {
+      switch (stageId) {
+        case 'discovery': return 'Söker utbildning'
+        case 'registration': return 'Registrerar sig'
+        case 'learning': return 'Studerar material'
+        case 'assessment': return 'Gör uppgifter'
+        case 'completion': return 'Laddar ner certifikat'
+        default: return ''
+      }
+    }
+    if (categoryId === 'emotions') {
+      switch (stageId) {
+        case 'discovery': return '🤔:50'      // Curious, positioned at 50%
+        case 'registration': return '😊:65'   // Excited, positioned at 65%
+        case 'learning': return '😤:60'       // Focused, positioned at 60%
+        case 'assessment': return '😰:35'     // Nervous, positioned at 35%
+        case 'completion': return '🎉:90'     // Proud, positioned at 90%
+        default: return ''
+      }
+    }
+    if (categoryId === 'touchpoints') {
+      switch (stageId) {
+        case 'discovery': return 'Sökmotor, Rekommendation'
+        case 'registration': return 'Webbsida, Email'
+        case 'learning': return 'LMS, Videor, Quiz'
+        case 'assessment': return 'Tentamen, Projekt'
+        case 'completion': return 'Certifikatportal'
+        default: return ''
+      }
+    }
+    if (categoryId === 'pain-points') {
+      switch (stageId) {
+        case 'discovery': return 'För många alternativ'
+        case 'registration': return 'Komplicerad process'
+        case 'learning': return 'Svårt material'
+        case 'assessment': return 'Tidsbrist'
+        case 'completion': return 'Tekniska problem'
+        default: return ''
+      }
+    }
+    if (categoryId === 'opportunities') {
+      switch (stageId) {
+        case 'discovery': return 'Personliga rekommendationer'
+        case 'registration': return 'Enkel onboarding'
+        case 'learning': return 'Interaktivt innehåll'
+        case 'assessment': return 'Flexibla deadlines'
+        case 'completion': return 'Digital badge'
+        default: return ''
+      }
+    }
+  }
+
+  // Template 9: Mobile App Onboarding
+  if (templateId === '9') {
+    if (categoryId === 'actions') {
+      switch (stageId) {
+        case 'download': return 'Laddar ner från store'
+        case 'signup': return 'Skapar profil'
+        case 'onboarding': return 'Går igenom tutorial'
+        case 'firstuse': return 'Utforskar funktioner'
+        default: return ''
+      }
+    }
+    if (categoryId === 'emotions') {
+      switch (stageId) {
+        case 'download': return '😊:70'       // Excited, positioned at 70%
+        case 'signup': return '😐:50'         // Neutral, positioned at 50%
+        case 'onboarding': return '🤓:65'     // Learning, positioned at 65%
+        case 'firstuse': return '😍:85'       // Delighted, positioned at 85%
+        default: return ''
+      }
+    }
+    if (categoryId === 'touchpoints') {
+      switch (stageId) {
+        case 'download': return 'App Store, Reklam'
+        case 'signup': return 'Registreringsform'
+        case 'onboarding': return 'Tutorial, Tips'
+        case 'firstuse': return 'Huvudgränssnitt'
+        default: return ''
+      }
+    }
+    if (categoryId === 'pain-points') {
+      switch (stageId) {
+        case 'download': return 'Stor filstorlek'
+        case 'signup': return 'För många fält'
+        case 'onboarding': return 'Långt tutorial'
+        case 'firstuse': return 'Förvirrande navigation'
+        default: return ''
+      }
+    }
+    if (categoryId === 'opportunities') {
+      switch (stageId) {
+        case 'download': return 'Snabb installation'
+        case 'signup': return 'Social login'
+        case 'onboarding': return 'Interaktiv guide'
+        case 'firstuse': return 'Tydliga CTA:s'
+        default: return ''
+      }
+    }
+  }
+
+  // Template 10: Event Management
+  if (templateId === '10') {
+    if (categoryId === 'actions') {
+      switch (stageId) {
+        case 'planning': return 'Letar efter events'
+        case 'registration': return 'Anmäler sig online'
+        case 'preparation': return 'Förbereder agenda'
+        case 'arrival': return 'Checkar in'
+        case 'participation': return 'Deltar i sessioner'
+        case 'followup': return 'Nätverkar och följer upp'
+        default: return ''
+      }
+    }
+    if (categoryId === 'emotions') {
+      switch (stageId) {
+        case 'planning': return '🤔:55'         // Thinking, positioned at 55%
+        case 'registration': return '😊:70'     // Happy, positioned at 70%
+        case 'preparation': return '😰:45'      // Nervous, positioned at 45%
+        case 'arrival': return '😍:75'         // Excited, positioned at 75%
+        case 'participation': return '🤓:80'    // Learning, positioned at 80%
+        case 'followup': return '😊:85'        // Satisfied, positioned at 85%
+        default: return ''
+      }
+    }
+    if (categoryId === 'touchpoints') {
+      switch (stageId) {
+        case 'planning': return 'Webbsida, Sociala medier'
+        case 'registration': return 'Anmälningsformulär'
+        case 'preparation': return 'Email, Eventapp'
+        case 'arrival': return 'Reception, Badgear'
+        case 'participation': return 'Lokaler, Presentatörer'
+        case 'followup': return 'LinkedIn, Email'
+        default: return ''
+      }
+    }
+    if (categoryId === 'pain-points') {
+      switch (stageId) {
+        case 'planning': return 'Svårt hitta relevant info'
+        case 'registration': return 'Komplicerad anmälan'
+        case 'preparation': return 'Oklart schema'
+        case 'arrival': return 'Långa köer'
+        case 'participation': return 'Dålig ljudkvalitet'
+        case 'followup': return 'Svårt hitta kontakter'
+        default: return ''
+      }
+    }
+    if (categoryId === 'opportunities') {
+      switch (stageId) {
+        case 'planning': return 'Personliga rekommendationer'
+        case 'registration': return 'Enkel registrering'
+        case 'preparation': return 'Interaktiv agenda'
+        case 'arrival': return 'Digital check-in'
+        case 'participation': return 'Live Q&A'
+        case 'followup': return 'Automatisk nätverksmatchning'
+        default: return ''
+      }
+    }
+  }
+
+  // Template 11: Recruitment Process
+  if (templateId === '11') {
+    if (categoryId === 'actions') {
+      switch (stageId) {
+        case 'discovery': return 'Söker jobb online'
+        case 'application': return 'Skickar CV och personligt brev'
+        case 'screening': return 'Väntar på svar'
+        case 'interview': return 'Deltar i intervjuer'
+        case 'decision': return 'Får besked om anställning'
+        default: return ''
+      }
+    }
+    if (categoryId === 'emotions') {
+      switch (stageId) {
+        case 'discovery': return '😊:60'         // Hopeful, positioned at 60%
+        case 'application': return '🤞:55'       // Hopeful, positioned at 55%
+        case 'screening': return '😰:40'        // Anxious, positioned at 40%
+        case 'interview': return '😅:45'        // Nervous, positioned at 45%
+        case 'decision': return '😍:90'         // Excited (if positive), positioned at 90%
+        default: return ''
+      }
+    }
+    if (categoryId === 'touchpoints') {
+      switch (stageId) {
+        case 'discovery': return 'LinkedIn, Platsbanken'
+        case 'application': return 'Ansökningsportal'
+        case 'screening': return 'Telefon, Email'
+        case 'interview': return 'Teams, Kontor'
+        case 'decision': return 'Telefon, Email'
+        default: return ''
+      }
+    }
+    if (categoryId === 'pain-points') {
+      switch (stageId) {
+        case 'discovery': return 'Otydliga jobbeskrivningar'
+        case 'application': return 'Långa ansökningsformulär'
+        case 'screening': return 'Långt väntetid'
+        case 'interview': return 'Tekniska problem'
+        case 'decision': return 'Ingen återkoppling'
+        default: return ''
+      }
+    }
+    if (categoryId === 'opportunities') {
+      switch (stageId) {
+        case 'discovery': return 'Tydliga rollbeskrivningar'
+        case 'application': return 'Smidig ansökan'
+        case 'screening': return 'Snabb återkoppling'
+        case 'interview': return 'Förbered teknisk setup'
+        case 'decision': return 'Konstruktiv feedback'
+        default: return ''
+      }
+    }
+  }
+
+  // Template 12: Insurance Claim
+  if (templateId === '12') {
+    if (categoryId === 'actions') {
+      switch (stageId) {
+        case 'incident': return 'Skadan uppstår'
+        case 'reporting': return 'Ringer försäkringsbolag'
+        case 'documentation': return 'Samlar bevis och bilder'
+        case 'assessment': return 'Väntar på besked'
+        case 'resolution': return 'Får ersättning eller avslag'
+        default: return ''
+      }
+    }
+    if (categoryId === 'emotions') {
+      switch (stageId) {
+        case 'incident': return '😱:20'          // Shocked, positioned at 20%
+        case 'reporting': return '😰:35'         // Worried, positioned at 35%
+        case 'documentation': return '😤:40'     // Frustrated, positioned at 40%
+        case 'assessment': return '🤞:50'        // Hopeful, positioned at 50%
+        case 'resolution': return '😊:80'        // Relieved, positioned at 80%
+        default: return ''
+      }
+    }
+    if (categoryId === 'touchpoints') {
+      switch (stageId) {
+        case 'incident': return 'Olycksplatsen'
+        case 'reporting': return 'Telefonsupport'
+        case 'documentation': return 'App, Email'
+        case 'assessment': return 'Besiktningsman'
+        case 'resolution': return 'Brev, Bankutbetalning'
+        default: return ''
+      }
+    }
+    if (categoryId === 'pain-points') {
+      switch (stageId) {
+        case 'incident': return 'Chock och stress'
+        case 'reporting': return 'Långa väntetider'
+        case 'documentation': return 'Otydliga krav'
+        case 'assessment': return 'Lång handläggningstid'
+        case 'resolution': return 'Oklar kommunikation'
+        default: return ''
+      }
+    }
+    if (categoryId === 'opportunities') {
+      switch (stageId) {
+        case 'incident': return 'Snabb första hjälp'
+        case 'reporting': return '24/7 support'
+        case 'documentation': return 'Digital guide'
+        case 'assessment': return 'Transparenta uppdateringar'
+        case 'resolution': return 'Tydlig förklaring'
+        default: return ''
+      }
+    }
+  }
+
   return ''
 }
 
@@ -568,6 +1060,9 @@ export default function JourneyMapBuilderPage() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isOnboardingActive, setIsOnboardingActive] = useState(false)
   const [isPaletteCollapsed, setIsPaletteCollapsed] = useState(false)
+  const [draggedStageId, setDraggedStageId] = useState<string | null>(null)
+  const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null)
+  const [isDraggingStage, setIsDraggingStage] = useState(false)
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -781,7 +1276,7 @@ export default function JourneyMapBuilderPage() {
 
   const handleAddStage = () => {
     if (!journeyMap) return
-    
+
     const newStageId = `stage-${Date.now()}`
     const newStage: JourneyMapStage = {
       id: newStageId,
@@ -789,7 +1284,7 @@ export default function JourneyMapBuilderPage() {
       description: '',
       phaseId: 'after' // Default to 'after' phase
     }
-    
+
     setJourneyMap({
       ...journeyMap,
       stages: [...journeyMap.stages, newStage],
@@ -802,6 +1297,93 @@ export default function JourneyMapBuilderPage() {
       })),
       updatedAt: new Date().toISOString()
     })
+  }
+
+  const handleStageDragStart = (e: React.DragEvent, stageId: string) => {
+    setDraggedStageId(stageId)
+    setIsDraggingStage(true)
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', stageId)
+
+    // Add some visual feedback to the dragged element
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '0.5'
+    }
+  }
+
+  const handleStageDragEnd = (e: React.DragEvent) => {
+    setDraggedStageId(null)
+    setDropTargetIndex(null)
+    setIsDraggingStage(false)
+
+    // Reset visual feedback
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '1'
+    }
+  }
+
+  const handleStageDragOver = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    setDropTargetIndex(targetIndex)
+  }
+
+  const handleStageHover = (e: React.DragEvent, stageIndex: number) => {
+    if (!isDraggingStage) return
+    e.preventDefault()
+
+    // Determine drop position based on mouse position within the stage
+    const rect = e.currentTarget.getBoundingClientRect()
+    const mouseX = e.clientX - rect.left
+    const stageWidth = rect.width
+
+    // If mouse is in left half, drop before this stage; if right half, drop after
+    const dropIndex = mouseX < stageWidth / 2 ? stageIndex : stageIndex + 1
+    setDropTargetIndex(dropIndex)
+  }
+
+  const handleStageDragLeave = () => {
+    setDropTargetIndex(null)
+  }
+
+  const handleStageDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault()
+
+    if (!journeyMap || !draggedStageId) return
+
+    const draggedStageIndex = journeyMap.stages.findIndex(stage => stage.id === draggedStageId)
+    if (draggedStageIndex === -1 || draggedStageIndex === targetIndex) return
+
+    // Create new stages array with reordered stages
+    const newStages = [...journeyMap.stages]
+    const [draggedStage] = newStages.splice(draggedStageIndex, 1)
+
+    // Adjust target index if dragging from left to right
+    const adjustedTargetIndex = draggedStageIndex < targetIndex ? targetIndex - 1 : targetIndex
+    newStages.splice(adjustedTargetIndex, 0, draggedStage)
+
+    // Reorder cells in all rows to match new stage order
+    const newRows = journeyMap.rows.map(row => {
+      const newCells = [...row.cells]
+      const [draggedCell] = newCells.splice(draggedStageIndex, 1)
+      newCells.splice(adjustedTargetIndex, 0, draggedCell)
+      return {
+        ...row,
+        cells: newCells
+      }
+    })
+
+    setJourneyMap({
+      ...journeyMap,
+      stages: newStages,
+      rows: newRows,
+      updatedAt: new Date().toISOString()
+    })
+
+    // Reset drag state
+    setDraggedStageId(null)
+    setDropTargetIndex(null)
+    setIsDraggingStage(false)
   }
 
   const handleDuplicateStage = (stageId: string, stageIndex: number) => {
@@ -1722,7 +2304,34 @@ export default function JourneyMapBuilderPage() {
                       Journey Kategorier
                     </th>
                     {journeyMap.stages.map((stage, index) => (
-                      <th key={stage.id} className="min-w-64 p-4 text-left border-r border-gray-200 relative group hover:bg-white transition-colors">
+                      <th
+                        key={stage.id}
+                        className={`min-w-64 p-4 text-left border-r border-gray-200 relative group hover:bg-white transition-colors cursor-move ${
+                          draggedStageId === stage.id ? 'bg-blue-50 shadow-lg' : ''
+                        }`}
+                        draggable={true}
+                        onDragStart={(e) => handleStageDragStart(e, stage.id)}
+                        onDragEnd={handleStageDragEnd}
+                        onDragOver={(e) => handleStageHover(e, index)}
+                        onDrop={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect()
+                          const mouseX = e.clientX - rect.left
+                          const stageWidth = rect.width
+                          const dropIndex = mouseX < stageWidth / 2 ? index : index + 1
+                          handleStageDrop(e, dropIndex)
+                        }}
+                      >
+                        {/* Drop indicator lines */}
+                        {isDraggingStage && draggedStageId !== stage.id && (
+                          <>
+                            {dropTargetIndex === index && (
+                              <div className="absolute left-0 top-0 w-1 h-full bg-slate-700 z-20"></div>
+                            )}
+                            {dropTargetIndex === index + 1 && (
+                              <div className="absolute right-0 top-0 w-1 h-full bg-slate-700 z-20"></div>
+                            )}
+                          </>
+                        )}
                         <div className="flex items-center justify-between">
                           <InlineEdit
                             value={stage.name}
@@ -1947,7 +2556,26 @@ export default function JourneyMapBuilderPage() {
                             key={cell.id}
                             className={`p-2 border-r border-gray-200 align-middle ${row.color} group relative`}
                             data-onboarding={rowIndex === 0 && cellIndex === 0 ? "cells" : undefined}
+                            onDragOver={(e) => handleStageHover(e, cellIndex)}
+                            onDrop={(e) => {
+                              const rect = e.currentTarget.getBoundingClientRect()
+                              const mouseX = e.clientX - rect.left
+                              const cellWidth = rect.width
+                              const dropIndex = mouseX < cellWidth / 2 ? cellIndex : cellIndex + 1
+                              handleStageDrop(e, dropIndex)
+                            }}
                           >
+                            {/* Drop indicator lines for cells */}
+                            {isDraggingStage && (
+                              <>
+                                {dropTargetIndex === cellIndex && (
+                                  <div className="absolute left-0 top-0 w-1 h-full bg-slate-700 z-20"></div>
+                                )}
+                                {dropTargetIndex === cellIndex + 1 && (
+                                  <div className="absolute right-0 top-0 w-1 h-full bg-slate-700 z-20"></div>
+                                )}
+                              </>
+                            )}
                             <JourneyMapCellComponent
                               content={cell.content}
                               type={row.type}
@@ -2113,6 +2741,7 @@ export default function JourneyMapBuilderPage() {
         onDelete={editingRow ? handleDeleteRow : undefined}
         isNewRow={!editingRow}
       />
+
 
       {/* Onboarding Component */}
       <JourneyMapOnboarding

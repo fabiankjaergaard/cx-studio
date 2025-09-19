@@ -63,6 +63,60 @@ const getTemplates = (t: (key: string) => string) => [
     touchpoints: 8,
     stages: 6,
     preview: '/api/templates/6/preview'
+  },
+  {
+    id: '7',
+    name: 'B2B Försäljning',
+    description: 'Komplex B2B-försäljningsprocess från prospektering till kundrelationer',
+    industry: 'B2B',
+    touchpoints: 12,
+    stages: 7,
+    preview: '/api/templates/7/preview'
+  },
+  {
+    id: '8',
+    name: 'E-learning Plattform',
+    description: 'Användarresa för online-utbildning från registrering till certifiering',
+    industry: 'Utbildning',
+    touchpoints: 8,
+    stages: 5,
+    preview: '/api/templates/8/preview'
+  },
+  {
+    id: '9',
+    name: 'Mobilapp Onboarding',
+    description: 'Första intryck och onboarding för mobilappar med användarengagemang',
+    industry: 'Teknologi',
+    touchpoints: 6,
+    stages: 4,
+    preview: '/api/templates/9/preview'
+  },
+  {
+    id: '10',
+    name: 'Eventmanagement',
+    description: 'Evenemangsupplevelse från planering till efterföljning',
+    industry: 'Event',
+    touchpoints: 10,
+    stages: 6,
+    preview: '/api/templates/10/preview'
+  },
+  {
+    id: '11',
+    name: 'Rekryteringsprocess',
+    description: 'Kandidatupplevelse genom hela rekryteringsprocessen',
+    industry: 'HR',
+    touchpoints: 9,
+    stages: 5,
+    preview: '/api/templates/11/preview'
+  },
+  {
+    id: '12',
+    name: 'Försäkringsärende',
+    description: 'Kundresa vid skadeanmälan och ärendehantering',
+    industry: 'Försäkring',
+    touchpoints: 7,
+    stages: 5,
+    preview: '/api/templates/12/preview'
   }
 ]
 
@@ -147,6 +201,11 @@ export default function TemplatesPage() {
               <option value="Hospitality">{t('templates.filters.hospitality')}</option>
               <option value="Finans">{t('templates.filters.finance')}</option>
               <option value="Hälsovård">{t('templates.filters.healthcare')}</option>
+              <option value="B2B">B2B</option>
+              <option value="Utbildning">Utbildning</option>
+              <option value="Event">Event</option>
+              <option value="HR">HR</option>
+              <option value="Försäkring">Försäkring</option>
               </select>
               <ChevronDownIcon className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
             </div>

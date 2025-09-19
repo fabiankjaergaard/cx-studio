@@ -239,6 +239,176 @@ export function TemplatePreviewModal({
             }
           ]
         }
+      case '7': // B2B Sales
+        return {
+          stages: [
+            { name: 'Prospektering', description: 'Identifiering av potentiella kunder' },
+            { name: 'Kvalificering', description: 'Bedömning av kundens behov' },
+            { name: 'Förslag', description: 'Presentation av lösning' },
+            { name: 'Förhandling', description: 'Pris och villkorsförhandling' },
+            { name: 'Beslut', description: 'Slutligt köpbeslut' },
+            { name: 'Implementering', description: 'Uppsättning av lösning' },
+            { name: 'Relation', description: 'Långsiktig kundrelation' }
+          ],
+          categories: [
+            {
+              name: 'Åtgärder',
+              examples: ['Research prospects', 'Genomför möten', 'Skapar förslag', 'Förhandlar villkor', 'Väntar på beslut', 'Hjälper med uppsättning', 'Vårdar relation']
+            },
+            {
+              name: 'Känslor',
+              examples: ['🤔', '😊', '😮', '😰', '🤞', '😌', '😊']
+            },
+            {
+              name: 'Touchpoints',
+              examples: ['LinkedIn, CRM', 'Videomöten', 'Presentationer', 'Kontrakt', 'Email, Telefon', 'Support team', 'Account management']
+            },
+            {
+              name: 'Smärtpunkter',
+              examples: ['Svårt hitta rätt kontakt', 'Tidspress', 'Teknisk komplexitet', 'Budgetbegränsningar', 'Lång beslutsprocess', 'Integrationsproblem', 'Konkurrens']
+            }
+          ]
+        }
+      case '8': // E-learning
+        return {
+          stages: [
+            { name: 'Upptäckt', description: 'Hittar utbildningen' },
+            { name: 'Registrering', description: 'Skapar konto och registrerar' },
+            { name: 'Lärande', description: 'Genomför kurser' },
+            { name: 'Bedömning', description: 'Tar prov och uppgifter' },
+            { name: 'Slutförande', description: 'Får certifikat' }
+          ],
+          categories: [
+            {
+              name: 'Åtgärder',
+              examples: ['Söker utbildning', 'Skapar konto', 'Följer lektioner', 'Gör uppgifter', 'Laddar ner certifikat']
+            },
+            {
+              name: 'Känslor',
+              examples: ['😊', '😐', '🤓', '😰', '😄']
+            },
+            {
+              name: 'Touchpoints',
+              examples: ['Sökmotor', 'Registreringsform', 'LMS-plattform', 'Quiz-system', 'Certifikatportal']
+            },
+            {
+              name: 'Smärtpunkter',
+              examples: ['För många alternativ', 'Komplicerad process', 'Svårt material', 'Tidsbrist', 'Tekniska problem']
+            }
+          ]
+        }
+      case '9': // Mobile App Onboarding
+        return {
+          stages: [
+            { name: 'Nedladdning', description: 'Laddar ner appen' },
+            { name: 'Registrering', description: 'Skapar konto' },
+            { name: 'Introduktion', description: 'Genomgår onboarding' },
+            { name: 'Första användning', description: 'Använder appen första gången' }
+          ],
+          categories: [
+            {
+              name: 'Åtgärder',
+              examples: ['Laddar ner från store', 'Skapar profil', 'Går igenom tutorial', 'Utforskar funktioner']
+            },
+            {
+              name: 'Känslor',
+              examples: ['😊', '😐', '🤓', '😍']
+            },
+            {
+              name: 'Touchpoints',
+              examples: ['App Store, Reklam', 'Registreringsform', 'Tutorial, Tips', 'Huvudgränssnitt']
+            },
+            {
+              name: 'Smärtpunkter',
+              examples: ['Stor filstorlek', 'För många fält', 'Långt tutorial', 'Förvirrande navigation']
+            }
+          ]
+        }
+      case '10': // Event Management
+        return {
+          stages: [
+            { name: 'Planering', description: 'Planerar att delta i event' },
+            { name: 'Anmälan', description: 'Anmäler sig till eventet' },
+            { name: 'Förberedelse', description: 'Förbereder inför eventet' },
+            { name: 'Ankomst', description: 'Kommer till eventplatsen' },
+            { name: 'Deltagande', description: 'Deltar aktivt i eventet' },
+            { name: 'Efterföljning', description: 'Följer upp efter eventet' }
+          ],
+          categories: [
+            {
+              name: 'Åtgärder',
+              examples: ['Letar efter events', 'Anmäler sig online', 'Förbereder agenda', 'Checkar in', 'Deltar i sessioner', 'Nätverkar och följer upp']
+            },
+            {
+              name: 'Känslor',
+              examples: ['🤔', '😊', '😰', '😍', '🤓', '😊']
+            },
+            {
+              name: 'Touchpoints',
+              examples: ['Webbsida, Sociala medier', 'Anmälningsformulär', 'Email, Eventapp', 'Reception, Badgear', 'Lokaler, Presentatörer', 'LinkedIn, Email']
+            },
+            {
+              name: 'Smärtpunkter',
+              examples: ['Svårt hitta relevant info', 'Komplicerad anmälan', 'Oklart schema', 'Långa köer', 'Dålig ljudkvalitet', 'Svårt hitta kontakter']
+            }
+          ]
+        }
+      case '11': // Recruitment Process
+        return {
+          stages: [
+            { name: 'Upptäckt', description: 'Hittar jobbannonsen' },
+            { name: 'Ansökan', description: 'Skickar in ansökan' },
+            { name: 'Gallring', description: 'Första urval och screening' },
+            { name: 'Intervju', description: 'Intervjuprocessen' },
+            { name: 'Beslut', description: 'Väntar på och får besked' }
+          ],
+          categories: [
+            {
+              name: 'Åtgärder',
+              examples: ['Söker jobb online', 'Skickar CV och personligt brev', 'Väntar på svar', 'Deltar i intervjuer', 'Får besked om anställning']
+            },
+            {
+              name: 'Känslor',
+              examples: ['😊', '🤞', '😰', '😅', '😍']
+            },
+            {
+              name: 'Touchpoints',
+              examples: ['LinkedIn, Platsbanken', 'Ansökningsportal', 'Telefon, Email', 'Teams, Kontor', 'Telefon, Email']
+            },
+            {
+              name: 'Smärtpunkter',
+              examples: ['Otydliga jobbeskrivningar', 'Långa ansökningsformulär', 'Långt väntetid', 'Tekniska problem', 'Ingen återkoppling']
+            }
+          ]
+        }
+      case '12': // Insurance Claim
+        return {
+          stages: [
+            { name: 'Incident', description: 'Skadan inträffar' },
+            { name: 'Anmälan', description: 'Anmäler skadan' },
+            { name: 'Dokumentation', description: 'Samlar in underlag' },
+            { name: 'Bedömning', description: 'Försäkringsbolaget bedömer' },
+            { name: 'Avslut', description: 'Ärendet avslutas' }
+          ],
+          categories: [
+            {
+              name: 'Åtgärder',
+              examples: ['Skadan uppstår', 'Ringer försäkringsbolag', 'Samlar bevis och bilder', 'Väntar på besked', 'Får ersättning eller avslag']
+            },
+            {
+              name: 'Känslor',
+              examples: ['😱', '😰', '😤', '🤞', '😊']
+            },
+            {
+              name: 'Touchpoints',
+              examples: ['Olycksplatsen', 'Telefonsupport', 'App, Email', 'Besiktningsman', 'Brev, Bankutbetalning']
+            },
+            {
+              name: 'Smärtpunkter',
+              examples: ['Chock och stress', 'Långa väntetider', 'Otydliga krav', 'Lång handläggningstid', 'Oklar kommunikation']
+            }
+          ]
+        }
       default:
         return {
           stages: [
