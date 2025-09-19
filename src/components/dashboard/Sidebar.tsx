@@ -45,9 +45,9 @@ const getNavigation = (t: (key: string) => string) => [
   { name: t('nav.journeyMaps'), href: '/journey-maps', icon: RouteIcon, tourId: 'journey-maps' },
   { name: t('nav.templates'), href: '/templates', icon: BookTemplateIcon, tourId: 'templates' },
   { name: t('nav.analytics'), href: '/analytics', icon: BarChart3Icon, tourId: 'analytics' },
-  { 
-    name: t('nav.personas'), 
-    icon: UsersIcon, 
+  {
+    name: t('nav.personas'),
+    icon: UsersIcon,
     tourId: 'personas',
     isExpandable: true,
     children: [
@@ -55,16 +55,9 @@ const getNavigation = (t: (key: string) => string) => [
         name: t('nav.createManage'),
         children: [
           { name: t('nav.createPersona'), href: '/personas/create', icon: PlusIcon },
+          { name: t('nav.allPersonas'), href: '/personas', icon: UsersIcon },
           { name: t('nav.personaTemplates'), href: '/personas/templates', icon: BookTemplateIcon },
           { name: t('nav.importPersona'), href: '/personas/import', icon: DatabaseIcon }
-        ]
-      },
-      {
-        name: t('nav.managePersonas'),
-        children: [
-          { name: t('nav.allPersonas'), href: '/personas', icon: UsersIcon },
-          { name: t('nav.personaGroups'), href: '/personas/groups', icon: UsersIcon },
-          { name: t('nav.archivedPersonas'), href: '/personas/archived', icon: DatabaseIcon }
         ]
       },
       {
