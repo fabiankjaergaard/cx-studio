@@ -3,7 +3,7 @@
 import { Header } from '@/components/dashboard/Header'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { PlusIcon, EyeIcon, DownloadIcon, BookTemplateIcon } from 'lucide-react'
+import { PlusIcon, EyeIcon, DownloadIcon, BookTemplateIcon, ChevronDownIcon } from 'lucide-react'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -134,11 +134,12 @@ export default function TemplatesPage() {
         {/* Filter/Search Section */}
         <div className="mb-8 flex items-center justify-between">
           <div className="flex space-x-4">
-            <select
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              value={selectedIndustry}
-              onChange={(e) => setSelectedIndustry(e.target.value)}
-            >
+            <div className="relative">
+              <select
+                className="pl-3 pr-8 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+                value={selectedIndustry}
+                onChange={(e) => setSelectedIndustry(e.target.value)}
+              >
               <option value="">{t('templates.filters.allIndustries')}</option>
               <option value="E-commerce">{t('templates.filters.ecommerce')}</option>
               <option value="Teknologi">{t('templates.filters.technology')}</option>
@@ -146,17 +147,22 @@ export default function TemplatesPage() {
               <option value="Hospitality">{t('templates.filters.hospitality')}</option>
               <option value="Finans">{t('templates.filters.finance')}</option>
               <option value="Hälsovård">{t('templates.filters.healthcare')}</option>
-            </select>
-            <select
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
+              </select>
+              <ChevronDownIcon className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+            </div>
+            <div className="relative">
+              <select
+                className="pl-3 pr-8 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
               <option value="">{t('templates.filters.sortBy')}</option>
               <option value="name">{t('templates.filters.name')}</option>
               <option value="industry">{t('templates.filters.industry')}</option>
               <option value="touchpoints">{t('templates.filters.touchpoints')}</option>
-            </select>
+              </select>
+              <ChevronDownIcon className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+            </div>
           </div>
           <div className="text-sm text-gray-500">
             {filteredAndSortedTemplates.length} {filteredAndSortedTemplates.length === 1 ? 'mall' : 'mallar'}
@@ -166,8 +172,8 @@ export default function TemplatesPage() {
         {/* Templates Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredAndSortedTemplates.map((template) => (
-            <Card key={template.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
+            <Card key={template.id} className="hover:shadow-lg transition-shadow h-72 flex flex-col">
+              <CardHeader className="pb-4 flex-shrink-0">
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="text-lg">{template.name}</CardTitle>
@@ -177,56 +183,54 @@ export default function TemplatesPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-                  {template.description}
-                </p>
-                
+              <CardContent className="flex-1 flex flex-col">
+                <div className="flex-1">
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+                    {template.description}
+                  </p>
+                </div>
+
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                   <span>{template.touchpoints} {t('templates.touchpoints')}</span>
                   <span>{template.stages} {t('templates.stages')}</span>
                 </div>
 
-                <div className="flex space-x-2">
+                <div className="flex space-x-3">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1"
+                    className="flex items-center justify-center w-10 h-10 p-0"
                     onClick={() => handlePreview(template)}
+                    title={t('templates.actions.preview')}
                   >
-                    <EyeIcon className="mr-1 h-4 w-4" />
-                    {t('templates.actions.preview')}
+                    <EyeIcon className="h-4 w-4" />
                   </Button>
-                  <Button 
-                    variant="primary" 
-                    size="sm" 
-                    className="flex-1"
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="flex items-center justify-center px-4 h-10 flex-1"
                     onClick={() => handleUseTemplate(template)}
                   >
-                    <DownloadIcon className="mr-1 h-4 w-4" />
+                    <DownloadIcon className="mr-2 h-4 w-4" />
                     {t('templates.actions.useTemplate')}
                   </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
-        </div>
 
-        {/* Custom Template Section */}
-        <div className="mt-12">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('templates.customSection.title')}</h2>
-          <Card className="border-dashed border-2 border-gray-300 hover:border-gray-400 transition-colors">
-            <CardContent className="p-8 text-center">
-              <PlusIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+          {/* Custom Template Card */}
+          <Card className="hover:shadow-lg transition-shadow h-72 flex flex-col border-dashed border-2 border-gray-300 hover:border-gray-400 cursor-pointer" onClick={handleCreateCustomTemplate}>
+            <CardContent className="flex-1 flex flex-col items-center justify-center text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center">
+                <PlusIcon className="h-8 w-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg text-gray-500 mb-2 font-normal">
                 {t('templates.customSection.cardTitle')}
               </h3>
-              <p className="text-gray-500 mb-4">
+              <p className="text-sm text-gray-400">
                 {t('templates.customSection.cardDescription')}
               </p>
-              <Button variant="primary" onClick={handleCreateCustomTemplate}>
-                {t('templates.customSection.getStarted')}
-              </Button>
             </CardContent>
           </Card>
         </div>

@@ -262,7 +262,8 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
     const deltaY = e.clientY - dragState.startY
     const deltaPercent = (deltaY / rect.height) * 100
 
-    let newYPercent = dragState.startYPercent + deltaPercent
+    // Invert delta so dragging down decreases yPercent (moves emoji down on curve)
+    let newYPercent = dragState.startYPercent - deltaPercent
     newYPercent = Math.max(10, Math.min(90, newYPercent)) // Constrain to 10-90%
 
     // Update the position in real-time
