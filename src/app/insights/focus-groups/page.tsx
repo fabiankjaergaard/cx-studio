@@ -62,7 +62,7 @@ const bestPractices = [
   {
     category: "Rekrytering",
     icon: UserCheckIcon,
-    color: "text-blue-600 bg-blue-100",
+    color: "text-gray-600 bg-gray-100",
     practices: [
       {
         title: "Homogen men inte för likartad",
@@ -79,7 +79,7 @@ const bestPractices = [
   {
     category: "Moderering",
     icon: MessageSquareIcon,
-    color: "text-green-600 bg-green-100", 
+    color: "text-gray-600 bg-gray-100", 
     practices: [
       {
         title: "Neutral men engagerad ledning",
@@ -96,7 +96,7 @@ const bestPractices = [
   {
     category: "Analys",
     icon: LightbulbIcon,
-    color: "text-purple-600 bg-purple-100",
+    color: "text-gray-600 bg-gray-100",
     practices: [
       {
         title: "Separera individuell vs grupp-åsikter",
@@ -188,13 +188,13 @@ export default function FocusGroupsPage() {
         }
       />
       
-      <div className="flex-1 p-8 overflow-auto bg-gray-50">
+      <div className="flex-1 p-6 overflow-auto bg-gray-50">
         {/* Introduction */}
-        <Card className="mb-8 border-l-4 border-l-green-500">
-          <CardContent className="p-6">
+        <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden">
+          <div className="p-6">
             <div className="flex items-start space-x-4">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <UsersIcon className="h-6 w-6 text-green-600" />
+              <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                <UsersIcon className="h-6 w-6 text-gray-600" />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -206,22 +206,22 @@ export default function FocusGroupsPage() {
                   skicklig moderering för att undvika bias och gruppinfluenser.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  <div className="bg-white p-3 rounded-lg border">
-                    <div className="text-lg font-semibold text-green-600">6-8</div>
+                  <div className="bg-gray-50 p-3 rounded-xl">
+                    <div className="text-lg font-semibold text-gray-900">6-8</div>
                     <div className="text-sm text-gray-600">Optimalt antal deltagare</div>
                   </div>
-                  <div className="bg-white p-3 rounded-lg border">
-                    <div className="text-lg font-semibold text-green-600">90-120 min</div>
+                  <div className="bg-gray-50 p-3 rounded-xl">
+                    <div className="text-lg font-semibold text-gray-900">90-120 min</div>
                     <div className="text-sm text-gray-600">Typisk sessionslängd</div>
                   </div>
-                  <div className="bg-white p-3 rounded-lg border">
-                    <div className="text-lg font-semibold text-green-600">2-4 grupper</div>
+                  <div className="bg-gray-50 p-3 rounded-xl">
+                    <div className="text-lg font-semibold text-gray-900">2-4 grupper</div>
                     <div className="text-sm text-gray-600">För mönstervalidering</div>
                   </div>
                 </div>
               </div>
             </div>
-          </CardContent>
+          </div>
         </Card>
 
         {/* Process Phases */}
@@ -229,11 +229,11 @@ export default function FocusGroupsPage() {
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">Processen i tre faser</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {focusGroupPhases.map((phase, index) => (
-              <Card key={index} className="border-t-4 border-t-blue-500">
-                <CardHeader className="pb-4">
+              <Card key={index} className="border-0 bg-white rounded-xl overflow-hidden">
+                <CardHeader className="pb-3">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <phase.icon className="h-6 w-6 text-blue-600" />
+                    <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+                      <phase.icon className="h-4 w-4 text-gray-600" />
                     </div>
                     <div>
                       <CardTitle className="text-lg">{phase.phase}</CardTitle>
@@ -248,7 +248,7 @@ export default function FocusGroupsPage() {
                   <ul className="space-y-2">
                     {phase.tasks.map((task, taskIndex) => (
                       <li key={taskIndex} className="flex items-start text-sm text-gray-600">
-                        <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <CheckCircleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                         {task}
                       </li>
                     ))}
@@ -266,15 +266,15 @@ export default function FocusGroupsPage() {
             {bestPractices.map((category, categoryIndex) => (
               <div key={categoryIndex}>
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className={`p-2 rounded-lg ${category.color}`}>
-                    <category.icon className="h-5 w-5" />
+                  <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+                    <category.icon className="h-4 w-4 text-gray-600" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900">{category.category}</h3>
                 </div>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {category.practices.map((practice, practiceIndex) => (
-                    <Card key={practiceIndex}>
+                    <Card key={practiceIndex} className="border-0 bg-white rounded-xl overflow-hidden">
                       <CardHeader>
                         <CardTitle className="text-base">{practice.title}</CardTitle>
                         <p className="text-sm text-gray-600">{practice.description}</p>
@@ -283,7 +283,7 @@ export default function FocusGroupsPage() {
                         <ul className="space-y-1">
                           {practice.tips.map((tip, tipIndex) => (
                             <li key={tipIndex} className="flex items-start text-sm text-gray-600">
-                              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
+                              <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
                               {tip}
                             </li>
                           ))}
@@ -300,7 +300,7 @@ export default function FocusGroupsPage() {
         {/* Discussion Guide Template */}
         <div className="mb-12">
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">Mall för diskussionsguide</h2>
-          <Card>
+          <Card className="border-0 bg-white rounded-xl overflow-hidden">
             <CardHeader>
               <CardTitle>Exempel på diskussionsstruktur</CardTitle>
               <p className="text-gray-600">Anpassa frågorna till ditt specifika ämne och syfte</p>
@@ -321,12 +321,12 @@ export default function FocusGroupsPage() {
                 ))}
               </div>
               
-              <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                 <div className="flex items-start space-x-3">
-                  <AlertTriangleIcon className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <AlertTriangleIcon className="h-5 w-5 text-gray-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h5 className="font-medium text-yellow-800 mb-1">Moderatortips</h5>
-                    <p className="text-sm text-yellow-700">
+                    <h5 className="font-medium text-gray-800 mb-1">Moderatortips</h5>
+                    <p className="text-sm text-gray-700">
                       Ha alltid följdfrågor redo: "Kan du utveckla det?", "Vad får dig att känna så?", 
                       "Instämmer alla?". Låt tystnaden göra sitt jobb - vänta efter frågor så kommer fler svar.
                     </p>
@@ -342,12 +342,14 @@ export default function FocusGroupsPage() {
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">Vanliga misstag</h2>
           <div className="space-y-4">
             {commonMistakes.map((mistake, index) => (
-              <Card key={index} className="border-l-4 border-l-red-200">
+              <Card key={index} className="border-0 bg-white rounded-xl overflow-hidden">
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-4">
-                    <AlertTriangleIcon className="h-6 w-6 text-red-500 mt-1 flex-shrink-0" />
+                    <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <AlertTriangleIcon className="h-4 w-4 text-gray-600" />
+                    </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-red-800 mb-2">{mistake.mistake}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{mistake.mistake}</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
                           <h4 className="font-medium text-gray-900 mb-1">Påverkan:</h4>
@@ -368,9 +370,14 @@ export default function FocusGroupsPage() {
 
         {/* When to Use / When Not to Use */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="border-l-4 border-l-green-500">
+          <Card className="border-0 bg-white rounded-xl overflow-hidden">
             <CardHeader>
-              <CardTitle className="text-green-800">Använd fokusgrupper när du vill:</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+                  <CheckCircleIcon className="h-4 w-4 text-gray-900" />
+                </div>
+                <span>Använd fokusgrupper när du vill:</span>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
@@ -383,7 +390,7 @@ export default function FocusGroupsPage() {
                   "Observera spontana reaktioner i grupp"
                 ].map((item, index) => (
                   <li key={index} className="flex items-start text-sm">
-                    <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                     {item}
                   </li>
                 ))}
@@ -391,9 +398,14 @@ export default function FocusGroupsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-red-500">
+          <Card className="border-0 bg-white rounded-xl overflow-hidden">
             <CardHeader>
-              <CardTitle className="text-red-800">Undvik fokusgrupper för:</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+                  <AlertTriangleIcon className="h-4 w-4 text-gray-600" />
+                </div>
+                <span>Undvik fokusgrupper för:</span>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
@@ -406,7 +418,7 @@ export default function FocusGroupsPage() {
                   "Validering av specifika designval"
                 ].map((item, index) => (
                   <li key={index} className="flex items-start text-sm">
-                    <AlertTriangleIcon className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <AlertTriangleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                     {item}
                   </li>
                 ))}
@@ -416,7 +428,7 @@ export default function FocusGroupsPage() {
         </div>
 
         {/* Call to Action */}
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0">
+        <Card className="border-0 bg-white rounded-xl overflow-hidden">
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">

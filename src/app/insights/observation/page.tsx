@@ -227,13 +227,13 @@ export default function ObservationPage() {
         }
       />
       
-      <div className="flex-1 p-8 overflow-auto bg-gray-50">
+      <div className="flex-1 p-6 overflow-auto bg-gray-50">
         {/* Introduction */}
-        <Card className="mb-8 border-l-4 border-l-indigo-500">
-          <CardContent className="p-6">
+        <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden">
+          <div className="p-6">
             <div className="flex items-start space-x-4">
-              <div className="p-3 bg-indigo-100 rounded-lg">
-                <EyeIcon className="h-6 w-6 text-indigo-600" />
+              <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                <EyeIcon className="h-6 w-6 text-gray-600" />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -242,17 +242,17 @@ export default function ObservationPage() {
                 <p className="text-gray-600 mb-4">
                   {t('observation.intro.description')}
                 </p>
-                <div className="bg-indigo-50 p-4 rounded-lg">
-                  <div className="text-lg font-semibold text-indigo-700 mb-2">
+                <div className="bg-gray-50 p-4 rounded-xl">
+                  <div className="text-lg font-semibold text-gray-900 mb-2">
                     "{t('observation.intro.quote')}"
                   </div>
-                  <p className="text-sm text-indigo-600">
+                  <p className="text-sm text-gray-600">
                     {t('observation.intro.quoteDescription')}
                   </p>
                 </div>
               </div>
             </div>
-          </CardContent>
+          </div>
         </Card>
 
         {/* Observation Types */}
@@ -260,12 +260,14 @@ export default function ObservationPage() {
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('observation.types.title')}</h2>
           <div className="space-y-6">
             {observationTypes.map((type, index) => (
-              <Card key={index} className="border-l-4 border-l-indigo-500">
-                <CardContent className="p-6">
+              <Card key={index} className="border-0 bg-white rounded-xl overflow-hidden">
+                <div className="p-6">
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-1">
                       <div className="flex items-center space-x-3 mb-3">
-                        <type.icon className="h-6 w-6 text-indigo-600" />
+                        <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+                          <type.icon className="h-4 w-4 text-gray-600" />
+                        </div>
                         <h3 className="text-lg font-semibold text-gray-900">{t(type.typeKey)}</h3>
                       </div>
                       <p className="text-sm text-gray-600 mb-3">{t(type.descriptionKey)}</p>
@@ -286,7 +288,7 @@ export default function ObservationPage() {
                           <ul className="space-y-1">
                             {type.prosKeys.map((proKey, proIndex) => (
                               <li key={proIndex} className="text-sm text-gray-600 flex items-start">
-                                <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                                <CheckCircleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                                 {t(proKey)}
                               </li>
                             ))}
@@ -298,7 +300,7 @@ export default function ObservationPage() {
                           <ul className="space-y-1">
                             {type.consKeys.map((conKey, conIndex) => (
                               <li key={conIndex} className="text-sm text-gray-600 flex items-start">
-                                <AlertTriangleIcon className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                                <AlertTriangleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                                 {t(conKey)}
                               </li>
                             ))}
@@ -311,7 +313,7 @@ export default function ObservationPage() {
                       <h4 className="font-medium text-gray-900 mb-2">{t('observation.types.examples')}</h4>
                       <ul className="space-y-1">
                         {type.exampleKeys.map((exampleKey, exampleIndex) => (
-                          <li key={exampleIndex} className="text-sm text-gray-600 pl-4 border-l-2 border-l-indigo-200">
+                          <li key={exampleIndex} className="text-sm text-gray-600 pl-4 border-l-2 border-l-gray-200">
                             {t(exampleKey)}
                           </li>
                         ))}
@@ -332,18 +334,18 @@ export default function ObservationPage() {
               <Card key={index} className="relative border-t-4 border-t-indigo-500">
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-sm">
+                    <div className="w-8 h-8 bg-gray-50 text-gray-600 rounded-full flex items-center justify-center font-bold text-sm">
                       {step.step}
                     </div>
                     <CardTitle className="text-base">{t(step.titleKey)}</CardTitle>
                   </div>
-                  <step.icon className="h-6 w-6 text-indigo-600 mt-2" />
+                  <step.icon className="h-6 w-6 text-gray-600 mt-2" />
                 </CardHeader>
                 <CardContent className="pt-0">
                   <ul className="space-y-2">
                     {step.taskKeys.map((taskKey, taskIndex) => (
                       <li key={taskIndex} className="text-xs text-gray-600 flex items-start">
-                        <CheckCircleIcon className="h-3 w-3 text-green-500 mr-1 mt-0.5 flex-shrink-0" />
+                        <CheckCircleIcon className="h-3 w-3 text-gray-500 mr-1 mt-0.5 flex-shrink-0" />
                         {t(taskKey)}
                       </li>
                     ))}
@@ -354,7 +356,7 @@ export default function ObservationPage() {
                 {index < observationSteps.length - 1 && (
                   <div className="absolute -right-3 top-1/2 transform -translate-y-1/2 hidden lg:block">
                     <div className="w-6 h-6 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
                     </div>
                   </div>
                 )}
@@ -377,7 +379,7 @@ export default function ObservationPage() {
                   <ul className="space-y-2">
                     {category.exampleKeys.map((exampleKey, exampleIndex) => (
                       <li key={exampleIndex} className="text-sm text-gray-700 flex items-start">
-                        <EyeIcon className="h-4 w-4 text-indigo-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <EyeIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                         {t(exampleKey)}
                       </li>
                     ))}
@@ -396,7 +398,7 @@ export default function ObservationPage() {
               <Card key={index} className="border-l-4 border-l-green-500">
                 <CardHeader>
                   <div className="flex items-center space-x-3">
-                    <ShieldIcon className="h-6 w-6 text-green-600" />
+                    <ShieldIcon className="h-6 w-6 text-gray-600" />
                     <CardTitle className="text-lg">{t(guideline.principleKey)}</CardTitle>
                   </div>
                   <p className="text-sm text-gray-600">{t(guideline.descriptionKey)}</p>
@@ -405,7 +407,7 @@ export default function ObservationPage() {
                   <ul className="space-y-2">
                     {guideline.practiceKeys.map((practiceKey, practiceIndex) => (
                       <li key={practiceIndex} className="text-sm text-gray-700 flex items-start">
-                        <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <CheckCircleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                         {t(practiceKey)}
                       </li>
                     ))}
@@ -453,7 +455,7 @@ export default function ObservationPage() {
         <Card className="mb-8 bg-gradient-to-r from-indigo-50 to-purple-50 border-0">
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
-              <NotebookIcon className="h-8 w-8 text-indigo-600 mt-1" />
+              <NotebookIcon className="h-8 w-8 text-gray-600 mt-1" />
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">
                   {t('observation.documentation.title')}
@@ -461,29 +463,29 @@ export default function ObservationPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <ul className="space-y-2">
                     <li className="flex items-start">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <CheckCircleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                       <span><strong>{t('observation.documentation.tip1')}</strong> - {t('observation.documentation.tip1Detail')}</span>
                     </li>
                     <li className="flex items-start">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <CheckCircleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                       <span><strong>{t('observation.documentation.tip2')}</strong> - {t('observation.documentation.tip2Detail')}</span>
                     </li>
                     <li className="flex items-start">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <CheckCircleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                       <span><strong>{t('observation.documentation.tip3')}</strong> - {t('observation.documentation.tip3Detail')}</span>
                     </li>
                   </ul>
                   <ul className="space-y-2">
                     <li className="flex items-start">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <CheckCircleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                       <span><strong>{t('observation.documentation.tip4')}</strong> - {t('observation.documentation.tip4Detail')}</span>
                     </li>
                     <li className="flex items-start">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <CheckCircleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                       <span><strong>{t('observation.documentation.tip5')}</strong> - {t('observation.documentation.tip5Detail')}</span>
                     </li>
                     <li className="flex items-start">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <CheckCircleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
                       <span><strong>{t('observation.documentation.tip6')}</strong> - {t('observation.documentation.tip6Detail')}</span>
                     </li>
                   </ul>

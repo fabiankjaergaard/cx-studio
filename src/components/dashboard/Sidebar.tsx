@@ -9,10 +9,10 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useGuidedTour } from '@/hooks/useGuidedTour'
 import { useLanguage } from '@/contexts/LanguageContext'
 import Image from 'next/image'
-import { 
-  MapIcon, 
-  HomeIcon, 
-  BookTemplateIcon, 
+import {
+  MapIcon,
+  HomeIcon,
+  BookTemplateIcon,
   BarChart3Icon,
   UsersIcon,
   SettingsIcon,
@@ -37,7 +37,10 @@ import {
   DatabaseIcon,
   BookIcon,
   LightbulbIcon,
-  PlusIcon
+  PlusIcon,
+  PlayIcon,
+  FolderIcon,
+  CircleIcon
 } from 'lucide-react'
 
 const getNavigation = (t: (key: string) => string) => [
@@ -87,7 +90,20 @@ const getNavigation = (t: (key: string) => string) => [
       {
         name: t('nav.qualitativeMethods'),
         children: [
-          { name: t('nav.interviews'), href: '/insights/interviews', icon: MicIcon },
+          {
+            name: t('nav.interviews'),
+            href: '/insights/interviews',
+            icon: MicIcon,
+            isExpandable: true,
+            children: [
+              { name: 'Översikt', href: '/insights/interviews', icon: HomeIcon },
+              { name: 'Skapa guide', href: '/insights/interviews?tab=create', icon: PlusIcon },
+              { name: 'Genomför', href: '/insights/interviews?tab=conduct', icon: PlayIcon },
+              { name: 'Analysera', href: '/insights/interviews?tab=analyze', icon: BarChart3Icon },
+              { name: 'Mina intervjuer', href: '/insights/interviews?tab=my-interviews', icon: FolderIcon },
+              { name: 'Mallar', href: '/insights/interviews?tab=templates', icon: BookTemplateIcon }
+            ]
+          },
           { name: t('nav.focusGroups'), href: '/insights/focus-groups', icon: UsersIcon },
           { name: t('nav.observation'), href: '/insights/observation', icon: EyeIcon }
         ]
@@ -122,6 +138,7 @@ export function Sidebar() {
   const { t } = useLanguage()
   const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({})
   const [expandedCategories, setExpandedCategories] = useState<{[key: string]: boolean}>({})
+  const [expandedSubItems, setExpandedSubItems] = useState<{[key: string]: boolean}>({})
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [hoveredSection, setHoveredSection] = useState<string | null>(null)
   
@@ -138,6 +155,13 @@ export function Sidebar() {
     setExpandedCategories(prev => ({
       ...prev,
       [categoryName]: !prev[categoryName]
+    }))
+  }
+
+  const toggleSubItem = (subItemName: string) => {
+    setExpandedSubItems(prev => ({
+      ...prev,
+      [subItemName]: !prev[subItemName]
     }))
   }
 
@@ -270,7 +294,67 @@ export function Sidebar() {
                             {isCategoryExpanded && category.children && (
                               <div className="ml-4 mt-1 space-y-1">
                                 {category.children.map((subItem) => {
-                                  const isSubActive = pathname === subItem.href
+                                  const isSubActive = pathname === subItem.href || pathname.startsWith(subItem.href + '?')
+
+                                  // Handle expandable sub-items (like interviews)
+                                  if (subItem.isExpandable && subItem.children) {
+                                    const isSubItemExpanded = expandedSubItems[subItem.name]
+
+                                    return (
+                                      <div key={subItem.name}>
+                                        {/* Sub-item header - clickable to expand/collapse */}
+                                        <button
+                                          onClick={() => toggleSubItem(subItem.name)}
+                                          className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors"
+                                        >
+                                          <div className="flex items-center">
+                                            <subItem.icon className="h-4 w-4 text-gray-400 mr-3" />
+                                            <span className="flex-1 text-left">{subItem.name}</span>
+                                          </div>
+                                          <div className="w-3 h-3 flex items-center justify-center">
+                                            {isSubItemExpanded ? (
+                                              <ChevronUpIcon className="h-3 w-3 text-gray-400" />
+                                            ) : (
+                                              <ChevronDownIcon className="h-3 w-3 text-gray-400" />
+                                            )}
+                                          </div>
+                                        </button>
+
+                                        {/* Level 3: Sub-sub-items under expandable sub-items */}
+                                        {isSubItemExpanded && subItem.children && (
+                                          <div className="ml-6 mt-1 space-y-1">
+                                            {subItem.children.map((subSubItem) => {
+                                              const isSubSubActive = pathname === subSubItem.href || pathname.startsWith(subSubItem.href + '?')
+                                              return (
+                                                <Link
+                                                  key={subSubItem.name}
+                                                  href={subSubItem.href}
+                                                  className={cn(
+                                                    'group flex items-center rounded-lg text-sm font-medium transition-colors px-3 py-2',
+                                                    isSubSubActive
+                                                      ? 'bg-slate-100 text-slate-700'
+                                                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                  )}
+                                                >
+                                                  <subSubItem.icon
+                                                    className={cn(
+                                                      'h-4 w-4 transition-colors mr-3',
+                                                      isSubSubActive
+                                                        ? 'text-slate-600'
+                                                        : 'text-gray-400 group-hover:text-gray-500'
+                                                    )}
+                                                  />
+                                                  {subSubItem.name}
+                                                </Link>
+                                              )
+                                            })}
+                                          </div>
+                                        )}
+                                      </div>
+                                    )
+                                  }
+
+                                  // Handle regular sub-items
                                   return (
                                     <Link
                                       key={subItem.name}

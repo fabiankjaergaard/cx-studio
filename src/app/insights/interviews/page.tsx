@@ -1,546 +1,519 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { 
-  MicIcon, 
-  ClockIcon, 
-  LightbulbIcon,
-  AlertTriangleIcon,
-  CheckCircleIcon,
-  UserIcon,
-  MessageSquareIcon,
-  HeadphonesIcon,
+import {
+  MicIcon,
+  PlusIcon,
+  PlayIcon,
   FileTextIcon,
-  PhoneIcon,
-  VideoIcon,
-  MapPinIcon
+  UsersIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  ArrowRightIcon,
+  DownloadIcon,
+  CalendarIcon,
+  BarChart3Icon,
+  ShareIcon,
+  BookOpenIcon,
+  CircleIcon,
+  PauseIcon,
+  SkipForwardIcon,
+  TrendingUpIcon,
+  LightbulbIcon,
+  FolderIcon,
+  StarIcon,
+  HistoryIcon,
+  TimerIcon,
+  EyeIcon,
+  MessageCircleIcon,
+  Target,
+  HomeIcon,
+  AlertTriangleIcon,
+  UserIcon
 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function InterviewsPage() {
   const { t } = useLanguage()
-  
-  const interviewTypes = [
+  const searchParams = useSearchParams()
+  const [activeTab, setActiveTab] = useState('overview')
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab')
+    if (tabParam) {
+      setActiveTab(tabParam)
+    } else {
+      setActiveTab('overview')
+    }
+  }, [searchParams])
+  const [isRecording, setIsRecording] = useState(false)
+  const [interviewTimer, setInterviewTimer] = useState(0)
+  const [currentNote, setCurrentNote] = useState('')
+
+  // Mock data for demonstration
+  const recentInterviews = [
+    { id: 1, participant: "Anna Andersson", date: "2024-01-15", status: "completed", insights: 3 },
+    { id: 2, participant: "Erik Johansson", date: "2024-01-14", status: "completed", insights: 5 },
+    { id: 3, participant: "Maria Larsson", date: "2024-01-13", status: "analyzing", insights: 0 },
+  ]
+
+  const insights = [
+    { theme: "Navigation förvirring", frequency: 8, sentiment: "negative" },
+    { theme: "Snabb checkout önskemål", frequency: 6, sentiment: "neutral" },
+    { theme: "Mobilapp prestanda", frequency: 5, sentiment: "negative" },
+    { theme: "Kundtjänst nöjdhet", frequency: 7, sentiment: "positive" },
+  ]
+
+  const quickActions = [
     {
-      type: t('interviews.types.structured.title'),
-      icon: FileTextIcon,
-      description: t('interviews.types.structured.description'),
-      duration: t('interviews.types.structured.duration'),
-      when: t('interviews.types.structured.when'),
-      pros: [t('interviews.types.structured.pro1'), t('interviews.types.structured.pro2'), t('interviews.types.structured.pro3')],
-      cons: [t('interviews.types.structured.con1'), t('interviews.types.structured.con2'), t('interviews.types.structured.con3')]
+      title: "Ny intervju",
+      description: "Skapa intervjuguide och kom igång",
+      icon: PlusIcon,
+      action: "create-guide",
+      primary: true
     },
     {
-      type: t('interviews.types.semiStructured.title'),
-      icon: MessageSquareIcon,
-      description: t('interviews.types.semiStructured.description'),
-      duration: t('interviews.types.semiStructured.duration'),
-      when: t('interviews.types.semiStructured.when'),
-      pros: [t('interviews.types.semiStructured.pro1'), t('interviews.types.semiStructured.pro2'), t('interviews.types.semiStructured.pro3')],
-      cons: [t('interviews.types.semiStructured.con1'), t('interviews.types.semiStructured.con2'), t('interviews.types.semiStructured.con3')]
+      title: "Fortsätt intervju",
+      description: "Återuppta pågående session",
+      icon: PlayIcon,
+      action: "live-interview"
     },
     {
-      type: t('interviews.types.unstructured.title'),
-      icon: LightbulbIcon,
-      description: t('interviews.types.unstructured.description'),
-      duration: t('interviews.types.unstructured.duration'),
-      when: t('interviews.types.unstructured.when'),
-      pros: [t('interviews.types.unstructured.pro1'), t('interviews.types.unstructured.pro2'), t('interviews.types.unstructured.pro3')],
-      cons: [t('interviews.types.unstructured.con1'), t('interviews.types.unstructured.con2'), t('interviews.types.unstructured.con3')]
+      title: "Analysera data",
+      description: "Hitta patterns i dina intervjuer",
+      icon: BarChart3Icon,
+      action: "analyze"
     }
   ]
 
-  const interviewChannels = [
-    {
-      channel: t('interviews.channels.inPerson.title'),
-      icon: MapPinIcon,
-      pros: [t('interviews.channels.inPerson.pro1'), t('interviews.channels.inPerson.pro2'), t('interviews.channels.inPerson.pro3')],
-      cons: [t('interviews.channels.inPerson.con1'), t('interviews.channels.inPerson.con2'), t('interviews.channels.inPerson.con3')],
-      bestFor: t('interviews.channels.inPerson.bestFor')
-    },
-    {
-      channel: t('interviews.channels.video.title'),
-      icon: VideoIcon,
-      pros: [t('interviews.channels.video.pro1'), t('interviews.channels.video.pro2'), t('interviews.channels.video.pro3')],
-      cons: [t('interviews.channels.video.con1'), t('interviews.channels.video.con2'), t('interviews.channels.video.con3')],
-      bestFor: t('interviews.channels.video.bestFor')
-    },
-    {
-      channel: t('interviews.channels.phone.title'),
-      icon: PhoneIcon,
-      pros: [t('interviews.channels.phone.pro1'), t('interviews.channels.phone.pro2'), t('interviews.channels.phone.pro3')],
-      cons: [t('interviews.channels.phone.con1'), t('interviews.channels.phone.con2'), t('interviews.channels.phone.con3')],
-      bestFor: t('interviews.channels.phone.bestFor')
+
+  const InterviewGuideBuilder = () => {
+    const [purpose, setPurpose] = useState('')
+    const [audience, setAudience] = useState('')
+    const [industry, setIndustry] = useState('')
+    const [duration, setDuration] = useState('45')
+    const [generatedQuestions, setGeneratedQuestions] = useState([])
+
+    const industries = [
+      'E-handel', 'SaaS & Tech', 'Fintech', 'Hälsovård', 'Utbildning', 'Media', 'Annat'
+    ]
+
+    const generateQuestions = () => {
+      const baseQuestions = [
+        "Berätta lite om dig själv och din bakgrund",
+        `Hur använder du ${purpose.toLowerCase()} idag?`,
+        "Vad fungerar bra med din nuvarande lösning?",
+        "Vilka utmaningar stöter du på?",
+        `Om du kunde förbättra en sak med ${purpose.toLowerCase()}, vad skulle det vara?`
+      ]
+
+      // Industry-specific questions
+      const industryQuestions = {
+        'E-handel': [
+          "Berätta om din senaste köpupplevelse online",
+          "Vad får dig att lita på en webbshop?",
+          "Hur viktigt är leveranshastighet för dig?"
+        ],
+        'SaaS & Tech': [
+          "Vilka verktyg använder du i ditt dagliga arbete?",
+          "Vad saknar du i era nuvarande system?",
+          "Hur lär du dig nya funktioner i mjukvara?"
+        ],
+        'Fintech': [
+          "Hur hanterar du dina finanser idag?",
+          "Vad får dig att känna dig trygg med finansiella tjänster?",
+          "Vilka finansiella mål har du?"
+        ]
+      }
+
+      const specificQuestions = industryQuestions[industry] || []
+      const questions = [...baseQuestions, ...specificQuestions, "Något annat du vill tillägga?"]
+      setGeneratedQuestions(questions)
     }
-  ]
 
-  const interviewGuideTemplate = [
-    {
-      section: t('interviews.guide.intro.title'),
-      purpose: t('interviews.guide.intro.purpose'),
-      questions: [
-        t('interviews.guide.intro.q1'),
-        t('interviews.guide.intro.q2'),
-        t('interviews.guide.intro.q3')
-      ]
-    },
-    {
-      section: t('interviews.guide.background.title'),
-      purpose: t('interviews.guide.background.purpose'),
-      questions: [
-        t('interviews.guide.background.q1'),
-        t('interviews.guide.background.q2'),
-        t('interviews.guide.background.q3')
-      ]
-    },
-    {
-      section: t('interviews.guide.deep.title'),
-      purpose: t('interviews.guide.deep.purpose'),
-      questions: [
-        t('interviews.guide.deep.q1'),
-        t('interviews.guide.deep.q2'),
-        t('interviews.guide.deep.q3'),
-        t('interviews.guide.deep.q4'),
-        t('interviews.guide.deep.q5')
-      ]
-    },
-    {
-      section: t('interviews.guide.closing.title'),
-      purpose: t('interviews.guide.closing.purpose'),
-      questions: [
-        t('interviews.guide.closing.q1'),
-        t('interviews.guide.closing.q2'),
-        t('interviews.guide.closing.q3')
-      ]
-    }
-  ]
-
-  const goodQuestions = [
-    {
-      category: t('interviews.questions.behavior.title'),
-      questions: [
-        t('interviews.questions.behavior.q1'),
-        t('interviews.questions.behavior.q2'),
-        t('interviews.questions.behavior.q3')
-      ]
-    },
-    {
-      category: t('interviews.questions.motivations.title'),
-      questions: [
-        t('interviews.questions.motivations.q1'),
-        t('interviews.questions.motivations.q2'),
-        t('interviews.questions.motivations.q3')
-      ]
-    },
-    {
-      category: t('interviews.questions.problems.title'),
-      questions: [
-        t('interviews.questions.problems.q1'),
-        t('interviews.questions.problems.q2'),
-        t('interviews.questions.problems.q3')
-      ]
-    },
-    {
-      category: t('interviews.questions.deepening.title'),
-      questions: [
-        t('interviews.questions.deepening.q1'),
-        t('interviews.questions.deepening.q2'),
-        t('interviews.questions.deepening.q3')
-      ]
-    }
-  ]
-
-  const avoidQuestions = [
-    t('interviews.questions.avoid1'),
-    t('interviews.questions.avoid2'),
-    t('interviews.questions.avoid3'),
-    t('interviews.questions.avoid4'),
-    t('interviews.questions.avoid5')
-  ]
-
-  const analysisSteps = [
-    {
-      step: 1,
-      title: t('interviews.analysis.step1.title'),
-      description: t('interviews.analysis.step1.description'),
-      tips: [t('interviews.analysis.step1.tip1'), t('interviews.analysis.step1.tip2'), t('interviews.analysis.step1.tip3'), t('interviews.analysis.step1.tip4')]
-    },
-    {
-      step: 2,
-      title: t('interviews.analysis.step2.title'),
-      description: t('interviews.analysis.step2.description'),
-      tips: [t('interviews.analysis.step2.tip1'), t('interviews.analysis.step2.tip2'), t('interviews.analysis.step2.tip3'), t('interviews.analysis.step2.tip4')]
-    },
-    {
-      step: 3,
-      title: t('interviews.analysis.step3.title'),
-      description: t('interviews.analysis.step3.description'),
-      tips: [t('interviews.analysis.step3.tip1'), t('interviews.analysis.step3.tip2'), t('interviews.analysis.step3.tip3'), t('interviews.analysis.step3.tip4')]
-    },
-    {
-      step: 4,
-      title: t('interviews.analysis.step4.title'),
-      description: t('interviews.analysis.step4.description'),
-      tips: [t('interviews.analysis.step4.tip1'), t('interviews.analysis.step4.tip2'), t('interviews.analysis.step4.tip3'), t('interviews.analysis.step4.tip4')]
-    }
-  ]
-
-  return (
-    <div className="h-full flex flex-col">
-      <Header 
-        title={t('interviews.pageTitle')} 
-        description={t('interviews.pageDescription')}
-        actions={
-          <Link href="/insights">
-            <Button variant="outline">
-              {t('interviews.backToOverview')}
-            </Button>
-          </Link>
-        }
-      />
-      
-      <div className="flex-1 p-8 overflow-auto bg-gray-50">
-        {/* Introduction */}
-        <Card className="mb-8 border-l-4 border-l-orange-500">
-          <CardContent className="p-6">
-            <div className="flex items-start space-x-4">
-              <div className="p-3 bg-orange-100 rounded-lg">
-                <MicIcon className="h-6 w-6 text-orange-600" />
+    return (
+      <div className="space-y-6">
+        <Card className="border-0 bg-white rounded-xl overflow-hidden">
+          <CardHeader>
+            <CardTitle>Skapa intervjuguide</CardTitle>
+            <p className="text-gray-600">Anpassad efter din bransch och syfte</p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Vad undersöker du?
+                </label>
+                <input
+                  type="text"
+                  value={purpose}
+                  onChange={(e) => setPurpose(e.target.value)}
+                  placeholder="t.ex. mobilappen, checkout-processen..."
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {t('interviews.intro.title')}
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {t('interviews.intro.description')}
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  <div className="bg-white p-3 rounded-lg border">
-                    <div className="text-lg font-semibold text-orange-600">{t('interviews.intro.stat1.value')}</div>
-                    <div className="text-sm text-gray-600">{t('interviews.intro.stat1.label')}</div>
-                  </div>
-                  <div className="bg-white p-3 rounded-lg border">
-                    <div className="text-lg font-semibold text-orange-600">{t('interviews.intro.stat2.value')}</div>
-                    <div className="text-sm text-gray-600">{t('interviews.intro.stat2.label')}</div>
-                  </div>
-                  <div className="bg-white p-3 rounded-lg border">
-                    <div className="text-lg font-semibold text-orange-600">{t('interviews.intro.stat3.value')}</div>
-                    <div className="text-sm text-gray-600">{t('interviews.intro.stat3.label')}</div>
-                  </div>
-                </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Bransch
+                </label>
+                <select
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Välj bransch</option>
+                  {industries.map(ind => (
+                    <option key={ind} value={ind}>{ind}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Målgrupp
+                </label>
+                <input
+                  type="text"
+                  value={audience}
+                  onChange={(e) => setAudience(e.target.value)}
+                  placeholder="t.ex. befintliga kunder, potentiella användare..."
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Längd (minuter)
+                </label>
+                <select
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="30">30 minuter</option>
+                  <option value="45">45 minuter</option>
+                  <option value="60">60 minuter</option>
+                </select>
               </div>
             </div>
+
+            <Button
+              variant="primary"
+              onClick={generateQuestions}
+              disabled={!purpose || !audience || !industry}
+              className="w-full"
+            >
+              Generera anpassad intervjuguide
+            </Button>
           </CardContent>
         </Card>
 
-        {/* Interview Types */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('interviews.types.title')}</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {interviewTypes.map((type, index) => (
-              <Card key={index} className="border-t-4 border-t-orange-500">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <type.icon className="h-6 w-6 text-orange-600" />
-                    <CardTitle className="text-lg">{type.type}</CardTitle>
-                  </div>
-                  <p className="text-sm text-gray-600">{type.description}</p>
-                  <div className="flex items-center text-sm text-gray-500 mt-2">
-                    <ClockIcon className="h-4 w-4 mr-1" />
-                    {type.duration}
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0 space-y-4">
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">{t('interviews.types.whenToUse')}</h4>
-                    <p className="text-sm text-gray-600">{type.when}</p>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h5 className="text-xs font-medium text-green-700 mb-2">{t('interviews.types.advantages')}</h5>
-                      <ul className="space-y-1">
-                        {type.pros.map((pro, proIndex) => (
-                          <li key={proIndex} className="text-xs text-gray-600 flex items-start">
-                            <CheckCircleIcon className="h-3 w-3 text-green-500 mr-1 mt-0.5 flex-shrink-0" />
-                            {pro}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h5 className="text-xs font-medium text-red-700 mb-2">{t('interviews.types.disadvantages')}</h5>
-                      <ul className="space-y-1">
-                        {type.cons.map((con, conIndex) => (
-                          <li key={conIndex} className="text-xs text-gray-600 flex items-start">
-                            <AlertTriangleIcon className="h-3 w-3 text-red-500 mr-1 mt-0.5 flex-shrink-0" />
-                            {con}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Interview Channels */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('interviews.channels.title')}</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {interviewChannels.map((channel, index) => (
-              <Card key={index}>
-                <CardHeader>
-                  <div className="flex items-center space-x-3">
-                    <channel.icon className="h-6 w-6 text-blue-600" />
-                    <CardTitle className="text-lg">{channel.channel}</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-medium text-green-700 mb-2">{t('interviews.channels.advantages')}</h4>
-                    <ul className="space-y-1">
-                      {channel.pros.map((pro, proIndex) => (
-                        <li key={proIndex} className="text-sm text-gray-600 flex items-start">
-                          <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                          {pro}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium text-red-700 mb-2">{t('interviews.channels.disadvantages')}</h4>
-                    <ul className="space-y-1">
-                      {channel.cons.map((con, conIndex) => (
-                        <li key={conIndex} className="text-sm text-gray-600 flex items-start">
-                          <AlertTriangleIcon className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
-                          {con}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div className="pt-2 border-t">
-                    <h4 className="font-medium text-gray-900 mb-1">{t('interviews.channels.bestFor')}</h4>
-                    <p className="text-sm text-gray-600">{channel.bestFor}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Interview Guide Template */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('interviews.guide.title')}</h2>
-          <Card>
+        {generatedQuestions.length > 0 && (
+          <Card className="border-0 bg-white rounded-xl overflow-hidden">
             <CardHeader>
-              <CardTitle>{t('interviews.guide.subtitle')}</CardTitle>
-              <p className="text-gray-600">{t('interviews.guide.description')}</p>
+              <div className="flex items-center justify-between">
+                <CardTitle>Din intervjuguide - {industry}</CardTitle>
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm">
+                    <ShareIcon className="h-4 w-4 mr-2" />
+                    Dela
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <DownloadIcon className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                </div>
+              </div>
+              <p className="text-gray-600">Beräknad tid: {duration} minuter</p>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                {interviewGuideTemplate.map((section, index) => (
-                  <div key={index} className="border-l-4 border-l-orange-200 pl-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900">{section.section}</h4>
-                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{section.purpose}</span>
+              <div className="space-y-4">
+                {generatedQuestions.map((question, index) => (
+                  <div key={index} className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                    <div className="w-8 h-8 bg-white border rounded-full flex items-center justify-center text-sm font-medium text-gray-600 flex-shrink-0">
+                      {index + 1}
                     </div>
-                    <ul className="space-y-2">
-                      {section.questions.map((question, questionIndex) => (
-                        <li key={questionIndex} className="text-sm text-gray-700 flex items-start">
-                          <span className="text-orange-500 mr-2">•</span>
-                          {question}
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="flex-1">
+                      <p className="text-gray-900 font-medium">{question}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Tips: {index === 0 ? "Börja mjukt, låt deltagaren bekväma sig" :
+                              index === generatedQuestions.length - 1 ? "Avsluta positivt, fråga om de har något att tillägga" :
+                              "Följ upp med 'Kan du berätta mer?' vid intressanta svar"}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
+              <div className="mt-6 pt-4 border-t text-center">
+                <Button variant="primary" onClick={() => setActiveTab('conduct')}>
+                  <PlayIcon className="mr-2 h-4 w-4" />
+                  Starta intervju
+                </Button>
+              </div>
             </CardContent>
           </Card>
+        )}
+      </div>
+    )
+  }
+
+  const LiveInterview = () => {
+    const formatTime = (seconds) => {
+      const mins = Math.floor(seconds / 60)
+      const secs = seconds % 60
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+    }
+
+    return (
+      <div className="space-y-6">
+        {/* Timer and Controls */}
+        <Card className="border-0 bg-white rounded-xl overflow-hidden">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="text-3xl font-mono text-gray-900">
+                  {formatTime(interviewTimer)}
+                </div>
+                <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-gray-300'}`}></div>
+              </div>
+              <div className="flex space-x-2">
+                <Button
+                  variant={isRecording ? "outline" : "primary"}
+                  onClick={() => setIsRecording(!isRecording)}
+                >
+                  {isRecording ? <PauseIcon className="h-4 w-4" /> : <CircleIcon className="h-4 w-4" />}
+                  {isRecording ? 'Pausa' : 'Starta'}
+                </Button>
+                <Button variant="outline">
+                  <SkipForwardIcon className="h-4 w-4" />
+                  Nästa fråga
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Current Question */}
+        <Card className="border-0 bg-white rounded-xl overflow-hidden">
+          <CardHeader>
+            <CardTitle>Aktuell fråga (3 av 8)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg text-gray-900 mb-4">
+              "Vad fungerar bra med din nuvarande lösning?"
+            </div>
+            <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+              <strong>Tips:</strong> Låt deltagaren tala färdigt. Följ upp med "Kan du ge ett konkret exempel?"
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Live Notes */}
+        <Card className="border-0 bg-white rounded-xl overflow-hidden">
+          <CardHeader>
+            <CardTitle>Anteckningar</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <textarea
+              value={currentNote}
+              onChange={(e) => setCurrentNote(e.target.value)}
+              placeholder="Skriv dina anteckningar här..."
+              className="w-full h-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            />
+            <div className="mt-3 flex justify-between items-center">
+              <div className="text-sm text-gray-500">
+                Auto-sparas var 30:e sekund
+              </div>
+              <Button variant="outline" size="sm">
+                Lägg till insight
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions During Interview */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { label: "Bra citat", icon: MessageCircleIcon },
+            { label: "Problem identifierat", icon: AlertTriangleIcon },
+            { label: "Förbättringsförslag", icon: LightbulbIcon }
+          ].map((action, index) => (
+            <Button key={index} variant="outline" className="p-4 h-auto">
+              <action.icon className="h-5 w-5 mr-2" />
+              {action.label}
+            </Button>
+          ))}
         </div>
+      </div>
+    )
+  }
 
-        {/* Good vs Bad Questions */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('interviews.questions.title')}</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Good Questions */}
-            <Card className="border-l-4 border-l-green-500">
-              <CardHeader>
-                <CardTitle className="text-green-800">{t('interviews.questions.good.title')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {goodQuestions.map((category, index) => (
-                    <div key={index}>
-                      <h4 className="font-medium text-gray-900 mb-2">{category.category}:</h4>
-                      <ul className="space-y-1">
-                        {category.questions.map((question, qIndex) => (
-                          <li key={qIndex} className="text-sm text-gray-700 pl-4 border-l-2 border-l-green-200">
-                            "{question}"
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Bad Questions */}
-            <Card className="border-l-4 border-l-red-500">
-              <CardHeader>
-                <CardTitle className="text-red-800">{t('interviews.questions.bad.title')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-600 mb-4">
-                    {t('interviews.questions.bad.description')}
-                  </p>
-                  {avoidQuestions.map((question, index) => (
-                    <div key={index} className="flex items-start space-x-3">
-                      <AlertTriangleIcon className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <p className="text-sm text-gray-700 line-through">"{question}"</p>
-                        <p className="text-xs text-red-600 mt-1">
-                          {index === 0 && t('interviews.questions.bad.reason1')}
-                          {index === 1 && t('interviews.questions.bad.reason2')}
-                          {index === 2 && t('interviews.questions.bad.reason3')}
-                          {index === 3 && t('interviews.questions.bad.reason4')}
-                          {index === 4 && t('interviews.questions.bad.reason5')}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 p-3 bg-red-50 border border-red-200 rounded">
-                  <h5 className="font-medium text-red-800 mb-2">{t('interviews.questions.goldenRule.title')}</h5>
-                  <p className="text-sm text-red-700">
-                    {t('interviews.questions.goldenRule.text')}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Analysis Process */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('interviews.analysis.title')}</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {analysisSteps.map((step, index) => (
-              <Card key={index} className="relative">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center font-bold text-sm">
-                      {step.step}
-                    </div>
-                    <CardTitle className="text-base">{step.title}</CardTitle>
+  const AnalysisView = () => (
+    <div className="space-y-6">
+      <Card className="border-0 bg-white rounded-xl overflow-hidden">
+        <CardHeader>
+          <CardTitle>Insights från {recentInterviews.length} intervjuer</CardTitle>
+          <p className="text-gray-600">Automatiskt identifierade patterns och teman</p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {insights.map((insight, index) => (
+              <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <TrendingUpIcon className="h-5 w-5 text-gray-600" />
+                  <div>
+                    <p className="font-medium text-gray-900">{insight.theme}</p>
+                    <p className="text-sm text-gray-600">{insight.frequency} av {recentInterviews.length} intervjuer</p>
                   </div>
-                  <p className="text-sm text-gray-600">{step.description}</p>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <ul className="space-y-1">
-                    {step.tips.map((tip, tipIndex) => (
-                      <li key={tipIndex} className="text-xs text-gray-600 flex items-start">
-                        <CheckCircleIcon className="h-3 w-3 text-green-500 mr-1 mt-0.5 flex-shrink-0" />
-                        {tip}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-                
-                {/* Arrow to next step */}
-                {index < analysisSteps.length - 1 && (
-                  <div className="absolute -right-3 top-1/2 transform -translate-y-1/2 hidden lg:block">
-                    <div className="w-6 h-6 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    </div>
-                  </div>
-                )}
-              </Card>
+                </div>
+                <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  insight.sentiment === 'positive' ? 'bg-green-100 text-green-800' :
+                  insight.sentiment === 'negative' ? 'bg-red-100 text-red-800' :
+                  'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {insight.sentiment === 'positive' ? 'Positivt' :
+                   insight.sentiment === 'negative' ? 'Problem' : 'Neutralt'}
+                </div>
+              </div>
             ))}
           </div>
-        </div>
+          <div className="mt-6 text-center">
+            <Button variant="primary">
+              Generera rapport
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
 
-        {/* Final Tips */}
-        <Card className="bg-gradient-to-r from-orange-50 to-red-50 border-0 mb-8">
-          <CardContent className="p-6">
-            <div className="flex items-start space-x-4">
-              <HeadphonesIcon className="h-8 w-8 text-orange-600 mt-1" />
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  {t('interviews.tips.title')}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>{t('interviews.tips.tip1.title')}</strong> - {t('interviews.tips.tip1.description')}</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>{t('interviews.tips.tip2.title')}</strong> - {t('interviews.tips.tip2.description')}</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>{t('interviews.tips.tip3.title')}</strong> - {t('interviews.tips.tip3.description')}</span>
-                    </li>
-                  </ul>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>{t('interviews.tips.tip4.title')}</strong> - {t('interviews.tips.tip4.description')}</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>{t('interviews.tips.tip5.title')}</strong> - {t('interviews.tips.tip5.description')}</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span><strong>{t('interviews.tips.tip6.title')}</strong> - {t('interviews.tips.tip6.description')}</span>
-                    </li>
-                  </ul>
+  const Dashboard = () => (
+    <div className="space-y-8">
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {quickActions.map((action, index) => (
+          <Card
+            key={index}
+            className={`border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow ${
+              action.primary ? 'bg-blue-50 border-blue-200' : 'bg-white'
+            }`}
+            onClick={() => setActiveTab(action.action)}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-start space-x-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                  action.primary ? 'bg-blue-100' : 'bg-gray-50'
+                }`}>
+                  <action.icon className={`h-6 w-6 ${action.primary ? 'text-blue-600' : 'text-gray-600'}`} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    {action.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    {action.description}
+                  </p>
+                </div>
+                <ArrowRightIcon className="h-5 w-5 text-gray-400" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Recent Interviews */}
+      <Card className="border-0 bg-white rounded-xl overflow-hidden">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Senaste intervjuer</CardTitle>
+            <Button variant="outline" size="sm" onClick={() => setActiveTab('my-interviews')}>
+              Visa alla
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {recentInterviews.slice(0, 3).map((interview) => (
+              <div key={interview.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                    <UserIcon className="h-4 w-4 text-gray-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{interview.participant}</p>
+                    <p className="text-sm text-gray-500">{interview.date}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm text-gray-600">{interview.insights} insights</span>
+                  <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    interview.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {interview.status === 'completed' ? 'Färdig' : 'Analyserar'}
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
 
-        {/* Call to Action */}
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0">
-          <CardContent className="p-6">
-            <div className="text-center">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {t('interviews.cta.title')}
-              </h3>
-              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                {t('interviews.cta.description')}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/insights/getting-started">
-                  <Button variant="primary">
-                    {t('interviews.cta.gettingStarted')}
-                  </Button>
-                </Link>
-                <Link href="/insights/focus-groups">
-                  <Button variant="outline">
-                    {t('interviews.cta.compareFocusGroups')}
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+  return (
+    <div className="h-full flex flex-col">
+      <Header
+        title={
+          activeTab === 'overview' || activeTab === 'dashboard' ? 'Översikt' :
+          activeTab === 'create' || activeTab === 'create-guide' ? 'Skapa intervjuguide' :
+          activeTab === 'conduct' || activeTab === 'live-interview' ? 'Genomför intervju' :
+          activeTab === 'analyze' ? 'Analysera resultat' :
+          activeTab === 'my-interviews' ? 'Mina intervjuer' :
+          'Mallar'
+        }
+        description={
+          activeTab === 'overview' || activeTab === 'dashboard' ? 'Din intervju-dashboard' :
+          activeTab === 'create' || activeTab === 'create-guide' ? 'Skapa anpassade frågor för din intervju' :
+          activeTab === 'conduct' || activeTab === 'live-interview' ? 'Live intervju-verktyg med timer och anteckningar' :
+          activeTab === 'analyze' ? 'Hitta patterns och generera insights' :
+          activeTab === 'my-interviews' ? 'Alla dina genomförda intervjuer' :
+          'Färdiga mallar för olika syften'
+        }
+      />
+
+      <div className="flex-1 p-6 overflow-auto bg-gray-50">
+        {(activeTab === 'overview' || activeTab === 'dashboard') && <Dashboard />}
+        {(activeTab === 'create' || activeTab === 'create-guide') && <InterviewGuideBuilder />}
+        {(activeTab === 'conduct' || activeTab === 'live-interview') && <LiveInterview />}
+        {activeTab === 'analyze' && <AnalysisView />}
+
+        {activeTab === 'my-interviews' && (
+          <div className="text-center py-12">
+            <FolderIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Mina intervjuer</h3>
+            <p className="text-gray-600 mb-4">Här kommer alla dina genomförda intervjuer att visas</p>
+            <Button variant="primary" onClick={() => setActiveTab('create')}>
+              Skapa första intervjun
+            </Button>
+          </div>
+        )}
+
+        {activeTab === 'templates' && (
+          <div className="text-center py-12">
+            <BookOpenIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Mallbibliotek</h3>
+            <p className="text-gray-600 mb-4">Färdiga mallar för olika typer av intervjuer</p>
+            <Button variant="primary" onClick={() => setActiveTab('create')}>
+              Skapa från mall
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )

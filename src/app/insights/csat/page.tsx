@@ -5,186 +5,183 @@ import { Header } from '@/components/dashboard/Header'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { 
-  TrendingUpIcon, 
-  UsersIcon, 
-  AlertTriangleIcon,
-  HeartIcon,
+import {
+  StarIcon,
+  UsersIcon,
   PlusIcon,
-  BarChart3Icon,
-  CalendarIcon,
   TargetIcon,
+  CheckCircleIcon,
   LightbulbIcon,
-  CheckCircleIcon
+  BarChart3Icon
 } from 'lucide-react'
 import Link from 'next/link'
 
-const getNpsSegments = (t: (key: string) => string) => [
+const getCsatSegments = (t: (key: string) => string) => [
   {
-    type: t('nps.promoters'),
-    score: t('nps.promotersScore'),
+    type: 'Mycket nöjda',
+    score: '4-5',
     color: 'text-green-600 bg-green-100',
-    description: t('nps.promotersDescription'),
+    description: 'Kunder som är mycket nöjda med produkten eller tjänsten',
     characteristics: [
-      t('nps.promotersChar1'),
-      t('nps.promotersChar2'),
-      t('nps.promotersChar3'),
-      t('nps.promotersChar4')
+      'Ger höga betyg konsekvent',
+      'Troliga att återköpa',
+      'Rekommenderar till andra',
+      'Lojala ambassadörer'
     ],
     actionItems: [
-      t('nps.promotersAction1'),
-      t('nps.promotersAction2'),
-      t('nps.promotersAction3'),
-      t('nps.promotersAction4')
+      'Be om recensioner och testimonials',
+      'Erbjud lojalitetsprogram',
+      'Använd som case studies',
+      'Fråga vad som gör dem nöjda'
     ]
   },
   {
-    type: t('nps.passives'),
-    score: t('nps.passivesScore'),
+    type: 'Nöjda',
+    score: '3',
     color: 'text-yellow-600 bg-yellow-100',
-    description: t('nps.passivesDescription'),
+    description: 'Kunder som är neutralt nöjda, risk för att byta',
     characteristics: [
-      t('nps.passivesChar1'),
-      t('nps.passivesChar2'),
-      t('nps.passivesChar3'),
-      t('nps.passivesChar4')
+      'Ger genomsnittliga betyg',
+      'Kan påverkas av konkurrenter',
+      'Behöver extra uppmärksamhet',
+      'Potential att bli ambassadörer'
     ],
     actionItems: [
-      t('nps.passivesAction1'),
-      t('nps.passivesAction2'),
-      t('nps.passivesAction3'),
-      t('nps.passivesAction4')
+      'Identifiera förbättringsområden',
+      'Erbjud personlig service',
+      'Följ upp regelbundet',
+      'Visa värde och fördelar'
     ]
   },
   {
-    type: t('nps.detractors'),
-    score: t('nps.detractorsScore'),
+    type: 'Missnöjda',
+    score: '1-2',
     color: 'text-red-600 bg-red-100',
-    description: t('nps.detractorsDescription'),
+    description: 'Kunder som är missnöjda och riskerar att lämna',
     characteristics: [
-      t('nps.detractorsChar1'),
-      t('nps.detractorsChar2'),
-      t('nps.detractorsChar3'),
-      t('nps.detractorsChar4')
+      'Ger låga betyg',
+      'Risk för negativa recensioner',
+      'Troliga att byta leverantör',
+      'Kan skada varumärket'
     ],
     actionItems: [
-      t('nps.detractorsAction1'),
-      t('nps.detractorsAction2'),
-      t('nps.detractorsAction3'),
-      t('nps.detractorsAction4')
+      'Kontakta omedelbart',
+      'Lös problem proaktivt',
+      'Erbjud kompensation',
+      'Förebygg framtida problem'
     ]
   }
 ]
 
-const getBestPractices = (t: (key: string) => string) => [
+const getBestPractices = () => [
   {
-    title: t('nps.timingTitle'),
-    description: t('nps.timingDescription'),
+    title: 'Timing är kritiskt',
+    description: 'Skicka CSAT-enkäter vid rätt tidpunkt för bästa svar',
     tips: [
-      t('nps.timingTip1'),
-      t('nps.timingTip2'),
-      t('nps.timingTip3'),
-      t('nps.timingTip4')
+      'Direkt efter köp eller tjänsteanvändning',
+      'Inom 24-48 timmar efter interaktion',
+      'Undvik helger och stressiga perioder',
+      'Anpassa till kundens tidszon'
     ]
   },
   {
-    title: t('nps.frequencyTitle'),
-    description: t('nps.frequencyDescription'),
+    title: 'Håll det enkelt',
+    description: 'Korta, fokuserade enkäter ger högre svarsfrekvens',
     tips: [
-      t('nps.frequencyTip1'),
-      t('nps.frequencyTip2'),
-      t('nps.frequencyTip3'),
-      t('nps.frequencyTip4')
+      'Max 3-5 frågor',
+      'Använd tydliga stjärnbetyg',
+      'En huvudfråga + uppföljningsfrågor',
+      'Mobilvänlig design'
     ]
   },
   {
-    title: t('nps.followUpTitle'),
-    description: t('nps.followUpDescription'),
+    title: 'Agera på feedback',
+    description: 'Följ upp negativ feedback snabbt och systematiskt',
     tips: [
-      t('nps.followUpTip1'),
-      t('nps.followUpTip2'),
-      t('nps.followUpTip3'),
-      t('nps.followUpTip4')
+      'Kontakta missnöjda kunder inom 24h',
+      'Ha en tydlig eskaleringsprocess',
+      'Dokumentera vanliga problem',
+      'Stäng loopen med kunden'
     ]
   }
 ]
 
-const getIndustryBenchmarks = (t: (key: string) => string) => [
-  { industry: t('nps.saasIndustry'), average: 31, top: 72 },
-  { industry: t('nps.ecommerceIndustry'), average: 47, top: 84 },
-  { industry: t('nps.telecomIndustry'), average: 31, top: 68 },
-  { industry: t('nps.bankingIndustry'), average: 34, top: 73 },
-  { industry: t('nps.insuranceIndustry'), average: 34, top: 73 },
-  { industry: t('nps.retailIndustry'), average: 39, top: 78 }
+const getIndustryBenchmarks = () => [
+  { industry: 'E-handel', average: 4.0, excellent: 4.5 },
+  { industry: 'SaaS/Tech', average: 4.2, excellent: 4.7 },
+  { industry: 'Detaljhandel', average: 3.8, excellent: 4.4 },
+  { industry: 'Bank & Finans', average: 3.9, excellent: 4.3 },
+  { industry: 'Telekom', average: 3.6, excellent: 4.2 },
+  { industry: 'Hälsovård', average: 4.1, excellent: 4.6 }
 ]
 
-const getNpsTemplate = (t: (key: string) => string) => ({
-  title: t('nps.templateTitle'),
-  description: t('nps.templateDescription'),
+const getCsatTemplate = () => ({
+  title: 'Standard CSAT-enkät',
+  description: 'En beprövad mall för att mäta kundnöjdhet',
   questions: [
     {
-      type: 'nps',
-      question: t('nps.question1'),
-      description: t('nps.question1Description')
+      type: 'rating',
+      question: 'Hur nöjd är du med din upplevelse idag?',
+      description: 'Huvudfrågan som mäter övergripande nöjdhet'
     },
     {
       type: 'text',
-      question: t('nps.question2'),
-      description: t('nps.question2Description')
+      question: 'Vad kan vi göra bättre?',
+      description: 'Öppen fråga för förbättringsförslag'
     },
     {
       type: 'text',
-      question: t('nps.question3'),
-      description: t('nps.question3Description')
+      question: 'Något annat du vill dela med dig av?',
+      description: 'Allmän feedback och kommentarer'
     }
   ]
 })
 
-export default function NPSPage() {
+export default function CSATPage() {
   const { t } = useLanguage()
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null)
-  
-  const npsSegments = getNpsSegments(t)
-  const bestPractices = getBestPractices(t)
-  const industryBenchmarks = getIndustryBenchmarks(t)
-  const npsTemplate = getNpsTemplate(t)
+
+  const csatSegments = getCsatSegments(t)
+  const bestPractices = getBestPractices()
+  const industryBenchmarks = getIndustryBenchmarks()
+  const csatTemplate = getCsatTemplate()
 
   return (
     <div className="h-full flex flex-col">
-      <Header 
-        title={t('nps.title')} 
-        description={t('nps.description')}
+      <Header
+        title="Customer Satisfaction (CSAT)"
+        description="Mät kundnöjdhet och förbättra kundupplevelsen"
         actions={
           <Link href="/insights/survey-builder">
             <Button variant="primary">
               <PlusIcon className="mr-2 h-4 w-4" />
-              {t('nps.createButton')}
+              Skapa CSAT-enkät
             </Button>
           </Link>
         }
       />
-      
+
       <div className="flex-1 p-6 overflow-auto bg-gray-50">
         {/* Introduction */}
         <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden">
           <div className="p-6">
             <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <TrendingUpIcon className="h-6 w-6 text-blue-600" />
+              <div className="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                <StarIcon className="h-6 w-6 text-yellow-600" />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {t('nps.whatIsNps')}
+                  Vad är Customer Satisfaction (CSAT)?
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  {t('nps.whatIsNpsDescription')}
+                  CSAT mäter hur nöjda kunder är med en specifik produkt, tjänst eller interaktion. Det är ett enkelt men kraftfullt verktyg för att förstå kundupplevelsen i realtid.
                 </p>
                 <div className="bg-gray-50 p-4 rounded-xl">
-                  <div className="text-2xl font-bold text-center mb-2 text-gray-900">
-                    {t('nps.formula')}
+                  <div className="text-lg font-semibold text-center mb-2 text-gray-900">
+                    CSAT = (Nöjda kunder / Totalt antal svar) × 100
                   </div>
                   <div className="text-sm text-gray-600 text-center">
-                    {t('nps.formulaDescription')}
+                    Vanligtvis mätt på en 1-5 skala där 4-5 räknas som "nöjda"
                   </div>
                 </div>
               </div>
@@ -192,11 +189,11 @@ export default function NPSPage() {
           </div>
         </Card>
 
-        {/* NPS Segments */}
+        {/* CSAT Segments */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('nps.threeSegments')}</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">De tre CSAT-segmenten</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {npsSegments.map((segment) => (
+            {csatSegments.map((segment) => (
               <Card
                 key={segment.type}
                 className={`cursor-pointer transition-all hover:shadow-md border-0 bg-white rounded-xl overflow-hidden ${
@@ -216,7 +213,7 @@ export default function NPSPage() {
                 <CardContent className="pt-0">
                   <div className="space-y-4">
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2">{t('nps.characteristics')}</h4>
+                      <h4 className="font-medium text-gray-900 mb-2">Kännetecken</h4>
                       <ul className="space-y-1">
                         {segment.characteristics.map((char, index) => (
                           <li key={index} className="flex items-start text-sm text-gray-600">
@@ -226,10 +223,10 @@ export default function NPSPage() {
                         ))}
                       </ul>
                     </div>
-                    
+
                     {selectedSegment === segment.type && (
                       <div className="border-t pt-4">
-                        <h4 className="font-medium text-gray-900 mb-2">{t('nps.recommendedActions')}</h4>
+                        <h4 className="font-medium text-gray-900 mb-2">Rekommenderade åtgärder</h4>
                         <ul className="space-y-1">
                           {segment.actionItems.map((action, index) => (
                             <li key={index} className="flex items-start text-sm text-gray-600">
@@ -249,14 +246,14 @@ export default function NPSPage() {
 
         {/* Best Practices */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('nps.bestPractices')}</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Bästa praxis för CSAT</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {bestPractices.map((practice, index) => (
               <Card key={index} className="border-0 bg-white rounded-xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-yellow-50 rounded-lg flex items-center justify-center">
-                      <LightbulbIcon className="h-4 w-4 text-yellow-600" />
+                    <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                      <LightbulbIcon className="h-4 w-4 text-blue-600" />
                     </div>
                     <span>{practice.title}</span>
                   </CardTitle>
@@ -279,19 +276,19 @@ export default function NPSPage() {
 
         {/* Industry Benchmarks */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('nps.industryBenchmarks')}</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Branschgenomsnitt för CSAT</h2>
           <Card className="border-0 bg-white rounded-xl overflow-hidden">
             <CardContent className="p-6">
               <p className="text-gray-600 mb-4">
-                {t('nps.benchmarkDescription')}
+                Jämför din CSAT-poäng med branschgenomsnittet för att förstå din position på marknaden.
               </p>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-semibold text-gray-900">{t('nps.industryColumn')}</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-900">{t('nps.averageColumn')}</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-900">{t('nps.topColumn')}</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-900">Bransch</th>
+                      <th className="text-center py-3 px-4 font-semibold text-gray-900">Genomsnitt</th>
+                      <th className="text-center py-3 px-4 font-semibold text-gray-900">Utmärkt</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -305,7 +302,7 @@ export default function NPSPage() {
                         </td>
                         <td className="py-3 px-4 text-center">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            {benchmark.top}
+                            {benchmark.excellent}
                           </span>
                         </td>
                       </tr>
@@ -317,17 +314,17 @@ export default function NPSPage() {
           </Card>
         </div>
 
-        {/* NPS Template */}
+        {/* CSAT Template */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('nps.surveyTemplate')}</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">CSAT-enkätmall</h2>
           <Card className="border-0 bg-white rounded-xl overflow-hidden">
             <CardHeader>
-              <CardTitle>{npsTemplate.title}</CardTitle>
-              <p className="text-gray-600">{npsTemplate.description}</p>
+              <CardTitle>{csatTemplate.title}</CardTitle>
+              <p className="text-gray-600">{csatTemplate.description}</p>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {npsTemplate.questions.map((question, index) => (
+                {csatTemplate.questions.map((question, index) => (
                   <div key={index} className="border-l-4 border-l-gray-200 pl-4">
                     <div className="flex items-start space-x-3">
                       <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-sm font-medium text-gray-600">
@@ -336,18 +333,19 @@ export default function NPSPage() {
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900 mb-1">{question.question}</h4>
                         <p className="text-sm text-gray-600">{question.description}</p>
-                        {question.type === 'nps' && (
+                        {question.type === 'rating' && (
                           <div className="flex space-x-2 mt-3">
-                            {[...Array(11)].map((_, i) => (
-                              <div key={i} className="w-8 h-8 border border-gray-300 rounded flex items-center justify-center bg-gray-50 text-sm text-gray-900 font-medium">
-                                {i}
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <div key={star} className="flex flex-col items-center">
+                                <StarIcon className="w-8 h-8 text-yellow-400 fill-current" />
+                                <span className="text-xs text-gray-500 mt-1">{star}</span>
                               </div>
                             ))}
                           </div>
                         )}
                         {question.type === 'text' && (
                           <div className="mt-3 border border-gray-300 rounded p-3 bg-gray-50 text-sm text-gray-500">
-                            {t('nps.textAreaPlaceholder')}
+                            Textområde för kundens feedback...
                           </div>
                         )}
                       </div>
@@ -355,15 +353,15 @@ export default function NPSPage() {
                   </div>
                 ))}
               </div>
-              
+
               <div className="mt-6 pt-6 border-t text-center">
                 <Link href="/insights/survey-builder">
                   <Button variant="primary" className="mr-3">
-                    {t('nps.useTemplate')}
+                    Använd denna mall
                   </Button>
                 </Link>
                 <Button variant="outline">
-                  {t('nps.customizeTemplate')}
+                  Anpassa mallen
                 </Button>
               </div>
             </CardContent>
@@ -375,21 +373,21 @@ export default function NPSPage() {
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {t('nps.readyToMeasure')}
+                Redo att mäta kundnöjdhet?
               </h3>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                {t('nps.ctaDescription')}
+                Kom igång med CSAT-mätning idag. Skapa din första enkät och börja samla värdefull feedback från dina kunder.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/insights/survey-builder">
                   <Button variant="primary">
                     <PlusIcon className="mr-2 h-4 w-4" />
-                    {t('nps.createButton')}
+                    Skapa CSAT-enkät
                   </Button>
                 </Link>
-                <Link href="/insights/getting-started">
+                <Link href="/insights/best-practices">
                   <Button variant="outline">
-                    {t('nps.learnMoreImplementation')}
+                    Läs mer om bästa praxis
                   </Button>
                 </Link>
               </div>
