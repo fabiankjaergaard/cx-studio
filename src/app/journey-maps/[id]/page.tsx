@@ -1063,6 +1063,25 @@ export default function JourneyMapBuilderPage() {
   const [draggedStageId, setDraggedStageId] = useState<string | null>(null)
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null)
   const [isDraggingStage, setIsDraggingStage] = useState(false)
+  const [isDragDropMode, setIsDragDropMode] = useState(true) // true for drag-drop, false for plus-button mode
+
+  // Additional settings toggles
+  const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState(false)
+  const [isCompactView, setIsCompactView] = useState(false)
+  const [showGridLines, setShowGridLines] = useState(true)
+  const [showTooltips, setShowTooltips] = useState(true)
+  const [isAdvancedMode, setIsAdvancedMode] = useState(false)
+
+  // Auto-save functionality
+  useEffect(() => {
+    if (!isAutoSaveEnabled || !journeyMap) return
+
+    const autoSaveTimer = setTimeout(() => {
+      handleSave()
+    }, 2000) // Auto-save after 2 seconds of inactivity
+
+    return () => clearTimeout(autoSaveTimer)
+  }, [journeyMap, isAutoSaveEnabled])
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -2059,9 +2078,8 @@ export default function JourneyMapBuilderPage() {
     )
   }
 
-  return (
-    <DragDropProvider>
-      <div className="h-full flex flex-col overflow-hidden">
+  const content = (
+    <div className="h-full flex flex-col overflow-hidden">
           <Header
         title={journeyMap.name}
         description={journeyMap.description || 'Redigera din customer journey map'}
@@ -2103,6 +2121,7 @@ export default function JourneyMapBuilderPage() {
                 </div>
               )}
             </div>
+
             <Button
               variant="outline"
               onClick={() => setIsSettingsModalOpen(true)}
@@ -2123,19 +2142,21 @@ export default function JourneyMapBuilderPage() {
       />
 
           <div className="flex-1 flex overflow-hidden">
-            {/* Row Types Palette */}
-            <RowTypePalette
-              isCollapsed={isPaletteCollapsed}
-              onToggleCollapse={() => setIsPaletteCollapsed(!isPaletteCollapsed)}
-              data-onboarding="palette"
-            />
+            {/* Row Types Palette - only shown in drag & drop mode */}
+            {isDragDropMode && (
+              <RowTypePalette
+                isCollapsed={isPaletteCollapsed}
+                onToggleCollapse={() => setIsPaletteCollapsed(!isPaletteCollapsed)}
+                data-onboarding="palette"
+              />
+            )}
 
             <div className="flex-1 overflow-auto bg-gray-50">
-            <div className="p-6">
+            <div className={isCompactView ? "p-3" : "p-6"}>
             {/* Persona Section */}
             <div className="mb-6" data-onboarding="persona">
               <Card className="border-l-4 border-l-slate-500">
-                <CardContent className="p-4">
+                <CardContent className={isCompactView ? "p-3" : "p-4"}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       {journeyMap.persona ? (
@@ -2186,7 +2207,7 @@ export default function JourneyMapBuilderPage() {
                     onMouseUp={handlePhaseResizeEnd}
                     onMouseLeave={handlePhaseResizeEnd}
                   >
-                    <th className="w-48 p-2 text-left text-xs font-semibold text-gray-600 border-r border-gray-200">
+                    <th className={`w-48 p-2 text-left text-xs font-semibold text-gray-600 ${showGridLines ? 'border-r border-gray-200' : ''}`}>
                       Phases
                     </th>
                     {journeyMap.phases.map((phase, phaseIndex) => {
@@ -2199,7 +2220,7 @@ export default function JourneyMapBuilderPage() {
                       return (
                         <th
                           key={phase.id}
-                          className={`relative p-2 text-center text-sm font-semibold text-gray-700 border-r border-gray-200 ${phase.color} ${stagesInPhase === 0 ? 'min-w-32' : ''} group`}
+                          className={`relative p-2 text-center text-sm font-semibold text-gray-700 ${showGridLines ? 'border-r border-gray-200' : ''} ${phase.color} ${stagesInPhase === 0 ? 'min-w-32' : ''} group`}
                           colSpan={colSpan}
                         >
                           <InlineEdit
@@ -2220,6 +2241,7 @@ export default function JourneyMapBuilderPage() {
                           />
 
                           {/* Phase actions dropdown */}
+                          {isAdvancedMode && (
                           <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-200" data-dropdown>
                             <button
                               onClick={(e) => {
@@ -2271,13 +2293,14 @@ export default function JourneyMapBuilderPage() {
                               </div>
                             )}
                           </div>
+                          )}
 
                           {/* Drag handle on the right edge (except for last phase) */}
                           {phaseIndex < journeyMap.phases.length - 1 && (
                             <div
                               className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize bg-gray-400 opacity-0 hover:opacity-100 transition-opacity z-10 flex items-center justify-center"
                               onMouseDown={(e) => handlePhaseResizeStart(e, phaseIndex)}
-                              title="Drag to resize phase"
+                              title={showTooltips ? "Drag to resize phase" : undefined}
                             >
                               <div className="w-0.5 h-8 bg-gray-600 rounded"></div>
                             </div>
@@ -2291,7 +2314,7 @@ export default function JourneyMapBuilderPage() {
                         size="sm"
                         onClick={handleAddPhase}
                         className="w-8 h-8 p-0"
-                        title="Add new phase"
+                        title={showTooltips ? "Add new phase" : undefined}
                       >
                         <PlusIcon className="h-4 w-4" />
                       </Button>
@@ -2300,13 +2323,13 @@ export default function JourneyMapBuilderPage() {
                   
                   {/* Stages Header Row */}
                   <tr className="bg-slate-50 border-b border-gray-100" data-onboarding="stages">
-                    <th className="w-48 p-4 text-left text-sm font-medium text-gray-900 border-r border-gray-200 hover:bg-white transition-colors">
+                    <th className={`w-48 ${isCompactView ? 'p-2' : 'p-4'} text-left text-sm font-medium text-gray-900 ${showGridLines ? 'border-r border-gray-200' : ''} hover:bg-white transition-colors`}>
                       Journey Kategorier
                     </th>
                     {journeyMap.stages.map((stage, index) => (
                       <th
                         key={stage.id}
-                        className={`min-w-64 p-4 text-left border-r border-gray-200 relative group hover:bg-white transition-colors cursor-move ${
+                        className={`min-w-64 ${isCompactView ? 'p-2' : 'p-4'} text-left ${showGridLines ? 'border-r border-gray-200' : ''} relative group hover:bg-white transition-colors cursor-move ${
                           draggedStageId === stage.id ? 'bg-blue-50 shadow-lg' : ''
                         }`}
                         draggable={true}
@@ -2340,6 +2363,7 @@ export default function JourneyMapBuilderPage() {
                             placeholder="Stage name"
                             variant="stage-title"
                           />
+                          {isAdvancedMode && (
                           <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-2" data-dropdown>
                             <button
                               onClick={(e) => {
@@ -2347,7 +2371,7 @@ export default function JourneyMapBuilderPage() {
                                 setActiveDropdown(activeDropdown === `stage-${stage.id}` ? null : `stage-${stage.id}`)
                               }}
                               className="w-6 h-6 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded flex items-center justify-center"
-                              title="Stage actions"
+                              title={showTooltips ? "Stage actions" : undefined}
                             >
                               <MoreVertical className="w-3 h-3" />
                             </button>
@@ -2396,6 +2420,7 @@ export default function JourneyMapBuilderPage() {
                               </div>
                             )}
                           </div>
+                          )}
                         </div>
                         <InlineEdit
                           value={stage.description || ''}
@@ -2407,13 +2432,13 @@ export default function JourneyMapBuilderPage() {
                         />
                       </th>
                     ))}
-                    <th className="w-12 p-4 bg-slate-50">
+                    <th className={`w-12 ${isCompactView ? 'p-2' : 'p-4'} bg-slate-50`}>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={handleAddStage}
                         className="w-8 h-8 p-0"
-                        title="Lägg till steg"
+                        title={showTooltips ? "Lägg till steg" : undefined}
                       >
                         <PlusIcon className="h-4 w-4" />
                       </Button>
@@ -2423,20 +2448,40 @@ export default function JourneyMapBuilderPage() {
                 
                 {/* Content Rows */}
                 <tbody>
-                  {/* Invisible insertion zone at top */}
-                  <RowInsertionZone
-                    key={`insertion-0-${journeyMap.rows.length}`}
-                    onDropBlock={handleDropBlockAtIndex}
-                    insertIndex={0}
-                    stageCount={journeyMap.stages.length}
-                    showAlways={false}
-                  />
+                  {/* Insertion zone at top - drag & drop mode only */}
+                  {isDragDropMode && (
+                    <RowInsertionZone
+                      key={`insertion-0-${journeyMap.rows.length}`}
+                      onDropBlock={handleDropBlockAtIndex}
+                      insertIndex={0}
+                      stageCount={journeyMap.stages.length}
+                      showAlways={false}
+                    />
+                  )}
+
+                  {/* Plus button zone at top - plus button mode only */}
+                  {!isDragDropMode && journeyMap.rows.length === 0 && (
+                    <tr>
+                      <td colSpan={journeyMap.stages.length + 1} className="p-6 text-center border-b">
+                        <div className="flex items-center justify-center">
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsRowEditorOpen(true)}
+                            className="text-gray-500 border-dashed border-2 hover:border-gray-400 hover:text-gray-700"
+                          >
+                            <PlusIcon className="mr-2 h-4 w-4" />
+                            Lägg till första rad
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
 
                   {journeyMap.rows.map((row, rowIndex) => (
                     <React.Fragment key={`row-section-${row.id}`}>
                       <tr key={row.id} className="border-b border-gray-100">
                       <td
-                        className={`p-4 border-r border-gray-200 bg-slate-50 group relative hover:bg-white transition-colors`}
+                        className={`${isCompactView ? 'p-2' : 'p-4'} ${showGridLines ? 'border-r border-gray-200' : ''} bg-slate-50 group relative hover:bg-white transition-colors`}
                         data-onboarding={rowIndex === 0 ? "categories" : undefined}
                       >
                         <div className="space-y-1">
@@ -2458,6 +2503,7 @@ export default function JourneyMapBuilderPage() {
                         </div>
 
                         {/* Row actions dropdown - appears on hover */}
+                        {isAdvancedMode && (
                         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-200" data-dropdown>
                           <button
                             onClick={(e) => {
@@ -2465,7 +2511,7 @@ export default function JourneyMapBuilderPage() {
                               setActiveDropdown(activeDropdown === `row-${row.id}` ? null : `row-${row.id}`)
                             }}
                             className="w-6 h-6 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded flex items-center justify-center"
-                            title="Row actions"
+                            title={showTooltips ? "Row actions" : undefined}
                           >
                             <MoreVertical className="w-3 h-3" />
                           </button>
@@ -2510,12 +2556,13 @@ export default function JourneyMapBuilderPage() {
                             </div>
                           )}
                         </div>
+                        )}
                       </td>
                       {(row.type === 'emoji' || row.type === 'pain-points' || row.type === 'opportunities' || row.type === 'metrics' || row.type === 'channels') ? (
                         // For visualization components, create one cell spanning all stages
                         <td 
                           key={`${row.id}-emotion-curve`} 
-                          className={`p-2 align-top ${row.color}`}
+                          className={`${isCompactView ? 'p-1' : 'p-2'} align-top ${row.color}`}
                           colSpan={journeyMap.stages.length}
                         >
                           <JourneyMapCellComponent
@@ -2554,7 +2601,7 @@ export default function JourneyMapBuilderPage() {
                         row.cells.map((cell, cellIndex) => (
                           <td
                             key={cell.id}
-                            className={`p-2 border-r border-gray-200 align-middle ${row.color} group relative`}
+                            className={`${isCompactView ? 'p-1' : 'p-2'} ${showGridLines ? 'border-r border-gray-200' : ''} align-middle ${row.color} group relative`}
                             data-onboarding={rowIndex === 0 && cellIndex === 0 ? "cells" : undefined}
                             onDragOver={(e) => handleStageHover(e, cellIndex)}
                             onDrop={(e) => {
@@ -2584,6 +2631,7 @@ export default function JourneyMapBuilderPage() {
                             />
 
                             {/* Cell actions dropdown - appears on hover */}
+                            {isAdvancedMode && (
                             <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-all duration-200" data-dropdown>
                               <button
                                 onClick={(e) => {
@@ -2591,7 +2639,7 @@ export default function JourneyMapBuilderPage() {
                                   setActiveDropdown(activeDropdown === `cell-${cell.id}` ? null : `cell-${cell.id}`)
                                 }}
                                 className="w-6 h-6 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded flex items-center justify-center"
-                                title="Cell actions"
+                                title={showTooltips ? "Cell actions" : undefined}
                               >
                                 <MoreVertical className="w-3 h-3" />
                               </button>
@@ -2625,19 +2673,38 @@ export default function JourneyMapBuilderPage() {
                                 </div>
                               )}
                             </div>
+                            )}
                           </td>
                         ))
                       )}
-                        <td className="p-4 bg-slate-50"></td>
+                        <td className={`${isCompactView ? 'p-2' : 'p-4'} bg-slate-50`}></td>
                       </tr>
 
-                      {/* Invisible insertion zone after each row */}
-                      <RowInsertionZone
-                        key={`insertion-${rowIndex + 1}-${journeyMap.rows.length}`}
-                        onDropBlock={handleDropBlockAtIndex}
-                        insertIndex={rowIndex + 1}
-                        stageCount={journeyMap.stages.length}
-                      />
+                      {/* Insertion zone after each row - drag & drop mode only */}
+                      {isDragDropMode && (
+                        <RowInsertionZone
+                          key={`insertion-${rowIndex + 1}-${journeyMap.rows.length}`}
+                          onDropBlock={handleDropBlockAtIndex}
+                          insertIndex={rowIndex + 1}
+                          stageCount={journeyMap.stages.length}
+                        />
+                      )}
+
+                      {/* Plus button after each row - plus button mode only */}
+                      {!isDragDropMode && (
+                        <tr key={`plus-button-${rowIndex + 1}`}>
+                          <td colSpan={journeyMap.stages.length + 1} className="p-2 text-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setIsRowEditorOpen(true)}
+                              className="text-gray-400 hover:text-gray-600 border-dashed border hover:border-gray-300"
+                            >
+                              <PlusIcon className="h-4 w-4" />
+                            </Button>
+                          </td>
+                        </tr>
+                      )}
                     </React.Fragment>
                   ))}
                   
@@ -2648,14 +2715,13 @@ export default function JourneyMapBuilderPage() {
           </Card>
         </div>
       </div>
-            </div>
         </div>
 
       {/* Persona Selection Modal */}
       <Modal
         isOpen={isPersonaModalOpen}
         onClose={() => setIsPersonaModalOpen(false)}
-        title="Välj persona"
+        title={showTooltips ? "Välj persona" : undefined}
       >
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
@@ -2698,7 +2764,8 @@ export default function JourneyMapBuilderPage() {
       <Modal
         isOpen={isSettingsModalOpen}
         onClose={() => setIsSettingsModalOpen(false)}
-        title="Journey Map Settings"
+        title={showTooltips ? "Journey Map Settings" : undefined}
+        maxWidth="lg"
       >
         <div className="space-y-6">
           <div>
@@ -2718,6 +2785,187 @@ export default function JourneyMapBuilderPage() {
               rows={3}
             />
           </div>
+
+          {/* Settings Toggles */}
+          <div className="border-t pt-6 space-y-6">
+            <h3 className="text-lg font-medium text-gray-900">Inställningar</h3>
+
+            {/* Interface Mode Setting */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Gränssnitt</h4>
+                <p className="text-xs text-gray-500 mt-1">
+                  {isDragDropMode ? 'Drag & Drop paletten är aktiv' : 'Plus-knappar är aktiva'}
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isDragDropMode}
+                  onChange={() => setIsDragDropMode(!isDragDropMode)}
+                  className="sr-only"
+                />
+                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+                  isDragDropMode ? 'bg-slate-700' : 'bg-gray-200'
+                }`}>
+                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
+                    isDragDropMode ? 'translate-x-6' : 'translate-x-1'
+                  } mt-1`}></div>
+                </div>
+              </label>
+            </div>
+
+            {/* Auto Save Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Auto-spara</h4>
+                <p className="text-xs text-gray-500 mt-1">
+                  {isAutoSaveEnabled ? 'Ändringar sparas automatiskt' : 'Spara manuellt med Ctrl+S'}
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isAutoSaveEnabled}
+                  onChange={() => setIsAutoSaveEnabled(!isAutoSaveEnabled)}
+                  className="sr-only"
+                />
+                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+                  isAutoSaveEnabled ? 'bg-slate-700' : 'bg-gray-200'
+                }`}>
+                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
+                    isAutoSaveEnabled ? 'translate-x-6' : 'translate-x-1'
+                  } mt-1`}></div>
+                </div>
+              </label>
+            </div>
+
+            {/* Compact View Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Kompakt vy</h4>
+                <p className="text-xs text-gray-500 mt-1">
+                  {isCompactView ? 'Tät layout för mer innehåll' : 'Normal layout med mer mellanrum'}
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isCompactView}
+                  onChange={() => setIsCompactView(!isCompactView)}
+                  className="sr-only"
+                />
+                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+                  isCompactView ? 'bg-slate-700' : 'bg-gray-200'
+                }`}>
+                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
+                    isCompactView ? 'translate-x-6' : 'translate-x-1'
+                  } mt-1`}></div>
+                </div>
+              </label>
+            </div>
+
+            {/* Grid Lines Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Rutnätslinjer</h4>
+                <p className="text-xs text-gray-500 mt-1">
+                  {showGridLines ? 'Visa linjer mellan celler' : 'Dölj rutnätslinjer'}
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showGridLines}
+                  onChange={() => setShowGridLines(!showGridLines)}
+                  className="sr-only"
+                />
+                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+                  showGridLines ? 'bg-slate-700' : 'bg-gray-200'
+                }`}>
+                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
+                    showGridLines ? 'translate-x-6' : 'translate-x-1'
+                  } mt-1`}></div>
+                </div>
+              </label>
+            </div>
+
+            {/* Tooltips Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Hjälptexter</h4>
+                <p className="text-xs text-gray-500 mt-1">
+                  {showTooltips ? 'Visa tips vid hover' : 'Dölj hjälptexter'}
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showTooltips}
+                  onChange={() => setShowTooltips(!showTooltips)}
+                  className="sr-only"
+                />
+                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+                  showTooltips ? 'bg-slate-700' : 'bg-gray-200'
+                }`}>
+                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
+                    showTooltips ? 'translate-x-6' : 'translate-x-1'
+                  } mt-1`}></div>
+                </div>
+              </label>
+            </div>
+
+            {/* Advanced Mode Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Avancerat läge</h4>
+                <p className="text-xs text-gray-500 mt-1">
+                  {isAdvancedMode ? 'Visa alla funktioner och menyer' : 'Enklare gränssnitt'}
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isAdvancedMode}
+                  onChange={() => setIsAdvancedMode(!isAdvancedMode)}
+                  className="sr-only"
+                />
+                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+                  isAdvancedMode ? 'bg-slate-700' : 'bg-gray-200'
+                }`}>
+                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
+                    isAdvancedMode ? 'translate-x-6' : 'translate-x-1'
+                  } mt-1`}></div>
+                </div>
+              </label>
+            </div>
+
+            {/* Onboarding Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Nybörjarguide</h4>
+                <p className="text-xs text-gray-500 mt-1">
+                  Återaktivera guider och tips för nya användare
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isOnboardingActive}
+                  onChange={() => setIsOnboardingActive(!isOnboardingActive)}
+                  className="sr-only"
+                />
+                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+                  isOnboardingActive ? 'bg-slate-700' : 'bg-gray-200'
+                }`}>
+                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
+                    isOnboardingActive ? 'translate-x-6' : 'translate-x-1'
+                  } mt-1`}></div>
+                </div>
+              </label>
+            </div>
+          </div>
+
           <div className="flex justify-end space-x-3 pt-4 border-t">
             <Button variant="outline" onClick={() => setIsSettingsModalOpen(false)}>
               Avbryt
@@ -2749,6 +2997,8 @@ export default function JourneyMapBuilderPage() {
         onComplete={() => setIsOnboardingActive(false)}
         onSkip={() => setIsOnboardingActive(false)}
       />
-    </DragDropProvider>
+    </div>
   )
+
+  return isDragDropMode ? <DragDropProvider>{content}</DragDropProvider> : content
 }
