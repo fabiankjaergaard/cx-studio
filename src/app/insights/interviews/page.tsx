@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Header } from '@/components/dashboard/Header'
@@ -38,7 +38,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-export default function InterviewsPage() {
+function InterviewsContent() {
   const { t } = useLanguage()
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState('overview')
@@ -516,5 +516,13 @@ export default function InterviewsPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function InterviewsPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Laddar...</div>}>
+      <InterviewsContent />
+    </Suspense>
   )
 }
