@@ -1,10 +1,11 @@
 'use client'
 
+import React, { useState } from 'react'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { 
-  UserIcon, 
+import {
+  UserIcon,
   LightbulbIcon,
   AlertTriangleIcon,
   CheckCircleIcon,
@@ -17,7 +18,11 @@ import {
   BrainIcon,
   TrendingUpIcon,
   UsersIcon,
-  FileTextIcon
+  FileTextIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  PlayIcon,
+  ClockIcon
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -250,11 +255,18 @@ const personaTemplate = {
 }
 
 export default function PersonaGuidePage() {
+  const [currentStep, setCurrentStep] = useState(0)
+  const totalSteps = personaSteps.length
+
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, totalSteps - 1))
+  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 0))
+  const goToStep = (step: number) => setCurrentStep(step)
+
   return (
     <div className="h-full flex flex-col">
-      <Header 
-        title="Guide: Skapa effektiva personas" 
-        description="Lär dig att bygga datadrivna personas som driver bättre produktbeslut"
+      <Header
+        title="Guide: Skapa effektiva personas"
+        description={`Steg ${currentStep + 1} av ${totalSteps}: ${personaSteps[currentStep].title}`}
         actions={
           <div className="flex space-x-2">
             <Link href="/personas">
@@ -262,329 +274,302 @@ export default function PersonaGuidePage() {
                 Tillbaka till personas
               </Button>
             </Link>
-            <Link href="/personas">
+            <Link href="/personas/create">
               <Button variant="primary">
-                <UserIcon className="mr-2 h-4 w-4" />
-                Skapa persona
+                <PlayIcon className="mr-2 h-4 w-4" />
+                Börja skapa persona
               </Button>
             </Link>
           </div>
         }
       />
-      
-      <div className="flex-1 p-8 overflow-auto bg-gray-50">
-        {/* Introduction */}
-        <Card className="mb-8 border-l-4 border-l-slate-500">
-          <CardContent className="p-6">
-            <div className="flex items-start space-x-4">
-              <div className="p-3 bg-slate-100 rounded-lg">
-                <UsersIcon className="h-6 w-6 text-slate-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Vad gör en bra persona?
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  En effektiv persona är mer än demografiska data - den fångar motivationer, beteenden 
-                  och pain points som hjälper teamet att förstå och empathisera med riktiga användare. 
-                  Bra personas baseras på riktig data och används aktivt i produktbeslut.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  <div className="bg-white p-3 rounded-lg border">
-                    <div className="text-lg font-semibold text-gray-900">3-5</div>
-                    <div className="text-sm text-gray-600">Personas max per produkt</div>
+      <div className="flex-1 overflow-auto bg-gray-50">
+        {/* Progress Steps Navigation */}
+        <div className="bg-white border-b border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            {/* Step indicators */}
+            <div className="flex items-center space-x-4">
+              {personaSteps.map((step, index) => (
+                <button
+                  key={step.step}
+                  onClick={() => goToStep(index)}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+                    index === currentStep
+                      ? 'bg-slate-700 text-white'
+                      : index < currentStep
+                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
+                    index === currentStep ? 'bg-white text-slate-700' : ''
+                  }`}>
+                    {index < currentStep ? (
+                      <CheckCircleIcon className="w-4 h-4" />
+                    ) : (
+                      step.step
+                    )}
                   </div>
-                  <div className="bg-white p-3 rounded-lg border">
-                    <div className="text-lg font-semibold text-gray-900">8-12</div>
-                    <div className="text-sm text-gray-600">Intervjuer per persona</div>
-                  </div>
-                  <div className="bg-white p-3 rounded-lg border">
-                    <div className="text-lg font-semibold text-gray-900">80/20</div>
-                    <div className="text-sm text-gray-600">Psykografi/Demografi</div>
-                  </div>
-                </div>
-              </div>
+                  <span className="text-sm font-medium hidden md:block">{step.title}</span>
+                </button>
+              ))}
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Process Steps */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Persona-skapande i 4 steg</h2>
-          <div className="space-y-6">
-            {personaSteps.map((step, index) => (
-              <Card key={index} className="border-l-4 border-l-slate-500">
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-1">
-                      <div className="flex items-center space-x-3 mb-3">
-                        <div className="w-8 h-8 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center font-bold text-sm">
-                          {step.step}
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900">{step.title}</h3>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-3">{step.description}</p>
-                      <div className="flex items-center text-xs text-gray-500">
-                        <step.icon className="h-4 w-4 mr-1" />
-                        {step.duration}
-                      </div>
-                    </div>
-
-                    <div className="lg:col-span-1">
-                      <h4 className="font-medium text-gray-900 mb-2">Aktiviteter:</h4>
-                      <ul className="space-y-1">
-                        {step.activities.map((activity, activityIndex) => (
-                          <li key={activityIndex} className="text-sm text-gray-600 flex items-start">
-                            <CheckCircleIcon className="h-4 w-4 text-slate-500 mr-2 mt-0.5 flex-shrink-0" />
-                            {activity}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="lg:col-span-1">
-                      <h4 className="font-medium text-gray-900 mb-2">Leverabler:</h4>
-                      <ul className="space-y-1">
-                        {step.deliverables.map((deliverable, delivIndex) => (
-                          <li key={delivIndex} className="text-sm text-gray-600 pl-4 border-l-2 border-l-slate-200">
-                            {deliverable}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {/* Navigation buttons */}
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={prevStep}
+                disabled={currentStep === 0}
+              >
+                <ChevronLeftIcon className="h-4 w-4 mr-1" />
+                Föregående
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={nextStep}
+                disabled={currentStep === totalSteps - 1}
+              >
+                Nästa
+                <ChevronRightIcon className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Persona Elements */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Vad ska ingå i en persona?</h2>
-          <div className="space-y-8">
-            {personaElements.map((category, categoryIndex) => (
-              <div key={categoryIndex}>
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className={`p-2 rounded-lg ${category.color}`}>
-                    <category.icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900">{category.category}</h3>
-                </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-                  {category.elements.map((element, elementIndex) => (
-                    <Card key={elementIndex}>
-                      <CardHeader>
-                        <CardTitle className="text-base">{element.field}</CardTitle>
-                        <p className="text-sm text-gray-600">{element.description}</p>
-                      </CardHeader>
-                      <CardContent className="pt-0 space-y-4">
-                        <div>
-                          <h5 className="font-medium text-gray-900 mb-2">Tips:</h5>
-                          <ul className="space-y-1">
-                            {element.tips.map((tip, tipIndex) => (
-                              <li key={tipIndex} className="text-sm text-gray-600 flex items-start">
-                                <LightbulbIcon className="h-4 w-4 text-slate-500 mr-2 mt-0.5 flex-shrink-0" />
-                                {tip}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        
-                        <div className="p-3 bg-gray-50 border border-gray-200 rounded">
-                          <h5 className="font-medium text-gray-900 mb-1">Exempel:</h5>
-                          <p className="text-sm text-gray-700 italic">"{element.example}"</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Persona Template */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Persona-mall</h2>
-          <Card>
+        {/* Step Content */}
+        <div className="p-8">
+          {/* Current Step Content */}
+          <Card className="border-0 shadow-sm">
             <CardHeader>
-              <CardTitle>Komplett persona-template</CardTitle>
-              <p className="text-gray-600">Använd denna struktur för att skapa konsekventa personas</p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {personaTemplate.sections.map((section, index) => (
-                  <div key={index} className="border-l-4 border-l-gray-200 pl-4">
-                    <h4 className="font-semibold text-gray-900 mb-3">{section.title}</h4>
-                    <ul className="space-y-2">
-                      {section.fields.map((field, fieldIndex) => (
-                        <li key={fieldIndex} className="text-sm text-gray-700 flex items-center">
-                          <div className="w-2 h-2 bg-slate-400 rounded-full mr-2 flex-shrink-0"></div>
-                          {field}
-                        </li>
-                      ))}
-                    </ul>
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-slate-100 rounded-xl">
+                  {React.createElement(personaSteps[currentStep].icon, {
+                    className: "h-8 w-8 text-slate-600"
+                  })}
+                </div>
+                <div>
+                  <CardTitle className="text-2xl">
+                    Steg {personaSteps[currentStep].step}: {personaSteps[currentStep].title}
+                  </CardTitle>
+                  <p className="text-gray-600 mt-2">{personaSteps[currentStep].description}</p>
+                  <div className="flex items-center mt-2 text-sm text-gray-500">
+                    <ClockIcon className="h-4 w-4 mr-1" />
+                    Tidsåtgång: {personaSteps[currentStep].duration}
                   </div>
-                ))}
+                </div>
               </div>
-              
-              <div className="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-lg">
-                <div className="flex items-start space-x-3">
-                  <FileTextIcon className="h-5 w-5 text-slate-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h5 className="font-medium text-slate-800 mb-1">Pro-tips för personas</h5>
-                    <ul className="text-sm text-slate-700 space-y-1">
-                      <li>• Håll personas till 1-2 sidor max - längre läser ingen</li>
-                      <li>• Använd verkliga citat från intervjuer för autenticitet</li>
-                      <li>• Inkludera foto eller avatar som teamet kan komma ihåg</li>
-                      <li>• Uppdatera personas varje 6-12 månader</li>
-                    </ul>
+            </CardHeader>
+            <CardContent className="px-6 pb-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Aktiviteter</h3>
+                  <ul className="space-y-3">
+                    {personaSteps[currentStep].activities.map((activity, index) => (
+                      <li key={index} className="flex items-start space-x-3">
+                        <CheckCircleIcon className="h-5 w-5 text-slate-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">{activity}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Leverabler</h3>
+                  <div className="space-y-3">
+                    {personaSteps[currentStep].deliverables.map((deliverable, index) => (
+                      <div key={index} className="p-3 bg-gray-50 border-l-4 border-l-slate-400 rounded-r">
+                        <span className="text-gray-700 font-medium">{deliverable}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Common Mistakes */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Vanliga misstag att undvika</h2>
-          <div className="space-y-4">
-            {commonMistakes.map((mistake, index) => (
-              <Card key={index} className="border-l-4 border-l-slate-200">
-                <CardContent className="p-6">
-                  <div className="flex items-start space-x-4">
-                    <AlertTriangleIcon className="h-6 w-6 text-slate-500 mt-1 flex-shrink-0" />
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-slate-800 mb-2">{mistake.mistake}</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <h4 className="font-medium text-gray-900 mb-1">Påverkan:</h4>
-                          <p className="text-gray-600">{mistake.impact}</p>
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-900 mb-1">Lösning:</h4>
-                          <p className="text-gray-600">{mistake.solution}</p>
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-900 mb-1">Förebygga:</h4>
-                          <p className="text-gray-600">{mistake.prevention}</p>
-                        </div>
+          {/* Step-specific content */}
+          {currentStep === 0 && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Vad gör en bra persona?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-6">
+                  En effektiv persona är mer än demografiska data - den fångar motivationer, beteenden
+                  och pain points som hjälper teamet att förstå och empathisera med riktiga användare.
+                  Bra personas baseras på riktig data och används aktivt i produktbeslut.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white p-4 rounded-lg border">
+                    <div className="text-2xl font-bold text-slate-700 mb-1">3-5</div>
+                    <div className="text-sm text-gray-600">Personas max per produkt</div>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg border">
+                    <div className="text-2xl font-bold text-slate-700 mb-1">8-12</div>
+                    <div className="text-sm text-gray-600">Intervjuer per persona</div>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg border">
+                    <div className="text-2xl font-bold text-slate-700 mb-1">80/20</div>
+                    <div className="text-sm text-gray-600">Psykografi/Demografi</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {currentStep === 1 && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Research-metoder för persona-data</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="border-l-4 border-l-slate-500 pl-4">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <MessageSquareIcon className="h-5 w-5 text-slate-600" />
+                      <h3 className="font-semibold text-gray-900">Kvalitativa metoder</h3>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Kundintervjuer</h4>
+                        <p className="text-sm text-gray-600">8-12 djupintervjuer per segment för att förstå motivationer</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Observationer</h4>
+                        <p className="text-sm text-gray-600">Se hur kunder faktiskt beter sig i naturlig miljö</p>
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Research Methods */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Research-metoder för persona-data</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="border-l-4 border-l-slate-500">
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <MessageSquareIcon className="h-6 w-6 text-slate-600" />
-                  <CardTitle>Kvalitativa metoder</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="font-medium text-gray-900">Kundintervjuer</h4>
-                    <p className="text-sm text-gray-600">8-12 djupintervjuer per segment för att förstå motivationer</p>
+                  <div className="border-l-4 border-l-slate-500 pl-4">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <BarChart3Icon className="h-5 w-5 text-slate-600" />
+                      <h3 className="font-semibold text-gray-900">Kvantitativa metoder</h3>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Enkätundersökningar</h4>
+                        <p className="text-sm text-gray-600">Validera hypoteser och få statistisk data</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Analytics</h4>
+                        <p className="text-sm text-gray-600">Beteendedata från webbplats och app</p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Observationer</h4>
-                    <p className="text-sm text-gray-600">Se hur kunder faktiskt beter sig i naturlig miljö</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Fokusgrupper</h4>
-                    <p className="text-sm text-gray-600">Utforska attityder och sociala påverkningsfaktorer</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-slate-500">
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <BarChart3Icon className="h-6 w-6 text-slate-600" />
-                  <CardTitle>Kvantitativa metoder</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="font-medium text-gray-900">Enkätundersökningar</h4>
-                    <p className="text-sm text-gray-600">Validera hypoteser och få statistisk data om segments</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Analytics</h4>
-                    <p className="text-sm text-gray-600">Beteendedata från webbplats, app eller andra digitala touchpoints</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">A/B-tester</h4>
-                    <p className="text-sm text-gray-600">Testa persona-antaganden mot faktiskt användarbeteende</p>
+                  <div className="border-l-4 border-l-slate-500 pl-4">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <EyeIcon className="h-5 w-5 text-slate-600" />
+                      <h3 className="font-semibold text-gray-900">Sekundära källor</h3>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-medium text-gray-900">Kundservice-loggar</h4>
+                        <p className="text-sm text-gray-600">Pain points från support-kanaler</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Säljteamets insights</h4>
+                        <p className="text-sm text-gray-600">Värdefulla observationer från säljare</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
+          )}
 
-            <Card className="border-l-4 border-l-slate-500">
+          {currentStep === 2 && (
+            <Card className="mt-6">
               <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <EyeIcon className="h-6 w-6 text-slate-600" />
-                  <CardTitle>Sekundära källor</CardTitle>
-                </div>
+                <CardTitle>Vad ska ingå i en persona?</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="font-medium text-gray-900">Kundservice-loggar</h4>
-                    <p className="text-sm text-gray-600">Pain points och vanliga frågor från support-kanaler</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Säljteamets insights</h4>
-                    <p className="text-sm text-gray-600">Direktkontakt med kunder ger värdefulla observationer</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Branschrapporter</h4>
-                    <p className="text-sm text-gray-600">Marknadsdata och trender för att komplettera egen research</p>
-                  </div>
+                <div className="space-y-6">
+                  {personaElements.slice(0, 2).map((category, categoryIndex) => (
+                    <div key={categoryIndex}>
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className={`p-2 rounded-lg ${category.color}`}>
+                          {React.createElement(category.icon, { className: "h-5 w-5" })}
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900">{category.category}</h3>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {category.elements.slice(0, 2).map((element, elementIndex) => (
+                          <div key={elementIndex} className="p-4 bg-gray-50 rounded-lg border">
+                            <h4 className="font-medium text-gray-900 mb-2">{element.field}</h4>
+                            <p className="text-sm text-gray-600 mb-3">{element.description}</p>
+                            <div className="text-xs text-gray-700 italic">"{element.example}"</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
-          </div>
+          )}
+
+          {currentStep === 3 && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Vanliga misstag att undvika</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {commonMistakes.slice(0, 3).map((mistake, index) => (
+                    <div key={index} className="border-l-4 border-l-red-200 pl-4 py-3">
+                      <div className="flex items-start space-x-3">
+                        <AlertTriangleIcon className="h-5 w-5 text-red-500 mt-1 flex-shrink-0" />
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 mb-2">{mistake.mistake}</h3>
+                          <p className="text-sm text-gray-600 mb-2"><strong>Påverkan:</strong> {mistake.impact}</p>
+                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> {mistake.solution}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Call to Action */}
-        <Card className="bg-slate-50 border-slate-200">
+        <Card className="bg-slate-50 border-slate-200 mt-8">
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Redo att skapa dina första personas?
+                {currentStep === totalSteps - 1
+                  ? "Redo att skapa dina första personas?"
+                  : "Fortsätt till nästa steg"}
               </h3>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                Kom ihåg att personas är verktyg för att hjälpa teamet förstå användare - de ska vara 
-                baserade på riktig data och användas aktivt i produktbeslut för att vara värdefulla.
+                {currentStep === totalSteps - 1
+                  ? "Kom ihåg att personas är verktyg för att hjälpa teamet förstå användare - de ska vara baserade på riktig data och används aktivt i produktbeslut för att vara värdefulla."
+                  : "Navigera mellan stegen för att lära dig mer om persona-skapande processen."}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/personas">
-                  <Button variant="primary">
-                    <UserIcon className="mr-2 h-4 w-4" />
-                    Skapa din första persona
+                {currentStep === totalSteps - 1 ? (
+                  <>
+                    <Link href="/personas/create">
+                      <Button variant="primary">
+                        <UserIcon className="mr-2 h-4 w-4" />
+                        Skapa din första persona
+                      </Button>
+                    </Link>
+                    <Link href="/insights/interviews">
+                      <Button variant="outline">
+                        Lär dig om kundintervjuer
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <Button variant="primary" onClick={nextStep}>
+                    Nästa steg: {personaSteps[currentStep + 1]?.title}
+                    <ChevronRightIcon className="ml-2 h-4 w-4" />
                   </Button>
-                </Link>
-                <Link href="/insights/interviews">
-                  <Button variant="outline">
-                    Lär dig om kundintervjuer
-                  </Button>
-                </Link>
+                )}
               </div>
             </div>
           </CardContent>
