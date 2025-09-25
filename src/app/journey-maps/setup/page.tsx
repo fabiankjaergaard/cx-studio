@@ -84,6 +84,7 @@ export default function JourneyMapSetupPage() {
   }
 
   const handleContinue = () => {
+    // Generate a new ID for the journey map
     const newMapId = Date.now().toString()
     const params = new URLSearchParams({
       name: mapName,
@@ -99,6 +100,7 @@ export default function JourneyMapSetupPage() {
     // Add team members as parameter
     params.append('team', JSON.stringify(teamMembers))
 
+    // Navigate to the actual journey map editor, not the creation page
     router.push(`/journey-maps/${newMapId}?${params.toString()}`)
   }
 
@@ -144,32 +146,6 @@ export default function JourneyMapSetupPage() {
               currentStep={2} // Team setup is step 2 (0-indexed)
             />
           </div>
-          {/* Project Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <UserCheckIcon className="mr-2 h-5 w-5" />
-                Projekt Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-medium text-gray-900">{mapName}</h3>
-                  {mapDescription && (
-                    <p className="text-gray-600 text-sm mt-1">{mapDescription}</p>
-                  )}
-                  {isFromTemplate && (
-                    <div className="flex items-center mt-2">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                        Från mall: {templateId}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Team Members */}
           <Card>
@@ -178,6 +154,9 @@ export default function JourneyMapSetupPage() {
                 <UsersIcon className="mr-2 h-5 w-5" />
                 Team ({teamMembers.length})
               </CardTitle>
+              <p className="text-sm text-gray-600 mt-2">
+                Bjud in teammedlemmar för att samarbeta på din journey map. Du kan ändra behörigheter när som helst.
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Current Team Members */}

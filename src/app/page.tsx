@@ -138,9 +138,9 @@ export default function Home() {
           <Card key={widgetId} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 relative group h-80">
             <button
               onClick={() => removeWidget(widgetId)}
-              className="absolute top-2 right-2 w-6 h-6 bg-white shadow-sm border rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-50 rounded border border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
             >
-              <XIcon className="w-3 h-3 text-gray-500" />
+              <XIcon className="w-4 h-4" />
             </button>
             <CardContent className="pt-6 h-full flex flex-col">
               <div className="flex items-center mb-4">
@@ -183,9 +183,9 @@ export default function Home() {
           <Card key={widgetId} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 relative group h-80">
             <button
               onClick={() => removeWidget(widgetId)}
-              className="absolute top-2 right-2 w-6 h-6 bg-white shadow-sm border rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-50 rounded border border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
             >
-              <XIcon className="w-3 h-3 text-gray-500" />
+              <XIcon className="w-4 h-4" />
             </button>
             <CardContent className="pt-6 h-full flex flex-col">
               <div className="flex items-center mb-4">
@@ -225,9 +225,9 @@ export default function Home() {
           <Card key={widgetId} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 relative group h-80">
             <button
               onClick={() => removeWidget(widgetId)}
-              className="absolute top-2 right-2 w-6 h-6 bg-white shadow-sm border rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-50 rounded border border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
             >
-              <XIcon className="w-3 h-3 text-gray-500" />
+              <XIcon className="w-4 h-4" />
             </button>
             <CardContent className="pt-6 h-full flex flex-col">
               <div className="flex items-center mb-4">
@@ -254,9 +254,9 @@ export default function Home() {
           <Card key={widgetId} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 relative group h-80">
             <button
               onClick={() => removeWidget(widgetId)}
-              className="absolute top-2 right-2 w-6 h-6 bg-white shadow-sm border rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-50 rounded border border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
             >
-              <XIcon className="w-3 h-3 text-gray-500" />
+              <XIcon className="w-4 h-4" />
             </button>
             <CardContent className="pt-6 h-full flex flex-col">
               <div className="flex items-center mb-4">
@@ -296,9 +296,9 @@ export default function Home() {
           <Card key={widgetId} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 relative group h-80">
             <button
               onClick={() => removeWidget(widgetId)}
-              className="absolute top-2 right-2 w-6 h-6 bg-white shadow-sm border rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50"
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-gray-50 rounded border border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
             >
-              <XIcon className="w-3 h-3 text-gray-500" />
+              <XIcon className="w-4 h-4" />
             </button>
             <CardContent className="pt-6 h-full flex flex-col">
               <div className="flex items-center mb-4">

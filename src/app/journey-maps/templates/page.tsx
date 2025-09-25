@@ -200,7 +200,7 @@ export default function JourneyMapTemplatesPage() {
           template={selectedTemplate}
           isOpen={isPreviewOpen}
           onClose={() => setIsPreviewOpen(false)}
-          onUse={() => handleUseTemplate(selectedTemplate)}
+          onUseTemplate={handleUseTemplate}
         />
       )}
     </div>

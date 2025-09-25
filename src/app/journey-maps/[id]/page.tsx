@@ -63,9 +63,9 @@ const samplePersonas: Persona[] = [
 ]
 
 // Function to create journey map from template
-const createJourneyMapFromTemplate = (templateId: string, templateName: string): JourneyMapData => {
+const createJourneyMapFromTemplate = (templateId: string, templateName: string, mapId?: string): JourneyMapData => {
   const baseJourneyMap: JourneyMapData = {
-    id: Date.now().toString(),
+    id: mapId || Date.now().toString(),
     name: templateName || 'Ny Journey Map från mall',
     description: 'Skapad från mall',
     persona: null,
@@ -1108,12 +1108,15 @@ export default function JourneyMapBuilderPage() {
     const isCustom = searchParams.get('custom')
     const teamParam = searchParams.get('team')
 
-    if (journeyMapId === 'new' || isBlank) {
+    // Check if this is a new journey map being created (either from 'new' route, blank param, or template param)
+    const isNewJourneyMap = journeyMapId === 'new' || isBlank || templateId
+
+    if (isNewJourneyMap) {
       let newJourneyMap: JourneyMapData
 
       if (templateId && templateName) {
         // Create journey map from template
-        newJourneyMap = createJourneyMapFromTemplate(templateId, decodeURIComponent(templateName))
+        newJourneyMap = createJourneyMapFromTemplate(templateId, decodeURIComponent(templateName), journeyMapId !== 'new' ? journeyMapId : undefined)
       } else if (isCustom && templateName) {
         // Create custom template with more rows for user to customize
         newJourneyMap = {
@@ -1168,6 +1171,11 @@ export default function JourneyMapBuilderPage() {
       }
 
       setJourneyMap(newJourneyMap)
+
+      // Save the newly created journey map to localStorage immediately
+      saveJourneyMap(newJourneyMap).catch(error => {
+        console.error('Failed to save new journey map:', error)
+      })
 
       // Handle team information from setup page
       if (teamParam) {
