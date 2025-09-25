@@ -67,7 +67,6 @@ const getNavigation = (t: (key: string) => string) => [
         name: t('nav.personaGuides'),
         children: [
           { name: t('nav.personaGuide'), href: '/personas/guide', icon: BookIcon },
-          { name: t('nav.personaBestPractices'), href: '/personas/best-practices', icon: BookOpenIcon },
           { name: t('nav.personaTips'), href: '/personas/tips', icon: LightbulbIcon }
         ]
       }

@@ -263,7 +263,7 @@ export default function PersonaGuidePage() {
   const goToStep = (step: number) => setCurrentStep(step)
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-gray-50">
       <Header
         title="Guide: Skapa effektiva personas"
         description={`Steg ${currentStep + 1} av ${totalSteps}: ${personaSteps[currentStep].title}`}
@@ -283,7 +283,7 @@ export default function PersonaGuidePage() {
           </div>
         }
       />
-      <div className="flex-1 overflow-auto bg-gray-50">
+      <div className="flex-1 overflow-auto bg-gray-50 min-h-0">
         {/* Progress Steps Navigation */}
         <div className="bg-white border-b border-gray-200 p-6">
           <div className="flex items-center justify-between">
@@ -296,8 +296,6 @@ export default function PersonaGuidePage() {
                   className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
                     index === currentStep
                       ? 'bg-slate-700 text-white'
-                      : index < currentStep
-                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
@@ -391,32 +389,86 @@ export default function PersonaGuidePage() {
 
           {/* Step-specific content */}
           {currentStep === 0 && (
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Vad gör en bra persona?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-6">
-                  En effektiv persona är mer än demografiska data - den fångar motivationer, beteenden
-                  och pain points som hjälper teamet att förstå och empathisera med riktiga användare.
-                  Bra personas baseras på riktig data och används aktivt i produktbeslut.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white p-4 rounded-lg border">
-                    <div className="text-2xl font-bold text-slate-700 mb-1">3-5</div>
-                    <div className="text-sm text-gray-600">Personas max per produkt</div>
+            <div className="space-y-6 mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vad gör en bra persona?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-6">
+                    En effektiv persona är mer än demografiska data - den fångar motivationer, beteenden
+                    och pain points som hjälper teamet att förstå och empathisera med riktiga användare.
+                    Bra personas baseras på riktig data och används aktivt i produktbeslut.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-white p-4 rounded-lg border">
+                      <div className="text-2xl font-bold text-slate-700 mb-1">3-5</div>
+                      <div className="text-sm text-gray-600">Personas max per produkt</div>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border">
+                      <div className="text-2xl font-bold text-slate-700 mb-1">8-12</div>
+                      <div className="text-sm text-gray-600">Intervjuer per persona</div>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border">
+                      <div className="text-2xl font-bold text-slate-700 mb-1">80/20</div>
+                      <div className="text-sm text-gray-600">Psykografi/Demografi</div>
+                    </div>
                   </div>
-                  <div className="bg-white p-4 rounded-lg border">
-                    <div className="text-2xl font-bold text-slate-700 mb-1">8-12</div>
-                    <div className="text-sm text-gray-600">Intervjuer per persona</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Viktiga tips för datainsamling</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="p-3 bg-green-50 border border-green-200 rounded">
+                        <div className="flex items-start space-x-2">
+                          <CheckCircleIcon className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <h5 className="font-medium text-green-800 text-sm mb-1">Gör så här:</h5>
+                            <p className="text-sm text-green-700">Starta alltid med research innan du skapar personas</p>
+                          </div>
+                        </div>
+                      </div>
+                      <ul className="space-y-2">
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Kombinera intervjuer med enkätdata för att validera mönster
+                        </li>
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Inkludera säljteamets och kundsupportens observationer
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="p-3 bg-red-50 border border-red-200 rounded">
+                        <div className="flex items-start space-x-2">
+                          <AlertTriangleIcon className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <h5 className="font-medium text-red-800 text-sm mb-1">Undvik detta:</h5>
+                            <p className="text-sm text-red-700">Skapa personas baserat enbart på antaganden</p>
+                          </div>
+                        </div>
+                      </div>
+                      <ul className="space-y-2">
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Anta vad användare vill utan att fråga dem
+                        </li>
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Fokusera bara på demografi som ålder och kön
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                  <div className="bg-white p-4 rounded-lg border">
-                    <div className="text-2xl font-bold text-slate-700 mb-1">80/20</div>
-                    <div className="text-sm text-gray-600">Psykografi/Demografi</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           )}
 
           {currentStep === 1 && (
@@ -480,58 +532,180 @@ export default function PersonaGuidePage() {
           )}
 
           {currentStep === 2 && (
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Vad ska ingå i en persona?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {personaElements.slice(0, 2).map((category, categoryIndex) => (
-                    <div key={categoryIndex}>
-                      <div className="flex items-center space-x-3 mb-4">
-                        <div className={`p-2 rounded-lg ${category.color}`}>
-                          {React.createElement(category.icon, { className: "h-5 w-5" })}
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900">{category.category}</h3>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {category.elements.slice(0, 2).map((element, elementIndex) => (
-                          <div key={elementIndex} className="p-4 bg-gray-50 rounded-lg border">
-                            <h4 className="font-medium text-gray-900 mb-2">{element.field}</h4>
-                            <p className="text-sm text-gray-600 mb-3">{element.description}</p>
-                            <div className="text-xs text-gray-700 italic">"{element.example}"</div>
+            <div className="space-y-6 mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vad ska ingå i en persona?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4">
+                    Fokusera på psykografi (80%) över demografi (20%). Det är motivationer och mål som driver beteende, inte ålder eller kön.
+                  </p>
+                  <div className="space-y-6">
+                    {personaElements.slice(0, 2).map((category, categoryIndex) => (
+                      <div key={categoryIndex}>
+                        <div className="flex items-center space-x-3 mb-4">
+                          <div className={`p-2 rounded-lg ${category.color}`}>
+                            {React.createElement(category.icon, { className: "h-5 w-5" })}
                           </div>
-                        ))}
+                          <h3 className="text-lg font-semibold text-gray-900">{category.category}</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {category.elements.slice(0, 2).map((element, elementIndex) => (
+                            <div key={elementIndex} className="p-4 bg-gray-50 rounded-lg border">
+                              <h4 className="font-medium text-gray-900 mb-2">{element.field}</h4>
+                              <p className="text-sm text-gray-600 mb-3">{element.description}</p>
+                              <div className="text-xs text-gray-700 italic">"{element.example}"</div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Best practices för persona-skapande</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="p-3 bg-green-50 border border-green-200 rounded">
+                        <div className="flex items-start space-x-2">
+                          <CheckCircleIcon className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <h5 className="font-medium text-green-800 text-sm mb-1">Gör så här:</h5>
+                            <p className="text-sm text-green-700">Håll personas till 1-2 sidor max</p>
+                          </div>
+                        </div>
+                      </div>
+                      <ul className="space-y-2">
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Använd verkliga citat från intervjuer för autenticitet
+                        </li>
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Ge personas namn som teamet kan komma ihåg
+                        </li>
+                      </ul>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <div className="space-y-4">
+                      <div className="p-3 bg-red-50 border border-red-200 rounded">
+                        <div className="flex items-start space-x-2">
+                          <AlertTriangleIcon className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <h5 className="font-medium text-red-800 text-sm mb-1">Undvik detta:</h5>
+                            <p className="text-sm text-red-700">Skapa så många personas att teamet blir förvirrat</p>
+                          </div>
+                        </div>
+                      </div>
+                      <ul className="space-y-2">
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Långa texter som ingen kommer att läsa
+                        </li>
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Generiska beskrivningar utan karaktär
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           )}
 
           {currentStep === 3 && (
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Vanliga misstag att undvika</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {commonMistakes.slice(0, 3).map((mistake, index) => (
-                    <div key={index} className="border-l-4 border-l-red-200 pl-4 py-3">
-                      <div className="flex items-start space-x-3">
-                        <AlertTriangleIcon className="h-5 w-5 text-red-500 mt-1 flex-shrink-0" />
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900 mb-2">{mistake.mistake}</h3>
-                          <p className="text-sm text-gray-600 mb-2"><strong>Påverkan:</strong> {mistake.impact}</p>
-                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> {mistake.solution}</p>
+            <div className="space-y-6 mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vanliga misstag att undvika</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-6">
+                    Lär av andra team misstag och spara tid genom att undvika dessa vanliga fallgropar i persona-validering.
+                  </p>
+                  <div className="space-y-4">
+                    {commonMistakes.slice(0, 3).map((mistake, index) => (
+                      <div key={index} className="border-l-4 border-l-red-200 pl-4 py-3">
+                        <div className="flex items-start space-x-3">
+                          <AlertTriangleIcon className="h-5 w-5 text-red-500 mt-1 flex-shrink-0" />
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900 mb-2">{mistake.mistake}</h3>
+                            <p className="text-sm text-gray-600 mb-2"><strong>Påverkan:</strong> {mistake.impact}</p>
+                            <p className="text-sm text-gray-600"><strong>Lösning:</strong> {mistake.solution}</p>
+                          </div>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Tips för framgångsrik implementation</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="p-3 bg-green-50 border border-green-200 rounded">
+                        <div className="flex items-start space-x-2">
+                          <CheckCircleIcon className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <h5 className="font-medium text-green-800 text-sm mb-1">Gör så här:</h5>
+                            <p className="text-sm text-green-700">Integrera personas i alla processer från dag ett</p>
+                          </div>
+                        </div>
+                      </div>
+                      <ul className="space-y-2">
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Ha persona-posters synliga i arbetsområdet
+                        </li>
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Ställ frågan "Vad skulle Anna göra?" i beslutssituationer
+                        </li>
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Granska och uppdatera personas var 6:e månad
+                        </li>
+                      </ul>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <div className="space-y-4">
+                      <div className="p-3 bg-red-50 border border-red-200 rounded">
+                        <div className="flex items-start space-x-2">
+                          <AlertTriangleIcon className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <h5 className="font-medium text-red-800 text-sm mb-1">Undvik detta:</h5>
+                            <p className="text-sm text-red-700">Skapa personas som bara läggs på hyllan</p>
+                          </div>
+                        </div>
+                      </div>
+                      <ul className="space-y-2">
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Låta personas bli inaktuella och föråldrade
+                        </li>
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Skapa personas isolerat utan team-input
+                        </li>
+                        <li className="text-sm text-gray-600 flex items-start">
+                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                          Perfekta personas utan realistiska brister
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           )}
         </div>
 
