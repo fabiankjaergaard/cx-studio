@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Header } from '@/components/dashboard/Header'
 import { Button } from '@/components/ui/Button'
@@ -29,7 +29,7 @@ interface Persona {
   motivations: string[]
 }
 
-export default function CreatePersonaPage() {
+function CreatePersonaContent() {
   const { t } = useLanguage()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -443,5 +443,13 @@ export default function CreatePersonaPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CreatePersonaPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Laddar...</div>}>
+      <CreatePersonaContent />
+    </Suspense>
   )
 }
