@@ -9,54 +9,9 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { TemplatePreviewModal } from '@/components/templates/TemplatePreviewModal'
 import Link from 'next/link'
+import { getSharedTemplates, TEMPLATE_INDUSTRIES, getCategorizedTemplates } from '@/data/templates'
 
-const getJourneyMapTemplates = (t: (key: string) => string) => [
-  {
-    id: '1',
-    name: 'E-commerce Customer Journey',
-    description: 'Complete customer journey from awareness to purchase and post-purchase for online retail',
-    industry: 'E-commerce',
-    touchpoints: 8,
-    stages: 5,
-    preview: '/api/templates/1/preview'
-  },
-  {
-    id: '2',
-    name: 'SaaS Onboarding',
-    description: 'User onboarding for SaaS products from registration to activation',
-    industry: 'Technology',
-    touchpoints: 6,
-    stages: 4,
-    preview: '/api/templates/2/preview'
-  },
-  {
-    id: '3',
-    name: 'Customer Service Journey',
-    description: 'Customer service process from problem identification to resolution',
-    industry: 'Service',
-    touchpoints: 7,
-    stages: 5,
-    preview: '/api/templates/3/preview'
-  },
-  {
-    id: '4',
-    name: 'Restaurant Experience',
-    description: 'Guest experience from booking to post-visit engagement',
-    industry: 'Restaurant',
-    touchpoints: 9,
-    stages: 6,
-    preview: '/api/templates/4/preview'
-  },
-  {
-    id: '5',
-    name: 'Banking Loan Process',
-    description: 'Loan application process from initial inquiry to disbursement',
-    industry: 'Finance',
-    touchpoints: 10,
-    stages: 5,
-    preview: '/api/templates/5/preview'
-  }
-]
+const getJourneyMapTemplates = getSharedTemplates
 
 export default function JourneyMapTemplatesPage() {
   const { t } = useLanguage()
@@ -67,20 +22,20 @@ export default function JourneyMapTemplatesPage() {
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const templates = getJourneyMapTemplates(t)
 
-  // Filter and sort templates
-  const filteredAndSortedTemplates = React.useMemo(() => {
-    let filtered = templates
+  // Get categorized templates
+  const categorizedTemplates = React.useMemo(() => {
+    let allTemplates = templates
 
-    // Filter by industry
+    // Filter by industry if selected
     if (selectedIndustry) {
-      filtered = filtered.filter(template =>
+      allTemplates = allTemplates.filter(template =>
         template.industry.toLowerCase() === selectedIndustry.toLowerCase()
       )
     }
 
     // Sort templates
     if (sortBy) {
-      filtered = [...filtered].sort((a, b) => {
+      allTemplates = [...allTemplates].sort((a, b) => {
         switch (sortBy) {
           case 'name':
             return a.name.localeCompare(b.name)
@@ -94,8 +49,17 @@ export default function JourneyMapTemplatesPage() {
       })
     }
 
-    return filtered
+    // If no industry filter is applied, return categorized templates
+    if (!selectedIndustry) {
+      return getCategorizedTemplates(allTemplates)
+    }
+
+    // If industry filter is applied, return all templates in a single category
+    return { 'Filtered Results': allTemplates }
   }, [templates, selectedIndustry, sortBy])
+
+  // Get total template count for display
+  const totalTemplates = Object.values(categorizedTemplates).flat().length
 
   const handlePreview = (template: any) => {
     setSelectedTemplate(template)
@@ -103,8 +67,14 @@ export default function JourneyMapTemplatesPage() {
   }
 
   const handleUseTemplate = (template: any) => {
-    // Navigate to journey-maps with template parameter
-    router.push(`/journey-maps/new?template=${template.id}&name=${encodeURIComponent(template.name)}`)
+    // Navigate to setup page with template parameters
+    const params = new URLSearchParams({
+      name: template.name,
+      description: template.description,
+      template: template.id
+    })
+
+    router.push(`/journey-maps/setup?${params.toString()}`)
   }
 
   return (
@@ -133,11 +103,9 @@ export default function JourneyMapTemplatesPage() {
                 onChange={(e) => setSelectedIndustry(e.target.value)}
               >
                 <option value="">All Industries</option>
-                <option value="E-commerce">E-commerce</option>
-                <option value="Technology">Technology</option>
-                <option value="Service">Service</option>
-                <option value="Restaurant">Restaurant</option>
-                <option value="Finance">Finance</option>
+                {TEMPLATE_INDUSTRIES.map(industry => (
+                  <option key={industry} value={industry}>{industry}</option>
+                ))}
               </select>
               <ChevronDownIcon className="absolute right-2 top-2.5 h-4 w-4 text-gray-400" />
             </div>
@@ -158,13 +126,24 @@ export default function JourneyMapTemplatesPage() {
           </div>
 
           <div className="text-sm text-gray-600">
-            {filteredAndSortedTemplates.length} templates
+            {totalTemplates} templates
           </div>
         </div>
 
-        {/* Templates Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAndSortedTemplates.map((template) => (
+        {/* Categorized Templates */}
+        {Object.entries(categorizedTemplates).map(([categoryName, categoryTemplates]) => (
+          <div key={categoryName} className="mb-8">
+            {categoryName !== 'Filtered Results' && (
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                {categoryName}
+                <span className="ml-2 text-sm font-normal text-gray-500">
+                  ({categoryTemplates.length} templates)
+                </span>
+              </h3>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {categoryTemplates.map((template) => (
             <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between mb-3">
@@ -209,8 +188,10 @@ export default function JourneyMapTemplatesPage() {
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Template Preview Modal */}

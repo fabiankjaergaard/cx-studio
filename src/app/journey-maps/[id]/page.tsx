@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -23,6 +23,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES } from '@/types/journey-map'
+import { saveJourneyMap, getJourneyMapById } from '@/services/journeyMapStorage'
 import { JourneyMapCell as JourneyMapCellComponent } from '@/components/journey-map/JourneyMapCell'
 import { RowEditor } from '@/components/journey-map/RowEditor'
 import { JourneyMapOnboarding } from '@/components/onboarding/JourneyMapOnboarding'
@@ -30,6 +31,7 @@ import { DragDropProvider } from '@/components/journey/DragDropProvider'
 import { RowTypePalette } from '@/components/journey-map/RowTypePalette'
 import { RowInsertionZone } from '@/components/journey-map/RowInsertionZone'
 import { InlineEdit } from '@/components/ui/InlineEdit'
+import { Toast } from '@/components/ui/Toast'
 
 interface Persona {
   id: string
@@ -72,7 +74,7 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string):
     rows: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    createdBy: 'Nuvarande användare',
+    createdBy: 'fabiankjaergaard',
     status: 'draft'
   }
 
@@ -1053,12 +1055,16 @@ export default function JourneyMapBuilderPage() {
   const [isRowEditorOpen, setIsRowEditorOpen] = useState(false)
   const [editingRow, setEditingRow] = useState<JourneyMapRow | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+  const [toastType, setToastType] = useState<'success' | 'error'>('success')
   const [isDraggingPhase, setIsDraggingPhase] = useState(false)
   const [dragStartX, setDragStartX] = useState(0)
   const [dragBoundaryIndex, setDragBoundaryIndex] = useState<number | null>(null)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isOnboardingActive, setIsOnboardingActive] = useState(false)
-  const [isPaletteCollapsed, setIsPaletteCollapsed] = useState(false)
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [draggedStageId, setDraggedStageId] = useState<string | null>(null)
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null)
   const [isDraggingStage, setIsDraggingStage] = useState(false)
@@ -1071,7 +1077,18 @@ export default function JourneyMapBuilderPage() {
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (activeDropdown && !(event.target as Element).closest('[data-dropdown]')) {
+      const target = event.target as Element
+      if (activeDropdown && !target.closest('[data-dropdown]')) {
+        // Don't close dropdowns when clicking on inputs, textareas, or other interactive elements
+        if (target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.tagName === 'SELECT' ||
+            target.closest('button') ||
+            target.closest('.emoji-picker-container') ||
+            target.closest('.status-picker') ||
+            target.closest('[contenteditable]')) {
+          return
+        }
         setActiveDropdown(null)
       }
     }
@@ -1089,6 +1106,7 @@ export default function JourneyMapBuilderPage() {
     const templateId = searchParams.get('template')
     const templateName = searchParams.get('name')
     const isCustom = searchParams.get('custom')
+    const teamParam = searchParams.get('team')
 
     if (journeyMapId === 'new' || isBlank) {
       let newJourneyMap: JourneyMapData
@@ -1118,7 +1136,7 @@ export default function JourneyMapBuilderPage() {
           })),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          createdBy: 'Nuvarande användare',
+          createdBy: 'fabiankjaergaard',
           status: 'draft'
         }
       } else {
@@ -1144,68 +1162,89 @@ export default function JourneyMapBuilderPage() {
           })), // Start with just the Actions row for onboarding
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          createdBy: 'Nuvarande användare',
+          createdBy: 'fabiankjaergaard',
           status: 'draft'
         }
       }
 
       setJourneyMap(newJourneyMap)
+
+      // Handle team information from setup page
+      if (teamParam) {
+        try {
+          const teamMembers = JSON.parse(decodeURIComponent(teamParam))
+          console.log('Team members loaded from setup:', teamMembers)
+          // Here you would typically save the team members to your backend
+          // For now, we just log them
+        } catch (error) {
+          console.error('Error parsing team parameters:', error)
+        }
+      }
+
       // Start onboarding for new journey maps (skip for templates and custom templates)
       if (!templateId && !isCustom) {
         setIsOnboardingActive(true)
       }
     } else {
-      // Load existing journey map (mock data for now)
-      const mockJourneyMap: JourneyMapData = {
-        id: journeyMapId,
-        name: 'E-handelskund Journey',
-        description: 'Kundresan för online-shopping från upptäckt till återköp',
-        persona: {
-          id: '1',
-          name: 'Anna Andersson',
-          avatar: 'A',
-          description: 'Produktchef, 32 år, Stockholm'
-        },
-        phases: DEFAULT_JOURNEY_PHASES,
-        stages: DEFAULT_JOURNEY_STAGES,
-        rows: DEFAULT_JOURNEY_CATEGORIES.map(category => ({
-          id: category.id,
-          category: category.name,
-          description: category.description,
-          type: category.type,
-          color: category.color,
-          cells: DEFAULT_JOURNEY_STAGES.map(stage => ({
-            id: `${category.id}-${stage.id}`,
-            content: category.id === 'actions' ? 'Example content...' :
-                    category.id === 'emotions' ? '' : ''
-          }))
-        })),
-        createdAt: '2024-01-15T10:00:00Z',
-        updatedAt: '2024-01-15T15:30:00Z',
-        createdBy: 'John Doe',
-        status: 'draft'
+      // Load existing journey map from storage
+      try {
+        const savedJourneyMap = getJourneyMapById(journeyMapId)
+        if (savedJourneyMap) {
+          setJourneyMap(savedJourneyMap)
+        } else {
+          // Journey map not found, redirect to journey maps list or show error
+          console.error('Journey map not found:', journeyMapId)
+          // You could redirect to /journey-maps here or show a "not found" message
+          router.push('/journey-maps')
+        }
+      } catch (error) {
+        console.error('Error loading journey map:', error)
+        // Fallback to redirect or error message
+        router.push('/journey-maps')
       }
-      setJourneyMap(mockJourneyMap)
     }
   }, [journeyMapId, searchParams])
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current)
+      }
+    }
+  }, [])
+
   const handleCellChange = (rowId: string, cellId: string, content: string) => {
     if (!journeyMap) return
-    
-    setJourneyMap({
+
+    const updatedJourneyMap = {
       ...journeyMap,
-      rows: journeyMap.rows.map(row => 
-        row.id === rowId 
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId
           ? {
               ...row,
-              cells: row.cells.map(cell => 
+              cells: row.cells.map(cell =>
                 cell.id === cellId ? { ...cell, content } : cell
               )
             }
           : row
       ),
       updatedAt: new Date().toISOString()
-    })
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save after a short delay (debounced)
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+        // Don't show UI feedback for auto-save failures
+      })
+    }, 2000) // Auto-save after 2 seconds of inactivity
   }
 
   const handlePhaseNameChange = (phaseId: string, newName: string) => {
@@ -1925,10 +1964,30 @@ export default function JourneyMapBuilderPage() {
   }
 
   const handleSave = async () => {
+    if (!journeyMap) {
+      console.error('No journey map to save')
+      return
+    }
+
     setIsSaving(true)
-    // Simulate save operation
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setIsSaving(false)
+    try {
+      await saveJourneyMap(journeyMap)
+      console.log('Journey map saved successfully!')
+
+      // Show success toast
+      setToastMessage('Journey map saved successfully!')
+      setToastType('success')
+      setShowToast(true)
+    } catch (error) {
+      console.error('Failed to save journey map:', error)
+
+      // Show error toast
+      setToastMessage('Failed to save journey map. Please try again.')
+      setToastType('error')
+      setShowToast(true)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const handleAddRow = () => {
@@ -2072,17 +2131,151 @@ export default function JourneyMapBuilderPage() {
         description={journeyMap.description || 'Redigera din customer journey map'}
         actions={
           <div className="flex items-center space-x-2">
+            {/* Team/Collaborators Section */}
+            <div className="flex items-center space-x-2">
+              <div className="relative" data-dropdown>
+                <div className="flex items-center">
+                  {/* Current user (owner) */}
+                  <div
+                    className="w-8 h-8 rounded-full bg-slate-700 text-white flex items-center justify-center text-sm font-medium border-2 border-white cursor-pointer hover:z-10 hover:scale-110 transition-transform"
+                    title="fabiankjaergaard (owner) - Click to manage team"
+                    onClick={() => setActiveDropdown(activeDropdown === 'team' ? null : 'team')}
+                  >
+                    F
+                  </div>
+                  {/* Other collaborators */}
+                  <div
+                    className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium -ml-2 border-2 border-white cursor-pointer hover:z-10 hover:scale-110 transition-transform"
+                    title="Anna Andersson (editor) - Click to manage team"
+                    onClick={() => setActiveDropdown(activeDropdown === 'team' ? null : 'team')}
+                  >
+                    A
+                  </div>
+                  <div
+                    className="w-8 h-8 rounded-full bg-gray-400 text-white flex items-center justify-center text-sm font-medium -ml-2 border-2 border-white cursor-pointer hover:z-10 hover:scale-110 transition-transform"
+                    title="Erik Nilsson (viewer) - Click to manage team"
+                    onClick={() => setActiveDropdown(activeDropdown === 'team' ? null : 'team')}
+                  >
+                    E
+                  </div>
+                </div>
+
+                {/* Team Dropdown */}
+                {activeDropdown === 'team' && (
+                  <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-64 z-20">
+                    <div className="px-3 py-2 border-b border-gray-100">
+                      <h3 className="text-sm font-medium text-gray-900">Team Members</h3>
+                    </div>
+
+                    {/* Current team members */}
+                    <div className="px-3 py-2">
+                      {/* Owner */}
+                      <div className="flex items-center justify-between py-2">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-6 h-6 rounded-full bg-slate-700 text-white flex items-center justify-center text-xs font-medium">
+                            F
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">fabiankjaergaard</p>
+                            <p className="text-xs text-gray-500">Owner</p>
+                          </div>
+                        </div>
+                        <span className="text-xs text-gray-400">You</span>
+                      </div>
+
+                      {/* Editor */}
+                      <div className="flex items-center justify-between py-2">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-medium">
+                            A
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">Anna Andersson</p>
+                            <p className="text-xs text-gray-500">Editor</p>
+                          </div>
+                        </div>
+                        <button className="text-xs text-gray-400 hover:text-red-500">Remove</button>
+                      </div>
+
+                      {/* Viewer */}
+                      <div className="flex items-center justify-between py-2">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-6 h-6 rounded-full bg-gray-400 text-white flex items-center justify-center text-xs font-medium">
+                            E
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">Erik Nilsson</p>
+                            <p className="text-xs text-gray-500">Viewer</p>
+                          </div>
+                        </div>
+                        <button className="text-xs text-gray-400 hover:text-red-500">Remove</button>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-gray-100 px-3 py-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setActiveDropdown(null)
+                        }}
+                        className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-blue-600 hover:text-blue-700 rounded"
+                      >
+                        <PlusIcon className="w-3 h-3" />
+                        Invite new member
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleSave}
+              disabled={isSaving}
+              className="flex items-center"
+            >
+              <SaveIcon className="mr-2 h-4 w-4" />
+              {isSaving ? 'Saving...' : 'Save'}
+            </Button>
+
             <div className="relative" data-dropdown>
               <Button
                 variant="outline"
-                onClick={() => setActiveDropdown(activeDropdown === 'export' ? null : 'export')}
+                size="sm"
+                onClick={() => setActiveDropdown(activeDropdown === 'more' ? null : 'more')}
+                className="p-2"
+                title="More options"
               >
-                <FileDownIcon className="mr-2 h-4 w-4" />
-                Export
+                <MoreVertical className="h-4 w-4" />
               </Button>
 
-              {activeDropdown === 'export' && (
-                <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-32 z-20">
+              {activeDropdown === 'more' && (
+                <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-36 z-20">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      // Handle duplicate
+                      setActiveDropdown(null)
+                    }}
+                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-900 hover:text-gray-900"
+                  >
+                    <Copy className="w-3 h-3 text-gray-700" />
+                    Duplicate
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      // Handle move
+                      setActiveDropdown(null)
+                    }}
+                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-900 hover:text-gray-900"
+                  >
+                    <Move className="w-3 h-3 text-gray-700" />
+                    Move to...
+                  </button>
+                  <div className="border-t border-gray-100 my-1"></div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
@@ -2105,18 +2298,21 @@ export default function JourneyMapBuilderPage() {
                     <ImageIcon className="w-3 h-3 text-gray-700" />
                     Export PNG
                   </button>
+                  <div className="border-t border-gray-100 my-1"></div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      // Handle delete with confirmation
+                      setActiveDropdown(null)
+                    }}
+                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-red-600 hover:text-red-700"
+                  >
+                    <Trash2 className="w-3 h-3 text-red-600" />
+                    Delete
+                  </button>
                 </div>
               )}
             </div>
-
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              disabled={isSaving}
-            >
-              <SaveIcon className="mr-2 h-4 w-4" />
-              {isSaving ? 'Sparar...' : 'Spara'}
-            </Button>
           </div>
         }
       />
@@ -2125,8 +2321,6 @@ export default function JourneyMapBuilderPage() {
             {/* Row Types Palette - only shown in drag & drop mode */}
             {isDragDropMode && (
               <RowTypePalette
-                isCollapsed={isPaletteCollapsed}
-                onToggleCollapse={() => setIsPaletteCollapsed(!isPaletteCollapsed)}
                 data-onboarding="palette"
               />
             )}
@@ -2491,7 +2685,6 @@ export default function JourneyMapBuilderPage() {
                         </div>
 
                         {/* Row actions dropdown - appears on hover */}
-                        {isAdvancedMode && (
                         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-200" data-dropdown>
                           <button
                             onClick={(e) => {
@@ -2544,7 +2737,6 @@ export default function JourneyMapBuilderPage() {
                             </div>
                           )}
                         </div>
-                        )}
                       </td>
                       {(row.type === 'emoji' || row.type === 'pain-points' || row.type === 'opportunities' || row.type === 'metrics' || row.type === 'channels') ? (
                         // For visualization components, create one cell spanning all stages
@@ -2764,5 +2956,20 @@ export default function JourneyMapBuilderPage() {
     </div>
   )
 
-  return isDragDropMode ? <DragDropProvider>{content}</DragDropProvider> : content
+  const finalContent = isDragDropMode ? <DragDropProvider>{content}</DragDropProvider> : content
+
+  return (
+    <>
+      {finalContent}
+
+{/* Toast Notification */}
+      <Toast
+        message={toastMessage}
+        type={toastType}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+        duration={3000}
+      />
+    </>
+  )
 }

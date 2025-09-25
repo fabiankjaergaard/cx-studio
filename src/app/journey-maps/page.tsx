@@ -1,20 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { 
-  PlusIcon, 
-  RouteIcon, 
-  EditIcon, 
-  TrashIcon, 
+import { getSavedJourneyMaps, deleteJourneyMap } from '@/services/journeyMapStorage'
+import {
+  PlusIcon,
+  RouteIcon,
+  EditIcon,
+  TrashIcon,
   CopyIcon,
   CalendarIcon,
+  ClockIcon,
   UserIcon,
+  UsersIcon,
   ExternalLinkIcon
 } from 'lucide-react'
 import Link from 'next/link'
@@ -29,6 +32,12 @@ interface JourneyMap {
   createdBy: string
   stages: number
   status: 'draft' | 'completed' | 'in-review'
+  collaborators?: Array<{
+    id: string
+    name: string
+    avatar?: string
+    role?: 'owner' | 'editor' | 'viewer'
+  }>
 }
 
 
@@ -53,6 +62,65 @@ export default function JourneyMapsPage() {
   const [newMapName, setNewMapName] = useState('')
   const [newMapDescription, setNewMapDescription] = useState('')
 
+  // Load saved journey maps on component mount
+  useEffect(() => {
+    const loadSavedMaps = () => {
+      try {
+        const savedMaps = getSavedJourneyMaps()
+        console.log('Loading saved journey maps:', savedMaps.length, 'maps found')
+        console.log('Saved maps data:', savedMaps)
+        const formattedMaps: JourneyMap[] = savedMaps.map(savedMap => ({
+          id: savedMap.id,
+          name: savedMap.name,
+          description: savedMap.description,
+          persona: savedMap.persona?.name || '',
+          lastModified: savedMap.lastModified || savedMap.updatedAt,
+          createdBy: (savedMap.createdBy === 'Nuvarande användare' || !savedMap.createdBy) ? 'fabiankjaergaard' : savedMap.createdBy,
+          stages: savedMap.stages?.length || 0,
+          status: savedMap.status || 'draft',
+          collaborators: [
+            {
+              id: '1',
+              name: (savedMap.createdBy === 'Nuvarande användare' || !savedMap.createdBy) ? 'fabiankjaergaard' : savedMap.createdBy,
+              avatar: ((savedMap.createdBy === 'Nuvarande användare' || !savedMap.createdBy) ? 'fabiankjaergaard' : savedMap.createdBy).charAt(0).toUpperCase(),
+              role: 'owner' as const
+            },
+            // Mock collaborators for demo
+            {
+              id: '2',
+              name: 'Anna Andersson',
+              avatar: 'A',
+              role: 'editor' as const
+            },
+            {
+              id: '3',
+              name: 'Erik Nilsson',
+              avatar: 'E',
+              role: 'viewer' as const
+            }
+          ]
+        }))
+        setJourneyMaps(formattedMaps)
+      } catch (error) {
+        console.error('Error loading saved journey maps:', error)
+      }
+    }
+
+    loadSavedMaps()
+
+    // Also reload when page comes into focus (when user navigates back)
+    const handleFocus = () => {
+      console.log('Page focused, reloading journey maps')
+      loadSavedMaps()
+    }
+
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [])
+
   const handleCreateJourneyMap = () => {
     if (newMapName.trim()) {
       const newMap: JourneyMap = {
@@ -61,7 +129,7 @@ export default function JourneyMapsPage() {
         description: newMapDescription.trim(),
         persona: '',
         lastModified: new Date().toISOString().split('T')[0],
-        createdBy: t('journeyMaps.currentUser'),
+        createdBy: 'fabiankjaergaard',
         stages: 4,
         status: 'draft'
       }
@@ -76,7 +144,14 @@ export default function JourneyMapsPage() {
   }
 
   const handleDeleteJourneyMap = (id: string) => {
-    setJourneyMaps(journeyMaps.filter(map => map.id !== id))
+    try {
+      deleteJourneyMap(id)
+      setJourneyMaps(journeyMaps.filter(map => map.id !== id))
+      console.log('Journey map deleted successfully')
+    } catch (error) {
+      console.error('Error deleting journey map:', error)
+      // You could show an error message to the user here
+    }
   }
 
   const handleDuplicateJourneyMap = (map: JourneyMap) => {
@@ -102,7 +177,7 @@ export default function JourneyMapsPage() {
           /* Journey Maps Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {journeyMaps.map((journeyMap) => (
-            <Card key={journeyMap.id} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 h-80">
+            <Card key={journeyMap.id} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 h-96">
               <CardContent className="pt-6 h-full flex flex-col">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -144,18 +219,79 @@ export default function JourneyMapsPage() {
                     </div>
                   )}
 
-                  <div className="flex items-center text-sm text-gray-600">
-                    <CalendarIcon className="h-4 w-4 mr-2" />
-                    {t('journeyMaps.lastModified')}: {new Date(journeyMap.lastModified).toLocaleDateString(language === 'sv' ? 'sv-SE' : 'en-US')}
+                  <div className="text-sm">
+                    <div className="font-medium text-gray-700 mb-1">Senast ändrad</div>
+                    <div className="space-y-1 text-gray-500">
+                      <div className="flex items-center">
+                        <CalendarIcon className="h-3 w-3 mr-1" />
+                        {new Date(journeyMap.lastModified).toLocaleDateString(language === 'sv' ? 'sv-SE' : 'en-US')}
+                      </div>
+                      <div className="flex items-center">
+                        <ClockIcon className="h-3 w-3 mr-1" />
+                        {new Date(journeyMap.lastModified).toLocaleTimeString(language === 'sv' ? 'sv-SE' : 'en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </div>
+                      <div className="flex items-center">
+                        <UserIcon className="h-3 w-3 mr-1" />
+                        {journeyMap.createdBy}
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span>{journeyMap.stages} {t('journeyMaps.stages')}</span>
-                    <span>{t('journeyMaps.createdBy')}: {journeyMap.createdBy}</span>
-                  </div>
+                  {/* Collaborators Section */}
+                  {journeyMap.collaborators && journeyMap.collaborators.length > 0 && (
+                    <div className="text-sm">
+                      <div className="font-medium text-gray-700 mb-2 flex items-center">
+                        <UsersIcon className="h-3 w-3 mr-1" />
+                        Team ({journeyMap.collaborators.length})
+                      </div>
+                      <div className="flex items-center">
+                        {journeyMap.collaborators.slice(0, 4).map((collaborator, index) => (
+                          <div
+                            key={collaborator.id}
+                            className="relative group"
+                            style={{ zIndex: journeyMap.collaborators!.length - index }}
+                          >
+                            <div
+                              className={`
+                                w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium
+                                ${collaborator.role === 'owner'
+                                  ? 'bg-slate-700 text-white'
+                                  : collaborator.role === 'editor'
+                                  ? 'bg-blue-500 text-white'
+                                  : 'bg-gray-400 text-white'
+                                }
+                                ${index > 0 ? '-ml-2' : ''}
+                                border-2 border-white
+                                hover:z-10 hover:scale-110 transition-transform cursor-pointer
+                              `}
+                              title={`${collaborator.name} (${collaborator.role})`}
+                            >
+                              {collaborator.avatar}
+                            </div>
+                          </div>
+                        ))}
+                        {journeyMap.collaborators.length > 4 && (
+                          <div
+                            className="w-7 h-7 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-xs font-medium -ml-2 border-2 border-white cursor-pointer hover:bg-gray-300 transition-colors"
+                            title={`+${journeyMap.collaborators.length - 4} more collaborators`}
+                          >
+                            +{journeyMap.collaborators.length - 4}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                <div className="flex space-x-2 pt-4 border-t border-gray-100 mt-4">
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                  <span>{journeyMap.stages} {t('journeyMaps.stages')}</span>
+                  <span>Owner: {journeyMap.createdBy}</span>
+                </div>
+
+                <div className="flex space-x-2 pt-4 border-t border-gray-100">
                   <Link href={`/journey-maps/${journeyMap.id}`} className="flex-1">
                     <Button variant="primary" size="sm" className="w-full">
                       <EditIcon className="h-3 w-3 mr-1" />
@@ -174,7 +310,7 @@ export default function JourneyMapsPage() {
 
             {/* Add New Journey Map Card */}
             <Link href="/journey-maps/new">
-              <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-gray-400 hover:shadow-sm transition-all duration-200 h-80 cursor-pointer">
+              <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-gray-400 hover:shadow-sm transition-all duration-200 h-96 cursor-pointer">
                 <CardContent className="pt-6 h-full flex flex-col">
                   <div className="text-center py-12 flex-1 flex flex-col justify-center">
                     <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center hover:bg-gray-100 transition-colors">

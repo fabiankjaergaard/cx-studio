@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { PlusIcon, UserIcon, SaveIcon, ArrowLeftIcon } from 'lucide-react'
+import { PlusIcon, UserIcon, SaveIcon, ArrowLeftIcon, CameraIcon, UploadIcon } from 'lucide-react'
 import Link from 'next/link'
 
 interface Persona {
@@ -82,6 +82,7 @@ function CreatePersonaContent() {
   }, [searchParams])
 
   const [isCreating, setIsCreating] = useState(false)
+  const [avatarImage, setAvatarImage] = useState<string | null>(null)
 
   const handleCreatePersona = async () => {
     if (persona.name && persona.age && persona.occupation) {
@@ -142,6 +143,24 @@ function CreatePersonaContent() {
     updatePersonaField(field, updatedList.length > 0 ? updatedList : [''])
   }
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const result = e.target?.result as string
+        setAvatarImage(result)
+        updatePersonaField('avatar', result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeImage = () => {
+    setAvatarImage(null)
+    updatePersonaField('avatar', '👤')
+  }
+
   return (
     <div className="h-full flex flex-col bg-gray-50">
       <Header
@@ -177,6 +196,44 @@ function CreatePersonaContent() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Profile Image Section */}
+              <div className="flex justify-center">
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-full bg-slate-100 border-4 border-white shadow-lg flex items-center justify-center overflow-hidden">
+                    {avatarImage || (typeof persona.avatar === 'string' && persona.avatar.startsWith('data:')) ? (
+                      <img
+                        src={avatarImage || persona.avatar}
+                        alt="Avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="text-2xl">
+                        {persona.avatar || '👤'}
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute bottom-0 right-0 flex space-x-1">
+                    <label className="w-8 h-8 bg-slate-600 hover:bg-slate-700 rounded-full flex items-center justify-center cursor-pointer shadow-md transition-colors">
+                      <CameraIcon className="w-4 h-4 text-white" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+                    {(avatarImage || (typeof persona.avatar === 'string' && persona.avatar.startsWith('data:'))) && (
+                      <button
+                        onClick={removeImage}
+                        className="w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center shadow-md transition-colors"
+                      >
+                        <span className="text-white text-xs font-bold">×</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
                   label="Namn *"

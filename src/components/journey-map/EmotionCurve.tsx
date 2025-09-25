@@ -193,7 +193,7 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
     for (let i = 0; i < stageCount; i++) {
       const emotionPos = currentEmotions[i]
       const xPercent = (i + 0.5) * (100 / stageCount) // Center in each column
-      const yPercent = emotionPos ? (100 - emotionPos.yPercent) : 50 // Invert y-axis: higher emotion value = higher position
+      const yPercent = emotionPos ? emotionPos.yPercent : 50 // Higher emotion value = higher position
 
       positions.push({
         x: xPercent,
@@ -262,8 +262,8 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
     const deltaY = e.clientY - dragState.startY
     const deltaPercent = (deltaY / rect.height) * 100
 
-    // Invert delta so dragging down decreases yPercent (moves emoji down on curve)
-    let newYPercent = dragState.startYPercent - deltaPercent
+    // Dragging down increases yPercent (moves emoji down on curve)
+    let newYPercent = dragState.startYPercent + deltaPercent
     newYPercent = Math.max(10, Math.min(90, newYPercent)) // Constrain to 10-90%
 
     // Update the position in real-time
@@ -371,7 +371,7 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
                     isDragging: true,
                     stageIndex: index,
                     startY: e.clientY,
-                    startYPercent: position.y
+                    startYPercent: currentEmotions[index]?.yPercent || 50
                   })
                 }
               }}

@@ -1,21 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Palette } from 'lucide-react'
+import { Palette } from 'lucide-react'
 import { RowTypeBlock } from './RowTypeBlock'
 import { ROW_TYPES, ROW_COLORS } from '@/types/journey-map'
-import { Button } from '@/components/ui/Button'
 
 interface RowTypePaletteProps {
-  isCollapsed?: boolean
-  onToggleCollapse?: () => void
   className?: string
   'data-onboarding'?: string
 }
 
 export function RowTypePalette({
-  isCollapsed = false,
-  onToggleCollapse,
   className = '',
   'data-onboarding': dataOnboarding
 }: RowTypePaletteProps) {
@@ -28,45 +23,13 @@ export function RowTypePalette({
 
   const selectedColorInfo = ROW_COLORS.find(color => color.id === selectedColor)
 
-  if (isCollapsed) {
-    return (
-      <div className={`w-12 bg-white border-r border-gray-200 flex flex-col items-center py-4 h-full ${className}`} data-onboarding={dataOnboarding}>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onToggleCollapse}
-          className="w-8 h-8 p-0 mb-4"
-          title="Expand palette"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </Button>
-        <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
-          <Palette className="w-3 h-3 text-gray-400" />
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className={`w-80 bg-white border-r border-gray-200 flex flex-col h-full ${className}`} data-onboarding={dataOnboarding}>
       {/* Header */}
       <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Palette className="w-4 h-4 text-gray-600" />
-            <h3 className="font-medium text-gray-900">Row Types</h3>
-          </div>
-          {onToggleCollapse && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onToggleCollapse}
-              className="w-6 h-6 p-0"
-              title="Collapse palette"
-            >
-              <ChevronLeft className="w-3 h-3" />
-            </Button>
-          )}
+        <div className="flex items-center space-x-2">
+          <Palette className="w-4 h-4 text-gray-600" />
+          <h3 className="font-medium text-gray-900">Row Types</h3>
         </div>
         <p className="text-xs text-gray-500 mt-1">
           Drag blocks to add rows to your journey map

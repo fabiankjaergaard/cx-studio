@@ -8,117 +8,9 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { TemplatePreviewModal } from '@/components/templates/TemplatePreviewModal'
+import { getSharedTemplates, TEMPLATE_INDUSTRIES, getCategorizedTemplates } from '@/data/templates'
 
-const getTemplates = (t: (key: string) => string) => [
-  {
-    id: '1',
-    name: t('templates.ecommerce.name'),
-    description: t('templates.ecommerce.description'),
-    industry: t('templates.ecommerce.industry'),
-    touchpoints: 8,
-    stages: 5,
-    preview: '/api/templates/1/preview'
-  },
-  {
-    id: '2', 
-    name: t('templates.saas.name'),
-    description: t('templates.saas.description'),
-    industry: t('templates.saas.industry'),
-    touchpoints: 6,
-    stages: 4,
-    preview: '/api/templates/2/preview'
-  },
-  {
-    id: '3',
-    name: t('templates.customerService.name'),
-    description: t('templates.customerService.description'),
-    industry: t('templates.customerService.industry'),
-    touchpoints: 7,
-    stages: 5,
-    preview: '/api/templates/3/preview'
-  },
-  {
-    id: '4',
-    name: t('templates.restaurant.name'),
-    description: t('templates.restaurant.description'),
-    industry: t('templates.restaurant.industry'),
-    touchpoints: 9,
-    stages: 6,
-    preview: '/api/templates/4/preview'
-  },
-  {
-    id: '5',
-    name: t('templates.banking.name'),
-    description: t('templates.banking.description'),
-    industry: t('templates.banking.industry'),
-    touchpoints: 10,
-    stages: 5,
-    preview: '/api/templates/5/preview'
-  },
-  {
-    id: '6',
-    name: t('templates.healthcare.name'),
-    description: t('templates.healthcare.description'),
-    industry: t('templates.healthcare.industry'),
-    touchpoints: 8,
-    stages: 6,
-    preview: '/api/templates/6/preview'
-  },
-  {
-    id: '7',
-    name: 'B2B Försäljning',
-    description: 'Komplex B2B-försäljningsprocess från prospektering till kundrelationer',
-    industry: 'B2B',
-    touchpoints: 12,
-    stages: 7,
-    preview: '/api/templates/7/preview'
-  },
-  {
-    id: '8',
-    name: 'E-learning Plattform',
-    description: 'Användarresa för online-utbildning från registrering till certifiering',
-    industry: 'Utbildning',
-    touchpoints: 8,
-    stages: 5,
-    preview: '/api/templates/8/preview'
-  },
-  {
-    id: '9',
-    name: 'Mobilapp Onboarding',
-    description: 'Första intryck och onboarding för mobilappar med användarengagemang',
-    industry: 'Teknologi',
-    touchpoints: 6,
-    stages: 4,
-    preview: '/api/templates/9/preview'
-  },
-  {
-    id: '10',
-    name: 'Eventmanagement',
-    description: 'Evenemangsupplevelse från planering till efterföljning',
-    industry: 'Event',
-    touchpoints: 10,
-    stages: 6,
-    preview: '/api/templates/10/preview'
-  },
-  {
-    id: '11',
-    name: 'Rekryteringsprocess',
-    description: 'Kandidatupplevelse genom hela rekryteringsprocessen',
-    industry: 'HR',
-    touchpoints: 9,
-    stages: 5,
-    preview: '/api/templates/11/preview'
-  },
-  {
-    id: '12',
-    name: 'Försäkringsärende',
-    description: 'Kundresa vid skadeanmälan och ärendehantering',
-    industry: 'Försäkring',
-    touchpoints: 7,
-    stages: 5,
-    preview: '/api/templates/12/preview'
-  }
-]
+const getTemplates = getSharedTemplates
 
 export default function TemplatesPage() {
   const { t } = useLanguage()
@@ -129,20 +21,20 @@ export default function TemplatesPage() {
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const templates = getTemplates(t)
 
-  // Filter and sort templates
-  const filteredAndSortedTemplates = React.useMemo(() => {
-    let filtered = templates
+  // Get categorized templates
+  const categorizedTemplates = React.useMemo(() => {
+    let allTemplates = templates
 
-    // Filter by industry
+    // Filter by industry if selected
     if (selectedIndustry) {
-      filtered = filtered.filter(template =>
+      allTemplates = allTemplates.filter(template =>
         template.industry.toLowerCase() === selectedIndustry.toLowerCase()
       )
     }
 
     // Sort templates
     if (sortBy) {
-      filtered = [...filtered].sort((a, b) => {
+      allTemplates = [...allTemplates].sort((a, b) => {
         switch (sortBy) {
           case 'name':
             return a.name.localeCompare(b.name)
@@ -156,8 +48,17 @@ export default function TemplatesPage() {
       })
     }
 
-    return filtered
+    // If no industry filter is applied, return categorized templates
+    if (!selectedIndustry) {
+      return getCategorizedTemplates(allTemplates)
+    }
+
+    // If industry filter is applied, return all templates in a single category
+    return { 'Filtered Results': allTemplates }
   }, [templates, selectedIndustry, sortBy])
+
+  // Get total template count for display
+  const totalTemplates = Object.values(categorizedTemplates).flat().length
 
   const handlePreview = (template: any) => {
     setSelectedTemplate(template)
@@ -194,18 +95,10 @@ export default function TemplatesPage() {
                 value={selectedIndustry}
                 onChange={(e) => setSelectedIndustry(e.target.value)}
               >
-              <option value="">{t('templates.filters.allIndustries')}</option>
-              <option value="E-commerce">{t('templates.filters.ecommerce')}</option>
-              <option value="Teknologi">{t('templates.filters.technology')}</option>
-              <option value="Service">{t('templates.filters.service')}</option>
-              <option value="Hospitality">{t('templates.filters.hospitality')}</option>
-              <option value="Finans">{t('templates.filters.finance')}</option>
-              <option value="Hälsovård">{t('templates.filters.healthcare')}</option>
-              <option value="B2B">B2B</option>
-              <option value="Utbildning">Utbildning</option>
-              <option value="Event">Event</option>
-              <option value="HR">HR</option>
-              <option value="Försäkring">Försäkring</option>
+              <option value="">All Industries</option>
+              {TEMPLATE_INDUSTRIES.map(industry => (
+                <option key={industry} value={industry}>{industry}</option>
+              ))}
               </select>
               <ChevronDownIcon className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
             </div>
@@ -223,76 +116,92 @@ export default function TemplatesPage() {
               <ChevronDownIcon className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
             </div>
           </div>
-          <div className="text-sm text-gray-500">
-            {filteredAndSortedTemplates.length} {filteredAndSortedTemplates.length === 1 ? 'mall' : 'mallar'}
+          <div className="text-sm text-gray-600">
+            {totalTemplates} templates
           </div>
         </div>
 
-        {/* Templates Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAndSortedTemplates.map((template) => (
-            <Card key={template.id} className="hover:shadow-lg transition-shadow h-72 flex flex-col">
-              <CardHeader className="pb-4 flex-shrink-0">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-lg">{template.name}</CardTitle>
-                    <span className="inline-block mt-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                      {template.industry}
-                    </span>
+        {/* Categorized Templates */}
+        {Object.entries(categorizedTemplates).map(([categoryName, categoryTemplates]) => (
+          <div key={categoryName} className="mb-8">
+            {categoryName !== 'Filtered Results' && (
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                {categoryName}
+                <span className="ml-2 text-sm font-normal text-gray-500">
+                  ({categoryTemplates.length} templates)
+                </span>
+              </h3>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {categoryTemplates.map((template) => (
+            <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
+                    <BookTemplateIcon className="h-6 w-6 text-slate-600" />
                   </div>
+                  <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded">
+                    {template.industry}
+                  </span>
                 </div>
+                <CardTitle className="text-lg leading-tight">{template.name}</CardTitle>
               </CardHeader>
-              <CardContent className="flex-1 flex flex-col">
-                <div className="flex-1">
-                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-                    {template.description}
-                  </p>
+              <CardContent className="pt-0">
+                <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                  {template.description}
+                </p>
+
+                <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                  <span>{template.touchpoints} touchpoints</span>
+                  <span>{template.stages} stages</span>
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                  <span>{template.touchpoints} {t('templates.touchpoints')}</span>
-                  <span>{template.stages} {t('templates.stages')}</span>
-                </div>
-
-                <div className="flex space-x-3">
+                <div className="flex space-x-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex items-center justify-center w-10 h-10 p-0"
                     onClick={() => handlePreview(template)}
-                    title={t('templates.actions.preview')}
+                    className="flex-1"
                   >
-                    <EyeIcon className="h-4 w-4" />
+                    <EyeIcon className="h-3 w-3 mr-1" />
+                    Preview
                   </Button>
                   <Button
                     variant="primary"
                     size="sm"
-                    className="flex items-center justify-center px-4 h-10 flex-1"
                     onClick={() => handleUseTemplate(template)}
+                    className="flex-1"
                   >
-                    <DownloadIcon className="mr-2 h-4 w-4" />
-                    {t('templates.actions.useTemplate')}
+                    <PlusIcon className="h-3 w-3 mr-1" />
+                    Use Template
                   </Button>
                 </div>
               </CardContent>
             </Card>
-          ))}
+              ))}
 
-          {/* Custom Template Card */}
-          <Card className="hover:shadow-lg transition-shadow h-72 flex flex-col border-dashed border-2 border-gray-300 hover:border-gray-400 cursor-pointer" onClick={handleCreateCustomTemplate}>
-            <CardContent className="flex-1 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center">
-                <PlusIcon className="h-8 w-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg text-gray-500 mb-2 font-normal">
-                {t('templates.customSection.cardTitle')}
-              </h3>
-              <p className="text-sm text-gray-400">
-                {t('templates.customSection.cardDescription')}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+              {/* Custom Template Card - only show in the last category */}
+              {categoryName === Object.keys(categorizedTemplates)[Object.keys(categorizedTemplates).length - 1] && (
+                <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-gray-400 hover:shadow-sm transition-all duration-200 cursor-pointer" onClick={handleCreateCustomTemplate}>
+                  <CardContent className="pt-6 h-full flex flex-col">
+                    <div className="text-center py-12 flex-1 flex flex-col justify-center">
+                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center hover:bg-gray-100 transition-colors">
+                        <PlusIcon className="w-8 h-8 text-gray-400 hover:text-gray-500" />
+                      </div>
+                      <h3 className="text-lg font-medium text-gray-500 mb-2 hover:text-gray-600">
+                        Create Custom Template
+                      </h3>
+                      <p className="text-sm text-gray-400 hover:text-gray-500">
+                        Start with a blank template and customize it
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Preview Modal */}

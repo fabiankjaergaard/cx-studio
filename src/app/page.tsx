@@ -10,10 +10,12 @@ import React from 'react'
 import Link from 'next/link'
 import { useJourneyStore } from '@/store/journey-store'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { getSavedJourneyMaps } from '@/services/journeyMapStorage'
 
 export default function Home() {
   const [showWidgetSelector, setShowWidgetSelector] = useState(false)
   const [enabledWidgets, setEnabledWidgets] = useState<string[]>([])
+  const [journeyMaps, setJourneyMaps] = useState<any[]>([])
   const { journeys } = useJourneyStore()
   const { t } = useLanguage()
 
@@ -56,6 +58,33 @@ export default function Home() {
     const saved = localStorage.getItem('cx-enabled-widgets')
     if (saved) {
       setEnabledWidgets(JSON.parse(saved))
+    }
+  }, [])
+
+  // Load saved journey maps on component mount
+  useEffect(() => {
+    const loadSavedMaps = () => {
+      try {
+        const savedMaps = getSavedJourneyMaps()
+        console.log('Loading saved journey maps on dashboard:', savedMaps.length, 'maps found')
+        setJourneyMaps(savedMaps)
+      } catch (error) {
+        console.error('Error loading saved journey maps on dashboard:', error)
+      }
+    }
+
+    loadSavedMaps()
+
+    // Also reload when page comes into focus (when user navigates back)
+    const handleFocus = () => {
+      console.log('Dashboard focused, reloading journey maps')
+      loadSavedMaps()
+    }
+
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      window.removeEventListener('focus', handleFocus)
     }
   }, [])
 
@@ -321,7 +350,7 @@ export default function Home() {
               {/* Journey Maps - Always show as first widget */}
               <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 h-80">
                 <CardContent className="pt-6 h-full flex flex-col">
-                  {journeys.length === 0 ? (
+                  {journeyMaps.length === 0 ? (
                     <div className="text-center py-12 flex-1 flex flex-col justify-center">
                       <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-2xl flex items-center justify-center">
                         <MapIcon className="w-8 h-8 text-slate-400" />
@@ -347,18 +376,25 @@ export default function Home() {
                         </Link>
                       </div>
                       <div className="space-y-3 flex-1 overflow-y-auto">
-                        {journeys.slice(0, 3).map((journey) => (
-                          <Link key={journey.id} href={`/journey-maps/${journey.id}`}>
-                            <div className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors border border-slate-100 hover:border-slate-200">
-                              <div className="min-w-0 flex-1">
-                                <p className="font-medium text-gray-900 truncate">{journey.title}</p>
-                                <p className="text-xs text-gray-500">{journey.touchpoints.length} touchpoints</p>
+                        {journeyMaps.slice(0, 3).map((journeyMap) => (
+                          <Link key={journeyMap.id} href={`/journey-maps/${journeyMap.id}`}>
+                            <div className="flex items-center p-3 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors border border-slate-100 hover:border-slate-200">
+                              <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                                <MapIcon className="w-4 h-4 text-slate-600" />
                               </div>
-                              <div className="ml-4">
+                              <div className="min-w-0 flex-1">
+                                <p className="font-medium text-gray-900 truncate">{journeyMap.name}</p>
+                                <p className="text-xs text-gray-500">{journeyMap.stages?.length || 0} stages • Senast ändrad {new Date(journeyMap.lastModified).toLocaleDateString('sv-SE')}</p>
+                              </div>
+                              <div className="ml-3 flex-shrink-0">
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  journey.touchpoints.length > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'
+                                  journeyMap.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                                  journeyMap.status === 'in-review' ? 'bg-blue-100 text-blue-700' :
+                                  'bg-slate-100 text-slate-700'
                                 }`}>
-                                  {journey.touchpoints.length > 0 ? 'Aktiv' : 'Tom'}
+                                  {journeyMap.status === 'completed' ? 'Klar' :
+                                   journeyMap.status === 'in-review' ? 'Granskas' :
+                                   'Utkast'}
                                 </span>
                               </div>
                             </div>

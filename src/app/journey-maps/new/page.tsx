@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { ProgressSteps } from '@/components/ui/ProgressSteps'
 
 const creationMethods = [
   {
@@ -95,17 +96,25 @@ const journeyMapTemplates = [
   }
 ]
 
+
 export default function NewJourneyMapPage() {
   const { t } = useLanguage()
   const router = useRouter()
-  const [isBlankModalOpen, setIsBlankModalOpen] = useState(false)
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(null)
   const [newMapName, setNewMapName] = useState('')
   const [newMapDescription, setNewMapDescription] = useState('')
+
+  // Determine current step based on state
+  const getCurrentStep = () => {
+    if (!selectedMethod) return 0 // Method selection
+    if (selectedMethod && (!newMapName.trim())) return 1 // Details form
+    return 1 // Still on details since we navigate away after completing
+  }
 
   const handleMethodSelect = (method: string) => {
     switch (method) {
       case 'blank':
-        setIsBlankModalOpen(true)
+        setSelectedMethod('blank')
         break
       case 'template':
         router.push('/journey-maps/templates')
@@ -120,19 +129,26 @@ export default function NewJourneyMapPage() {
   const handleCreateBlankMap = () => {
     console.log('handleCreateBlankMap called, newMapName:', newMapName)
     if (newMapName.trim()) {
-      console.log('Name is valid, navigating...')
-      // Here you would typically save to your backend/state
+      console.log('Name is valid, navigating to setup...')
       const mapName = newMapName.trim()
-      setIsBlankModalOpen(false)
+      const mapDescription = newMapDescription.trim()
+      setSelectedMethod(null)
       setNewMapName('')
       setNewMapDescription('')
 
-      // Generate a unique ID for the new journey map
-      const newMapId = Date.now().toString()
-      const url = `/journey-maps/${newMapId}?blank=true&name=${encodeURIComponent(mapName)}`
-      console.log('Navigating to:', url)
+      // Navigate to setup page with parameters
+      const params = new URLSearchParams({
+        name: mapName,
+        blank: 'true'
+      })
 
-      // Try multiple navigation methods
+      if (mapDescription) {
+        params.append('description', mapDescription)
+      }
+
+      const url = `/journey-maps/setup?${params.toString()}`
+      console.log('Navigating to setup:', url)
+
       try {
         router.push(url)
       } catch (error) {
@@ -161,131 +177,150 @@ export default function NewJourneyMapPage() {
 
       <div className="flex-1 p-8 overflow-auto">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-              How would you like to create your journey map?
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Choose the method that best fits your project. You can always modify and customize later.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {creationMethods.map((method) => (
-              <Card
-                key={method.id}
-                className={`cursor-pointer transition-all duration-200 border-2 ${method.borderColor} hover:shadow-md ${
-                  method.id === 'ai' ? 'relative opacity-75' : ''
-                }`}
-                onClick={() => method.id !== 'ai' && handleMethodSelect(method.id)}
-              >
-                <CardContent className="p-6 text-center">
-                  {method.id === 'ai' && (
-                    <div className="absolute top-2 right-2 bg-slate-700 text-white text-xs font-medium px-2 py-0.5 rounded-full">
-                      Coming Soon
-                    </div>
-                  )}
-
-                  <div className={`w-16 h-16 mx-auto mb-4 ${method.color} rounded-2xl flex items-center justify-center`}>
-                    <method.icon className="w-8 h-8" />
-                  </div>
-
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {method.title}
-                  </h3>
-
-                  <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-                    {method.description}
-                  </p>
-
-                  <Button
-                    variant={method.id === 'ai' ? 'outline' : 'primary'}
-                    className="w-full"
-                    disabled={method.id === 'ai'}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      if (method.id !== 'ai') {
-                        handleMethodSelect(method.id)
-                      }
-                    }}
-                  >
-                    {method.id === 'ai' ? 'Coming Soon' : method.buttonText}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Additional Information */}
-          <Card className="mt-8 bg-slate-50 border-slate-200">
-            <CardContent className="p-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Need help choosing?</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                <div>
-                  <strong className="text-gray-900">Blank:</strong> Best when you have a clear vision and want full control over the structure.
-                </div>
-                <div>
-                  <strong className="text-gray-900">Template:</strong> Perfect for getting started quickly with proven structures.
-                </div>
-                <div>
-                  <strong className="text-gray-900">AI:</strong> Ideal when you want suggestions and inspiration based on your needs.
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Blank Journey Map Modal */}
-      <Modal
-        isOpen={isBlankModalOpen}
-        onClose={() => setIsBlankModalOpen(false)}
-        title="Create blank journey map"
-      >
-        <div className="space-y-6">
-          <p className="text-gray-600">
-            Give your journey map a name and description to get started.
-          </p>
-
-          <Input
-            label="Name *"
-            value={newMapName}
-            onChange={(e) => setNewMapName(e.target.value)}
-            placeholder="e.g. Onboarding Journey"
-            required
-          />
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description
-            </label>
-            <textarea
-              value={newMapDescription}
-              onChange={(e) => setNewMapDescription(e.target.value)}
-              placeholder="Describe what this journey map will be used for..."
-              className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white text-gray-900 placeholder-gray-500"
-              rows={3}
+          {/* Progress Steps */}
+          <div className="mb-8">
+            <ProgressSteps
+              totalSteps={4}
+              currentStep={getCurrentStep()}
             />
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4 border-t">
-            <Button
-              variant="outline"
-              onClick={() => setIsBlankModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleCreateBlankMap}
-              disabled={!newMapName.trim()}
-            >
-              <PlusIcon className="mr-2 h-4 w-4" />
-              Create journey map
-            </Button>
-          </div>
+          {!selectedMethod ? (
+            <>
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-semibold text-gray-900 mb-3">
+                  How would you like to create your journey map?
+                </h2>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  Choose the method that best fits your project. You can always modify and customize later.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {creationMethods.map((method) => (
+                  <Card
+                    key={method.id}
+                    className={`cursor-pointer transition-all duration-200 border-2 ${method.borderColor} hover:shadow-md ${
+                      method.id === 'ai' ? 'relative opacity-75' : ''
+                    }`}
+                    onClick={() => method.id !== 'ai' && handleMethodSelect(method.id)}
+                  >
+                    <CardContent className="p-6 text-center">
+                      {method.id === 'ai' && (
+                        <div className="absolute top-2 right-2 bg-slate-700 text-white text-xs font-medium px-2 py-0.5 rounded-full">
+                          Coming Soon
+                        </div>
+                      )}
+
+                      <div className={`w-16 h-16 mx-auto mb-4 ${method.color} rounded-2xl flex items-center justify-center`}>
+                        <method.icon className="w-8 h-8" />
+                      </div>
+
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                        {method.title}
+                      </h3>
+
+                      <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                        {method.description}
+                      </p>
+
+                      <Button
+                        variant={method.id === 'ai' ? 'outline' : 'primary'}
+                        className="w-full"
+                        disabled={method.id === 'ai'}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (method.id !== 'ai') {
+                            handleMethodSelect(method.id)
+                          }
+                        }}
+                      >
+                        {method.id === 'ai' ? 'Coming Soon' : method.buttonText}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
+          ) : (
+            /* Blank Journey Map Form */
+            <div className="max-w-2xl mx-auto">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-semibold text-gray-900 mb-3">
+                  Create blank journey map
+                </h2>
+                <p className="text-gray-600">
+                  Give your journey map a name and description to get started.
+                </p>
+              </div>
+
+              <Card>
+                <CardContent className="p-8">
+                  <div className="space-y-6">
+                    <Input
+                      label="Name *"
+                      value={newMapName}
+                      onChange={(e) => setNewMapName(e.target.value)}
+                      placeholder="e.g. Onboarding Journey"
+                      required
+                    />
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                      </label>
+                      <textarea
+                        value={newMapDescription}
+                        onChange={(e) => setNewMapDescription(e.target.value)}
+                        placeholder="Describe what this journey map will be used for..."
+                        className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white text-gray-900 placeholder-gray-500"
+                        rows={4}
+                      />
+                    </div>
+
+                    <div className="flex justify-between pt-4 border-t">
+                      <Button
+                        variant="outline"
+                        onClick={() => setSelectedMethod(null)}
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        variant="primary"
+                        onClick={handleCreateBlankMap}
+                        disabled={!newMapName.trim()}
+                      >
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        Continue to team setup
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {!selectedMethod && (
+            /* Additional Information */
+            <Card className="mt-8 bg-slate-50 border-slate-200">
+              <CardContent className="p-6">
+                <h3 className="font-semibold text-gray-900 mb-3">Need help choosing?</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                  <div>
+                    <strong className="text-gray-900">Blank:</strong> Best when you have a clear vision and want full control over the structure.
+                  </div>
+                  <div>
+                    <strong className="text-gray-900">Template:</strong> Perfect for getting started quickly with proven structures.
+                  </div>
+                  <div>
+                    <strong className="text-gray-900">AI:</strong> Ideal when you want suggestions and inspiration based on your needs.
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
-      </Modal>
+      </div>
 
     </div>
   )
