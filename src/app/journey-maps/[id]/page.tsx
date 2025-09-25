@@ -1050,7 +1050,6 @@ export default function JourneyMapBuilderPage() {
 
   const [journeyMap, setJourneyMap] = useState<JourneyMapData | null>(null)
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false)
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isRowEditorOpen, setIsRowEditorOpen] = useState(false)
   const [editingRow, setEditingRow] = useState<JourneyMapRow | null>(null)
   const [isSaving, setIsSaving] = useState(false)
@@ -1064,24 +1063,10 @@ export default function JourneyMapBuilderPage() {
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null)
   const [isDraggingStage, setIsDraggingStage] = useState(false)
   const [isDragDropMode, setIsDragDropMode] = useState(true) // true for drag-drop, false for plus-button mode
-
-  // Additional settings toggles
-  const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState(false)
   const [isCompactView, setIsCompactView] = useState(false)
   const [showGridLines, setShowGridLines] = useState(true)
-  const [showTooltips, setShowTooltips] = useState(true)
   const [isAdvancedMode, setIsAdvancedMode] = useState(false)
-
-  // Auto-save functionality
-  useEffect(() => {
-    if (!isAutoSaveEnabled || !journeyMap) return
-
-    const autoSaveTimer = setTimeout(() => {
-      handleSave()
-    }, 2000) // Auto-save after 2 seconds of inactivity
-
-    return () => clearTimeout(autoSaveTimer)
-  }, [journeyMap, isAutoSaveEnabled])
+  const [showTooltips, setShowTooltips] = useState(true)
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -2084,7 +2069,7 @@ export default function JourneyMapBuilderPage() {
         title={journeyMap.name}
         description={journeyMap.description || 'Redigera din customer journey map'}
         actions={
-          <div className="flex space-x-2">
+          <div className="flex items-center space-x-2">
             <div className="relative" data-dropdown>
               <Button
                 variant="outline"
@@ -2122,13 +2107,6 @@ export default function JourneyMapBuilderPage() {
               )}
             </div>
 
-            <Button
-              variant="outline"
-              onClick={() => setIsSettingsModalOpen(true)}
-            >
-              <SettingsIcon className="mr-2 h-4 w-4" />
-              Settings
-            </Button>
             <Button
               variant="primary"
               onClick={handleSave}
@@ -2192,8 +2170,33 @@ export default function JourneyMapBuilderPage() {
               </Card>
             </div>
 
+            {/* Toolbar */}
+            <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-t-lg">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-700 font-medium">Redigeringsläge:</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isDragDropMode}
+                    onChange={() => setIsDragDropMode(!isDragDropMode)}
+                    className="sr-only"
+                  />
+                  <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+                    isDragDropMode ? 'bg-slate-700' : 'bg-gray-300'
+                  }`}>
+                    <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
+                      isDragDropMode ? 'translate-x-6' : 'translate-x-1'
+                    } mt-1`}></div>
+                  </div>
+                </label>
+                <span className="text-sm text-gray-600">
+                  {isDragDropMode ? 'Drag & Drop' : 'Plus-knappar'}
+                </span>
+              </div>
+            </div>
+
             {/* Journey Map Grid */}
-            <Card className="overflow-hidden journey-map-content" data-export="journey-map">
+            <Card className="overflow-hidden journey-map-content rounded-t-none border-t-0" data-export="journey-map">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
@@ -2459,23 +2462,6 @@ export default function JourneyMapBuilderPage() {
                     />
                   )}
 
-                  {/* Plus button zone at top - plus button mode only */}
-                  {!isDragDropMode && journeyMap.rows.length === 0 && (
-                    <tr>
-                      <td colSpan={journeyMap.stages.length + 1} className="p-6 text-center border-b">
-                        <div className="flex items-center justify-center">
-                          <Button
-                            variant="outline"
-                            onClick={() => setIsRowEditorOpen(true)}
-                            className="text-gray-500 border-dashed border-2 hover:border-gray-400 hover:text-gray-700"
-                          >
-                            <PlusIcon className="mr-2 h-4 w-4" />
-                            Lägg till första rad
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
 
                   {journeyMap.rows.map((row, rowIndex) => (
                     <React.Fragment key={`row-section-${row.id}`}>
@@ -2690,21 +2676,6 @@ export default function JourneyMapBuilderPage() {
                         />
                       )}
 
-                      {/* Plus button after each row - plus button mode only */}
-                      {!isDragDropMode && (
-                        <tr key={`plus-button-${rowIndex + 1}`}>
-                          <td colSpan={journeyMap.stages.length + 1} className="p-2 text-center">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setIsRowEditorOpen(true)}
-                              className="text-gray-400 hover:text-gray-600 border-dashed border hover:border-gray-300"
-                            >
-                              <PlusIcon className="h-4 w-4" />
-                            </Button>
-                          </td>
-                        </tr>
-                      )}
                     </React.Fragment>
                   ))}
                   
@@ -2713,6 +2684,16 @@ export default function JourneyMapBuilderPage() {
             </div>
           </CardContent>
           </Card>
+
+          {/* Separate Plus Button Section - plus button mode only */}
+          {!isDragDropMode && (
+            <div
+              onClick={() => setIsRowEditorOpen(true)}
+              className="mt-6 border-2 border-dashed border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-all duration-200 rounded-lg p-4 flex justify-center cursor-pointer"
+            >
+              <PlusIcon className="h-5 w-5 text-gray-400" />
+            </div>
+          )}
         </div>
       </div>
         </div>
@@ -2760,225 +2741,6 @@ export default function JourneyMapBuilderPage() {
         </div>
       </Modal>
 
-      {/* Settings Modal */}
-      <Modal
-        isOpen={isSettingsModalOpen}
-        onClose={() => setIsSettingsModalOpen(false)}
-        title={showTooltips ? "Journey Map Settings" : undefined}
-        maxWidth="lg"
-      >
-        <div className="space-y-6">
-          <div>
-            <Input
-              value={journeyMap.name}
-              onChange={(e) => setJourneyMap({ ...journeyMap, name: e.target.value })}
-              placeholder="Namn på journey map"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Beskrivning</label>
-            <textarea
-              value={journeyMap.description || ''}
-              onChange={(e) => setJourneyMap({ ...journeyMap, description: e.target.value })}
-              placeholder="Beskriv syftet med denna journey map..."
-              className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
-              rows={3}
-            />
-          </div>
-
-          {/* Settings Toggles */}
-          <div className="border-t pt-6 space-y-6">
-            <h3 className="text-lg font-medium text-gray-900">Inställningar</h3>
-
-            {/* Interface Mode Setting */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium text-gray-900">Gränssnitt</h4>
-                <p className="text-xs text-gray-500 mt-1">
-                  {isDragDropMode ? 'Drag & Drop paletten är aktiv' : 'Plus-knappar är aktiva'}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isDragDropMode}
-                  onChange={() => setIsDragDropMode(!isDragDropMode)}
-                  className="sr-only"
-                />
-                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
-                  isDragDropMode ? 'bg-slate-700' : 'bg-gray-200'
-                }`}>
-                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
-                    isDragDropMode ? 'translate-x-6' : 'translate-x-1'
-                  } mt-1`}></div>
-                </div>
-              </label>
-            </div>
-
-            {/* Auto Save Toggle */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium text-gray-900">Auto-spara</h4>
-                <p className="text-xs text-gray-500 mt-1">
-                  {isAutoSaveEnabled ? 'Ändringar sparas automatiskt' : 'Spara manuellt med Ctrl+S'}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isAutoSaveEnabled}
-                  onChange={() => setIsAutoSaveEnabled(!isAutoSaveEnabled)}
-                  className="sr-only"
-                />
-                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
-                  isAutoSaveEnabled ? 'bg-slate-700' : 'bg-gray-200'
-                }`}>
-                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
-                    isAutoSaveEnabled ? 'translate-x-6' : 'translate-x-1'
-                  } mt-1`}></div>
-                </div>
-              </label>
-            </div>
-
-            {/* Compact View Toggle */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium text-gray-900">Kompakt vy</h4>
-                <p className="text-xs text-gray-500 mt-1">
-                  {isCompactView ? 'Tät layout för mer innehåll' : 'Normal layout med mer mellanrum'}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isCompactView}
-                  onChange={() => setIsCompactView(!isCompactView)}
-                  className="sr-only"
-                />
-                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
-                  isCompactView ? 'bg-slate-700' : 'bg-gray-200'
-                }`}>
-                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
-                    isCompactView ? 'translate-x-6' : 'translate-x-1'
-                  } mt-1`}></div>
-                </div>
-              </label>
-            </div>
-
-            {/* Grid Lines Toggle */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium text-gray-900">Rutnätslinjer</h4>
-                <p className="text-xs text-gray-500 mt-1">
-                  {showGridLines ? 'Visa linjer mellan celler' : 'Dölj rutnätslinjer'}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showGridLines}
-                  onChange={() => setShowGridLines(!showGridLines)}
-                  className="sr-only"
-                />
-                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
-                  showGridLines ? 'bg-slate-700' : 'bg-gray-200'
-                }`}>
-                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
-                    showGridLines ? 'translate-x-6' : 'translate-x-1'
-                  } mt-1`}></div>
-                </div>
-              </label>
-            </div>
-
-            {/* Tooltips Toggle */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium text-gray-900">Hjälptexter</h4>
-                <p className="text-xs text-gray-500 mt-1">
-                  {showTooltips ? 'Visa tips vid hover' : 'Dölj hjälptexter'}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showTooltips}
-                  onChange={() => setShowTooltips(!showTooltips)}
-                  className="sr-only"
-                />
-                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
-                  showTooltips ? 'bg-slate-700' : 'bg-gray-200'
-                }`}>
-                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
-                    showTooltips ? 'translate-x-6' : 'translate-x-1'
-                  } mt-1`}></div>
-                </div>
-              </label>
-            </div>
-
-            {/* Advanced Mode Toggle */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium text-gray-900">Avancerat läge</h4>
-                <p className="text-xs text-gray-500 mt-1">
-                  {isAdvancedMode ? 'Visa alla funktioner och menyer' : 'Enklare gränssnitt'}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isAdvancedMode}
-                  onChange={() => setIsAdvancedMode(!isAdvancedMode)}
-                  className="sr-only"
-                />
-                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
-                  isAdvancedMode ? 'bg-slate-700' : 'bg-gray-200'
-                }`}>
-                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
-                    isAdvancedMode ? 'translate-x-6' : 'translate-x-1'
-                  } mt-1`}></div>
-                </div>
-              </label>
-            </div>
-
-            {/* Onboarding Toggle */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium text-gray-900">Nybörjarguide</h4>
-                <p className="text-xs text-gray-500 mt-1">
-                  Återaktivera guider och tips för nya användare
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isOnboardingActive}
-                  onChange={() => setIsOnboardingActive(!isOnboardingActive)}
-                  className="sr-only"
-                />
-                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
-                  isOnboardingActive ? 'bg-slate-700' : 'bg-gray-200'
-                }`}>
-                  <div className={`inline-block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out ${
-                    isOnboardingActive ? 'translate-x-6' : 'translate-x-1'
-                  } mt-1`}></div>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <div className="flex justify-end space-x-3 pt-4 border-t">
-            <Button variant="outline" onClick={() => setIsSettingsModalOpen(false)}>
-              Avbryt
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => setIsSettingsModalOpen(false)}
-            >
-              Spara ändringar
-            </Button>
-          </div>
-        </div>
-      </Modal>
 
       {/* Row Editor Modal */}
       <RowEditor

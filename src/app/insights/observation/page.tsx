@@ -261,7 +261,7 @@ export default function ObservationPage() {
           <div className="space-y-6">
             {observationTypes.map((type, index) => (
               <Card key={index} className="border-0 bg-white rounded-xl overflow-hidden">
-                <div className="p-6">
+                <CardContent className="p-6">
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-1">
                       <div className="flex items-center space-x-3 mb-3">
