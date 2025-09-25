@@ -1084,12 +1084,13 @@ export default function JourneyMapBuilderPage() {
 
   // Initialize journey map data
   useEffect(() => {
-    if (journeyMapId === 'new') {
-      // Check if creating from template or custom template
-      const templateId = searchParams.get('template')
-      const templateName = searchParams.get('name')
-      const isCustom = searchParams.get('custom')
+    // Check if this is a new journey map (either journeyMapId === 'new' OR blank=true parameter)
+    const isBlank = searchParams.get('blank') === 'true'
+    const templateId = searchParams.get('template')
+    const templateName = searchParams.get('name')
+    const isCustom = searchParams.get('custom')
 
+    if (journeyMapId === 'new' || isBlank) {
       let newJourneyMap: JourneyMapData
 
       if (templateId && templateName) {
@@ -1098,7 +1099,7 @@ export default function JourneyMapBuilderPage() {
       } else if (isCustom && templateName) {
         // Create custom template with more rows for user to customize
         newJourneyMap = {
-          id: Date.now().toString(),
+          id: journeyMapId === 'new' ? Date.now().toString() : journeyMapId,
           name: decodeURIComponent(templateName),
           description: 'Skapa din egen anpassade mall',
           persona: null,
@@ -1121,10 +1122,11 @@ export default function JourneyMapBuilderPage() {
           status: 'draft'
         }
       } else {
-        // Create blank journey map
+        // Create blank journey map - check if name is provided
+        const blankName = templateName || 'Ny Journey Map'
         newJourneyMap = {
-          id: Date.now().toString(),
-          name: 'Ny Journey Map',
+          id: journeyMapId === 'new' ? Date.now().toString() : journeyMapId,
+          name: blankName ? decodeURIComponent(blankName) : 'Ny Journey Map',
           description: '',
           persona: null,
           phases: DEFAULT_JOURNEY_PHASES,
@@ -1139,7 +1141,7 @@ export default function JourneyMapBuilderPage() {
               id: `${category.id}-${stage.id}`,
               content: ''
             }))
-          })),
+          })), // Start with just the Actions row for onboarding
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           createdBy: 'Nuvarande användare',
