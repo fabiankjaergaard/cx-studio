@@ -33,7 +33,7 @@ export function Modal({ isOpen, onClose, children, title, className, maxWidth = 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-20 backdrop-blur-[0.5px]" onClick={onClose} />
+        <div className="fixed inset-0 bg-white bg-opacity-80 backdrop-blur-sm" onClick={onClose} />
 
         <div className={cn(
           "relative bg-white rounded-xl shadow-lg border border-gray-100 w-full mx-auto transform transition-all",

@@ -27,6 +27,7 @@ export default function JourneyMapSetupPage() {
   const [mapDescription, setMapDescription] = useState('')
   const [isFromTemplate, setIsFromTemplate] = useState(false)
   const [templateId, setTemplateId] = useState('')
+  const [mapId, setMapId] = useState('')
 
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     {
@@ -48,6 +49,7 @@ export default function JourneyMapSetupPage() {
     const description = searchParams.get('description')
     const template = searchParams.get('template')
     const blank = searchParams.get('blank')
+    const id = searchParams.get('id')
 
     if (name) setMapName(decodeURIComponent(name))
     if (description) setMapDescription(decodeURIComponent(description))
@@ -55,6 +57,7 @@ export default function JourneyMapSetupPage() {
       setIsFromTemplate(true)
       setTemplateId(template)
     }
+    if (id) setMapId(id)
   }, [searchParams])
 
   const addTeamMember = () => {
@@ -84,8 +87,8 @@ export default function JourneyMapSetupPage() {
   }
 
   const handleContinue = () => {
-    // Generate a new ID for the journey map
-    const newMapId = Date.now().toString()
+    // Use the existing map ID from the URL parameters
+    const finalMapId = mapId || Date.now().toString()
     const params = new URLSearchParams({
       name: mapName,
       description: mapDescription
@@ -101,7 +104,7 @@ export default function JourneyMapSetupPage() {
     params.append('team', JSON.stringify(teamMembers))
 
     // Navigate to the actual journey map editor, not the creation page
-    router.push(`/journey-maps/${newMapId}?${params.toString()}`)
+    router.push(`/journey-maps/${finalMapId}?${params.toString()}`)
   }
 
   const getRoleColor = (role: string) => {

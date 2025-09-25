@@ -433,7 +433,7 @@ export function TemplatePreviewModal({
       isOpen={isOpen}
       onClose={onClose}
       title={`Förhandsgranska: ${template.name}`}
-      maxWidth="4xl"
+      maxWidth="5xl"
     >
       <div className="space-y-6">
         {/* Template Info */}

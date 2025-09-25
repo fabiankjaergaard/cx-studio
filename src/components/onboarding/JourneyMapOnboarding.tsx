@@ -60,7 +60,7 @@ const onboardingSteps: OnboardingStep[] = [
     description: 'Klicka på valfri cell för att lägga till innehåll. Här skapar du din journey map genom att fylla i relevant information.',
     targetSelector: '[data-onboarding="cells"]',
     position: 'bottom'
-  }
+  },
 ]
 
 export function JourneyMapOnboarding({ isActive, onComplete, onSkip }: JourneyMapOnboardingProps) {
@@ -222,7 +222,7 @@ export function JourneyMapOnboarding({ isActive, onComplete, onSkip }: JourneyMa
               <div
                 key={index}
                 className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentStep ? 'bg-blue-500' : 'bg-gray-300'
+                  index === currentStep ? 'bg-slate-900' : 'bg-gray-300'
                 }`}
               />
             ))}

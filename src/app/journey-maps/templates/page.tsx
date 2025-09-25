@@ -67,14 +67,15 @@ export default function JourneyMapTemplatesPage() {
   }
 
   const handleUseTemplate = (template: any) => {
-    // Navigate to setup page with template parameters
+    // Navigate directly to journey map editor with template parameters
+    const newMapId = Date.now().toString()
     const params = new URLSearchParams({
       name: template.name,
       description: template.description,
       template: template.id
     })
 
-    router.push(`/journey-maps/setup?${params.toString()}`)
+    router.push(`/journey-maps/${newMapId}?${params.toString()}`)
   }
 
   return (

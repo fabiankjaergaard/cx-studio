@@ -136,7 +136,8 @@ export default function NewJourneyMapPage() {
       setNewMapName('')
       setNewMapDescription('')
 
-      // Navigate to setup page with parameters
+      // Navigate to team setup for blank maps
+      const newMapId = Date.now().toString()
       const params = new URLSearchParams({
         name: mapName,
         blank: 'true'
@@ -146,7 +147,7 @@ export default function NewJourneyMapPage() {
         params.append('description', mapDescription)
       }
 
-      const url = `/journey-maps/setup?${params.toString()}`
+      const url = `/journey-maps/setup?${params.toString()}&id=${newMapId}`
       console.log('Navigating to setup:', url)
 
       try {
