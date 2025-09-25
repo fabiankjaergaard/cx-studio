@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { PlusIcon, UserIcon, SaveIcon, ArrowLeftIcon, CameraIcon, UploadIcon } from 'lucide-react'
+import { PlusIcon, UserIcon, SaveIcon, ArrowLeftIcon, CameraIcon, UploadIcon, SparklesIcon } from 'lucide-react'
 import Link from 'next/link'
 
 interface Persona {
@@ -39,7 +39,7 @@ function CreatePersonaContent() {
     age: '',
     location: '',
     occupation: '',
-    avatar: '👤',
+    avatar: '',
     goals: [''],
     painPoints: [''],
     description: '',
@@ -63,7 +63,7 @@ function CreatePersonaContent() {
           age: templateData.age || '',
           location: '',
           occupation: templateData.occupation || '',
-          avatar: templateData.avatar || '👤',
+          avatar: templateData.avatar || '',
           goals: templateData.goals || [''],
           painPoints: templateData.painPoints || [''],
           description: templateData.description || '',
@@ -158,7 +158,7 @@ function CreatePersonaContent() {
 
   const removeImage = () => {
     setAvatarImage(null)
-    updatePersonaField('avatar', '👤')
+    updatePersonaField('avatar', '')
   }
 
   return (
@@ -197,9 +197,9 @@ function CreatePersonaContent() {
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Profile Image Section */}
-              <div className="flex justify-center">
+              <div className="flex justify-center mb-8">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-full bg-slate-100 border-4 border-white shadow-lg flex items-center justify-center overflow-hidden">
+                  <div className="w-32 h-32 rounded-full bg-slate-100 border-4 border-white shadow-lg flex items-center justify-center overflow-hidden">
                     {avatarImage || (typeof persona.avatar === 'string' && persona.avatar.startsWith('data:')) ? (
                       <img
                         src={avatarImage || persona.avatar}
@@ -207,9 +207,7 @@ function CreatePersonaContent() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="text-2xl">
-                        {persona.avatar || '👤'}
-                      </div>
+                      <UserIcon className="w-12 h-12 text-gray-400" />
                     )}
                   </div>
                   <div className="absolute bottom-0 right-0 flex space-x-1">
