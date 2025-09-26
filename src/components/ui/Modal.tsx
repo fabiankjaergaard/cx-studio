@@ -31,9 +31,9 @@ export function Modal({ isOpen, onClose, children, title, className, maxWidth = 
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-[9999] overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="fixed inset-0 bg-white bg-opacity-80 backdrop-blur-sm" onClick={onClose} />
+        <div className="fixed inset-0" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }} onClick={onClose} />
 
         <div className={cn(
           "relative bg-white rounded-xl shadow-lg border border-gray-100 w-full mx-auto transform transition-all",
@@ -41,7 +41,7 @@ export function Modal({ isOpen, onClose, children, title, className, maxWidth = 
           className
         )}>
           {title && (
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
               <button
                 onClick={onClose}
@@ -52,7 +52,7 @@ export function Modal({ isOpen, onClose, children, title, className, maxWidth = 
             </div>
           )}
           
-          <div className="p-6">
+          <div className="p-4 max-h-[70vh] overflow-y-auto">
             {children}
           </div>
         </div>

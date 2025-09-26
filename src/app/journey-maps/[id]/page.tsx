@@ -22,7 +22,7 @@ import {
   ImageIcon
 } from 'lucide-react'
 import Link from 'next/link'
-import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES } from '@/types/journey-map'
+import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES, ROW_TYPES } from '@/types/journey-map'
 import { saveJourneyMap, getJourneyMapById } from '@/services/journeyMapStorage'
 import { JourneyMapCell as JourneyMapCellComponent } from '@/components/journey-map/JourneyMapCell'
 import { RowEditor } from '@/components/journey-map/RowEditor'
@@ -1998,10 +1998,7 @@ export default function JourneyMapBuilderPage() {
     }
   }
 
-  const handleAddRow = () => {
-    setEditingRow(null)
-    setIsRowEditorOpen(true)
-  }
+
 
   const handleDropBlock = (item: { rowType: string; name: string; description: string; color: string }) => {
     if (!journeyMap) return
@@ -2401,7 +2398,7 @@ export default function JourneyMapBuilderPage() {
 
             {/* Journey Map Grid */}
             <Card className="overflow-hidden journey-map-content rounded-t-none border-t-0" data-export="journey-map">
-              <CardContent className="p-0">
+              <CardContent className="p-0 border-b-2 border-gray-200">
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                 {/* Phase Header Row */}
@@ -2529,7 +2526,7 @@ export default function JourneyMapBuilderPage() {
                   </tr>
                   
                   {/* Stages Header Row */}
-                  <tr className="bg-slate-50 border-b border-gray-100" data-onboarding="stages">
+                  <tr className="bg-slate-50 border-b-2 border-gray-200" data-onboarding="stages">
                     <th className={`w-48 ${isCompactView ? 'p-2' : 'p-4'} text-left text-sm font-medium text-gray-900 ${showGridLines ? 'border-r border-gray-200' : ''} hover:bg-white transition-colors`}>
                       Journey Kategorier
                     </th>
@@ -2669,7 +2666,7 @@ export default function JourneyMapBuilderPage() {
 
                   {journeyMap.rows.map((row, rowIndex) => (
                     <React.Fragment key={`row-section-${row.id}`}>
-                      <tr key={row.id} className="border-b border-gray-100">
+                      <tr key={row.id} className="border-b-2 border-gray-200">
                       <td
                         className={`${isCompactView ? 'p-2' : 'p-4'} ${showGridLines ? 'border-r border-gray-200' : ''} bg-slate-50 group relative hover:bg-white transition-colors`}
                         data-onboarding={rowIndex === 0 ? "categories" : undefined}
@@ -2892,7 +2889,10 @@ export default function JourneyMapBuilderPage() {
           {/* Separate Plus Button Section - plus button mode only */}
           {!isDragDropMode && (
             <div
-              onClick={() => setIsRowEditorOpen(true)}
+              onClick={() => {
+                setEditingRow(null)
+                setIsRowEditorOpen(true)
+              }}
               className="mt-6 border-2 border-dashed border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-all duration-200 rounded-lg p-4 flex justify-center cursor-pointer"
             >
               <PlusIcon className="h-5 w-5 text-gray-400" />
@@ -2945,17 +2945,15 @@ export default function JourneyMapBuilderPage() {
         </div>
       </Modal>
 
-
       {/* Row Editor Modal */}
       <RowEditor
         isOpen={isRowEditorOpen}
         onClose={() => setIsRowEditorOpen(false)}
         row={editingRow}
         onSave={handleSaveRow}
-        onDelete={editingRow ? handleDeleteRow : undefined}
+        onDelete={editingRow ? () => handleDeleteRow(editingRow.id) : undefined}
         isNewRow={!editingRow}
       />
-
 
       {/* Onboarding Component */}
       <JourneyMapOnboarding
@@ -2971,6 +2969,7 @@ export default function JourneyMapBuilderPage() {
   return (
     <>
       {finalContent}
+
 
 {/* Toast Notification */}
       <Toast

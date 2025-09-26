@@ -25,17 +25,14 @@ export function RowEditor({ isOpen, onClose, row, onSave, onDelete, isNewRow = f
   })
 
   const handleSave = () => {
-    if (!formData.category.trim()) return
-
-    // Journey categories always get white background
-    const isJourneyCategory = ['actions', 'touchpoints', 'emotions', 'pain-points', 'opportunities', 'backstage'].includes(formData.category.toLowerCase())
-    const finalColor = isJourneyCategory ? 'bg-slate-50' : formData.color
+    const selectedRowType = ROW_TYPES.find(type => type.id === formData.type)
+    const defaultName = selectedRowType?.name || 'New Row'
 
     onSave({
-      category: formData.category.trim(),
-      description: formData.description.trim(),
+      category: defaultName,
+      description: selectedRowType?.description || '',
       type: formData.type as any,
-      color: finalColor
+      color: formData.color
     })
     onClose()
   }
@@ -56,117 +53,110 @@ export function RowEditor({ isOpen, onClose, row, onSave, onDelete, isNewRow = f
       isOpen={isOpen}
       onClose={onClose}
       title={isNewRow ? 'Add new row' : 'Edit row'}
+      maxWidth="4xl"
     >
       <div className="space-y-6">
-        <Input
-          label="Row name"
-          value={formData.category}
-          onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-          placeholder="e.g. Customer emotions"
-          required
-        />
-
+        {/* Row Type Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Description
-          </label>
-          <textarea
-            value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            placeholder="Describe what this row should contain..."
-            className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
-            rows={2}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Row type
-          </label>
-          <div className="space-y-2">
-            {ROW_TYPES.map((type) => (
-              <label key={type.id} className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-slate-400">
-                <input
-                  type="radio"
-                  name="type"
-                  value={type.id}
-                  checked={formData.type === type.id}
-                  onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as any }))}
-                  className="mt-1"
-                />
-                <div>
-                  <div className="font-medium text-gray-900">{type.name}</div>
-                  <div className="text-sm text-gray-600">{type.description}</div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-slate-800">Choose Type</h3>
+            <div className="h-px bg-gradient-to-r from-slate-200 to-transparent flex-1 ml-4"></div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {ROW_TYPES.map((type, index) => (
+              <button
+                key={type.id}
+                onClick={() => setFormData(prev => ({ ...prev, type: type.id as any }))}
+                className={`group relative p-4 text-left border-2 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-md ${
+                  formData.type === type.id
+                    ? 'border-slate-400 bg-slate-50 shadow-lg ring-2 ring-slate-200'
+                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-25'
+                }`}
+                style={{
+                  animationDelay: `${index * 50}ms`
+                }}
+              >
+                <div className={`font-semibold text-sm mb-1 transition-colors ${
+                  formData.type === type.id ? 'text-slate-700' : 'text-slate-800 group-hover:text-slate-700'
+                }`}>
+                  {type.name}
                 </div>
-              </label>
+                <div className={`text-xs leading-relaxed transition-colors ${
+                  formData.type === type.id ? 'text-slate-600' : 'text-slate-500 group-hover:text-slate-600'
+                }`}>
+                  {type.description}
+                </div>
+              </button>
             ))}
           </div>
         </div>
 
+        {/* Color Selection */}
         {!isJourneyCategory && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Row color
-            </label>
-            <div className="grid grid-cols-4 gap-2">
-              {ROW_COLORS.map((color) => (
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-800">Choose Color</h3>
+              <div className="h-px bg-gradient-to-r from-slate-200 to-transparent flex-1 ml-4"></div>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {ROW_COLORS.map((color, index) => (
                 <button
                   key={color.id}
                   onClick={() => setFormData(prev => ({ ...prev, color: color.id }))}
-                  className={`p-3 rounded-lg border-2 transition-all ${color.class} ${
+                  className={`group relative w-12 h-12 rounded-xl border-2 transition-all duration-300 hover:scale-110 ${color.class} ${
                     formData.color === color.id
-                      ? 'border-slate-500 ring-2 ring-slate-200'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-slate-600 shadow-lg ring-2 ring-slate-200 scale-105'
+                      : 'border-slate-300 hover:border-slate-400 shadow-sm hover:shadow-md'
                   }`}
                   title={color.name}
+                  style={{
+                    animationDelay: `${index * 30}ms`
+                  }}
                 >
-                  <div className="text-sm font-medium text-gray-700">{color.name}</div>
+                  <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <span className="text-xs font-medium text-slate-600 bg-white px-2 py-0.5 rounded-md shadow-sm whitespace-nowrap">
+                      {color.name}
+                    </span>
+                  </div>
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Preview */}
-        <div className="border-t pt-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Preview
-          </label>
-          <div className={`p-3 rounded-lg border ${isJourneyCategory ? 'bg-slate-50' : formData.color}`}>
-            <div className="font-medium text-gray-900 mb-1">
-              {formData.category || 'Row name'}
-            </div>
-            <div className="text-sm text-gray-600">
-              {formData.description || 'Row description'}
-            </div>
-            <div className="text-xs text-gray-500 mt-2">
-              Type: {selectedRowType?.name}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-between pt-4 border-t">
+        {/* Action Buttons */}
+        <div className="flex items-center justify-between pt-6 mt-8 border-t border-slate-200">
           <div>
             {!isNewRow && onDelete && (
               <Button
                 variant="outline"
                 onClick={handleDelete}
-                className="text-red-600 border-red-200 hover:bg-red-50"
+                className="text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400 transition-all duration-200"
               >
-                Delete row
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Delete
               </Button>
             )}
           </div>
-          <div className="flex space-x-3">
-            <Button variant="outline" onClick={onClose}>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="px-6 py-2.5 transition-all duration-200 hover:bg-slate-50"
+            >
               Cancel
             </Button>
-            <Button 
-              variant="primary" 
+            <Button
+              variant="primary"
               onClick={handleSave}
-              disabled={!formData.category.trim()}
+              className="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              {isNewRow ? 'Add' : 'Save changes'}
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              {isNewRow ? 'Add Row' : 'Save Changes'}
             </Button>
           </div>
         </div>
