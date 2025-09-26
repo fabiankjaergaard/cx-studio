@@ -88,18 +88,35 @@ function CreatePersonaContent() {
     if (persona.name && persona.age && persona.occupation) {
       setIsCreating(true)
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      // Here you would normally save to your database
-      console.log('Creating persona:', {
+      // Create the persona object
+      const newPersona: Persona = {
         ...persona,
         id: Date.now().toString(),
+        name: persona.name || '',
+        age: persona.age || '',
+        location: persona.location || '',
+        occupation: persona.occupation || '',
+        avatar: persona.avatar || '',
         goals: persona.goals?.filter(Boolean) || [],
         painPoints: persona.painPoints?.filter(Boolean) || [],
+        description: persona.description || '',
+        demographics: persona.demographics || { income: '', education: '', family: '' },
         behaviors: persona.behaviors?.filter(Boolean) || [],
         motivations: persona.motivations?.filter(Boolean) || []
-      })
+      }
+
+      // Save to localStorage
+      try {
+        const existingPersonas = JSON.parse(localStorage.getItem('user-personas') || '[]')
+        const updatedPersonas = [...existingPersonas, newPersona]
+        localStorage.setItem('user-personas', JSON.stringify(updatedPersonas))
+        console.log('Persona saved to localStorage:', newPersona)
+      } catch (error) {
+        console.error('Error saving persona to localStorage:', error)
+      }
+
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
 
       setIsCreating(false)
       router.push('/personas')

@@ -33,7 +33,7 @@ export function Modal({ isOpen, onClose, children, title, className, maxWidth = 
   return (
     <div className="fixed inset-0 z-[9999] overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="fixed inset-0" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }} onClick={onClose} />
+        <div className="fixed inset-0" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }} onClick={onClose} />
 
         <div className={cn(
           "relative bg-white rounded-xl shadow-lg border border-gray-100 w-full mx-auto transform transition-all",

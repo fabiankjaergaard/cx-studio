@@ -22,7 +22,9 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   PlayIcon,
-  ClockIcon
+  ClockIcon,
+  ChevronDownIcon,
+  ChevronUpIcon
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -256,11 +258,19 @@ const personaTemplate = {
 
 export default function PersonaGuidePage() {
   const [currentStep, setCurrentStep] = useState(0)
+  const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({})
   const totalSteps = personaSteps.length
 
   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, totalSteps - 1))
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 0))
   const goToStep = (step: number) => setCurrentStep(step)
+
+  const toggleSection = (sectionKey: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionKey]: !prev[sectionKey]
+    }))
+  }
 
   return (
     <div className="h-full flex flex-col bg-gray-50">
@@ -284,61 +294,9 @@ export default function PersonaGuidePage() {
         }
       />
       <div className="flex-1 overflow-auto bg-gray-50 min-h-0">
-        {/* Progress Steps Navigation */}
-        <div className="bg-white border-b border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            {/* Step indicators */}
-            <div className="flex items-center space-x-4">
-              {personaSteps.map((step, index) => (
-                <button
-                  key={step.step}
-                  onClick={() => goToStep(index)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-                    index === currentStep
-                      ? 'bg-slate-700 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
-                    index === currentStep ? 'bg-white text-slate-700' : ''
-                  }`}>
-                    {index < currentStep ? (
-                      <CheckCircleIcon className="w-4 h-4" />
-                    ) : (
-                      step.step
-                    )}
-                  </div>
-                  <span className="text-sm font-medium hidden md:block">{step.title}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Navigation buttons */}
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={prevStep}
-                disabled={currentStep === 0}
-              >
-                <ChevronLeftIcon className="h-4 w-4 mr-1" />
-                Föregående
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={nextStep}
-                disabled={currentStep === totalSteps - 1}
-              >
-                Nästa
-                <ChevronRightIcon className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-          </div>
-        </div>
 
         {/* Step Content */}
-        <div className="p-8">
+        <div className="p-8 pb-32">
           {/* Current Step Content */}
           <Card className="border-0 shadow-sm">
             <CardHeader>
@@ -387,367 +345,465 @@ export default function PersonaGuidePage() {
             </CardContent>
           </Card>
 
-          {/* Step-specific content */}
-          {currentStep === 0 && (
-            <div className="space-y-6 mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Vad gör en bra persona?</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-6">
-                    En effektiv persona är mer än demografiska data - den fångar motivationer, beteenden
-                    och pain points som hjälper teamet att förstå och empathisera med riktiga användare.
-                    Bra personas baseras på riktig data och används aktivt i produktbeslut.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-white p-4 rounded-lg border">
-                      <div className="text-2xl font-bold text-slate-700 mb-1">3-5</div>
-                      <div className="text-sm text-gray-600">Personas max per produkt</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg border">
-                      <div className="text-2xl font-bold text-slate-700 mb-1">8-12</div>
-                      <div className="text-sm text-gray-600">Intervjuer per persona</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg border">
-                      <div className="text-2xl font-bold text-slate-700 mb-1">80/20</div>
-                      <div className="text-sm text-gray-600">Psykografi/Demografi</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Viktiga tips för datainsamling</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="p-3 bg-green-50 border border-green-200 rounded">
-                        <div className="flex items-start space-x-2">
-                          <CheckCircleIcon className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <h5 className="font-medium text-green-800 text-sm mb-1">Gör så här:</h5>
-                            <p className="text-sm text-green-700">Starta alltid med research innan du skapar personas</p>
-                          </div>
-                        </div>
+          {/* Step-Specific Quick Reference Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+            {currentStep === 0 && (
+              <>
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <MessageSquareIcon className="h-6 w-6 text-slate-600" />
                       </div>
-                      <ul className="space-y-2">
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Kombinera intervjuer med enkätdata för att validera mönster
-                        </li>
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Inkludera säljteamets och kundsupportens observationer
-                        </li>
-                      </ul>
+                      <h3 className="font-semibold text-gray-900 mb-2">Intervjuteknik</h3>
+                      <p className="text-sm text-gray-600">Ställ öppna frågor och lyssna mer än du talar</p>
                     </div>
-                    <div className="space-y-4">
-                      <div className="p-3 bg-red-50 border border-red-200 rounded">
-                        <div className="flex items-start space-x-2">
-                          <AlertTriangleIcon className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <h5 className="font-medium text-red-800 text-sm mb-1">Undvik detta:</h5>
-                            <p className="text-sm text-red-700">Skapa personas baserat enbart på antaganden</p>
-                          </div>
-                        </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <FileTextIcon className="h-6 w-6 text-slate-600" />
                       </div>
-                      <ul className="space-y-2">
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Anta vad användare vill utan att fråga dem
-                        </li>
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Fokusera bara på demografi som ålder och kön
-                        </li>
-                      </ul>
+                      <h3 className="font-semibold text-gray-900 mb-2">Dokumentera allt</h3>
+                      <p className="text-sm text-gray-600">Spela in intervjuer och anteckna observationer</p>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+                  </CardContent>
+                </Card>
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <UsersIcon className="h-6 w-6 text-slate-600" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Olika perspektiv</h3>
+                      <p className="text-sm text-gray-600">8-12 intervjuer per segment för mångfald</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+            {currentStep === 1 && (
+              <>
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <BarChart3Icon className="h-6 w-6 text-slate-600" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Sök mönster</h3>
+                      <p className="text-sm text-gray-600">Hitta likheter och skillnader i datan</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <TrendingUpIcon className="h-6 w-6 text-slate-600" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Segmentera smart</h3>
+                      <p className="text-sm text-gray-600">Fokusera på beteende och motivation</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <EyeIcon className="h-6 w-6 text-slate-600" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Validera hypoteser</h3>
+                      <p className="text-sm text-gray-600">Testa dina antaganden mot datan</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+            {currentStep === 2 && (
+              <>
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <HeartIcon className="h-6 w-6 text-slate-600" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Empati först</h3>
+                      <p className="text-sm text-gray-600">Fokusera på känslor och motivationer</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <FileTextIcon className="h-6 w-6 text-slate-600" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Berätta historier</h3>
+                      <p className="text-sm text-gray-600">Gör personas levande med narrativ</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <TargetIcon className="h-6 w-6 text-slate-600" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Håll det relevant</h3>
+                      <p className="text-sm text-gray-600">Inkludera bara information som påverkar beslut</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+            {currentStep === 3 && (
+              <>
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <UsersIcon className="h-6 w-6 text-slate-600" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Involvera teamet</h3>
+                      <p className="text-sm text-gray-600">Få alla att känna ägarskap för personorna</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <CheckCircleIcon className="h-6 w-6 text-slate-600" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Testa med kunder</h3>
+                      <p className="text-sm text-gray-600">Validera med riktiga användare</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <LightbulbIcon className="h-6 w-6 text-slate-600" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Uppdatera regelbundet</h3>
+                      <p className="text-sm text-gray-600">Håll personas levande och aktuella</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+          </div>
 
-          {currentStep === 1 && (
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Research-metoder för persona-data</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="border-l-4 border-l-slate-500 pl-4">
-                    <div className="flex items-center space-x-2 mb-3">
+          {/* Expandable Sections */}
+          <div className="space-y-4 mt-8">
+            {/* Step-Specific Expandable Content */}
+            {currentStep === 0 && (
+              <Card className="border-0 shadow-sm">
+                <CardHeader
+                  className="cursor-pointer"
+                  onClick={() => toggleSection('research')}
+                >
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center space-x-3">
                       <MessageSquareIcon className="h-5 w-5 text-slate-600" />
-                      <h3 className="font-semibold text-gray-900">Kvalitativa metoder</h3>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="font-medium text-gray-900">Kundintervjuer</h4>
-                        <p className="text-sm text-gray-600">8-12 djupintervjuer per segment för att förstå motivationer</p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">Observationer</h4>
-                        <p className="text-sm text-gray-600">Se hur kunder faktiskt beter sig i naturlig miljö</p>
-                      </div>
-                    </div>
+                      <span>Research-metoder</span>
+                    </CardTitle>
+                    {expandedSections.research ?
+                      <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                      <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                    }
                   </div>
-                  <div className="border-l-4 border-l-slate-500 pl-4">
-                    <div className="flex items-center space-x-2 mb-3">
+                </CardHeader>
+                {expandedSections.research && (
+                  <CardContent className="pt-0">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Kundintervjuer</h4>
+                        <p className="text-sm text-gray-600">8-12 djupintervjuer per segment</p>
+                      </div>
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Enkäter</h4>
+                        <p className="text-sm text-gray-600">Kvantitativ validering av hypoteser</p>
+                      </div>
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Analytics</h4>
+                        <p className="text-sm text-gray-600">Beteendedata från webb/app</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+            )}
+
+            {currentStep === 1 && (
+              <Card className="border-0 shadow-sm">
+                <CardHeader
+                  className="cursor-pointer"
+                  onClick={() => toggleSection('analysis')}
+                >
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center space-x-3">
                       <BarChart3Icon className="h-5 w-5 text-slate-600" />
-                      <h3 className="font-semibold text-gray-900">Kvantitativa metoder</h3>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="font-medium text-gray-900">Enkätundersökningar</h4>
-                        <p className="text-sm text-gray-600">Validera hypoteser och få statistisk data</p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">Analytics</h4>
-                        <p className="text-sm text-gray-600">Beteendedata från webbplats och app</p>
-                      </div>
-                    </div>
+                      <span>Analys-tekniker</span>
+                    </CardTitle>
+                    {expandedSections.analysis ?
+                      <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                      <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                    }
                   </div>
-                  <div className="border-l-4 border-l-slate-500 pl-4">
-                    <div className="flex items-center space-x-2 mb-3">
-                      <EyeIcon className="h-5 w-5 text-slate-600" />
-                      <h3 className="font-semibold text-gray-900">Sekundära källor</h3>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="font-medium text-gray-900">Kundservice-loggar</h4>
-                        <p className="text-sm text-gray-600">Pain points från support-kanaler</p>
+                </CardHeader>
+                {expandedSections.analysis && (
+                  <CardContent className="pt-0">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Affinity Mapping</h4>
+                        <p className="text-sm text-gray-600">Gruppera liknande insikter och mönster</p>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">Säljteamets insights</h4>
-                        <p className="text-sm text-gray-600">Värdefulla observationer från säljare</p>
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Behavioural Clustering</h4>
+                        <p className="text-sm text-gray-600">Segmentera baserat på beteenden</p>
+                      </div>
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Pain Point Analysis</h4>
+                        <p className="text-sm text-gray-600">Identifiera och prioritera utmaningar</p>
                       </div>
                     </div>
+                  </CardContent>
+                )}
+              </Card>
+            )}
+
+            {currentStep === 2 && (
+              <Card className="border-0 shadow-sm">
+                <CardHeader
+                  className="cursor-pointer"
+                  onClick={() => toggleSection('creation')}
+                >
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center space-x-3">
+                      <UserIcon className="h-5 w-5 text-slate-600" />
+                      <span>Persona-mallar</span>
+                    </CardTitle>
+                    {expandedSections.creation ?
+                      <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                      <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                    }
                   </div>
+                </CardHeader>
+                {expandedSections.creation && (
+                  <CardContent className="pt-0">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                          <BrainIcon className="h-4 w-4 mr-2 text-slate-600" />
+                          Psykografi (80%)
+                        </h4>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>• Mål och ambitioner</li>
+                          <li>• Motivationer och drivkrafter</li>
+                          <li>• Värderingar och attityder</li>
+                          <li>• Pain points och utmaningar</li>
+                        </ul>
+                      </div>
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                          <FileTextIcon className="h-4 w-4 mr-2 text-slate-600" />
+                          Demografi (20%)
+                        </h4>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>• Namn och ålder</li>
+                          <li>• Yrke och inkomst</li>
+                          <li>• Geografi och miljö</li>
+                          <li>• Teknologianvändning</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+            )}
+
+            {currentStep === 3 && (
+              <Card className="border-0 shadow-sm">
+                <CardHeader
+                  className="cursor-pointer"
+                  onClick={() => toggleSection('implementation')}
+                >
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center space-x-3">
+                      <CheckCircleIcon className="h-5 w-5 text-slate-600" />
+                      <span>Implementeringstips</span>
+                    </CardTitle>
+                    {expandedSections.implementation ?
+                      <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                      <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                    }
+                  </div>
+                </CardHeader>
+                {expandedSections.implementation && (
+                  <CardContent className="pt-0">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Team Workshops</h4>
+                        <p className="text-sm text-gray-600">Introducera personas för alla teammedlemmar</p>
+                      </div>
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Validering</h4>
+                        <p className="text-sm text-gray-600">Testa personas med riktiga användare</p>
+                      </div>
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Underhåll</h4>
+                        <p className="text-sm text-gray-600">Uppdatera baserat på ny data och feedback</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+            )}
+
+
+            {/* Step-Specific Mistakes Section */}
+            <Card className="border-0 shadow-sm">
+              <CardHeader
+                className="cursor-pointer"
+                onClick={() => toggleSection('mistakes')}
+              >
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center space-x-3">
+                    <AlertTriangleIcon className="h-5 w-5 text-red-600" />
+                    <span>Vanliga misstag för detta steg</span>
+                  </CardTitle>
+                  {expandedSections.mistakes ?
+                    <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                    <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                  }
                 </div>
-              </CardContent>
+              </CardHeader>
+              {expandedSections.mistakes && (
+                <CardContent className="pt-0">
+                  <div className="space-y-3">
+                    {currentStep === 0 && (
+                      <>
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                          <h4 className="font-medium text-red-800 mb-1">Ledande frågor</h4>
+                          <p className="text-sm text-red-600 mb-2">Ställer frågor som leder respondenten mot förväntade svar</p>
+                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Använd öppna frågor som "Berätta om..." istället för ja/nej frågor</p>
+                        </div>
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                          <h4 className="font-medium text-red-800 mb-1">För få intervjuer</h4>
+                          <p className="text-sm text-red-600 mb-2">Baserar personas på för få datapunkter</p>
+                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Minimum 8-12 intervjuer per persona-segment</p>
+                        </div>
+                      </>
+                    )}
+                    {currentStep === 1 && (
+                      <>
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                          <h4 className="font-medium text-red-800 mb-1">Demografisk segmentering</h4>
+                          <p className="text-sm text-red-600 mb-2">Segmenterar endast baserat på ålder, kön eller geografi</p>
+                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Fokusera på beteenden, mål och motivationer</p>
+                        </div>
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                          <h4 className="font-medium text-red-800 mb-1">Konfirmationsbias</h4>
+                          <p className="text-sm text-red-600 mb-2">Ser bara mönster som bekräftar befintliga antaganden</p>
+                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Aktivt leta efter motsägelser och överraskningar</p>
+                        </div>
+                      </>
+                    )}
+                    {currentStep === 2 && (
+                      <>
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                          <h4 className="font-medium text-red-800 mb-1">Stereotyper</h4>
+                          <p className="text-sm text-red-600 mb-2">Skapar personas baserade på antaganden snarare än data</p>
+                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Använd riktiga citat och specifika beteenden från research</p>
+                        </div>
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                          <h4 className="font-medium text-red-800 mb-1">För många detaljer</h4>
+                          <p className="text-sm text-red-600 mb-2">Inkluderar irrelevant information som förvirrar</p>
+                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Fokusera på information som påverkar produktbeslut</p>
+                        </div>
+                      </>
+                    )}
+                    {currentStep === 3 && (
+                      <>
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                          <h4 className="font-medium text-red-800 mb-1">Glömmer uppdatering</h4>
+                          <p className="text-sm text-red-600 mb-2">Personas blir inaktuella och irrelevanta över tid</p>
+                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Schemalägg regelbundna uppdateringar baserat på ny data</p>
+                        </div>
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                          <h4 className="font-medium text-red-800 mb-1">Ingen teamkoppling</h4>
+                          <p className="text-sm text-red-600 mb-2">Personas förblir abstrakta och används inte aktivt</p>
+                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Koppla personas till konkreta beslut och användarscenarier</p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              )}
             </Card>
-          )}
-
-          {currentStep === 2 && (
-            <div className="space-y-6 mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Vad ska ingå i en persona?</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">
-                    Fokusera på psykografi (80%) över demografi (20%). Det är motivationer och mål som driver beteende, inte ålder eller kön.
-                  </p>
-                  <div className="space-y-6">
-                    {personaElements.slice(0, 2).map((category, categoryIndex) => (
-                      <div key={categoryIndex}>
-                        <div className="flex items-center space-x-3 mb-4">
-                          <div className={`p-2 rounded-lg ${category.color}`}>
-                            {React.createElement(category.icon, { className: "h-5 w-5" })}
-                          </div>
-                          <h3 className="text-lg font-semibold text-gray-900">{category.category}</h3>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {category.elements.slice(0, 2).map((element, elementIndex) => (
-                            <div key={elementIndex} className="p-4 bg-gray-50 rounded-lg border">
-                              <h4 className="font-medium text-gray-900 mb-2">{element.field}</h4>
-                              <p className="text-sm text-gray-600 mb-3">{element.description}</p>
-                              <div className="text-xs text-gray-700 italic">"{element.example}"</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Best practices för persona-skapande</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="p-3 bg-green-50 border border-green-200 rounded">
-                        <div className="flex items-start space-x-2">
-                          <CheckCircleIcon className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <h5 className="font-medium text-green-800 text-sm mb-1">Gör så här:</h5>
-                            <p className="text-sm text-green-700">Håll personas till 1-2 sidor max</p>
-                          </div>
-                        </div>
-                      </div>
-                      <ul className="space-y-2">
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Använd verkliga citat från intervjuer för autenticitet
-                        </li>
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Ge personas namn som teamet kan komma ihåg
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="space-y-4">
-                      <div className="p-3 bg-red-50 border border-red-200 rounded">
-                        <div className="flex items-start space-x-2">
-                          <AlertTriangleIcon className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <h5 className="font-medium text-red-800 text-sm mb-1">Undvik detta:</h5>
-                            <p className="text-sm text-red-700">Skapa så många personas att teamet blir förvirrat</p>
-                          </div>
-                        </div>
-                      </div>
-                      <ul className="space-y-2">
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Långa texter som ingen kommer att läsa
-                        </li>
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Generiska beskrivningar utan karaktär
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {currentStep === 3 && (
-            <div className="space-y-6 mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Vanliga misstag att undvika</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-6">
-                    Lär av andra team misstag och spara tid genom att undvika dessa vanliga fallgropar i persona-validering.
-                  </p>
-                  <div className="space-y-4">
-                    {commonMistakes.slice(0, 3).map((mistake, index) => (
-                      <div key={index} className="border-l-4 border-l-red-200 pl-4 py-3">
-                        <div className="flex items-start space-x-3">
-                          <AlertTriangleIcon className="h-5 w-5 text-red-500 mt-1 flex-shrink-0" />
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 mb-2">{mistake.mistake}</h3>
-                            <p className="text-sm text-gray-600 mb-2"><strong>Påverkan:</strong> {mistake.impact}</p>
-                            <p className="text-sm text-gray-600"><strong>Lösning:</strong> {mistake.solution}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Tips för framgångsrik implementation</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="p-3 bg-green-50 border border-green-200 rounded">
-                        <div className="flex items-start space-x-2">
-                          <CheckCircleIcon className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <h5 className="font-medium text-green-800 text-sm mb-1">Gör så här:</h5>
-                            <p className="text-sm text-green-700">Integrera personas i alla processer från dag ett</p>
-                          </div>
-                        </div>
-                      </div>
-                      <ul className="space-y-2">
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Ha persona-posters synliga i arbetsområdet
-                        </li>
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Ställ frågan "Vad skulle Anna göra?" i beslutssituationer
-                        </li>
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <LightbulbIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Granska och uppdatera personas var 6:e månad
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="space-y-4">
-                      <div className="p-3 bg-red-50 border border-red-200 rounded">
-                        <div className="flex items-start space-x-2">
-                          <AlertTriangleIcon className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <h5 className="font-medium text-red-800 text-sm mb-1">Undvik detta:</h5>
-                            <p className="text-sm text-red-700">Skapa personas som bara läggs på hyllan</p>
-                          </div>
-                        </div>
-                      </div>
-                      <ul className="space-y-2">
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Låta personas bli inaktuella och föråldrade
-                        </li>
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Skapa personas isolerat utan team-input
-                        </li>
-                        <li className="text-sm text-gray-600 flex items-start">
-                          <AlertTriangleIcon className="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                          Perfekta personas utan realistiska brister
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+          </div>
         </div>
 
-        {/* Call to Action */}
-        <Card className="bg-slate-50 border-slate-200 mt-8">
-          <CardContent className="p-6">
-            <div className="text-center">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {currentStep === totalSteps - 1
-                  ? "Redo att skapa dina första personas?"
-                  : "Fortsätt till nästa steg"}
-              </h3>
-              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                {currentStep === totalSteps - 1
-                  ? "Kom ihåg att personas är verktyg för att hjälpa teamet förstå användare - de ska vara baserade på riktig data och används aktivt i produktbeslut för att vara värdefulla."
-                  : "Navigera mellan stegen för att lära dig mer om persona-skapande processen."}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                {currentStep === totalSteps - 1 ? (
-                  <>
-                    <Link href="/personas/create">
-                      <Button variant="primary">
-                        <UserIcon className="mr-2 h-4 w-4" />
-                        Skapa din första persona
-                      </Button>
-                    </Link>
-                    <Link href="/insights/interviews">
-                      <Button variant="outline">
-                        Lär dig om kundintervjuer
-                      </Button>
-                    </Link>
-                  </>
-                ) : (
-                  <Button variant="primary" onClick={nextStep}>
-                    Nästa steg: {personaSteps[currentStep + 1]?.title}
-                    <ChevronRightIcon className="ml-2 h-4 w-4" />
-                  </Button>
-                )}
+
+        {/* Bottom Navigation with Progress */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg">
+          <div className="max-w-4xl mx-auto px-8 py-4">
+            <div className="flex items-center justify-center space-x-6">
+              {/* Back Button */}
+              {currentStep > 0 ? (
+                <Button
+                  variant="outline"
+                  onClick={prevStep}
+                  className="flex items-center"
+                >
+                  <ChevronLeftIcon className="h-4 w-4 mr-1" />
+                  Tillbaka
+                </Button>
+              ) : (
+                <div className="w-20"></div>
+              )}
+
+              {/* Progress Bar Center */}
+              <div className="flex items-center space-x-3 px-4">
+                <span className="text-sm font-medium text-gray-700">
+                  {currentStep + 1}/{totalSteps}
+                </span>
+                <div className="w-32 bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-slate-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
+                  ></div>
+                </div>
+                <span className="text-sm text-gray-500">
+                  {Math.round(((currentStep + 1) / totalSteps) * 100)}%
+                </span>
               </div>
+
+              {/* Next Button */}
+              {currentStep < totalSteps - 1 ? (
+                <Button
+                  variant="primary"
+                  onClick={nextStep}
+                  className="flex items-center"
+                >
+                  Nästa
+                  <ChevronRightIcon className="h-4 w-4 ml-1" />
+                </Button>
+              ) : (
+                <Link href="/personas/create">
+                  <Button variant="primary" className="flex items-center">
+                    <PlayIcon className="h-4 w-4 mr-2" />
+                    Kom igång
+                  </Button>
+                </Link>
+              )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )

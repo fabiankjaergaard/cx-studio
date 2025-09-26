@@ -6,6 +6,7 @@ import { Header } from '@/components/dashboard/Header'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { PersonaTemplatePreviewModal } from '@/components/personas/PersonaTemplatePreviewModal'
 import {
   BookTemplateIcon,
   UserIcon,
@@ -457,85 +458,75 @@ export default function PersonaTemplatesPage() {
         {/* Templates Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTemplates.map((template) => (
-            <Card key={template.id} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out border-0 bg-white rounded-xl overflow-hidden cursor-pointer group">
-              <div className="p-4">
-                {/* Header with category badge */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center group-hover:bg-slate-200 group-hover:scale-110 transition-all duration-300 ease-out">
+            <Card key={template.id} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out hover:bg-white/80 cursor-pointer group">
+              <CardContent className="p-6">
+                {/* Icon and category */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center group-hover:bg-slate-200 group-hover:scale-110 transition-all duration-300 ease-out">
                     {React.createElement(getPersonaIcon(template.icon), {
-                      className: "h-5 w-5 text-slate-600 group-hover:text-slate-700 transition-colors duration-200"
+                      className: "h-6 w-6 text-slate-600 group-hover:text-slate-700 transition-colors duration-200"
                     })}
                   </div>
-                  <span className="px-3 py-1 bg-slate-50 text-slate-700 text-xs font-medium rounded-full">
+                  <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded">
                     {template.category}
                   </span>
                 </div>
 
-                {/* Main content */}
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2 leading-tight">
-                    {template.name}
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
-                    {template.description}
-                  </p>
-                </div>
+                {/* Title */}
+                <h3 className="text-lg font-semibold leading-tight text-gray-900 mb-3">
+                  {template.name}
+                </h3>
+
+                {/* Description */}
+                <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                  {template.description}
+                </p>
 
                 {/* Stats */}
-                <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium">{template.age} år</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span>{template.goals.length} mål</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span>{template.painPoints.length} utmaningar</span>
-                  </div>
-                </div>
-
-                {/* Occupation */}
-                <div className="mb-4">
-                  <span className="text-sm text-gray-700 font-medium">{template.occupation}</span>
+                <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                  <span>{template.age} år • {template.occupation}</span>
+                  <span>{template.goals.length} mål</span>
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2">
+                <div className="flex space-x-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex items-center justify-center w-10 h-8 p-0 hover:scale-110 transition-all duration-200 ease-out"
                     onClick={() => handlePreview(template)}
-                    title="Förhandsgranska"
+                    className="flex-1 hover:scale-105 transform transition-all duration-200 ease-out"
                   >
-                    <EyeIcon className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
+                    <EyeIcon className="h-3 w-3 mr-1 transition-transform duration-200 group-hover:scale-110" />
+                    Preview
                   </Button>
                   <Button
                     variant="primary"
                     size="sm"
-                    className="flex items-center justify-center px-3 py-2 flex-1 hover:scale-105 transition-all duration-200 ease-out hover:shadow-lg"
                     onClick={() => handleUseTemplate(template)}
+                    className="flex-1 hover:scale-105 transform transition-all duration-200 ease-out hover:shadow-lg"
                   >
-                    <DownloadIcon className="h-4 w-4 mr-1 transition-transform duration-200 group-hover:translate-y-[-2px]" />
-                    Använd mall
+                    <PlusIcon className="h-3 w-3 mr-1 transition-transform duration-200 group-hover:rotate-90" />
+                    Use Template
                   </Button>
                 </div>
-              </div>
+              </CardContent>
             </Card>
           ))}
 
           {/* Custom Template Card */}
-          <Card className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-64 flex flex-col border-dashed border-2 border-gray-300 hover:border-slate-400 cursor-pointer group hover:bg-slate-50/30" onClick={() => router.push('/personas/create')}>
-            <CardContent className="flex-1 flex flex-col items-center justify-center text-center p-6">
-              <div className="w-12 h-12 mx-auto mb-3 bg-gray-50 rounded-xl flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-110 transition-all duration-300 ease-out">
-                <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 group-hover:rotate-90 transition-all duration-300" />
+          <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer group hover:bg-slate-50/30" onClick={() => router.push('/personas/create')}>
+            <CardContent className="pt-6 h-full flex flex-col">
+              <div className="text-center py-12 flex-1 flex flex-col justify-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-110 transition-all duration-300 ease-out">
+                  <PlusIcon className="w-8 h-8 text-gray-400 group-hover:text-slate-600 group-hover:rotate-90 transition-all duration-300" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">
+                  Create Custom Persona
+                </h3>
+                <p className="text-sm text-gray-400 group-hover:text-slate-600 transition-colors duration-200">
+                  Start with a blank template and customize it
+                </p>
               </div>
-              <h3 className="text-sm font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">
-                Skapa anpassad mall
-              </h3>
-              <p className="text-xs text-gray-400 group-hover:text-slate-600 transition-colors duration-200">
-                Skapa din egen persona från början
-              </p>
             </CardContent>
           </Card>
         </div>
@@ -555,112 +546,12 @@ export default function PersonaTemplatesPage() {
       </div>
 
       {/* Preview Modal */}
-      {isPreviewOpen && selectedTemplate && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-xl font-bold">{selectedTemplate.name}</h2>
-                  <span className="inline-block mt-1 px-2 py-1 bg-slate-100 text-slate-800 text-xs rounded-full">
-                    {selectedTemplate.category}
-                  </span>
-                </div>
-                <button
-                  onClick={() => setIsPreviewOpen(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <h3 className="font-medium text-gray-900 mb-2">Beskrivning</h3>
-                  <p className="text-gray-600">{selectedTemplate.description}</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-1">Ålder</h4>
-                    <p className="text-gray-600">{selectedTemplate.age}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-1">Yrke</h4>
-                    <p className="text-gray-600">{selectedTemplate.occupation}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="font-medium text-gray-900 mb-2">Mål & Behov</h3>
-                  <ul className="list-disc list-inside text-gray-600 space-y-1">
-                    {selectedTemplate.goals.map((goal, index) => (
-                      <li key={index}>{goal}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="font-medium text-gray-900 mb-2">Utmaningar & Smärtpunkter</h3>
-                  <ul className="list-disc list-inside text-gray-600 space-y-1">
-                    {selectedTemplate.painPoints.map((pain, index) => (
-                      <li key={index}>{pain}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="font-medium text-gray-900 mb-2">Demografisk information</h3>
-                  <div className="grid grid-cols-1 gap-2 text-sm">
-                    <div><strong>Inkomst:</strong> {selectedTemplate.demographics.income}</div>
-                    <div><strong>Utbildning:</strong> {selectedTemplate.demographics.education}</div>
-                    <div><strong>Familj:</strong> {selectedTemplate.demographics.family}</div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="font-medium text-gray-900 mb-2">Beteenden</h3>
-                  <ul className="list-disc list-inside text-gray-600 space-y-1">
-                    {selectedTemplate.behaviors.map((behavior, index) => (
-                      <li key={index}>{behavior}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="font-medium text-gray-900 mb-2">Motivationer</h3>
-                  <ul className="list-disc list-inside text-gray-600 space-y-1">
-                    {selectedTemplate.motivations.map((motivation, index) => (
-                      <li key={index}>{motivation}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="flex space-x-3 mt-8 pt-6 border-t">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsPreviewOpen(false)}
-                  className="flex-1"
-                >
-                  Stäng
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    handleUseTemplate(selectedTemplate)
-                    setIsPreviewOpen(false)
-                  }}
-                  className="flex-1"
-                >
-                  <DownloadIcon className="mr-2 h-4 w-4" />
-                  Använd denna mall
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <PersonaTemplatePreviewModal
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        template={selectedTemplate}
+        onUseTemplate={handleUseTemplate}
+      />
     </div>
   )
 }

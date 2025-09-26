@@ -54,27 +54,16 @@ const getNavigation = (t: (key: string) => string) => [
     tourId: 'personas',
     isExpandable: true,
     children: [
-      {
-        name: t('nav.createManage'),
-        children: [
-          { name: t('nav.createPersona'), href: '/personas/create', icon: PlusIcon },
-          { name: t('nav.allPersonas'), href: '/personas', icon: UsersIcon },
-          { name: t('nav.personaTemplates'), href: '/personas/templates', icon: BookTemplateIcon },
-          { name: t('nav.importPersona'), href: '/personas/import', icon: DatabaseIcon }
-        ]
-      },
-      {
-        name: t('nav.personaGuides'),
-        children: [
-          { name: t('nav.personaGuide'), href: '/personas/guide', icon: BookIcon },
-          { name: t('nav.personaTips'), href: '/personas/tips', icon: LightbulbIcon }
-        ]
-      }
+      { name: t('nav.allPersonas'), href: '/personas', icon: UsersIcon },
+      { name: t('nav.createPersona'), href: '/personas/create', icon: PlusIcon },
+      { name: t('nav.personaTemplates'), href: '/personas/templates', icon: BookTemplateIcon },
+      { name: t('nav.personaGuide'), href: '/personas/guide', icon: BookIcon },
+      { name: t('nav.importPersona'), href: '/personas/import', icon: DatabaseIcon }
     ]
   },
-  { 
-    name: t('nav.insights'), 
-    icon: ClipboardIcon, 
+  {
+    name: t('nav.insights'),
+    icon: ClipboardIcon,
     tourId: 'insights',
     isExpandable: true,
     children: [
@@ -258,18 +247,18 @@ export function Sidebar() {
                       <>
                         <span className="flex-1 text-left">{item.name}</span>
                         <div className="w-4 h-4 flex items-center justify-center">
-                          {isExpanded ? (
-                            <ChevronUpIcon className={cn(
-                              "h-4 w-4 text-gray-400 transition-opacity",
-                              hoveredSection === item.name ? "opacity-100" : "opacity-0"
-                            )} />
-                          ) : (
-                            <ChevronDownIcon className={cn(
-                              "h-4 w-4 text-gray-400 transition-opacity",
-                              hoveredSection === item.name ? "opacity-100" : "opacity-0"
-                            )} />
-                          )}
-                        </div>
+                            {isExpanded ? (
+                              <ChevronUpIcon className={cn(
+                                "h-4 w-4 text-gray-400 transition-opacity",
+                                hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                              )} />
+                            ) : (
+                              <ChevronDownIcon className={cn(
+                                "h-4 w-4 text-gray-400 transition-opacity",
+                                hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                              )} />
+                            )}
+                          </div>
                       </>
                     )}
                   </button>
@@ -278,6 +267,34 @@ export function Sidebar() {
                   {!isCollapsed && isExpanded && (
                     <div className="mt-2 ml-4 space-y-1">
                       {item.children.map((category) => {
+                        // Special handling for personas - render as direct links
+                        if (item.name === t('nav.personas') && category.href) {
+                          const isSubActive = pathname === category.href || pathname.startsWith(category.href + '?')
+                          return (
+                            <Link
+                              key={category.name}
+                              href={category.href}
+                              className={cn(
+                                'group flex items-center rounded-lg text-sm font-medium transition-colors px-3 py-2',
+                                isSubActive
+                                  ? 'bg-slate-100 text-slate-700'
+                                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                              )}
+                            >
+                              <category.icon
+                                className={cn(
+                                  'h-4 w-4 transition-colors mr-3',
+                                  isSubActive
+                                    ? 'text-slate-600'
+                                    : 'text-gray-400 group-hover:text-gray-500'
+                                )}
+                              />
+                              {category.name}
+                            </Link>
+                          )
+                        }
+
+                        // Default category handling for other items
                         const isCategoryExpanded = expandedCategories[category.name]
                         return (
                           <div key={category.name}>
@@ -302,7 +319,7 @@ export function Sidebar() {
                                   )} />
                                 ) : (
                                   <ChevronDownIcon className={cn(
-                                    "h-3 w-3 text-gray-400 transition-opacity", 
+                                    "h-3 w-3 text-gray-400 transition-opacity",
                                     hoveredCategory === category.name ? "opacity-100" : "opacity-0"
                                   )} />
                                 )}

@@ -136,14 +136,21 @@ const getSamplePersonas = (t: (key: string) => string): Persona[] => [
 
 export default function PersonasPage() {
   const { t } = useLanguage()
-  const [personas, setPersonas] = useState<Persona[]>(getSamplePersonas(t))
+  const [personas, setPersonas] = useState<Persona[]>([])
   const [isNewPersonaModalOpen, setIsNewPersonaModalOpen] = useState(false)
   const [editingPersona, setEditingPersona] = useState<Persona | null>(null)
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null)
 
-  // Update sample personas when language changes
+  // Load personas from localStorage and combine with sample personas
   useEffect(() => {
-    setPersonas(getSamplePersonas(t))
+    const samplePersonas = getSamplePersonas(t)
+    try {
+      const userPersonas = JSON.parse(localStorage.getItem('user-personas') || '[]')
+      setPersonas([...samplePersonas, ...userPersonas])
+    } catch (error) {
+      console.error('Error loading personas from localStorage:', error)
+      setPersonas(samplePersonas)
+    }
   }, [t])
 
   const [newPersona, setNewPersona] = useState<Partial<Persona>>({
@@ -200,7 +207,18 @@ export default function PersonasPage() {
   }
 
   const handleDeletePersona = (id: string) => {
-    setPersonas(personas.filter(p => p.id !== id))
+    // Remove from state
+    const updatedPersonas = personas.filter(p => p.id !== id)
+    setPersonas(updatedPersonas)
+
+    // Also remove from localStorage if it's a user-created persona
+    try {
+      const userPersonas = JSON.parse(localStorage.getItem('user-personas') || '[]')
+      const updatedUserPersonas = userPersonas.filter((p: Persona) => p.id !== id)
+      localStorage.setItem('user-personas', JSON.stringify(updatedUserPersonas))
+    } catch (error) {
+      console.error('Error updating localStorage:', error)
+    }
   }
 
   const updateNewPersonaField = (field: string, value: any) => {
@@ -234,13 +252,12 @@ export default function PersonasPage() {
                 {t('personas.guideToPersonas')}
               </Button>
             </Link>
-            <Button 
-              variant="primary"
-              onClick={() => setIsNewPersonaModalOpen(true)}
-            >
-              <PlusIcon className="mr-2 h-4 w-4" />
-              {t('personas.newPersona')}
-            </Button>
+            <Link href="/personas/create">
+              <Button variant="primary">
+                <PlusIcon className="mr-2 h-4 w-4" />
+                {t('personas.newPersona')}
+              </Button>
+            </Link>
           </div>
         }
       />
@@ -353,20 +370,19 @@ export default function PersonasPage() {
           ))}
           
           {/* Add New Persona Card */}
-          <Card
-            className="border-dashed border-2 border-gray-300 hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer group hover:bg-slate-50/30"
-            onClick={() => setIsNewPersonaModalOpen(true)}
-          >
-            <CardContent className="p-8 text-center">
-              <PlusIcon className="mx-auto h-12 w-12 text-gray-400 mb-4 group-hover:text-slate-600 group-hover:scale-110 group-hover:rotate-90 transition-all duration-300 ease-out" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-slate-700 transition-colors duration-200">
-                {t('personas.createNewPersona')}
-              </h3>
-              <p className="text-gray-500 group-hover:text-slate-600 transition-colors duration-200">
-                {t('personas.defineNewPersona')}
-              </p>
-            </CardContent>
-          </Card>
+          <Link href="/personas/create">
+            <Card className="border-dashed border-2 border-gray-300 hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer group hover:bg-slate-50/30">
+              <CardContent className="p-8 text-center">
+                <PlusIcon className="mx-auto h-12 w-12 text-gray-400 mb-4 group-hover:text-slate-600 group-hover:scale-110 group-hover:rotate-90 transition-all duration-300 ease-out" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-slate-700 transition-colors duration-200">
+                  {t('personas.createNewPersona')}
+                </h3>
+                <p className="text-gray-500 group-hover:text-slate-600 transition-colors duration-200">
+                  {t('personas.defineNewPersona')}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </div>
       
