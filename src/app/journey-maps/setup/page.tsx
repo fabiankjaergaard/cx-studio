@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -20,7 +20,7 @@ interface TeamMember {
 }
 
 
-export default function JourneyMapSetupPage() {
+function JourneyMapSetupContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [mapName, setMapName] = useState('')
@@ -282,5 +282,15 @@ export default function JourneyMapSetupPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function JourneyMapSetupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600"></div>
+    </div>}>
+      <JourneyMapSetupContent />
+    </Suspense>
   )
 }
