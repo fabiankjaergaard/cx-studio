@@ -56,7 +56,7 @@ const journeyMapTemplates = [
     stages: ['Medvetenhet', 'Överväga', 'Köp', 'Leverans', 'Support'],
     touchpoints: ['Annons', 'Webbplats', 'Kassan', 'Email', 'Kundtjänst'],
     preview: '🛒 Produktsökning → 🔍 Jämför → 💳 Köp → 📦 Leverans → ⭐ Betyg',
-    color: 'bg-blue-50 border-blue-200'
+    color: 'bg-slate-50 border-slate-200'
   },
   {
     id: 'saas',
@@ -201,7 +201,7 @@ export default function NewJourneyMapPage() {
                 {creationMethods.map((method) => (
                   <Card
                     key={method.id}
-                    className={`cursor-pointer transition-all duration-200 border-2 ${method.borderColor} hover:shadow-md ${
+                    className={`cursor-pointer border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out group ${
                       method.id === 'ai' ? 'relative opacity-75' : ''
                     }`}
                     onClick={() => method.id !== 'ai' && handleMethodSelect(method.id)}
@@ -213,21 +213,21 @@ export default function NewJourneyMapPage() {
                         </div>
                       )}
 
-                      <div className={`w-16 h-16 mx-auto mb-4 ${method.color} rounded-2xl flex items-center justify-center`}>
-                        <method.icon className="w-8 h-8" />
+                      <div className={`w-16 h-16 mx-auto mb-4 ${method.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 ease-out`}>
+                        <method.icon className="w-8 h-8 group-hover:text-slate-700 transition-colors duration-200" />
                       </div>
 
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-slate-900 transition-colors duration-200">
                         {method.title}
                       </h3>
 
-                      <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                      <p className="text-sm text-gray-600 mb-6 leading-relaxed group-hover:text-slate-700 transition-colors duration-200">
                         {method.description}
                       </p>
 
                       <Button
                         variant={method.id === 'ai' ? 'outline' : 'primary'}
-                        className="w-full"
+                        className="w-full hover:scale-105 transform transition-all duration-200 ease-out"
                         disabled={method.id === 'ai'}
                         onClick={(e) => {
                           e.stopPropagation()
@@ -255,7 +255,7 @@ export default function NewJourneyMapPage() {
                 </p>
               </div>
 
-              <Card>
+              <Card className="border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
                 <CardContent className="p-8">
                   <div className="space-y-6">
                     <Input
@@ -303,7 +303,7 @@ export default function NewJourneyMapPage() {
 
           {!selectedMethod && (
             /* Additional Information */
-            <Card className="mt-8 bg-slate-50 border-slate-200">
+            <Card className="mt-8 bg-slate-50 border-slate-200 border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
               <CardContent className="p-6">
                 <h3 className="font-semibold text-gray-900 mb-3">Need help choosing?</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">

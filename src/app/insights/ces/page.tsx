@@ -196,7 +196,7 @@ export default function CESPage() {
               <Card
                 key={segment.type}
                 className={`cursor-pointer transition-all hover:shadow-md border-0 bg-white rounded-xl overflow-hidden ${
-                  selectedSegment === segment.type ? 'ring-2 ring-blue-500' : ''
+                  selectedSegment === segment.type ? 'ring-2 ring-slate-500' : ''
                 }`}
                 onClick={() => setSelectedSegment(selectedSegment === segment.type ? null : segment.type)}
               >

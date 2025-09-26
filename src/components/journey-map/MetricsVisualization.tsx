@@ -15,12 +15,14 @@ const METRIC_LEVELS = [
   { level: 1, name: 'Poor', color: 'bg-red-400', trend: 'down', textColor: 'text-white' },
   { level: 2, name: 'Below Average', color: 'bg-orange-400', trend: 'down', textColor: 'text-white' },
   { level: 3, name: 'Average', color: 'bg-yellow-400', trend: 'neutral', textColor: 'text-gray-800' },
-  { level: 4, name: 'Good', color: 'bg-blue-400', trend: 'up', textColor: 'text-white' },
+  { level: 4, name: 'Good', color: 'bg-slate-400', trend: 'up', textColor: 'text-white' },
   { level: 5, name: 'Excellent', color: 'bg-green-500', trend: 'up', textColor: 'text-white' }
 ]
 
 export function MetricsVisualization({ metrics, onChange, stageCount }: MetricsVisualizationProps) {
   const [editingStage, setEditingStage] = useState<number | null>(null)
+  const [tempMetricName, setTempMetricName] = useState('')
+  const [tempValue, setTempValue] = useState('')
 
   const getCurrentMetrics = () => {
     return metrics.slice()
@@ -30,20 +32,36 @@ export function MetricsVisualization({ metrics, onChange, stageCount }: MetricsV
 
   const handleMetricSelect = (stageIndex: number, level: number, metricName: string = '', value: string = '') => {
     const newMetrics = [...currentMetrics]
-    
+
     while (newMetrics.length <= stageIndex) {
       newMetrics.push('')
     }
-    
+
     // Format: "level:metricName:value"
     newMetrics[stageIndex] = level === 0 ? '' : `${level}:${metricName}:${value}`
-    
+
     while (newMetrics.length > 0 && newMetrics[newMetrics.length - 1] === '') {
       newMetrics.pop()
     }
-    
+
     onChange(newMetrics)
     setEditingStage(null)
+    setTempMetricName('')
+    setTempValue('')
+  }
+
+  const handleLevelSelect = (stageIndex: number, level: number) => {
+    const metricName = tempMetricName.trim()
+    const value = tempValue.trim()
+    handleMetricSelect(stageIndex, level, metricName, value)
+  }
+
+  const handleOpenEdit = (stageIndex: number) => {
+    const positions = getMetricPositions()
+    const position = positions[stageIndex]
+    setTempMetricName(position?.metricName || '')
+    setTempValue(position?.value || '')
+    setEditingStage(stageIndex)
   }
 
   const getMetricPositions = () => {
@@ -101,45 +119,63 @@ export function MetricsVisualization({ metrics, onChange, stageCount }: MetricsV
               top: `${position.y}%`
             }}
           >
-            {/* Metric indicator */}
-            <button
-              onClick={() => setEditingStage(editingStage === index ? null : index)}
-              className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-all duration-200 shadow-sm ${
-                position.isEmpty 
-                  ? 'bg-gray-100 border-gray-300 hover:border-gray-400 hover:bg-gray-200' 
-                  : `${METRIC_LEVELS[position.level]?.color || 'bg-blue-400'} border-gray-300 hover:border-gray-500 hover:scale-110 ${METRIC_LEVELS[position.level]?.textColor}`
-              }`}
-              title={position.metricName ? `${position.metricName}: ${position.value}` : undefined}
-            >
-              {position.isEmpty ? (
-                <span className="text-gray-400 text-sm font-bold">+</span>
-              ) : (
-                <BarChart3Icon className="h-4 w-4" />
+            <div className="flex flex-col items-center">
+              {/* Metric indicator */}
+              <button
+                onClick={() => editingStage === index ? setEditingStage(null) : handleOpenEdit(index)}
+                className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-all duration-200 shadow-sm mb-1 ${
+                  position.isEmpty
+                    ? 'bg-gray-100 border-gray-300 hover:border-gray-400 hover:bg-gray-200'
+                    : `${METRIC_LEVELS[position.level]?.color || 'bg-slate-400'} border-gray-300 hover:border-gray-500 hover:scale-110 ${METRIC_LEVELS[position.level]?.textColor}`
+                }`}
+                title={position.metricName ? `${position.metricName}: ${position.value}` : undefined}
+              >
+                {position.isEmpty ? (
+                  <span className="text-gray-400 text-sm font-bold">+</span>
+                ) : (
+                  <BarChart3Icon className="h-4 w-4" />
+                )}
+              </button>
+
+              {/* Metric info */}
+              {!position.isEmpty && (
+                <div className="text-xs text-gray-700 font-medium text-center">
+                  <div>{METRIC_LEVELS[position.level]?.name || 'Unknown'}</div>
+                  {position.metricName && position.metricName !== position.value && (
+                    <div className="text-gray-600 font-normal">{position.metricName}</div>
+                  )}
+                </div>
               )}
-            </button>
+            </div>
             
             {/* Metric selector popup */}
             {editingStage === index && (
-              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 rounded-lg shadow-xl p-4 z-30 w-80">
-                <div className="space-y-3">
-                  <div className="text-base font-semibold text-gray-700">Metric</div>
+              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 rounded-lg shadow-xl p-3 z-30 w-64">
+                <div className="space-y-2">
+                  <div className="text-sm font-semibold text-gray-700">Metric</div>
                   
                   {/* Metric inputs */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      placeholder="Metric name (e.g. NPS)"
-                      value={position.metricName}
-                      onChange={(e) => handleMetricSelect(index, Math.max(1, position.level), e.target.value, position.value)}
-                      className="p-3 border border-gray-300 rounded text-sm font-medium text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Value (e.g. 7.2)"
-                      value={position.value}
-                      onChange={(e) => handleMetricSelect(index, Math.max(1, position.level), position.metricName, e.target.value)}
-                      className="p-3 border border-gray-300 rounded text-sm font-medium text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                    />
+                  <div className="space-y-2">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Metric Name</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. NPS, CSAT"
+                        value={tempMetricName}
+                        onChange={(e) => setTempMetricName(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded text-sm font-medium text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Value</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 7.2, 85%, $1.2M"
+                        value={tempValue}
+                        onChange={(e) => setTempValue(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded text-sm font-medium text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white"
+                      />
+                    </div>
                   </div>
                   
                   {/* Performance level selector */}
@@ -147,22 +183,22 @@ export function MetricsVisualization({ metrics, onChange, stageCount }: MetricsV
                     {METRIC_LEVELS.map((metricLevel) => (
                       <button
                         key={metricLevel.level}
-                        onClick={() => handleMetricSelect(index, metricLevel.level, position.metricName, position.value)}
-                        className={`flex flex-col items-center p-3 rounded border transition-colors ${
+                        onClick={() => handleLevelSelect(index, metricLevel.level)}
+                        className={`flex flex-col items-center p-2 rounded border transition-colors ${
                           position.level === metricLevel.level 
-                            ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-200' 
+                            ? 'bg-slate-50 border-slate-300 ring-2 ring-slate-200' 
                             : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                         }`}
                         title={metricLevel.name}
                       >
-                        <div className={`w-6 h-6 rounded ${metricLevel.color} flex items-center justify-center text-sm ${metricLevel.textColor}`}>
+                        <div className={`w-5 h-5 rounded ${metricLevel.color} flex items-center justify-center text-xs ${metricLevel.textColor}`}>
                           {metricLevel.level === 0 ? '○' : getTrendIcon(metricLevel.trend)}
                         </div>
-                        <div className="text-sm font-medium text-gray-700 mt-2">{metricLevel.name}</div>
+                        <div className="text-xs font-medium text-gray-700 mt-1">{metricLevel.name}</div>
                       </button>
                     ))}
                   </div>
-                  
+
                   <div className="flex justify-between pt-3 border-t">
                     {!position.isEmpty && (
                       <button
@@ -172,12 +208,25 @@ export function MetricsVisualization({ metrics, onChange, stageCount }: MetricsV
                         Remove
                       </button>
                     )}
-                    <button
-                      onClick={() => setEditingStage(null)}
-                      className="text-sm text-gray-500 hover:text-gray-700 ml-auto font-medium"
-                    >
-                      Close
-                    </button>
+                    <div className="flex space-x-2 ml-auto">
+                      <button
+                        onClick={() => {
+                          setEditingStage(null)
+                          setTempMetricName('')
+                          setTempValue('')
+                        }}
+                        className="text-sm text-gray-500 hover:text-gray-700 font-medium"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => handleLevelSelect(index, Math.max(1, position.level || 1))}
+                        className="px-3 py-1 bg-slate-600 text-white text-sm font-medium rounded hover:bg-slate-700 transition-colors"
+                        disabled={!tempMetricName.trim()}
+                      >
+                        Save
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -193,17 +242,6 @@ export function MetricsVisualization({ metrics, onChange, stageCount }: MetricsV
         ))}
       </div>
 
-      {/* Performance scale on the right */}
-      <div className="absolute right-2 top-2 bottom-2 w-16 flex flex-col justify-between text-xs text-gray-500">
-        <div className="flex items-center">
-          <TrendingUpIcon className="h-3 w-3 mr-1 text-green-500" />
-          <span>High</span>
-        </div>
-        <div className="flex items-center">
-          <TrendingDownIcon className="h-3 w-3 mr-1 text-red-500" />
-          <span>Low</span>
-        </div>
-      </div>
     </div>
   )
 }

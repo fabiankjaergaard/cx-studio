@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AlertTriangleIcon, XIcon } from 'lucide-react'
+import { AlertTriangleIcon, XIcon, CircleIcon, AlertCircleIcon, XCircleIcon, ZapIcon } from 'lucide-react'
 
 interface PainPointsVisualizationProps {
   painPoints: string[]
@@ -11,11 +11,11 @@ interface PainPointsVisualizationProps {
 
 // Pain point intensity levels
 const PAIN_LEVELS = [
-  { level: 0, name: 'None', color: 'bg-gray-100', icon: '○', intensity: 0 },
-  { level: 1, name: 'Minor', color: 'bg-yellow-200', icon: '▲', intensity: 1 },
-  { level: 2, name: 'Moderate', color: 'bg-orange-300', icon: '▲▲', intensity: 2 },
-  { level: 3, name: 'Major', color: 'bg-red-400', icon: '▲▲▲', intensity: 3 },
-  { level: 4, name: 'Critical', color: 'bg-red-600', icon: '▲▲▲▲', intensity: 4 }
+  { level: 0, name: 'None', color: 'bg-gray-100', icon: CircleIcon, iconColor: 'text-gray-400', intensity: 0 },
+  { level: 1, name: 'Minor', color: 'bg-yellow-200', icon: AlertCircleIcon, iconColor: 'text-yellow-700', intensity: 1 },
+  { level: 2, name: 'Moderate', color: 'bg-orange-300', icon: AlertTriangleIcon, iconColor: 'text-orange-700', intensity: 2 },
+  { level: 3, name: 'Major', color: 'bg-red-400', icon: XCircleIcon, iconColor: 'text-red-700', intensity: 3 },
+  { level: 4, name: 'Critical', color: 'bg-red-600', icon: ZapIcon, iconColor: 'text-red-100', intensity: 4 }
 ]
 
 export function PainPointsVisualization({ painPoints, onChange, stageCount }: PainPointsVisualizationProps) {
@@ -93,21 +93,35 @@ export function PainPointsVisualization({ painPoints, onChange, stageCount }: Pa
               top: `${position.y}%`
             }}
           >
-            {/* Pain point indicator */}
-            <button
-              onClick={() => setEditingStage(editingStage === index ? null : index)}
-              className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-all duration-200 shadow-sm ${
-                position.isEmpty 
-                  ? 'bg-gray-100 border-gray-300 hover:border-gray-400 hover:bg-gray-200' 
-                  : `${PAIN_LEVELS[position.level]?.color || 'bg-red-400'} border-gray-300 hover:border-gray-500 hover:scale-110 text-white font-bold`
-              }`}
-            >
-              {position.isEmpty ? (
-                <span className="text-gray-400 text-sm font-bold">+</span>
-              ) : (
-                <AlertTriangleIcon className="h-4 w-4" />
+            <div className="flex flex-col items-center">
+              {/* Pain point indicator */}
+              <button
+                onClick={() => setEditingStage(editingStage === index ? null : index)}
+                className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-all duration-200 shadow-sm mb-1 ${
+                  position.isEmpty
+                    ? 'bg-gray-100 border-gray-300 hover:border-gray-400 hover:bg-gray-200'
+                    : `${PAIN_LEVELS[position.level]?.color || 'bg-red-400'} border-gray-300 hover:border-gray-500 hover:scale-110 text-white font-bold`
+                }`}
+              >
+                {position.isEmpty ? (
+                  <span className="text-gray-400 text-sm font-bold">+</span>
+                ) : (
+                  (() => {
+                    const painLevel = PAIN_LEVELS[position.level]
+                    if (!painLevel) return <AlertTriangleIcon className="h-4 w-4" />
+                    const Icon = painLevel.icon
+                    return <Icon className="h-4 w-4 text-white" />
+                  })()
+                )}
+              </button>
+
+              {/* Pain point label */}
+              {!position.isEmpty && (
+                <div className="text-xs text-gray-700 font-medium text-center">
+                  {PAIN_LEVELS[position.level]?.name || 'Unknown'}
+                </div>
               )}
-            </button>
+            </div>
             
             {/* Pain point selector popup */}
             {editingStage === index && (
@@ -122,16 +136,16 @@ export function PainPointsVisualization({ painPoints, onChange, stageCount }: Pa
                         key={painLevel.level}
                         onClick={() => handlePainPointSelect(index, painLevel.level, position.description)}
                         className={`flex flex-col items-center p-3 rounded border transition-colors ${
-                          position.level === painLevel.level 
-                            ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-200' 
+                          position.level === painLevel.level
+                            ? 'bg-slate-50 border-slate-300 ring-2 ring-slate-200'
                             : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                         }`}
                         title={painLevel.name}
                       >
-                        <div className={`w-6 h-6 rounded ${painLevel.color} flex items-center justify-center text-sm`}>
-                          {painLevel.level === 0 ? '○' : <AlertTriangleIcon className="h-4 w-4" />}
+                        <div className={`w-8 h-8 rounded ${painLevel.color} flex items-center justify-center text-sm mb-2`}>
+                          <painLevel.icon className={`h-4 w-4 ${painLevel.iconColor}`} />
                         </div>
-                        <div className="text-sm font-medium text-gray-700 mt-2">{painLevel.name}</div>
+                        <div className="text-sm font-medium text-gray-900 text-center">{painLevel.name}</div>
                       </button>
                     ))}
                   </div>
@@ -144,7 +158,7 @@ export function PainPointsVisualization({ painPoints, onChange, stageCount }: Pa
                         placeholder="Describe the pain point..."
                         value={position.description}
                         onChange={(e) => handlePainPointSelect(index, position.level, e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded text-sm font-medium text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                        className="w-full p-3 border border-gray-300 rounded text-sm font-medium text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white"
                         autoFocus
                       />
                     </div>
@@ -173,17 +187,6 @@ export function PainPointsVisualization({ painPoints, onChange, stageCount }: Pa
         ))}
       </div>
 
-      {/* Intensity scale on the right */}
-      <div className="absolute right-2 top-2 bottom-2 w-16 flex flex-col justify-between text-xs text-gray-500">
-        <div className="flex items-center">
-          <AlertTriangleIcon className="h-3 w-3 mr-1 text-red-600" />
-          <span>High</span>
-        </div>
-        <div className="flex items-center">
-          <span className="w-3 h-3 mr-1 rounded-full bg-gray-300"></span>
-          <span>Low</span>
-        </div>
-      </div>
     </div>
   )
 }

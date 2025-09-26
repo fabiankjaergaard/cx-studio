@@ -88,8 +88,8 @@ export function SurveyPreview({ survey, isOpen, onClose }: SurveyPreviewProps) {
                   onClick={() => handleAnswer(question.id, i)}
                   className={`w-12 h-12 border-2 rounded-lg flex items-center justify-center font-semibold transition-all ${
                     answer === i 
-                      ? 'border-blue-500 bg-blue-500 text-white' 
-                      : 'border-gray-300 hover:border-blue-300 bg-white'
+                      ? 'border-slate-500 bg-slate-500 text-white' 
+                      : 'border-gray-300 hover:border-slate-300 bg-white'
                   }`}
                 >
                   {i}
@@ -137,7 +137,7 @@ export function SurveyPreview({ survey, isOpen, onClose }: SurveyPreviewProps) {
               value={answer || ''}
               onChange={(e) => handleAnswer(question.id, e.target.value)}
               placeholder="Skriv ditt svar här..."
-              className="w-full h-24 p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-24 p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
             />
           </div>
         )
@@ -151,14 +151,14 @@ export function SurveyPreview({ survey, isOpen, onClose }: SurveyPreviewProps) {
                 onClick={() => handleAnswer(question.id, option)}
                 className={`w-full text-left p-4 border-2 rounded-lg transition-all ${
                   answer === option
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-300 hover:border-blue-300 bg-white'
+                    ? 'border-slate-500 bg-slate-50'
+                    : 'border-gray-300 hover:border-slate-300 bg-white'
                 }`}
               >
                 <div className="flex items-center space-x-3">
                   <div className={`w-5 h-5 border-2 rounded-full flex items-center justify-center ${
                     answer === option 
-                      ? 'border-blue-500 bg-blue-500' 
+                      ? 'border-slate-500 bg-slate-500' 
                       : 'border-gray-300'
                   }`}>
                     {answer === option && <div className="w-2 h-2 bg-white rounded-full" />}
@@ -187,14 +187,14 @@ export function SurveyPreview({ survey, isOpen, onClose }: SurveyPreviewProps) {
                   }}
                   className={`w-full text-left p-4 border-2 rounded-lg transition-all ${
                     isSelected
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-300 hover:border-blue-300 bg-white'
+                      ? 'border-slate-500 bg-slate-50'
+                      : 'border-gray-300 hover:border-slate-300 bg-white'
                   }`}
                 >
                   <div className="flex items-center space-x-3">
                     <div className={`w-5 h-5 border-2 rounded flex items-center justify-center ${
                       isSelected 
-                        ? 'border-blue-500 bg-blue-500' 
+                        ? 'border-slate-500 bg-slate-500' 
                         : 'border-gray-300'
                     }`}>
                       {isSelected && <CheckIcon className="w-3 h-3 text-white" />}
@@ -232,7 +232,7 @@ export function SurveyPreview({ survey, isOpen, onClose }: SurveyPreviewProps) {
                 onClick={() => setPreviewMode('customer')}
                 className={`px-3 py-1 text-sm rounded-l-lg transition-colors ${
                   previewMode === 'customer' 
-                    ? 'bg-blue-500 text-white' 
+                    ? 'bg-slate-500 text-white' 
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -242,7 +242,7 @@ export function SurveyPreview({ survey, isOpen, onClose }: SurveyPreviewProps) {
                 onClick={() => setPreviewMode('admin')}
                 className={`px-3 py-1 text-sm rounded-r-lg transition-colors ${
                   previewMode === 'admin' 
-                    ? 'bg-blue-500 text-white' 
+                    ? 'bg-slate-500 text-white' 
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -320,7 +320,7 @@ export function SurveyPreview({ survey, isOpen, onClose }: SurveyPreviewProps) {
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                  className="bg-slate-500 h-2 rounded-full transition-all duration-300"
                   style={{ 
                     width: `${((currentQuestionIndex + 1) / survey.questions.length) * 100}%` 
                   }}
@@ -349,8 +349,8 @@ export function SurveyPreview({ survey, isOpen, onClose }: SurveyPreviewProps) {
                       {renderQuestion(currentQuestion)}
                       
                       {previewMode === 'admin' && (
-                        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                          <div className="text-sm text-blue-800">
+                        <div className="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                          <div className="text-sm text-slate-800">
                             <strong>Frågetyp:</strong> {currentQuestion.type} | 
                             <strong> Obligatorisk:</strong> {currentQuestion.required ? 'Ja' : 'Nej'}
                             {answers[currentQuestion.id] !== undefined && (

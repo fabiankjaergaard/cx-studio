@@ -12,8 +12,8 @@ interface OpportunitiesVisualizationProps {
 // Opportunity priority levels
 const OPPORTUNITY_LEVELS = [
   { level: 0, name: 'None', color: 'bg-gray-100', priority: 'None' },
-  { level: 1, name: 'Low Priority', color: 'bg-blue-200', priority: 'Low' },
-  { level: 2, name: 'Medium Priority', color: 'bg-blue-400', priority: 'Medium' },
+  { level: 1, name: 'Low Priority', color: 'bg-slate-200', priority: 'Low' },
+  { level: 2, name: 'Medium Priority', color: 'bg-slate-400', priority: 'Medium' },
   { level: 3, name: 'High Priority', color: 'bg-green-400', priority: 'High' },
   { level: 4, name: 'Critical Opportunity', color: 'bg-green-600', priority: 'Critical' }
 ]
@@ -88,23 +88,32 @@ export function OpportunitiesVisualization({ opportunities, onChange, stageCount
               top: `${position.y}%`
             }}
           >
-            {/* Opportunity indicator */}
-            <button
-              onClick={() => {
-                setEditingStage(editingStage === index ? null : index)
-              }}
-              className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-all duration-200 shadow-sm ${
-                position.isEmpty 
-                  ? 'bg-gray-100 border-gray-300 hover:border-gray-400 hover:bg-gray-200' 
-                  : `${OPPORTUNITY_LEVELS[position.level]?.color || 'bg-green-400'} border-gray-300 hover:border-gray-500 hover:scale-110 text-white`
-              }`}
-            >
-              {position.isEmpty ? (
-                <span className="text-gray-400 text-sm font-bold">+</span>
-              ) : (
-                <LightbulbIcon className="h-4 w-4" />
+            <div className="flex flex-col items-center">
+              {/* Opportunity indicator */}
+              <button
+                onClick={() => {
+                  setEditingStage(editingStage === index ? null : index)
+                }}
+                className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-all duration-200 shadow-sm mb-1 ${
+                  position.isEmpty
+                    ? 'bg-gray-100 border-gray-300 hover:border-gray-400 hover:bg-gray-200'
+                    : `${OPPORTUNITY_LEVELS[position.level]?.color || 'bg-green-400'} border-gray-300 hover:border-gray-500 hover:scale-110 text-white`
+                }`}
+              >
+                {position.isEmpty ? (
+                  <span className="text-gray-400 text-sm font-bold">+</span>
+                ) : (
+                  <LightbulbIcon className="h-4 w-4" />
+                )}
+              </button>
+
+              {/* Opportunity level label */}
+              {!position.isEmpty && (
+                <div className="text-xs text-gray-700 font-medium text-center">
+                  {OPPORTUNITY_LEVELS[position.level]?.name || 'Unknown'}
+                </div>
               )}
-            </button>
+            </div>
             
             {/* Opportunity selector popup */}
             {editingStage === index && (
@@ -120,7 +129,7 @@ export function OpportunitiesVisualization({ opportunities, onChange, stageCount
                         onClick={() => handleOpportunitySelect(index, oppLevel.level, position.description)}
                         className={`flex flex-col items-center p-3 rounded border transition-colors ${
                           position.level === oppLevel.level 
-                            ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-200' 
+                            ? 'bg-slate-50 border-slate-300 ring-2 ring-slate-200' 
                             : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                         }`}
                         title={`${oppLevel.name} - ${oppLevel.priority} Priority`}
@@ -141,7 +150,7 @@ export function OpportunitiesVisualization({ opportunities, onChange, stageCount
                         placeholder="Describe the opportunity..."
                         value={position.description}
                         onChange={(e) => handleOpportunitySelect(index, position.level, e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded text-sm font-medium text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                        className="w-full p-3 border border-gray-300 rounded text-sm font-medium text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white"
                         autoFocus
                       />
                     </div>
@@ -170,17 +179,6 @@ export function OpportunitiesVisualization({ opportunities, onChange, stageCount
         ))}
       </div>
 
-      {/* Priority scale on the right */}
-      <div className="absolute right-2 top-2 bottom-2 w-20 flex flex-col justify-between text-xs text-gray-500">
-        <div className="flex items-center">
-          <TrendingUpIcon className="h-3 w-3 mr-1 text-green-600" />
-          <span>High Priority</span>
-        </div>
-        <div className="flex items-center">
-          <span className="w-3 h-3 mr-1 rounded-full bg-gray-300"></span>
-          <span>Low Priority</span>
-        </div>
-      </div>
     </div>
   )
 }

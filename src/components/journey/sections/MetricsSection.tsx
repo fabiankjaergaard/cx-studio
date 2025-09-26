@@ -50,9 +50,9 @@ export function MetricsSection({
     <Section {...sectionProps} title="Mätpunkter">
       <div className="space-y-8">
         {/* Metrics Scale Legend */}
-        <div className="flex items-center justify-center p-4 bg-blue-50 rounded-lg">
+        <div className="flex items-center justify-center p-4 bg-slate-50 rounded-lg">
           <div className="flex items-center space-x-2">
-            <BarChartIcon className="h-6 w-6 text-blue-600" />
+            <BarChartIcon className="h-6 w-6 text-slate-600" />
             <span className="text-sm font-medium text-gray-700">Definiera KPI:er och mätvärden för varje steg</span>
           </div>
         </div>
@@ -139,9 +139,9 @@ export function MetricsSection({
         </div>
 
         {/* Metrics Dashboard */}
-        <div className="mt-8 p-6 bg-blue-50 rounded-lg">
+        <div className="mt-8 p-6 bg-slate-50 rounded-lg">
           <h3 className="font-medium text-gray-900 mb-4 flex items-center">
-            <BarChartIcon className="h-5 w-5 text-blue-600 mr-2" />
+            <BarChartIcon className="h-5 w-5 text-slate-600 mr-2" />
             KPI Dashboard
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -168,7 +168,7 @@ export function MetricsSection({
                         <div className="flex justify-between text-xs">
                           <span className="text-gray-500">Mål: {metric.target}</span>
                           {metric.currentValue && (
-                            <span className="text-blue-600 font-medium">Nu: {metric.currentValue}</span>
+                            <span className="text-slate-600 font-medium">Nu: {metric.currentValue}</span>
                           )}
                         </div>
                       </div>

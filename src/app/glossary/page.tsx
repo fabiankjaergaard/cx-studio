@@ -18,7 +18,7 @@ const getCategoryLabels = (t: (key: string) => string) => ({
 })
 
 const categoryColors = {
-  general: 'bg-blue-100 text-blue-800',
+  general: 'bg-slate-100 text-slate-800',
   journey: 'bg-green-100 text-green-800',
   touchpoint: 'bg-purple-100 text-purple-800',
   emotion: 'bg-orange-100 text-orange-800',
@@ -112,7 +112,7 @@ export default function GlossaryPage() {
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white"
                   >
                     <option value="all">{t('glossary.allCategories')}</option>
                     {categories.map(category => (
@@ -200,7 +200,7 @@ export default function GlossaryPage() {
                               <button
                                 key={relatedId}
                                 onClick={() => handleRelatedTermClick(relatedId)}
-                                className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200 transition-colors"
+                                className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm hover:bg-slate-200 transition-colors"
                               >
                                 <TagIcon className="h-3 w-3" />
                                 {relatedTerm.term}

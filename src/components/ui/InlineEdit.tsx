@@ -124,7 +124,7 @@ export function InlineEdit({
         onKeyDown={handleKeyDown}
         onBlur={handleBlur}
         placeholder={placeholder}
-        className={`${inputClassName} ${variantStyles.input} bg-white border border-blue-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500`}
+        className={`${inputClassName} ${variantStyles.input} bg-white border border-slate-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 placeholder-gray-500`}
         {...(multiline ? { rows: 2 } : {})}
       />
     )

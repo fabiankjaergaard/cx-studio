@@ -79,22 +79,22 @@ export function RowTypeBlock({ rowType, color = 'bg-slate-50' }: RowTypeBlockPro
     <div
       ref={drag as any}
       className={`
-        cursor-grab active:cursor-grabbing p-3 rounded-lg border-2 border-gray-200
-        hover:border-gray-300 hover:shadow-sm transition-all duration-200
+        cursor-grab active:cursor-grabbing p-3 rounded-lg border-2 border-gray-200 group
+        hover:border-slate-300 hover:shadow-md hover:scale-105 hover:-translate-y-1 transition-all duration-200 ease-out
         ${colorClass} ${isDragging ? 'opacity-50 scale-95' : 'opacity-100'}
         select-none
       `}
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <div className="flex items-start space-x-3">
-        <div className="w-8 h-8 bg-white rounded-lg border border-gray-200 flex items-center justify-center flex-shrink-0">
-          <IconComponent className="w-4 h-4 text-gray-600" />
+        <div className="w-8 h-8 bg-white rounded-lg border border-gray-200 flex items-center justify-center flex-shrink-0 group-hover:border-slate-300 group-hover:shadow-sm transition-all duration-200">
+          <IconComponent className="w-4 h-4 text-gray-600 group-hover:text-slate-700 transition-colors duration-200" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-medium text-gray-900 text-sm mb-1">
+          <h4 className="font-medium text-gray-900 text-sm mb-1 group-hover:text-slate-900 transition-colors duration-200">
             {rowType.name}
           </h4>
-          <p className="text-xs text-gray-500 leading-relaxed">
+          <p className="text-xs text-gray-500 leading-relaxed group-hover:text-slate-600 transition-colors duration-200">
             {rowType.description}
           </p>
         </div>

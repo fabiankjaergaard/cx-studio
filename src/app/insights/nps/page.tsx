@@ -169,8 +169,8 @@ export default function NPSPage() {
         <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden">
           <div className="p-6">
             <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <TrendingUpIcon className="h-6 w-6 text-blue-600" />
+              <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                <TrendingUpIcon className="h-6 w-6 text-slate-600" />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -200,7 +200,7 @@ export default function NPSPage() {
               <Card
                 key={segment.type}
                 className={`cursor-pointer transition-all hover:shadow-md border-0 bg-white rounded-xl overflow-hidden ${
-                  selectedSegment === segment.type ? 'ring-2 ring-blue-500' : ''
+                  selectedSegment === segment.type ? 'ring-2 ring-slate-500' : ''
                 }`}
                 onClick={() => setSelectedSegment(selectedSegment === segment.type ? null : segment.type)}
               >
@@ -266,7 +266,7 @@ export default function NPSPage() {
                   <ul className="space-y-2">
                     {practice.tips.map((tip, tipIndex) => (
                       <li key={tipIndex} className="flex items-start text-sm text-gray-600">
-                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
                         {tip}
                       </li>
                     ))}
@@ -299,7 +299,7 @@ export default function NPSPage() {
                       <tr key={index} className="border-b hover:bg-gray-50">
                         <td className="py-3 px-4 font-medium text-gray-900">{benchmark.industry}</td>
                         <td className="py-3 px-4 text-center">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-slate-100 text-slate-800">
                             {benchmark.average}
                           </span>
                         </td>

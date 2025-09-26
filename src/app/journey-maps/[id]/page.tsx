@@ -2153,7 +2153,7 @@ export default function JourneyMapBuilderPage() {
                   </div>
                   {/* Other collaborators */}
                   <div
-                    className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium -ml-2 border-2 border-white cursor-pointer hover:z-10 hover:scale-110 transition-transform"
+                    className="w-8 h-8 rounded-full bg-slate-500 text-white flex items-center justify-center text-sm font-medium -ml-2 border-2 border-white cursor-pointer hover:z-10 hover:scale-110 transition-transform"
                     title="Anna Andersson (editor) - Click to manage team"
                     onClick={() => setActiveDropdown(activeDropdown === 'team' ? null : 'team')}
                   >
@@ -2194,7 +2194,7 @@ export default function JourneyMapBuilderPage() {
                       {/* Editor */}
                       <div className="flex items-center justify-between py-2">
                         <div className="flex items-center space-x-2">
-                          <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-medium">
+                          <div className="w-6 h-6 rounded-full bg-slate-500 text-white flex items-center justify-center text-xs font-medium">
                             A
                           </div>
                           <div>
@@ -2226,7 +2226,7 @@ export default function JourneyMapBuilderPage() {
                           e.stopPropagation()
                           setActiveDropdown(null)
                         }}
-                        className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-blue-600 hover:text-blue-700 rounded"
+                        className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-slate-600 hover:text-slate-700 rounded"
                       >
                         <PlusIcon className="w-3 h-3" />
                         Invite new member
@@ -2537,7 +2537,7 @@ export default function JourneyMapBuilderPage() {
                       <th
                         key={stage.id}
                         className={`min-w-64 ${isCompactView ? 'p-2' : 'p-4'} text-left ${showGridLines ? 'border-r border-gray-200' : ''} relative group hover:bg-white transition-colors cursor-move ${
-                          draggedStageId === stage.id ? 'bg-blue-50 shadow-lg' : ''
+                          draggedStageId === stage.id ? 'bg-slate-50 shadow-lg' : ''
                         }`}
                         draggable={true}
                         onDragStart={(e) => handleStageDragStart(e, stage.id)}
@@ -2671,7 +2671,7 @@ export default function JourneyMapBuilderPage() {
                     <React.Fragment key={`row-section-${row.id}`}>
                       <tr key={row.id} className="border-b border-gray-100">
                       <td
-                        className={`${isCompactView ? 'p-2' : 'p-4'} ${showGridLines ? 'border-r border-gray-200' : ''} bg-slate-50 group relative hover:bg-white transition-colors`}
+                        className={`${isCompactView ? 'p-2' : 'p-4'} ${showGridLines ? 'border-r border-gray-200' : ''} ${row.color} group relative hover:bg-white transition-colors`}
                         data-onboarding={rowIndex === 0 ? "categories" : undefined}
                       >
                         <div className="space-y-1">
@@ -2756,6 +2756,7 @@ export default function JourneyMapBuilderPage() {
                           <JourneyMapCellComponent
                             content={row.cells.map(c => c.content).join(',')}
                             type={row.type}
+                            backgroundColor={row.color}
                             onChange={(content) => {
                               const emotions = content.split(',').map(e => e.trim())
                               
@@ -2814,6 +2815,7 @@ export default function JourneyMapBuilderPage() {
                             <JourneyMapCellComponent
                               content={cell.content}
                               type={row.type}
+                              backgroundColor={row.color}
                               onChange={(content) => handleCellChange(row.id, cell.id, content)}
                               placeholder="Klicka för att redigera..."
                             />

@@ -249,7 +249,7 @@ export default function PersonasPage() {
         {/* Personas Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {personas.map((persona) => (
-            <Card key={persona.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Card key={persona.id} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer group">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
@@ -273,7 +273,7 @@ export default function PersonasPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => setEditingPersona(persona)}
-                      className="p-2"
+                      className="p-2 hover:scale-105 transform transition-all duration-200 ease-out"
                     >
                       <EditIcon className="h-3 w-3" />
                     </Button>
@@ -281,7 +281,7 @@ export default function PersonasPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDeletePersona(persona.id)}
-                      className="p-2 text-red-600 hover:text-red-700"
+                      className="p-2 text-red-600 hover:text-red-700 hover:scale-105 transform transition-all duration-200 ease-out"
                     >
                       <TrashIcon className="h-3 w-3" />
                     </Button>
@@ -339,10 +339,10 @@ export default function PersonasPage() {
                     )}
                   </div>
                   
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-4"
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full mt-4 hover:scale-105 transform transition-all duration-200 ease-out group-hover:bg-slate-50"
                     onClick={() => setSelectedPersona(persona)}
                   >
                     {t('personas.showDetails')}
@@ -353,16 +353,16 @@ export default function PersonasPage() {
           ))}
           
           {/* Add New Persona Card */}
-          <Card 
-            className="border-dashed border-2 border-gray-300 hover:border-gray-400 transition-colors cursor-pointer"
+          <Card
+            className="border-dashed border-2 border-gray-300 hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer group hover:bg-slate-50/30"
             onClick={() => setIsNewPersonaModalOpen(true)}
           >
             <CardContent className="p-8 text-center">
-              <PlusIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <PlusIcon className="mx-auto h-12 w-12 text-gray-400 mb-4 group-hover:text-slate-600 group-hover:scale-110 group-hover:rotate-90 transition-all duration-300 ease-out" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-slate-700 transition-colors duration-200">
                 {t('personas.createNewPersona')}
               </h3>
-              <p className="text-gray-500">
+              <p className="text-gray-500 group-hover:text-slate-600 transition-colors duration-200">
                 {t('personas.defineNewPersona')}
               </p>
             </CardContent>

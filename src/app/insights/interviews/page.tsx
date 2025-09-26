@@ -154,7 +154,7 @@ function InterviewsContent() {
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
                   placeholder="t.ex. mobilappen, checkout-processen..."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                 />
               </div>
 
@@ -165,7 +165,7 @@ function InterviewsContent() {
                 <select
                   value={industry}
                   onChange={(e) => setIndustry(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                 >
                   <option value="">Välj bransch</option>
                   {industries.map(ind => (
@@ -183,7 +183,7 @@ function InterviewsContent() {
                   value={audience}
                   onChange={(e) => setAudience(e.target.value)}
                   placeholder="t.ex. befintliga kunder, potentiella användare..."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                 />
               </div>
 
@@ -194,7 +194,7 @@ function InterviewsContent() {
                 <select
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                 >
                   <option value="30">30 minuter</option>
                   <option value="45">45 minuter</option>
@@ -308,7 +308,7 @@ function InterviewsContent() {
             <div className="text-lg text-gray-900 mb-4">
               "Vad fungerar bra med din nuvarande lösning?"
             </div>
-            <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+            <div className="text-sm text-gray-600 bg-slate-50 p-3 rounded-lg">
               <strong>Tips:</strong> Låt deltagaren tala färdigt. Följ upp med "Kan du ge ett konkret exempel?"
             </div>
           </CardContent>
@@ -324,7 +324,7 @@ function InterviewsContent() {
               value={currentNote}
               onChange={(e) => setCurrentNote(e.target.value)}
               placeholder="Skriv dina anteckningar här..."
-              className="w-full h-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full h-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
             />
             <div className="mt-3 flex justify-between items-center">
               <div className="text-sm text-gray-500">
@@ -401,16 +401,16 @@ function InterviewsContent() {
           <Card
             key={index}
             className={`border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow ${
-              action.primary ? 'bg-blue-50 border-blue-200' : 'bg-white'
+              action.primary ? 'bg-slate-50 border-slate-200' : 'bg-white'
             }`}
             onClick={() => setActiveTab(action.action)}
           >
             <CardContent className="p-6">
               <div className="flex items-start space-x-4">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                  action.primary ? 'bg-blue-100' : 'bg-gray-50'
+                  action.primary ? 'bg-slate-100' : 'bg-gray-50'
                 }`}>
-                  <action.icon className={`h-6 w-6 ${action.primary ? 'text-blue-600' : 'text-gray-600'}`} />
+                  <action.icon className={`h-6 w-6 ${action.primary ? 'text-slate-600' : 'text-gray-600'}`} />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">

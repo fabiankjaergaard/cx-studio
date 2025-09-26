@@ -80,7 +80,7 @@ export function EditTouchpointModal({ isOpen, onClose, touchpoint }: EditTouchpo
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Beskriv vad som händer i denna touchpoint..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-slate-500 resize-none"
             rows={3}
           />
         </div>
@@ -92,7 +92,7 @@ export function EditTouchpointModal({ isOpen, onClose, touchpoint }: EditTouchpo
           <select
             value={channel}
             onChange={(e) => setChannel(e.target.value as any)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-slate-500"
           >
             <option value="online">Online</option>
             <option value="offline">Offline</option>
@@ -109,7 +109,7 @@ export function EditTouchpointModal({ isOpen, onClose, touchpoint }: EditTouchpo
           <select
             value={emotion}
             onChange={(e) => setEmotion(e.target.value as any)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-slate-500"
           >
             <option value="positive">Positiv</option>
             <option value="neutral">Neutral</option>

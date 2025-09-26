@@ -44,8 +44,8 @@ export function PersonaSection({ persona, onUpdate, ...sectionProps }: PersonaSe
 
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 text-sm font-medium">Å</span>
+              <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
+                <span className="text-slate-600 text-sm font-medium">Å</span>
               </div>
               <Input
                 placeholder="Ålder"
@@ -138,7 +138,7 @@ export function PersonaSection({ persona, onUpdate, ...sectionProps }: PersonaSe
           placeholder="Beskriv personas bakgrund, beteenden och motivationer..."
           value={persona?.description || ''}
           onChange={(e) => handleUpdate('description', e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
           rows={4}
         />
       </div>

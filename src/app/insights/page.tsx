@@ -187,7 +187,7 @@ export default function InsightsPage() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {getQuantitativeMethods(t).map((method) => (
-              <Card key={method.title} className="hover:shadow-md transition-shadow">
+              <Card key={method.title} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer group">
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3 mb-3">
                     <div className={`p-2 rounded-lg ${method.color}`}>
@@ -225,7 +225,7 @@ export default function InsightsPage() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {getQualitativeMethods(t).map((method) => (
-              <Card key={method.title} className="hover:shadow-md transition-shadow">
+              <Card key={method.title} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer group">
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3 mb-3">
                     <div className={`p-2 rounded-lg ${method.color}`}>

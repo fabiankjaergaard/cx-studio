@@ -105,7 +105,7 @@ export function NewJourneyModal({ isOpen, onClose }: NewJourneyModalProps) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Beskriv denna customer journey..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-slate-500 resize-none"
             rows={3}
           />
         </div>
@@ -121,8 +121,8 @@ export function NewJourneyModal({ isOpen, onClose }: NewJourneyModalProps) {
           />
         </div>
 
-        <div className="bg-blue-50 p-3 rounded-lg">
-          <p className="text-sm text-blue-700">
+        <div className="bg-slate-50 p-3 rounded-lg">
+          <p className="text-sm text-slate-700">
             Din journey map kommer att skapas med 5 standardfaser: Medvetenhet, Övervägande, Köp, Användning och Lojalitet. Du kan anpassa dessa senare.
           </p>
         </div>

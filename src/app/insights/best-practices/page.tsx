@@ -25,7 +25,7 @@ const getBestPractices = (t: any) => [
   {
     category: t('bestPractices.planningDesign'),
     icon: TargetIcon,
-    color: 'text-blue-600 bg-blue-100',
+    color: 'text-slate-600 bg-slate-100',
     practices: [
       {
         title: t('bestPractices.clearGoalsTitle'),
@@ -283,10 +283,10 @@ export default function BestPracticesPage() {
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('bestPractices.progressiveApproach')}</h2>
           <div className="space-y-6">
             {progressiveDisclosure.map((phase, index) => (
-              <Card key={phase.phase} className="border-l-4 border-l-blue-500">
+              <Card key={phase.phase} className="border-l-4 border-l-slate-500">
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
+                    <div className="w-12 h-12 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center font-bold text-lg">
                       {index + 1}
                     </div>
                     <div className="flex-1">
@@ -313,7 +313,7 @@ export default function BestPracticesPage() {
                         
                         <div>
                           <h4 className="font-medium text-gray-900 mb-2">{t('bestPractices.nextStep')}</h4>
-                          <div className="flex items-center text-sm text-blue-600">
+                          <div className="flex items-center text-sm text-slate-600">
                             <ArrowRightIcon className="h-4 w-4 mr-1" />
                             {phase.nextStep}
                           </div>
@@ -427,7 +427,7 @@ export default function BestPracticesPage() {
               <Card key={index}>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-3">
-                    <methodTip.icon className="h-5 w-5 text-blue-600" />
+                    <methodTip.icon className="h-5 w-5 text-slate-600" />
                     <span>{methodTip.method}</span>
                   </CardTitle>
                 </CardHeader>
@@ -447,7 +447,7 @@ export default function BestPracticesPage() {
         </div>
 
         {/* Final CTA */}
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0">
+        <Card className="bg-gradient-to-r from-slate-50 to-indigo-50 border-0">
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">

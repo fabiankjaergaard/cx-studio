@@ -110,7 +110,7 @@ export default function JourneyMapSetupPage() {
   const getRoleColor = (role: string) => {
     switch (role) {
       case 'owner': return 'bg-slate-700 text-white'
-      case 'editor': return 'bg-blue-500 text-white'
+      case 'editor': return 'bg-slate-500 text-white'
       case 'viewer': return 'bg-gray-400 text-white'
       default: return 'bg-gray-400 text-white'
     }
@@ -151,7 +151,7 @@ export default function JourneyMapSetupPage() {
           </div>
 
           {/* Team Members */}
-          <Card>
+          <Card className="border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <UsersIcon className="mr-2 h-5 w-5" />
@@ -165,9 +165,9 @@ export default function JourneyMapSetupPage() {
               {/* Current Team Members */}
               <div className="space-y-3">
                 {teamMembers.map((member) => (
-                  <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-slate-50 hover:shadow-sm hover:scale-[1.02] transition-all duration-200 ease-out group">
                     <div className="flex items-center space-x-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${getRoleColor(member.role)}`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${getRoleColor(member.role)} group-hover:scale-110 transition-transform duration-200`}>
                         {member.avatar}
                       </div>
                       <div>
@@ -201,7 +201,7 @@ export default function JourneyMapSetupPage() {
                       {member.role !== 'owner' && (
                         <button
                           onClick={() => removeTeamMember(member.id)}
-                          className="p-1 text-gray-400 hover:text-red-600"
+                          className="p-1 text-gray-400 hover:text-red-600 hover:scale-110 transition-all duration-200 ease-out"
                         >
                           <XIcon className="w-4 h-4" />
                         </button>
@@ -234,6 +234,7 @@ export default function JourneyMapSetupPage() {
                     variant="outline"
                     onClick={addTeamMember}
                     disabled={!inviteEmail.trim()}
+                    className="hover:scale-105 transform transition-all duration-200 ease-out"
                   >
                     <UserPlusIcon className="mr-2 h-4 w-4" />
                     Bjud in
@@ -247,7 +248,7 @@ export default function JourneyMapSetupPage() {
           </Card>
 
           {/* Permissions Info */}
-          <Card className="bg-slate-50 border-slate-200">
+          <Card className="bg-slate-50 border-slate-200 border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
             <CardContent className="p-4">
               <h4 className="font-medium text-gray-900 mb-3">Behörigheter</h4>
               <div className="space-y-2 text-sm text-gray-600">
@@ -256,7 +257,7 @@ export default function JourneyMapSetupPage() {
                   <span><strong>Ägare:</strong> Full kontroll, kan redigera allt och hantera teamet</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-slate-500 rounded-full"></div>
                   <span><strong>Redigerare:</strong> Kan redigera journey map-innehåll</span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -272,7 +273,7 @@ export default function JourneyMapSetupPage() {
             <Button
               variant="primary"
               onClick={handleContinue}
-              className="px-8"
+              className="px-8 hover:scale-105 transform transition-all duration-200 ease-out hover:shadow-lg"
             >
               <ArrowRightIcon className="mr-2 h-4 w-4" />
               Fortsätt till editorn

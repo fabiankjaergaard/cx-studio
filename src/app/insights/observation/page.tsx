@@ -496,7 +496,7 @@ export default function ObservationPage() {
         </Card>
 
         {/* Call to Action */}
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0">
+        <Card className="bg-gradient-to-r from-slate-50 to-indigo-50 border-0">
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">

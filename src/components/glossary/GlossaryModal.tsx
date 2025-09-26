@@ -21,7 +21,7 @@ const categoryLabels = {
 }
 
 const categoryColors = {
-  general: 'bg-blue-100 text-blue-800',
+  general: 'bg-slate-100 text-slate-800',
   journey: 'bg-green-100 text-green-800',
   touchpoint: 'bg-purple-100 text-purple-800',
   emotion: 'bg-orange-100 text-orange-800',
@@ -79,7 +79,7 @@ export function GlossaryModal({ isOpen, onClose }: GlossaryModalProps) {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
           >
             <option value="all">Alla kategorier</option>
             {categories.map(category => (
@@ -147,7 +147,7 @@ export function GlossaryModal({ isOpen, onClose }: GlossaryModalProps) {
                             <button
                               key={relatedId}
                               onClick={() => handleRelatedTermClick(relatedId)}
-                              className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs hover:bg-blue-200 transition-colors"
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 text-slate-700 rounded-full text-xs hover:bg-slate-200 transition-colors"
                             >
                               <TagIcon className="h-3 w-3" />
                               {relatedTerm.term}

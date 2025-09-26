@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/dashboard/Header'
 import { Button } from '@/components/ui/Button'
@@ -21,7 +21,10 @@ import {
   ChevronDownIcon,
   EyeIcon,
   DownloadIcon,
-  PlusIcon
+  PlusIcon,
+  RocketIcon,
+  CreditCardIcon,
+  UtensilsIcon
 } from 'lucide-react'
 
 interface PersonaTemplate {
@@ -41,6 +44,7 @@ interface PersonaTemplate {
   behaviors: string[]
   motivations: string[]
   avatar: string
+  icon: string
 }
 
 const personaTemplates: PersonaTemplate[] = [
@@ -53,6 +57,7 @@ const personaTemplates: PersonaTemplate[] = [
     age: '28',
     occupation: 'Marketing Coordinator',
     avatar: '',
+    icon: 'ShoppingCartIcon',
     goals: [
       'Hitta senaste modetrenden',
       'Få bästa värde för pengarna',
@@ -91,6 +96,7 @@ const personaTemplates: PersonaTemplate[] = [
     age: '52',
     occupation: 'Projektledare',
     avatar: '',
+    icon: 'ShoppingCartIcon',
     goals: [
       'Hitta bästa priserna',
       'Jämföra produkter mellan sajter',
@@ -131,6 +137,7 @@ const personaTemplates: PersonaTemplate[] = [
     age: '34',
     occupation: 'CEO/Grundare',
     avatar: '',
+    icon: 'RocketIcon',
     goals: [
       'Hitta kostnadseffektiva lösningar',
       'Skala verksamheten snabbt',
@@ -171,6 +178,7 @@ const personaTemplates: PersonaTemplate[] = [
     age: '41',
     occupation: 'Grundskollärare',
     avatar: '',
+    icon: 'GraduationCapIcon',
     goals: [
       'Engagera eleverna i lärandet',
       'Spara tid på administration',
@@ -211,6 +219,7 @@ const personaTemplates: PersonaTemplate[] = [
     age: '67',
     occupation: 'Pensionär',
     avatar: '',
+    icon: 'HeartIcon',
     goals: [
       'Få tillgång till vård enkelt',
       'Förstå sin hälsoinformation',
@@ -251,6 +260,7 @@ const personaTemplates: PersonaTemplate[] = [
     age: '26',
     occupation: 'Finansanalytiker',
     avatar: '',
+    icon: 'CreditCardIcon',
     goals: [
       'Spara till första bostaden',
       'Börja investera smart',
@@ -291,6 +301,7 @@ const personaTemplates: PersonaTemplate[] = [
     age: '29',
     occupation: 'Grafisk designer',
     avatar: '',
+    icon: 'PlaneIcon',
     goals: [
       'Upptäcka nya destinationer',
       'Hitta unika upplevelser',
@@ -331,6 +342,7 @@ const personaTemplates: PersonaTemplate[] = [
     age: '33',
     occupation: 'Personlig tränare',
     avatar: '',
+    icon: 'UtensilsIcon',
     goals: [
       'Hitta näringsrika måltider',
       'Stödja lokala producenter',
@@ -374,6 +386,21 @@ const categories = [
   'Mat & Dryck'
 ]
 
+// Map icon names to icon components
+const getPersonaIcon = (iconName: string) => {
+  const iconMap: { [key: string]: any } = {
+    'ShoppingCartIcon': ShoppingCartIcon,
+    'RocketIcon': RocketIcon,
+    'GraduationCapIcon': GraduationCapIcon,
+    'HeartIcon': HeartIcon,
+    'CreditCardIcon': CreditCardIcon,
+    'PlaneIcon': PlaneIcon,
+    'UtensilsIcon': UtensilsIcon,
+  }
+
+  return iconMap[iconName] || UserIcon
+}
+
 export default function PersonaTemplatesPage() {
   const { t } = useLanguage()
   const router = useRouter()
@@ -409,7 +436,7 @@ export default function PersonaTemplatesPage() {
           <div className="flex space-x-4">
             <div className="relative">
               <select
-                className="pl-3 pr-8 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+                className="pl-3 pr-8 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 appearance-none bg-white"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
@@ -430,11 +457,16 @@ export default function PersonaTemplatesPage() {
         {/* Templates Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTemplates.map((template) => (
-            <Card key={template.id} className="hover:shadow-md transition-shadow border-0 bg-white rounded-xl overflow-hidden">
+            <Card key={template.id} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out border-0 bg-white rounded-xl overflow-hidden cursor-pointer group">
               <div className="p-4">
                 {/* Header with category badge */}
                 <div className="flex items-center justify-between mb-3">
-                  <span className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
+                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center group-hover:bg-slate-200 group-hover:scale-110 transition-all duration-300 ease-out">
+                    {React.createElement(getPersonaIcon(template.icon), {
+                      className: "h-5 w-5 text-slate-600 group-hover:text-slate-700 transition-colors duration-200"
+                    })}
+                  </div>
+                  <span className="px-3 py-1 bg-slate-50 text-slate-700 text-xs font-medium rounded-full">
                     {template.category}
                   </span>
                 </div>
@@ -472,19 +504,19 @@ export default function PersonaTemplatesPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex items-center justify-center w-10 h-8 p-0"
+                    className="flex items-center justify-center w-10 h-8 p-0 hover:scale-110 transition-all duration-200 ease-out"
                     onClick={() => handlePreview(template)}
                     title="Förhandsgranska"
                   >
-                    <EyeIcon className="h-4 w-4" />
+                    <EyeIcon className="h-4 w-4 transition-transform duration-200 group-hover:scale-125" />
                   </Button>
                   <Button
                     variant="primary"
                     size="sm"
-                    className="flex items-center justify-center px-3 py-2 flex-1"
+                    className="flex items-center justify-center px-3 py-2 flex-1 hover:scale-105 transition-all duration-200 ease-out hover:shadow-lg"
                     onClick={() => handleUseTemplate(template)}
                   >
-                    <DownloadIcon className="h-4 w-4 mr-1" />
+                    <DownloadIcon className="h-4 w-4 mr-1 transition-transform duration-200 group-hover:translate-y-[-2px]" />
                     Använd mall
                   </Button>
                 </div>
@@ -493,15 +525,15 @@ export default function PersonaTemplatesPage() {
           ))}
 
           {/* Custom Template Card */}
-          <Card className="hover:shadow-lg transition-shadow h-64 flex flex-col border-dashed border-2 border-gray-300 hover:border-gray-400 cursor-pointer" onClick={() => router.push('/personas/create')}>
+          <Card className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-64 flex flex-col border-dashed border-2 border-gray-300 hover:border-slate-400 cursor-pointer group hover:bg-slate-50/30" onClick={() => router.push('/personas/create')}>
             <CardContent className="flex-1 flex flex-col items-center justify-center text-center p-6">
-              <div className="w-12 h-12 mx-auto mb-3 bg-gray-50 rounded-xl flex items-center justify-center">
-                <PlusIcon className="h-6 w-6 text-gray-400" />
+              <div className="w-12 h-12 mx-auto mb-3 bg-gray-50 rounded-xl flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-110 transition-all duration-300 ease-out">
+                <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 group-hover:rotate-90 transition-all duration-300" />
               </div>
-              <h3 className="text-sm font-medium text-gray-500 mb-2">
+              <h3 className="text-sm font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">
                 Skapa anpassad mall
               </h3>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 group-hover:text-slate-600 transition-colors duration-200">
                 Skapa din egen persona från början
               </p>
             </CardContent>
@@ -530,7 +562,7 @@ export default function PersonaTemplatesPage() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-xl font-bold">{selectedTemplate.name}</h2>
-                  <span className="inline-block mt-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                  <span className="inline-block mt-1 px-2 py-1 bg-slate-100 text-slate-800 text-xs rounded-full">
                     {selectedTemplate.category}
                   </span>
                 </div>

@@ -3,7 +3,25 @@
 import { Header } from '@/components/dashboard/Header'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { PlusIcon, EyeIcon, DownloadIcon, BookTemplateIcon, ChevronDownIcon } from 'lucide-react'
+import {
+  PlusIcon,
+  EyeIcon,
+  DownloadIcon,
+  BookTemplateIcon,
+  ChevronDownIcon,
+  ShoppingCartIcon,
+  RocketIcon,
+  HeadphonesIcon,
+  UtensilsIcon,
+  CreditCardIcon,
+  HeartIcon,
+  TrendingUpIcon,
+  GraduationCapIcon,
+  SmartphoneIcon,
+  CalendarIcon,
+  UsersIcon,
+  ShieldIcon
+} from 'lucide-react'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -11,6 +29,26 @@ import { TemplatePreviewModal } from '@/components/templates/TemplatePreviewModa
 import { getSharedTemplates, TEMPLATE_INDUSTRIES, getCategorizedTemplates } from '@/data/templates'
 
 const getTemplates = getSharedTemplates
+
+// Map icon names to icon components
+const getTemplateIcon = (iconName: string) => {
+  const iconMap: { [key: string]: any } = {
+    'ShoppingCartIcon': ShoppingCartIcon,
+    'RocketIcon': RocketIcon,
+    'HeadphonesIcon': HeadphonesIcon,
+    'UtensilsIcon': UtensilsIcon,
+    'CreditCardIcon': CreditCardIcon,
+    'HeartIcon': HeartIcon,
+    'TrendingUpIcon': TrendingUpIcon,
+    'GraduationCapIcon': GraduationCapIcon,
+    'SmartphoneIcon': SmartphoneIcon,
+    'CalendarIcon': CalendarIcon,
+    'UsersIcon': UsersIcon,
+    'ShieldIcon': ShieldIcon,
+  }
+
+  return iconMap[iconName] || BookTemplateIcon
+}
 
 export default function TemplatesPage() {
   const { t } = useLanguage()
@@ -91,7 +129,7 @@ export default function TemplatesPage() {
           <div className="flex space-x-4">
             <div className="relative">
               <select
-                className="pl-3 pr-8 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+                className="pl-3 pr-8 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 appearance-none bg-white"
                 value={selectedIndustry}
                 onChange={(e) => setSelectedIndustry(e.target.value)}
               >
@@ -104,7 +142,7 @@ export default function TemplatesPage() {
             </div>
             <div className="relative">
               <select
-                className="pl-3 pr-8 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+                className="pl-3 pr-8 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 appearance-none bg-white"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
@@ -135,11 +173,13 @@ export default function TemplatesPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {categoryTemplates.map((template) => (
-            <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200">
+            <Card key={template.id} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out hover:bg-white/80 cursor-pointer group">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between mb-3">
-                  <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
-                    <BookTemplateIcon className="h-6 w-6 text-slate-600" />
+                  <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center group-hover:bg-slate-200 group-hover:scale-110 transition-all duration-300 ease-out">
+                    {React.createElement(getTemplateIcon(template.icon), {
+                      className: "h-6 w-6 text-slate-600 group-hover:text-slate-700 transition-colors duration-200"
+                    })}
                   </div>
                   <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded">
                     {template.industry}
@@ -162,18 +202,18 @@ export default function TemplatesPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handlePreview(template)}
-                    className="flex-1"
+                    className="flex-1 hover:scale-105 transform transition-all duration-200 ease-out"
                   >
-                    <EyeIcon className="h-3 w-3 mr-1" />
+                    <EyeIcon className="h-3 w-3 mr-1 transition-transform duration-200 group-hover:scale-110" />
                     Preview
                   </Button>
                   <Button
                     variant="primary"
                     size="sm"
                     onClick={() => handleUseTemplate(template)}
-                    className="flex-1"
+                    className="flex-1 hover:scale-105 transform transition-all duration-200 ease-out hover:shadow-lg"
                   >
-                    <PlusIcon className="h-3 w-3 mr-1" />
+                    <PlusIcon className="h-3 w-3 mr-1 transition-transform duration-200 group-hover:rotate-90" />
                     Use Template
                   </Button>
                 </div>
@@ -183,16 +223,16 @@ export default function TemplatesPage() {
 
               {/* Custom Template Card - only show in the last category */}
               {categoryName === Object.keys(categorizedTemplates)[Object.keys(categorizedTemplates).length - 1] && (
-                <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-gray-400 hover:shadow-sm transition-all duration-200 cursor-pointer" onClick={handleCreateCustomTemplate}>
+                <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer group hover:bg-slate-50/30" onClick={handleCreateCustomTemplate}>
                   <CardContent className="pt-6 h-full flex flex-col">
                     <div className="text-center py-12 flex-1 flex flex-col justify-center">
-                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center hover:bg-gray-100 transition-colors">
-                        <PlusIcon className="w-8 h-8 text-gray-400 hover:text-gray-500" />
+                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-110 transition-all duration-300 ease-out">
+                        <PlusIcon className="w-8 h-8 text-gray-400 group-hover:text-slate-600 group-hover:rotate-90 transition-all duration-300" />
                       </div>
-                      <h3 className="text-lg font-medium text-gray-500 mb-2 hover:text-gray-600">
+                      <h3 className="text-lg font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">
                         Create Custom Template
                       </h3>
-                      <p className="text-sm text-gray-400 hover:text-gray-500">
+                      <p className="text-sm text-gray-400 group-hover:text-slate-600 transition-colors duration-200">
                         Start with a blank template and customize it
                       </p>
                     </div>

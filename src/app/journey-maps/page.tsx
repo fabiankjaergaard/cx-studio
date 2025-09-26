@@ -177,7 +177,7 @@ export default function JourneyMapsPage() {
           /* Journey Maps Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {journeyMaps.map((journeyMap) => (
-            <Card key={journeyMap.id} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 h-96">
+            <Card key={journeyMap.id} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-96 group cursor-pointer">
               <CardContent className="pt-6 h-full flex flex-col">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -260,7 +260,7 @@ export default function JourneyMapsPage() {
                                 ${collaborator.role === 'owner'
                                   ? 'bg-slate-700 text-white'
                                   : collaborator.role === 'editor'
-                                  ? 'bg-blue-500 text-white'
+                                  ? 'bg-slate-500 text-white'
                                   : 'bg-gray-400 text-white'
                                 }
                                 ${index > 0 ? '-ml-2' : ''}
@@ -310,16 +310,16 @@ export default function JourneyMapsPage() {
 
             {/* Add New Journey Map Card */}
             <Link href="/journey-maps/new">
-              <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-gray-400 hover:shadow-sm transition-all duration-200 h-96 cursor-pointer">
+              <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-96 cursor-pointer group hover:bg-slate-50/30">
                 <CardContent className="pt-6 h-full flex flex-col">
                   <div className="text-center py-12 flex-1 flex flex-col justify-center">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center hover:bg-gray-100 transition-colors">
-                      <RouteIcon className="w-8 h-8 text-gray-400 hover:text-gray-500" />
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-110 transition-all duration-300 ease-out">
+                      <RouteIcon className="w-8 h-8 text-gray-400 group-hover:text-slate-600 transition-colors duration-200" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-500 mb-2 hover:text-gray-600">
+                    <h3 className="text-lg font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">
                       {t('journeyMaps.createNewCard.title')}
                     </h3>
-                    <p className="text-sm text-gray-400 hover:text-gray-500">
+                    <p className="text-sm text-gray-400 group-hover:text-slate-600 transition-colors duration-200">
                       {t('journeyMaps.createNewCard.description')}
                     </p>
                   </div>

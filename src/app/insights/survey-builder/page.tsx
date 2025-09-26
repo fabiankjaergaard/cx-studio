@@ -215,7 +215,7 @@ export default function SurveyBuilderPage() {
 
     if (!isEditing) {
       return (
-        <div className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer" onClick={() => setEditingQuestion(question.id)}>
+        <div className="border rounded-lg p-4 hover:bg-gray-50 hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer group" onClick={() => setEditingQuestion(question.id)}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-2">
               <GripVerticalIcon className="h-4 w-4 text-gray-400" />
@@ -269,7 +269,7 @@ export default function SurveyBuilderPage() {
     }
 
     return (
-      <Card className="border-2 border-blue-200">
+      <Card className="border-2 border-slate-200 shadow-md hover:shadow-lg transition-shadow duration-300 ease-out">
         <CardContent className="p-4">
           <div className="space-y-4">
             <div>
@@ -448,7 +448,7 @@ export default function SurveyBuilderPage() {
               {surveyTemplates
                 .slice(0, showAllTemplates ? surveyTemplates.length : 3)
                 .map((template) => (
-                  <Card key={template.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                  <Card key={template.id} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer group">
                     <CardContent className="p-4" onClick={() => loadTemplate(template.id)}>
                       <h4 className="font-medium text-gray-900 mb-1">{template.name}</h4>
                       <p className="text-sm text-gray-600">{template.description}</p>
@@ -459,7 +459,7 @@ export default function SurveyBuilderPage() {
               {surveyTemplates.length > 3 && (
                 <button
                   onClick={() => setShowAllTemplates(!showAllTemplates)}
-                  className="w-full flex items-center justify-center space-x-2 py-3 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center space-x-2 py-3 text-sm font-medium text-slate-600 hover:text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
                 >
                   <span>
                     {showAllTemplates 
@@ -484,7 +484,7 @@ export default function SurveyBuilderPage() {
                 <button
                   key={type.type}
                   onClick={() => addQuestion(type.type)}
-                  className="w-full text-left p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                  className="w-full text-left p-3 border rounded-lg hover:bg-gray-50 hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out group"
                 >
                   <div className="flex items-center space-x-3">
                     <type.icon className="h-5 w-5 text-gray-400" />
@@ -502,7 +502,7 @@ export default function SurveyBuilderPage() {
         {/* Main Panel - Survey Builder */}
         <div className="flex-1 p-6 overflow-y-auto bg-gray-50">
           {/* Survey Header */}
-          <Card className="mb-6">
+          <Card className="mb-6 border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div>
@@ -534,7 +534,7 @@ export default function SurveyBuilderPage() {
           {/* Questions */}
           <div className="space-y-4">
             {survey.questions.length === 0 ? (
-              <Card className="border-2 border-dashed border-gray-300">
+              <Card className="border-2 border-dashed border-gray-300 hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out group hover:bg-slate-50/30">
                 <CardContent className="p-12 text-center">
                   <SlidersIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">{t('surveyBuilder.noQuestions')}</h3>

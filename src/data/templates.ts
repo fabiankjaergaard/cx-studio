@@ -8,6 +8,7 @@ export interface Template {
   touchpoints: number
   stages: number
   preview: string
+  icon: string
 }
 
 export const getSharedTemplates = (t: (key: string) => string): Template[] => [
@@ -18,7 +19,8 @@ export const getSharedTemplates = (t: (key: string) => string): Template[] => [
     industry: t('templates.ecommerce.industry') || 'E-commerce',
     touchpoints: 8,
     stages: 5,
-    preview: '/api/templates/1/preview'
+    preview: '/api/templates/1/preview',
+    icon: 'ShoppingCartIcon'
   },
   {
     id: '2',
@@ -27,7 +29,8 @@ export const getSharedTemplates = (t: (key: string) => string): Template[] => [
     industry: t('templates.saas.industry') || 'Technology',
     touchpoints: 6,
     stages: 4,
-    preview: '/api/templates/2/preview'
+    preview: '/api/templates/2/preview',
+    icon: 'RocketIcon'
   },
   {
     id: '3',
@@ -36,7 +39,8 @@ export const getSharedTemplates = (t: (key: string) => string): Template[] => [
     industry: t('templates.customerService.industry') || 'Service',
     touchpoints: 7,
     stages: 5,
-    preview: '/api/templates/3/preview'
+    preview: '/api/templates/3/preview',
+    icon: 'HeadphonesIcon'
   },
   {
     id: '4',
@@ -45,7 +49,8 @@ export const getSharedTemplates = (t: (key: string) => string): Template[] => [
     industry: t('templates.restaurant.industry') || 'Restaurant',
     touchpoints: 9,
     stages: 6,
-    preview: '/api/templates/4/preview'
+    preview: '/api/templates/4/preview',
+    icon: 'UtensilsIcon'
   },
   {
     id: '5',
@@ -54,7 +59,8 @@ export const getSharedTemplates = (t: (key: string) => string): Template[] => [
     industry: t('templates.banking.industry') || 'Finance',
     touchpoints: 10,
     stages: 5,
-    preview: '/api/templates/5/preview'
+    preview: '/api/templates/5/preview',
+    icon: 'CreditCardIcon'
   },
   {
     id: '6',
@@ -63,7 +69,8 @@ export const getSharedTemplates = (t: (key: string) => string): Template[] => [
     industry: t('templates.healthcare.industry') || 'Healthcare',
     touchpoints: 8,
     stages: 6,
-    preview: '/api/templates/6/preview'
+    preview: '/api/templates/6/preview',
+    icon: 'HeartIcon'
   },
   {
     id: '7',
@@ -72,7 +79,8 @@ export const getSharedTemplates = (t: (key: string) => string): Template[] => [
     industry: 'B2B',
     touchpoints: 12,
     stages: 7,
-    preview: '/api/templates/7/preview'
+    preview: '/api/templates/7/preview',
+    icon: 'TrendingUpIcon'
   },
   {
     id: '8',
@@ -81,7 +89,8 @@ export const getSharedTemplates = (t: (key: string) => string): Template[] => [
     industry: 'Education',
     touchpoints: 8,
     stages: 5,
-    preview: '/api/templates/8/preview'
+    preview: '/api/templates/8/preview',
+    icon: 'GraduationCapIcon'
   },
   {
     id: '9',
@@ -90,7 +99,8 @@ export const getSharedTemplates = (t: (key: string) => string): Template[] => [
     industry: 'Technology',
     touchpoints: 6,
     stages: 4,
-    preview: '/api/templates/9/preview'
+    preview: '/api/templates/9/preview',
+    icon: 'SmartphoneIcon'
   },
   {
     id: '10',
@@ -99,7 +109,8 @@ export const getSharedTemplates = (t: (key: string) => string): Template[] => [
     industry: 'Events',
     touchpoints: 10,
     stages: 6,
-    preview: '/api/templates/10/preview'
+    preview: '/api/templates/10/preview',
+    icon: 'CalendarIcon'
   },
   {
     id: '11',
@@ -108,7 +119,8 @@ export const getSharedTemplates = (t: (key: string) => string): Template[] => [
     industry: 'HR',
     touchpoints: 9,
     stages: 5,
-    preview: '/api/templates/11/preview'
+    preview: '/api/templates/11/preview',
+    icon: 'UsersIcon'
   },
   {
     id: '12',
@@ -117,7 +129,8 @@ export const getSharedTemplates = (t: (key: string) => string): Template[] => [
     industry: 'Insurance',
     touchpoints: 7,
     stages: 5,
-    preview: '/api/templates/12/preview'
+    preview: '/api/templates/12/preview',
+    icon: 'ShieldIcon'
   }
 ]
 

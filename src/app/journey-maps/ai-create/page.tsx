@@ -154,10 +154,10 @@ export default function AICreateJourneyMapPage() {
             </CardContent>
           </Card>
 
-          <Card className="mt-6 bg-blue-50 border-blue-200">
+          <Card className="mt-6 bg-slate-50 border-slate-200">
             <CardContent className="p-4">
-              <h4 className="font-medium text-blue-900 mb-2">💡 Tips for best results:</h4>
-              <ul className="text-sm text-blue-800 space-y-1">
+              <h4 className="font-medium text-slate-900 mb-2">💡 Tips for best results:</h4>
+              <ul className="text-sm text-slate-800 space-y-1">
                 <li>• Be as specific as possible about your industry and target audience</li>
                 <li>• Describe concrete situations and challenges</li>
                 <li>• Include information about your customers' behavior and preferences</li>

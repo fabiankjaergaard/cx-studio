@@ -100,7 +100,7 @@ export default function LoginPage() {
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Or{' '}
-            <Link href="/auth/register" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link href="/auth/register" className="font-medium text-slate-600 hover:text-slate-500">
               create a new account
             </Link>
           </p>
@@ -116,7 +116,7 @@ export default function LoginPage() {
               )}
 
               {debugInfo && (
-                <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg text-sm">
+                <div className="bg-slate-50 border border-slate-200 text-slate-700 px-4 py-3 rounded-lg text-sm">
                   <strong>Debug:</strong> {debugInfo}
                 </div>
               )}
@@ -169,7 +169,7 @@ export default function LoginPage() {
 
               <div className="flex items-center justify-between">
                 <div className="text-sm">
-                  <Link href="/auth/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
+                  <Link href="/auth/forgot-password" className="font-medium text-slate-600 hover:text-slate-500">
                     Forgot your password?
                   </Link>
                 </div>

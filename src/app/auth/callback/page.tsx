@@ -63,7 +63,7 @@ export default function AuthCallback() {
         
         {/* Loading animation */}
         <div className="mt-6">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto"></div>
         </div>
       </div>
     </div>

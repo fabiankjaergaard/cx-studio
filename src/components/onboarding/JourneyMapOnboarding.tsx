@@ -141,7 +141,7 @@ export function JourneyMapOnboarding({ isActive, onComplete, onSkip }: JourneyMa
     <>
       {/* Highlight border only */}
       <div
-        className="fixed z-50 border-4 border-blue-500 rounded shadow-xl pointer-events-none transition-all duration-500 ease-in-out"
+        className="fixed z-50 border-4 border-slate-500 rounded shadow-xl pointer-events-none transition-all duration-500 ease-in-out"
         style={{
           top: highlightPosition.top - 4,
           left: highlightPosition.left - 4,

@@ -32,7 +32,7 @@ export function DropZone({ stage, children }: DropZoneProps) {
       ref={drop}
       className={cn(
         'min-h-80 transition-all duration-200 rounded-lg p-3 border border-transparent',
-        isOver && canDrop && 'bg-blue-50 border-blue-200',
+        isOver && canDrop && 'bg-slate-50 border-slate-200',
         canDrop && !isOver && 'bg-gray-50/30'
       )}
     >

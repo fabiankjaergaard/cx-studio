@@ -33,7 +33,7 @@ const mockGroups: PersonaGroup[] = [
     id: '1',
     name: 'E-commerce Kunder',
     description: 'Personas för online-shoppare och digitala kunder',
-    color: 'bg-blue-500',
+    color: 'bg-slate-500',
     personaCount: 5,
     createdAt: '2024-01-15',
     personas: ['emma-shopper', 'bengt-bargain']
@@ -84,11 +84,11 @@ export default function PersonaGroupsPage() {
   const [newGroup, setNewGroup] = useState({
     name: '',
     description: '',
-    color: 'bg-blue-500'
+    color: 'bg-slate-500'
   })
 
   const colors = [
-    'bg-blue-500',
+    'bg-slate-500',
     'bg-green-500',
     'bg-red-500',
     'bg-purple-500',
@@ -115,7 +115,7 @@ export default function PersonaGroupsPage() {
         personas: []
       }
       setGroups([...groups, group])
-      setNewGroup({ name: '', description: '', color: 'bg-blue-500' })
+      setNewGroup({ name: '', description: '', color: 'bg-slate-500' })
       setIsCreating(false)
     }
   }
@@ -317,10 +317,10 @@ export default function PersonaGroupsPage() {
         {/* Stats */}
         {filteredGroups.length > 0 && (
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
+            <Card className="border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <FolderIcon className="h-8 w-8 text-blue-500 mr-3" />
+                  <FolderIcon className="h-8 w-8 text-slate-500 mr-3" />
                   <div>
                     <p className="text-2xl font-bold">{groups.length}</p>
                     <p className="text-sm text-gray-600">Totalt grupper</p>
@@ -328,7 +328,7 @@ export default function PersonaGroupsPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
               <CardContent className="p-4">
                 <div className="flex items-center">
                   <UserIcon className="h-8 w-8 text-green-500 mr-3" />
@@ -341,7 +341,7 @@ export default function PersonaGroupsPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
               <CardContent className="p-4">
                 <div className="flex items-center">
                   <TagIcon className="h-8 w-8 text-purple-500 mr-3" />

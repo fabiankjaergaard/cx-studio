@@ -125,14 +125,14 @@ export const ROW_TYPES = [
 
 // Available row colors
 export const ROW_COLORS = [
-  { id: 'bg-slate-50', name: 'Gray', class: 'bg-slate-50' },
-  { id: 'bg-blue-50', name: 'Blue', class: 'bg-blue-50' },
-  { id: 'bg-green-50', name: 'Green', class: 'bg-green-50' },
-  { id: 'bg-red-50', name: 'Red', class: 'bg-red-50' },
-  { id: 'bg-yellow-50', name: 'Yellow', class: 'bg-yellow-50' },
-  { id: 'bg-purple-50', name: 'Purple', class: 'bg-purple-50' },
-  { id: 'bg-pink-50', name: 'Pink', class: 'bg-pink-50' },
-  { id: 'bg-indigo-50', name: 'Indigo', class: 'bg-indigo-50' }
+  { id: 'bg-slate-200', name: 'Gray', class: 'bg-slate-200' },
+  { id: 'bg-slate-300', name: 'Light Blue', class: 'bg-slate-300' },
+  { id: 'bg-emerald-200', name: 'Green', class: 'bg-emerald-200' },
+  { id: 'bg-rose-200', name: 'Rose', class: 'bg-rose-200' },
+  { id: 'bg-amber-200', name: 'Amber', class: 'bg-amber-200' },
+  { id: 'bg-violet-200', name: 'Violet', class: 'bg-violet-200' },
+  { id: 'bg-pink-200', name: 'Pink', class: 'bg-pink-200' },
+  { id: 'bg-cyan-200', name: 'Cyan', class: 'bg-cyan-200' }
 ]
 
 // Default phases for journey maps

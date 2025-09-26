@@ -82,7 +82,7 @@ const getMethodGuide = (t: (key: string) => string) => [
         when: t('gettingStarted.methods.nps.when'),
         frequency: t('gettingStarted.methods.nps.frequency'),
         sample: t('gettingStarted.methods.nps.sample'),
-        color: "text-blue-600"
+        color: "text-slate-600"
       },
       {
         name: t('gettingStarted.methods.csat.name'), 
@@ -197,11 +197,11 @@ export default function GettingStartedPage() {
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('gettingStarted.processStepByStep')}</h2>
           <div className="space-y-6">
             {steps.map((step, index) => (
-              <Card key={step.step} className="border-l-4 border-l-blue-500">
+              <Card key={step.step} className="border-l-4 border-l-slate-500">
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-4">
                     <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">
+                      <div className="w-10 h-10 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center font-bold">
                         {step.step}
                       </div>
                     </div>
@@ -294,7 +294,7 @@ export default function GettingStartedPage() {
         </div>
 
         {/* Next Steps */}
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0">
+        <Card className="bg-gradient-to-r from-slate-50 to-indigo-50 border-0">
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">

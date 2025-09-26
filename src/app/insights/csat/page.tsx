@@ -197,7 +197,7 @@ export default function CSATPage() {
               <Card
                 key={segment.type}
                 className={`cursor-pointer transition-all hover:shadow-md border-0 bg-white rounded-xl overflow-hidden ${
-                  selectedSegment === segment.type ? 'ring-2 ring-blue-500' : ''
+                  selectedSegment === segment.type ? 'ring-2 ring-slate-500' : ''
                 }`}
                 onClick={() => setSelectedSegment(selectedSegment === segment.type ? null : segment.type)}
               >
@@ -252,8 +252,8 @@ export default function CSATPage() {
               <Card key={index} className="border-0 bg-white rounded-xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                      <LightbulbIcon className="h-4 w-4 text-blue-600" />
+                    <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center">
+                      <LightbulbIcon className="h-4 w-4 text-slate-600" />
                     </div>
                     <span>{practice.title}</span>
                   </CardTitle>
@@ -263,7 +263,7 @@ export default function CSATPage() {
                   <ul className="space-y-2">
                     {practice.tips.map((tip, tipIndex) => (
                       <li key={tipIndex} className="flex items-start text-sm text-gray-600">
-                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
                         {tip}
                       </li>
                     ))}
@@ -296,7 +296,7 @@ export default function CSATPage() {
                       <tr key={index} className="border-b hover:bg-gray-50">
                         <td className="py-3 px-4 font-medium text-gray-900">{benchmark.industry}</td>
                         <td className="py-3 px-4 text-center">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-slate-100 text-slate-800">
                             {benchmark.average}
                           </span>
                         </td>

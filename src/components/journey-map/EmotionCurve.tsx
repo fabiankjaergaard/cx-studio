@@ -338,7 +338,7 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
         >
           <button
             onClick={handleAddEmoji}
-            className="w-6 h-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 pointer-events-auto"
+            className="w-6 h-6 bg-slate-500 hover:bg-slate-600 text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 pointer-events-auto"
             title="Add emoji here"
           >
             <span className="text-xs font-bold">+</span>
@@ -379,7 +379,7 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
                 position.isEmpty
                   ? 'bg-gray-100 border-gray-300 hover:border-gray-400 hover:bg-gray-200 hover:shadow-md'
                   : 'bg-white border-gray-200 hover:border-gray-400 hover:scale-110 hover:shadow-lg cursor-move'
-              } ${dragState?.stageIndex === index ? 'ring-2 ring-blue-400 scale-110' : ''}`}
+              } ${dragState?.stageIndex === index ? 'ring-2 ring-slate-400 scale-110' : ''}`}
             >
               {position.isEmpty ? (
                 <span className="text-gray-400 text-sm font-bold">+</span>
@@ -412,7 +412,7 @@ export function EmotionCurve({ emotions, onChange, stageCount }: EmotionCurvePro
                         onMouseEnter={() => setHoveredEmoji(emotion.emoji)}
                         onMouseLeave={() => setHoveredEmoji(null)}
                         className={`relative p-3 hover:bg-gray-100 rounded-lg transition-colors ${
-                          position.emoji === emotion.emoji ? 'bg-blue-100 ring-2 ring-blue-300' : ''
+                          position.emoji === emotion.emoji ? 'bg-slate-100 ring-2 ring-slate-300' : ''
                         }`}
                       >
                         <TwemojiEmoji emoji={emotion.emoji} size={20} />
