@@ -349,36 +349,36 @@ export default function PersonaGuidePage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
             {currentStep === 0 && (
               <>
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardContent className="p-6">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <MessageSquareIcon className="h-6 w-6 text-slate-600" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                        <MessageSquareIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">Intervjuteknik</h3>
-                      <p className="text-sm text-gray-600">Ställ öppna frågor och lyssna mer än du talar</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Intervjuteknik</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Ställ öppna frågor och lyssna mer än du talar</p>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardContent className="p-6">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <FileTextIcon className="h-6 w-6 text-slate-600" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                        <FileTextIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">Dokumentera allt</h3>
-                      <p className="text-sm text-gray-600">Spela in intervjuer och anteckna observationer</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Dokumentera allt</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Spela in intervjuer och anteckna observationer</p>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardContent className="p-6">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <UsersIcon className="h-6 w-6 text-slate-600" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                        <UsersIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">Olika perspektiv</h3>
-                      <p className="text-sm text-gray-600">8-12 intervjuer per segment för mångfald</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Olika perspektiv</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">8-12 intervjuer per segment för mångfald</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -386,36 +386,36 @@ export default function PersonaGuidePage() {
             )}
             {currentStep === 1 && (
               <>
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardContent className="p-6">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <BarChart3Icon className="h-6 w-6 text-slate-600" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                        <BarChart3Icon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">Sök mönster</h3>
-                      <p className="text-sm text-gray-600">Hitta likheter och skillnader i datan</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Sök mönster</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Hitta likheter och skillnader i datan</p>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardContent className="p-6">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <TrendingUpIcon className="h-6 w-6 text-slate-600" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                        <TrendingUpIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">Segmentera smart</h3>
-                      <p className="text-sm text-gray-600">Fokusera på beteende och motivation</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Segmentera smart</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Fokusera på beteende och motivation</p>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardContent className="p-6">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <EyeIcon className="h-6 w-6 text-slate-600" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                        <EyeIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">Validera hypoteser</h3>
-                      <p className="text-sm text-gray-600">Testa dina antaganden mot datan</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Validera hypoteser</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Testa dina antaganden mot datan</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -423,36 +423,36 @@ export default function PersonaGuidePage() {
             )}
             {currentStep === 2 && (
               <>
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardContent className="p-6">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <HeartIcon className="h-6 w-6 text-slate-600" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                        <HeartIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">Empati först</h3>
-                      <p className="text-sm text-gray-600">Fokusera på känslor och motivationer</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Empati först</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Fokusera på känslor och motivationer</p>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardContent className="p-6">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <FileTextIcon className="h-6 w-6 text-slate-600" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                        <FileTextIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">Berätta historier</h3>
-                      <p className="text-sm text-gray-600">Gör personas levande med narrativ</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Berätta historier</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Gör personas levande med narrativ</p>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardContent className="p-6">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <TargetIcon className="h-6 w-6 text-slate-600" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                        <TargetIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">Håll det relevant</h3>
-                      <p className="text-sm text-gray-600">Inkludera bara information som påverkar beslut</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Håll det relevant</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Inkludera bara information som påverkar beslut</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -460,36 +460,36 @@ export default function PersonaGuidePage() {
             )}
             {currentStep === 3 && (
               <>
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardContent className="p-6">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <UsersIcon className="h-6 w-6 text-slate-600" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                        <UsersIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">Involvera teamet</h3>
-                      <p className="text-sm text-gray-600">Få alla att känna ägarskap för personorna</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Involvera teamet</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Få alla att känna ägarskap för personorna</p>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardContent className="p-6">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <CheckCircleIcon className="h-6 w-6 text-slate-600" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                        <CheckCircleIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">Testa med kunder</h3>
-                      <p className="text-sm text-gray-600">Validera med riktiga användare</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Testa med kunder</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Validera med riktiga användare</p>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
                   <CardContent className="p-6">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <LightbulbIcon className="h-6 w-6 text-slate-600" />
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                        <LightbulbIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">Uppdatera regelbundet</h3>
-                      <p className="text-sm text-gray-600">Håll personas levande och aktuella</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Uppdatera regelbundet</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Håll personas levande och aktuella</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -501,7 +501,7 @@ export default function PersonaGuidePage() {
           <div className="space-y-4 mt-8">
             {/* Step-Specific Expandable Content */}
             {currentStep === 0 && (
-              <Card className="border-0 shadow-sm">
+              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <CardHeader
                   className="cursor-pointer"
                   onClick={() => toggleSection('research')}
@@ -522,15 +522,15 @@ export default function PersonaGuidePage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-4 bg-slate-50 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2">Kundintervjuer</h4>
-                        <p className="text-sm text-gray-600">8-12 djupintervjuer per segment</p>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">8-12 djupintervjuer per segment</p>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2">Enkäter</h4>
-                        <p className="text-sm text-gray-600">Kvantitativ validering av hypoteser</p>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Kvantitativ validering av hypoteser</p>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2">Analytics</h4>
-                        <p className="text-sm text-gray-600">Beteendedata från webb/app</p>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Beteendedata från webb/app</p>
                       </div>
                     </div>
                   </CardContent>
@@ -539,7 +539,7 @@ export default function PersonaGuidePage() {
             )}
 
             {currentStep === 1 && (
-              <Card className="border-0 shadow-sm">
+              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <CardHeader
                   className="cursor-pointer"
                   onClick={() => toggleSection('analysis')}
@@ -560,15 +560,15 @@ export default function PersonaGuidePage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-4 bg-slate-50 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2">Affinity Mapping</h4>
-                        <p className="text-sm text-gray-600">Gruppera liknande insikter och mönster</p>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Gruppera liknande insikter och mönster</p>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2">Behavioural Clustering</h4>
-                        <p className="text-sm text-gray-600">Segmentera baserat på beteenden</p>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Segmentera baserat på beteenden</p>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2">Pain Point Analysis</h4>
-                        <p className="text-sm text-gray-600">Identifiera och prioritera utmaningar</p>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Identifiera och prioritera utmaningar</p>
                       </div>
                     </div>
                   </CardContent>
@@ -577,7 +577,7 @@ export default function PersonaGuidePage() {
             )}
 
             {currentStep === 2 && (
-              <Card className="border-0 shadow-sm">
+              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <CardHeader
                   className="cursor-pointer"
                   onClick={() => toggleSection('creation')}
@@ -627,7 +627,7 @@ export default function PersonaGuidePage() {
             )}
 
             {currentStep === 3 && (
-              <Card className="border-0 shadow-sm">
+              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <CardHeader
                   className="cursor-pointer"
                   onClick={() => toggleSection('implementation')}
@@ -648,15 +648,15 @@ export default function PersonaGuidePage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-4 bg-slate-50 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2">Team Workshops</h4>
-                        <p className="text-sm text-gray-600">Introducera personas för alla teammedlemmar</p>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Introducera personas för alla teammedlemmar</p>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2">Validering</h4>
-                        <p className="text-sm text-gray-600">Testa personas med riktiga användare</p>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Testa personas med riktiga användare</p>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2">Underhåll</h4>
-                        <p className="text-sm text-gray-600">Uppdatera baserat på ny data och feedback</p>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Uppdatera baserat på ny data och feedback</p>
                       </div>
                     </div>
                   </CardContent>
@@ -666,7 +666,7 @@ export default function PersonaGuidePage() {
 
 
             {/* Step-Specific Mistakes Section */}
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
               <CardHeader
                 className="cursor-pointer"
                 onClick={() => toggleSection('mistakes')}
@@ -690,12 +690,12 @@ export default function PersonaGuidePage() {
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                           <h4 className="font-medium text-red-800 mb-1">Ledande frågor</h4>
                           <p className="text-sm text-red-600 mb-2">Ställer frågor som leder respondenten mot förväntade svar</p>
-                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Använd öppna frågor som "Berätta om..." istället för ja/nej frågor</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Använd öppna frågor som "Berätta om..." istället för ja/nej frågor</p>
                         </div>
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                           <h4 className="font-medium text-red-800 mb-1">För få intervjuer</h4>
                           <p className="text-sm text-red-600 mb-2">Baserar personas på för få datapunkter</p>
-                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Minimum 8-12 intervjuer per persona-segment</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Minimum 8-12 intervjuer per persona-segment</p>
                         </div>
                       </>
                     )}
@@ -704,12 +704,12 @@ export default function PersonaGuidePage() {
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                           <h4 className="font-medium text-red-800 mb-1">Demografisk segmentering</h4>
                           <p className="text-sm text-red-600 mb-2">Segmenterar endast baserat på ålder, kön eller geografi</p>
-                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Fokusera på beteenden, mål och motivationer</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Fokusera på beteenden, mål och motivationer</p>
                         </div>
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                           <h4 className="font-medium text-red-800 mb-1">Konfirmationsbias</h4>
                           <p className="text-sm text-red-600 mb-2">Ser bara mönster som bekräftar befintliga antaganden</p>
-                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Aktivt leta efter motsägelser och överraskningar</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Aktivt leta efter motsägelser och överraskningar</p>
                         </div>
                       </>
                     )}
@@ -718,12 +718,12 @@ export default function PersonaGuidePage() {
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                           <h4 className="font-medium text-red-800 mb-1">Stereotyper</h4>
                           <p className="text-sm text-red-600 mb-2">Skapar personas baserade på antaganden snarare än data</p>
-                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Använd riktiga citat och specifika beteenden från research</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Använd riktiga citat och specifika beteenden från research</p>
                         </div>
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                           <h4 className="font-medium text-red-800 mb-1">För många detaljer</h4>
                           <p className="text-sm text-red-600 mb-2">Inkluderar irrelevant information som förvirrar</p>
-                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Fokusera på information som påverkar produktbeslut</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Fokusera på information som påverkar produktbeslut</p>
                         </div>
                       </>
                     )}
@@ -732,12 +732,12 @@ export default function PersonaGuidePage() {
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                           <h4 className="font-medium text-red-800 mb-1">Glömmer uppdatering</h4>
                           <p className="text-sm text-red-600 mb-2">Personas blir inaktuella och irrelevanta över tid</p>
-                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Schemalägg regelbundna uppdateringar baserat på ny data</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Schemalägg regelbundna uppdateringar baserat på ny data</p>
                         </div>
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                           <h4 className="font-medium text-red-800 mb-1">Ingen teamkoppling</h4>
                           <p className="text-sm text-red-600 mb-2">Personas förblir abstrakta och används inte aktivt</p>
-                          <p className="text-sm text-gray-600"><strong>Lösning:</strong> Koppla personas till konkreta beslut och användarscenarier</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Koppla personas till konkreta beslut och användarscenarier</p>
                         </div>
                       </>
                     )}

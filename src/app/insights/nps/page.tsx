@@ -5,9 +5,9 @@ import { Header } from '@/components/dashboard/Header'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { 
-  TrendingUpIcon, 
-  UsersIcon, 
+import {
+  TrendingUpIcon,
+  UsersIcon,
   AlertTriangleIcon,
   HeartIcon,
   PlusIcon,
@@ -15,7 +15,10 @@ import {
   CalendarIcon,
   TargetIcon,
   LightbulbIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  PlayIcon
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -143,16 +146,24 @@ const getNpsTemplate = (t: (key: string) => string) => ({
 export default function NPSPage() {
   const { t } = useLanguage()
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null)
-  
+  const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({})
+
   const npsSegments = getNpsSegments(t)
   const bestPractices = getBestPractices(t)
   const industryBenchmarks = getIndustryBenchmarks(t)
   const npsTemplate = getNpsTemplate(t)
 
+  const toggleSection = (sectionKey: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionKey]: !prev[sectionKey]
+    }))
+  }
+
   return (
     <div className="h-full flex flex-col">
-      <Header 
-        title={t('nps.title')} 
+      <Header
+        title={t('nps.title')}
         description={t('nps.description')}
         actions={
           <Link href="/insights/survey-builder">
@@ -163,10 +174,10 @@ export default function NPSPage() {
           </Link>
         }
       />
-      
+
       <div className="flex-1 p-6 overflow-auto bg-gray-50">
         {/* Introduction */}
-        <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden">
+        <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden hover:shadow-md transition-shadow duration-300">
           <div className="p-6">
             <div className="flex items-start space-x-4">
               <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -179,7 +190,7 @@ export default function NPSPage() {
                 <p className="text-gray-600 mb-4">
                   {t('nps.whatIsNpsDescription')}
                 </p>
-                <div className="bg-gray-50 p-4 rounded-xl">
+                <div className="bg-gradient-to-r from-slate-50 to-gray-50 p-4 rounded-xl border">
                   <div className="text-2xl font-bold text-center mb-2 text-gray-900">
                     {t('nps.formula')}
                   </div>
@@ -192,181 +203,284 @@ export default function NPSPage() {
           </div>
         </Card>
 
-        {/* NPS Segments */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('nps.threeSegments')}</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {npsSegments.map((segment) => (
-              <Card
-                key={segment.type}
-                className={`cursor-pointer transition-all hover:shadow-md border-0 bg-white rounded-xl overflow-hidden ${
-                  selectedSegment === segment.type ? 'ring-2 ring-slate-500' : ''
-                }`}
-                onClick={() => setSelectedSegment(selectedSegment === segment.type ? null : segment.type)}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{segment.type}</CardTitle>
-                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${segment.color}`}>
-                      {segment.score}
-                    </div>
-                  </div>
-                  <p className="text-gray-600 text-sm">{segment.description}</p>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">{t('nps.characteristics')}</h4>
-                      <ul className="space-y-1">
-                        {segment.characteristics.map((char, index) => (
-                          <li key={index} className="flex items-start text-sm text-gray-600">
-                            <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
-                            {char}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    {selectedSegment === segment.type && (
-                      <div className="border-t pt-4">
-                        <h4 className="font-medium text-gray-900 mb-2">{t('nps.recommendedActions')}</h4>
-                        <ul className="space-y-1">
-                          {segment.actionItems.map((action, index) => (
-                            <li key={index} className="flex items-start text-sm text-gray-600">
-                              <CheckCircleIcon className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                              {action}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Best Practices */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('nps.bestPractices')}</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {bestPractices.map((practice, index) => (
-              <Card key={index} className="border-0 bg-white rounded-xl overflow-hidden">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-yellow-50 rounded-lg flex items-center justify-center">
-                      <LightbulbIcon className="h-4 w-4 text-yellow-600" />
-                    </div>
-                    <span>{practice.title}</span>
-                  </CardTitle>
-                  <p className="text-gray-600 text-sm">{practice.description}</p>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <ul className="space-y-2">
-                    {practice.tips.map((tip, tipIndex) => (
-                      <li key={tipIndex} className="flex items-start text-sm text-gray-600">
-                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
-                        {tip}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Industry Benchmarks */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('nps.industryBenchmarks')}</h2>
-          <Card className="border-0 bg-white rounded-xl overflow-hidden">
+        {/* Quick Reference Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
             <CardContent className="p-6">
-              <p className="text-gray-600 mb-4">
-                {t('nps.benchmarkDescription')}
-              </p>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-semibold text-gray-900">{t('nps.industryColumn')}</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-900">{t('nps.averageColumn')}</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-900">{t('nps.topColumn')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {industryBenchmarks.map((benchmark, index) => (
-                      <tr key={index} className="border-b hover:bg-gray-50">
-                        <td className="py-3 px-4 font-medium text-gray-900">{benchmark.industry}</td>
-                        <td className="py-3 px-4 text-center">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-slate-100 text-slate-800">
-                            {benchmark.average}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            {benchmark.top}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-green-200 group-hover:scale-110">
+                  <HeartIcon className="h-6 w-6 text-green-600 transition-all duration-300 group-hover:text-green-700" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Promoters (9-10)</h3>
+                <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Lojala ambassadörer som rekommenderar ditt företag</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-yellow-200 group-hover:scale-110">
+                  <UsersIcon className="h-6 w-6 text-yellow-600 transition-all duration-300 group-hover:text-yellow-700" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Passives (7-8)</h3>
+                <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Nöjda men inte entusiastiska kunder</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-red-200 group-hover:scale-110">
+                  <AlertTriangleIcon className="h-6 w-6 text-red-600 transition-all duration-300 group-hover:text-red-700" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Detractors (0-6)</h3>
+                <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Missnöjda kunder som kan sprida negativ publicitet</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* NPS Template */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('nps.surveyTemplate')}</h2>
-          <Card className="border-0 bg-white rounded-xl overflow-hidden">
-            <CardHeader>
-              <CardTitle>{npsTemplate.title}</CardTitle>
-              <p className="text-gray-600">{npsTemplate.description}</p>
+        {/* Expandable Sections */}
+        <div className="space-y-4 mb-8">
+          {/* Detailed NPS Segments */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <CardHeader
+              className="cursor-pointer"
+              onClick={() => toggleSection('segments')}
+            >
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center space-x-3">
+                  <UsersIcon className="h-5 w-5 text-slate-600" />
+                  <span>Detaljerad segmentanalys</span>
+                </CardTitle>
+                {expandedSections.segments ?
+                  <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                  <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                }
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {npsTemplate.questions.map((question, index) => (
-                  <div key={index} className="border-l-4 border-l-gray-200 pl-4">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-sm font-medium text-gray-600">
-                        {index + 1}
+            {expandedSections.segments && (
+              <CardContent className="pt-0">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {npsSegments.map((segment) => (
+                    <Card
+                      key={segment.type}
+                      className={`cursor-pointer transition-all hover:shadow-md border bg-white rounded-xl overflow-hidden ${
+                        selectedSegment === segment.type ? 'ring-2 ring-slate-500' : ''
+                      }`}
+                      onClick={() => setSelectedSegment(selectedSegment === segment.type ? null : segment.type)}
+                    >
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg">{segment.type}</CardTitle>
+                          <div className={`px-3 py-1 rounded-full text-sm font-medium ${segment.color}`}>
+                            {segment.score}
+                          </div>
+                        </div>
+                        <p className="text-gray-600 text-sm">{segment.description}</p>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="font-medium text-gray-900 mb-2">{t('nps.characteristics')}</h4>
+                            <ul className="space-y-1">
+                              {segment.characteristics.map((char, index) => (
+                                <li key={index} className="flex items-start text-sm text-gray-600">
+                                  <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
+                                  {char}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          {selectedSegment === segment.type && (
+                            <div className="border-t pt-4">
+                              <h4 className="font-medium text-gray-900 mb-2">{t('nps.recommendedActions')}</h4>
+                              <ul className="space-y-1">
+                                {segment.actionItems.map((action, index) => (
+                                  <li key={index} className="flex items-start text-sm text-gray-600">
+                                    <CheckCircleIcon className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                                    {action}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+
+          {/* Best Practices */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <CardHeader
+              className="cursor-pointer"
+              onClick={() => toggleSection('practices')}
+            >
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center space-x-3">
+                  <LightbulbIcon className="h-5 w-5 text-slate-600" />
+                  <span>Best Practices</span>
+                </CardTitle>
+                {expandedSections.practices ?
+                  <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                  <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                }
+              </div>
+            </CardHeader>
+            {expandedSections.practices && (
+              <CardContent className="pt-0">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {bestPractices.map((practice, index) => (
+                    <div key={index} className="p-4 bg-slate-50 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                          <LightbulbIcon className="h-4 w-4 text-yellow-600" />
+                        </div>
+                        <h4 className="font-medium text-gray-900">{practice.title}</h4>
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-900 mb-1">{question.question}</h4>
-                        <p className="text-sm text-gray-600">{question.description}</p>
-                        {question.type === 'nps' && (
-                          <div className="flex space-x-2 mt-3">
-                            {[...Array(11)].map((_, i) => (
-                              <div key={i} className="w-8 h-8 border border-gray-300 rounded flex items-center justify-center bg-gray-50 text-sm text-gray-900 font-medium">
-                                {i}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {question.type === 'text' && (
-                          <div className="mt-3 border border-gray-300 rounded p-3 bg-gray-50 text-sm text-gray-500">
-                            {t('nps.textAreaPlaceholder')}
-                          </div>
-                        )}
+                      <p className="text-gray-600 text-sm mb-3">{practice.description}</p>
+                      <ul className="space-y-2">
+                        {practice.tips.map((tip, tipIndex) => (
+                          <li key={tipIndex} className="flex items-start text-sm text-gray-600">
+                            <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
+                            {tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+
+          {/* Industry Benchmarks */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <CardHeader
+              className="cursor-pointer"
+              onClick={() => toggleSection('benchmarks')}
+            >
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center space-x-3">
+                  <BarChart3Icon className="h-5 w-5 text-slate-600" />
+                  <span>Branschbenchmarks</span>
+                </CardTitle>
+                {expandedSections.benchmarks ?
+                  <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                  <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                }
+              </div>
+            </CardHeader>
+            {expandedSections.benchmarks && (
+              <CardContent className="pt-0">
+                <p className="text-gray-600 mb-4">
+                  {t('nps.benchmarkDescription')}
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-3 px-4 font-semibold text-gray-900">{t('nps.industryColumn')}</th>
+                        <th className="text-center py-3 px-4 font-semibold text-gray-900">{t('nps.averageColumn')}</th>
+                        <th className="text-center py-3 px-4 font-semibold text-gray-900">{t('nps.topColumn')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {industryBenchmarks.map((benchmark, index) => (
+                        <tr key={index} className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4 font-medium text-gray-900">{benchmark.industry}</td>
+                          <td className="py-3 px-4 text-center">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-slate-100 text-slate-800">
+                              {benchmark.average}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                              {benchmark.top}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            )}
+          </Card>
+
+          {/* Survey Template */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <CardHeader
+              className="cursor-pointer"
+              onClick={() => toggleSection('template')}
+            >
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center space-x-3">
+                  <TargetIcon className="h-5 w-5 text-slate-600" />
+                  <span>Enkätmall</span>
+                </CardTitle>
+                {expandedSections.template ?
+                  <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                  <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                }
+              </div>
+            </CardHeader>
+            {expandedSections.template && (
+              <CardContent className="pt-0">
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-900 mb-2">{npsTemplate.title}</h4>
+                  <p className="text-gray-600 text-sm">{npsTemplate.description}</p>
+                </div>
+                <div className="space-y-6">
+                  {npsTemplate.questions.map((question, index) => (
+                    <div key={index} className="border-l-4 border-l-gray-200 pl-4">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-sm font-medium text-gray-600">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900 mb-1">{question.question}</h4>
+                          <p className="text-sm text-gray-600">{question.description}</p>
+                          {question.type === 'nps' && (
+                            <div className="flex space-x-2 mt-3 flex-wrap">
+                              {[...Array(11)].map((_, i) => (
+                                <div key={i} className="w-8 h-8 border border-gray-300 rounded flex items-center justify-center bg-gray-50 text-sm text-gray-900 font-medium">
+                                  {i}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {question.type === 'text' && (
+                            <div className="mt-3 border border-gray-300 rounded p-3 bg-gray-50 text-sm text-gray-500">
+                              {t('nps.textAreaPlaceholder')}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-6 pt-6 border-t text-center">
-                <Link href="/insights/survey-builder">
-                  <Button variant="primary" className="mr-3">
-                    {t('nps.useTemplate')}
+                  ))}
+                </div>
+
+                <div className="mt-6 pt-6 border-t text-center">
+                  <Link href="/insights/survey-builder">
+                    <Button variant="primary" className="mr-3">
+                      <PlayIcon className="h-4 w-4 mr-2" />
+                      {t('nps.useTemplate')}
+                    </Button>
+                  </Link>
+                  <Button variant="outline">
+                    {t('nps.customizeTemplate')}
                   </Button>
-                </Link>
-                <Button variant="outline">
-                  {t('nps.customizeTemplate')}
-                </Button>
-              </div>
-            </CardContent>
+                </div>
+              </CardContent>
+            )}
           </Card>
         </div>
 
