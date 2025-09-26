@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSidebar } from '@/contexts/SidebarContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { useGuidedTour } from '@/hooks/useGuidedTour'
@@ -89,7 +89,8 @@ const getNavigation = (t: (key: string) => string) => [
               { name: 'Genomför', href: '/insights/interviews?tab=conduct', icon: PlayIcon },
               { name: 'Analysera', href: '/insights/interviews?tab=analyze', icon: BarChart3Icon },
               { name: 'Mina intervjuer', href: '/insights/interviews?tab=my-interviews', icon: FolderIcon },
-              { name: 'Mallar', href: '/insights/interviews?tab=templates', icon: BookTemplateIcon }
+              { name: 'Mallar', href: '/insights/interviews?tab=templates', icon: BookTemplateIcon },
+              { name: 'Lär dig intervjua', href: '/insights/interviews/guide', icon: BookOpenIcon }
             ]
           },
           { name: t('nav.focusGroups'), href: '/insights/focus-groups', icon: UsersIcon },
@@ -120,6 +121,7 @@ const getNavigation = (t: (key: string) => string) => [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const { isCollapsed, setIsCollapsed } = useSidebar()
   const { user, signOut } = useAuth()
   const { startTour } = useGuidedTour()
@@ -129,8 +131,6 @@ export function Sidebar() {
   const [expandedSubItems, setExpandedSubItems] = useState<{[key: string]: boolean}>({})
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [hoveredSection, setHoveredSection] = useState<string | null>(null)
-  
-  const navigation = getNavigation(t)
   
   const toggleSection = (sectionName: string) => {
     setExpandedSections(prev => {
@@ -152,7 +152,7 @@ export function Sidebar() {
       }
     })
   }
-  
+
   const toggleCategory = (categoryName: string) => {
     setExpandedCategories(prev => ({
       ...prev,
@@ -166,6 +166,72 @@ export function Sidebar() {
       [subItemName]: !prev[subItemName]
     }))
   }
+
+  // Auto-expand sections based on current pathname
+  useEffect(() => {
+    const navigation = getNavigation(t)
+
+    const autoExpandSections = () => {
+      const newExpandedSections: {[key: string]: boolean} = {}
+      const newExpandedCategories: {[key: string]: boolean} = {}
+      const newExpandedSubItems: {[key: string]: boolean} = {}
+
+      navigation.forEach((item) => {
+        if (item.isExpandable && item.children) {
+          // Check if we're in this main section
+          const isInSection = item.children.some((category) => {
+            if (category.href) {
+              // Direct link category (like personas)
+              return pathname === category.href || pathname.startsWith(category.href + '?')
+            }
+
+            if (category.children) {
+              // Category with subcategories
+              return category.children.some((subItem) => {
+                if (subItem.href) {
+                  const isMatch = pathname === subItem.href || pathname.startsWith(subItem.href + '?')
+                  if (isMatch && subItem.isExpandable && subItem.children) {
+                    // Also expand the sub-item if it has children
+                    newExpandedSubItems[subItem.name] = true
+                  }
+                  return isMatch
+                }
+                return false
+              })
+            }
+            return false
+          })
+
+          if (isInSection) {
+            newExpandedSections[item.name] = true
+
+            // Also expand relevant categories
+            item.children.forEach((category) => {
+              if (category.children) {
+                const isInCategory = category.children.some((subItem) => {
+                  if (subItem.href) {
+                    return pathname === subItem.href || pathname.startsWith(subItem.href + '?')
+                  }
+                  return false
+                })
+                if (isInCategory) {
+                  newExpandedCategories[category.name] = true
+                }
+              }
+            })
+          }
+        }
+      })
+
+      setExpandedSections(newExpandedSections)
+      setExpandedCategories(newExpandedCategories)
+      setExpandedSubItems(newExpandedSubItems)
+    }
+
+    autoExpandSections()
+  }, [pathname, t])
+
+  const navigation = getNavigation(t)
 
   return (
     <div className={cn(
@@ -360,7 +426,9 @@ export function Sidebar() {
                                         {isSubItemExpanded && subItem.children && (
                                           <div className="ml-6 mt-1 space-y-1">
                                             {subItem.children.map((subSubItem) => {
-                                              const isSubSubActive = pathname === subSubItem.href || pathname.startsWith(subSubItem.href + '?')
+                                              // Simple matching logic using current pathname and search params
+                                              const currentFullPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '')
+                                              const isSubSubActive = currentFullPath === subSubItem.href
                                               return (
                                                 <Link
                                                   key={subSubItem.name}

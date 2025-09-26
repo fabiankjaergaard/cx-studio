@@ -11,7 +11,12 @@ import {
   PlusIcon,
   CheckCircleIcon,
   LightbulbIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  BarChart,
+  TrendingDownIcon,
+  TrendingUpIcon
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -139,11 +144,19 @@ const getCesTemplate = () => ({
 export default function CESPage() {
   const { t } = useLanguage()
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null)
+  const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({})
 
   const cesSegments = getCesSegments(t)
   const bestPractices = getBestPractices()
   const industryBenchmarks = getIndustryBenchmarks()
   const cesTemplate = getCesTemplate()
+
+  const toggleSection = (sectionName: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionName]: !prev[sectionName]
+    }))
+  }
 
   return (
     <div className="h-full flex flex-col">
@@ -188,44 +201,118 @@ export default function CESPage() {
           </div>
         </Card>
 
-        {/* CES Segments */}
+        {/* Quick Reference Cards */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">De tre CES-segmenten</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Snabböversikt CES-segment</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {cesSegments.map((segment) => (
-              <Card
-                key={segment.type}
-                className={`cursor-pointer transition-all hover:shadow-md border-0 bg-white rounded-xl overflow-hidden ${
-                  selectedSegment === segment.type ? 'ring-2 ring-slate-500' : ''
-                }`}
-                onClick={() => setSelectedSegment(selectedSegment === segment.type ? null : segment.type)}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{segment.type}</CardTitle>
-                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${segment.color}`}>
-                      {segment.score}
-                    </div>
+            {/* Low Effort Card */}
+            <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-0 bg-white rounded-xl overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center group-hover:bg-green-100 transition-colors duration-300">
+                    <TrendingDownIcon className="h-6 w-6 text-green-600 group-hover:scale-110 transition-transform duration-300" />
                   </div>
-                  <p className="text-gray-600 text-sm">{segment.description}</p>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Kännetecken</h4>
-                      <ul className="space-y-1">
-                        {segment.characteristics.map((char, index) => (
-                          <li key={index} className="flex items-start text-sm text-gray-600">
-                            <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
-                            {char}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Låg ansträngning</h3>
+                    <p className="text-sm text-green-600 font-medium">1-2 poäng</p>
+                  </div>
+                </div>
+                <p className="text-gray-600 text-sm mb-4">
+                  Kunder som upplevde processen som mycket enkel och smidig
+                </p>
+                <div className="text-2xl font-bold text-green-600 mb-1">20-40%</div>
+                <p className="text-xs text-gray-500">Typisk andel av kunder</p>
+              </CardContent>
+            </Card>
 
-                    {selectedSegment === segment.type && (
+            {/* Medium Effort Card */}
+            <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-0 bg-white rounded-xl overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center group-hover:bg-yellow-100 transition-colors duration-300">
+                    <BarChart className="h-6 w-6 text-yellow-600 group-hover:scale-110 transition-transform duration-300" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Måttlig ansträngning</h3>
+                    <p className="text-sm text-yellow-600 font-medium">3-5 poäng</p>
+                  </div>
+                </div>
+                <p className="text-gray-600 text-sm mb-4">
+                  Kunder som upplevde viss friktion i processen
+                </p>
+                <div className="text-2xl font-bold text-yellow-600 mb-1">40-60%</div>
+                <p className="text-xs text-gray-500">Typisk andel av kunder</p>
+              </CardContent>
+            </Card>
+
+            {/* High Effort Card */}
+            <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-0 bg-white rounded-xl overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center group-hover:bg-red-100 transition-colors duration-300">
+                    <TrendingUpIcon className="h-6 w-6 text-red-600 group-hover:scale-110 transition-transform duration-300" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Hög ansträngning</h3>
+                    <p className="text-sm text-red-600 font-medium">6-7 poäng</p>
+                  </div>
+                </div>
+                <p className="text-gray-600 text-sm mb-4">
+                  Kunder som upplevde processen som krånglig och frustrerande
+                </p>
+                <div className="text-2xl font-bold text-red-600 mb-1">10-20%</div>
+                <p className="text-xs text-gray-500">Typisk andel av kunder</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Detailed Segment Analysis - Expandable */}
+        <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden">
+          <CardHeader
+            className="cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+            onClick={() => toggleSection('segments')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl">Detaljerad segmentanalys</CardTitle>
+                <p className="text-gray-600 text-sm mt-1">Djupgående förståelse av varje CES-segment</p>
+              </div>
+              {expandedSections.segments ? (
+                <ChevronUpIcon className="h-5 w-5 text-gray-500" />
+              ) : (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+              )}
+            </div>
+          </CardHeader>
+          {expandedSections.segments && (
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {cesSegments.map((segment) => (
+                  <div key={segment.type} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-gray-900">{segment.type}</h4>
+                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${segment.color}`}>
+                        {segment.score}
+                      </div>
+                    </div>
+                    <p className="text-gray-600 text-sm mb-4">{segment.description}</p>
+
+                    <div className="space-y-4">
+                      <div>
+                        <h5 className="font-medium text-gray-900 mb-2">Kännetecken</h5>
+                        <ul className="space-y-1">
+                          {segment.characteristics.map((char, index) => (
+                            <li key={index} className="flex items-start text-sm text-gray-600">
+                              <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
+                              {char}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
                       <div className="border-t pt-4">
-                        <h4 className="font-medium text-gray-900 mb-2">Rekommenderade åtgärder</h4>
+                        <h5 className="font-medium text-gray-900 mb-2">Rekommenderade åtgärder</h5>
                         <ul className="space-y-1">
                           {segment.actionItems.map((action, index) => (
                             <li key={index} className="flex items-start text-sm text-gray-600">
@@ -235,50 +322,80 @@ export default function CESPage() {
                           ))}
                         </ul>
                       </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Best Practices */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Bästa praxis för CES</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {bestPractices.map((practice, index) => (
-              <Card key={index} className="border-0 bg-white rounded-xl overflow-hidden">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
-                      <LightbulbIcon className="h-4 w-4 text-orange-600" />
                     </div>
-                    <span>{practice.title}</span>
-                  </CardTitle>
-                  <p className="text-gray-600 text-sm">{practice.description}</p>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <ul className="space-y-2">
-                    {practice.tips.map((tip, tipIndex) => (
-                      <li key={tipIndex} className="flex items-start text-sm text-gray-600">
-                        <div className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
-                        {tip}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          )}
+        </Card>
 
-        {/* Industry Benchmarks */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Branschgenomsnitt för CES</h2>
-          <Card className="border-0 bg-white rounded-xl overflow-hidden">
-            <CardContent className="p-6">
-              <p className="text-gray-600 mb-4">
+        {/* Best Practices - Expandable */}
+        <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden">
+          <CardHeader
+            className="cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+            onClick={() => toggleSection('practices')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl">Bästa praxis för CES</CardTitle>
+                <p className="text-gray-600 text-sm mt-1">Proven strategier för effektiv CES-mätning</p>
+              </div>
+              {expandedSections.practices ? (
+                <ChevronUpIcon className="h-5 w-5 text-gray-500" />
+              ) : (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+              )}
+            </div>
+          </CardHeader>
+          {expandedSections.practices && (
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {bestPractices.map((practice, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
+                        <LightbulbIcon className="h-4 w-4 text-orange-600" />
+                      </div>
+                      <h4 className="font-semibold text-gray-900">{practice.title}</h4>
+                    </div>
+                    <p className="text-gray-600 text-sm mb-4">{practice.description}</p>
+                    <ul className="space-y-2">
+                      {practice.tips.map((tip, tipIndex) => (
+                        <li key={tipIndex} className="flex items-start text-sm text-gray-600">
+                          <div className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
+                          {tip}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          )}
+        </Card>
+
+        {/* Industry Benchmarks - Expandable */}
+        <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden">
+          <CardHeader
+            className="cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+            onClick={() => toggleSection('benchmarks')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl">Branschgenomsnitt för CES</CardTitle>
+                <p className="text-gray-600 text-sm mt-1">Jämför din prestanda mot industristandarder</p>
+              </div>
+              {expandedSections.benchmarks ? (
+                <ChevronUpIcon className="h-5 w-5 text-gray-500" />
+              ) : (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+              )}
+            </div>
+          </CardHeader>
+          {expandedSections.benchmarks && (
+            <CardContent className="pt-0">
+              <p className="text-gray-600 mb-6">
                 Jämför din CES-poäng med branschgenomsnittet. Kom ihåg att lägre poäng är bättre för CES.
               </p>
               <div className="overflow-x-auto">
@@ -310,18 +427,34 @@ export default function CESPage() {
                 </table>
               </div>
             </CardContent>
-          </Card>
-        </div>
+          )}
+        </Card>
 
-        {/* CES Template */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">CES-enkätmall</h2>
-          <Card className="border-0 bg-white rounded-xl overflow-hidden">
-            <CardHeader>
-              <CardTitle>{cesTemplate.title}</CardTitle>
-              <p className="text-gray-600">{cesTemplate.description}</p>
-            </CardHeader>
-            <CardContent>
+        {/* Survey Templates - Expandable */}
+        <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden">
+          <CardHeader
+            className="cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+            onClick={() => toggleSection('templates')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl">CES-enkätmallar</CardTitle>
+                <p className="text-gray-600 text-sm mt-1">Färdiga mallar för att komma igång snabbt</p>
+              </div>
+              {expandedSections.templates ? (
+                <ChevronUpIcon className="h-5 w-5 text-gray-500" />
+              ) : (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+              )}
+            </div>
+          </CardHeader>
+          {expandedSections.templates && (
+            <CardContent className="pt-0">
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <h4 className="font-semibold text-gray-900 mb-2">{cesTemplate.title}</h4>
+                <p className="text-gray-600 text-sm">{cesTemplate.description}</p>
+              </div>
+
               <div className="space-y-6">
                 {cesTemplate.questions.map((question, index) => (
                   <div key={index} className="border-l-4 border-l-gray-200 pl-4">
@@ -331,9 +464,9 @@ export default function CESPage() {
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900 mb-1">{question.question}</h4>
-                        <p className="text-sm text-gray-600">{question.description}</p>
+                        <p className="text-sm text-gray-600 mb-3">{question.description}</p>
                         {question.type === 'rating' && (
-                          <div className="flex space-x-2 mt-3">
+                          <div className="flex space-x-2">
                             {[1, 2, 3, 4, 5, 6, 7].map((num) => (
                               <div key={num} className="flex flex-col items-center">
                                 <div className={`w-8 h-8 border border-gray-300 rounded flex items-center justify-center bg-gray-50 text-sm text-gray-900 font-medium ${
@@ -350,7 +483,7 @@ export default function CESPage() {
                           </div>
                         )}
                         {question.type === 'text' && (
-                          <div className="mt-3 border border-gray-300 rounded p-3 bg-gray-50 text-sm text-gray-500">
+                          <div className="border border-gray-300 rounded p-3 bg-gray-50 text-sm text-gray-500">
                             Textområde för kundens feedback...
                           </div>
                         )}
@@ -371,8 +504,8 @@ export default function CESPage() {
                 </Button>
               </div>
             </CardContent>
-          </Card>
-        </div>
+          )}
+        </Card>
 
         {/* Action Steps */}
         <Card className="border-0 bg-white rounded-xl overflow-hidden">

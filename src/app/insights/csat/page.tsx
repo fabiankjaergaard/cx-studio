@@ -12,7 +12,13 @@ import {
   TargetIcon,
   CheckCircleIcon,
   LightbulbIcon,
-  BarChart3Icon
+  BarChart3Icon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  PlayIcon,
+  SmileIcon,
+  MehIcon,
+  FrownIcon
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -140,11 +146,19 @@ const getCsatTemplate = () => ({
 export default function CSATPage() {
   const { t } = useLanguage()
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null)
+  const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({})
 
   const csatSegments = getCsatSegments(t)
   const bestPractices = getBestPractices()
   const industryBenchmarks = getIndustryBenchmarks()
   const csatTemplate = getCsatTemplate()
+
+  const toggleSection = (sectionKey: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionKey]: !prev[sectionKey]
+    }))
+  }
 
   return (
     <div className="h-full flex flex-col">
@@ -163,7 +177,7 @@ export default function CSATPage() {
 
       <div className="flex-1 p-6 overflow-auto bg-gray-50">
         {/* Introduction */}
-        <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden">
+        <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden hover:shadow-md transition-shadow duration-300">
           <div className="p-6">
             <div className="flex items-start space-x-4">
               <div className="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -176,7 +190,7 @@ export default function CSATPage() {
                 <p className="text-gray-600 mb-4">
                   CSAT mäter hur nöjda kunder är med en specifik produkt, tjänst eller interaktion. Det är ett enkelt men kraftfullt verktyg för att förstå kundupplevelsen i realtid.
                 </p>
-                <div className="bg-gray-50 p-4 rounded-xl">
+                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-xl border">
                   <div className="text-lg font-semibold text-center mb-2 text-gray-900">
                     CSAT = (Nöjda kunder / Totalt antal svar) × 100
                   </div>
@@ -189,182 +203,285 @@ export default function CSATPage() {
           </div>
         </Card>
 
-        {/* CSAT Segments */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">De tre CSAT-segmenten</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {csatSegments.map((segment) => (
-              <Card
-                key={segment.type}
-                className={`cursor-pointer transition-all hover:shadow-md border-0 bg-white rounded-xl overflow-hidden ${
-                  selectedSegment === segment.type ? 'ring-2 ring-slate-500' : ''
-                }`}
-                onClick={() => setSelectedSegment(selectedSegment === segment.type ? null : segment.type)}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{segment.type}</CardTitle>
-                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${segment.color}`}>
-                      {segment.score}
-                    </div>
-                  </div>
-                  <p className="text-gray-600 text-sm">{segment.description}</p>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Kännetecken</h4>
-                      <ul className="space-y-1">
-                        {segment.characteristics.map((char, index) => (
-                          <li key={index} className="flex items-start text-sm text-gray-600">
-                            <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
-                            {char}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {selectedSegment === segment.type && (
-                      <div className="border-t pt-4">
-                        <h4 className="font-medium text-gray-900 mb-2">Rekommenderade åtgärder</h4>
-                        <ul className="space-y-1">
-                          {segment.actionItems.map((action, index) => (
-                            <li key={index} className="flex items-start text-sm text-gray-600">
-                              <CheckCircleIcon className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                              {action}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Best Practices */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Bästa praxis för CSAT</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {bestPractices.map((practice, index) => (
-              <Card key={index} className="border-0 bg-white rounded-xl overflow-hidden">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center">
-                      <LightbulbIcon className="h-4 w-4 text-slate-600" />
-                    </div>
-                    <span>{practice.title}</span>
-                  </CardTitle>
-                  <p className="text-gray-600 text-sm">{practice.description}</p>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <ul className="space-y-2">
-                    {practice.tips.map((tip, tipIndex) => (
-                      <li key={tipIndex} className="flex items-start text-sm text-gray-600">
-                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
-                        {tip}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Industry Benchmarks */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Branschgenomsnitt för CSAT</h2>
-          <Card className="border-0 bg-white rounded-xl overflow-hidden">
+        {/* Quick Reference Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
             <CardContent className="p-6">
-              <p className="text-gray-600 mb-4">
-                Jämför din CSAT-poäng med branschgenomsnittet för att förstå din position på marknaden.
-              </p>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-semibold text-gray-900">Bransch</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-900">Genomsnitt</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-900">Utmärkt</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {industryBenchmarks.map((benchmark, index) => (
-                      <tr key={index} className="border-b hover:bg-gray-50">
-                        <td className="py-3 px-4 font-medium text-gray-900">{benchmark.industry}</td>
-                        <td className="py-3 px-4 text-center">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-slate-100 text-slate-800">
-                            {benchmark.average}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            {benchmark.excellent}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-green-200 group-hover:scale-110">
+                  <SmileIcon className="h-6 w-6 text-green-600 transition-all duration-300 group-hover:text-green-700" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Mycket nöjda (4-5)</h3>
+                <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Lojala kunder som rekommenderar ditt företag</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-yellow-200 group-hover:scale-110">
+                  <MehIcon className="h-6 w-6 text-yellow-600 transition-all duration-300 group-hover:text-yellow-700" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Nöjda (3)</h3>
+                <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Neutrala kunder som kan påverkas av konkurrenter</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-red-200 group-hover:scale-110">
+                  <FrownIcon className="h-6 w-6 text-red-600 transition-all duration-300 group-hover:text-red-700" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Missnöjda (1-2)</h3>
+                <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Riskgrupp som kan sprida negativ publicitet</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* CSAT Template */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">CSAT-enkätmall</h2>
-          <Card className="border-0 bg-white rounded-xl overflow-hidden">
-            <CardHeader>
-              <CardTitle>{csatTemplate.title}</CardTitle>
-              <p className="text-gray-600">{csatTemplate.description}</p>
+        {/* Expandable Sections */}
+        <div className="space-y-4 mb-8">
+          {/* Detailed CSAT Segments */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <CardHeader
+              className="cursor-pointer"
+              onClick={() => toggleSection('segments')}
+            >
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center space-x-3">
+                  <UsersIcon className="h-5 w-5 text-slate-600" />
+                  <span>Detaljerad segmentanalys</span>
+                </CardTitle>
+                {expandedSections.segments ?
+                  <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                  <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                }
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {csatTemplate.questions.map((question, index) => (
-                  <div key={index} className="border-l-4 border-l-gray-200 pl-4">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-sm font-medium text-gray-600">
-                        {index + 1}
+            {expandedSections.segments && (
+              <CardContent className="pt-0">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {csatSegments.map((segment) => (
+                    <Card
+                      key={segment.type}
+                      className={`cursor-pointer transition-all hover:shadow-md border bg-white rounded-xl overflow-hidden ${
+                        selectedSegment === segment.type ? 'ring-2 ring-slate-500' : ''
+                      }`}
+                      onClick={() => setSelectedSegment(selectedSegment === segment.type ? null : segment.type)}
+                    >
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg">{segment.type}</CardTitle>
+                          <div className={`px-3 py-1 rounded-full text-sm font-medium ${segment.color}`}>
+                            {segment.score}
+                          </div>
+                        </div>
+                        <p className="text-gray-600 text-sm">{segment.description}</p>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="font-medium text-gray-900 mb-2">Kännetecken</h4>
+                            <ul className="space-y-1">
+                              {segment.characteristics.map((char, index) => (
+                                <li key={index} className="flex items-start text-sm text-gray-600">
+                                  <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
+                                  {char}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          {selectedSegment === segment.type && (
+                            <div className="border-t pt-4">
+                              <h4 className="font-medium text-gray-900 mb-2">Rekommenderade åtgärder</h4>
+                              <ul className="space-y-1">
+                                {segment.actionItems.map((action, index) => (
+                                  <li key={index} className="flex items-start text-sm text-gray-600">
+                                    <CheckCircleIcon className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                                    {action}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+
+          {/* Best Practices */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <CardHeader
+              className="cursor-pointer"
+              onClick={() => toggleSection('practices')}
+            >
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center space-x-3">
+                  <LightbulbIcon className="h-5 w-5 text-slate-600" />
+                  <span>Best Practices</span>
+                </CardTitle>
+                {expandedSections.practices ?
+                  <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                  <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                }
+              </div>
+            </CardHeader>
+            {expandedSections.practices && (
+              <CardContent className="pt-0">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {bestPractices.map((practice, index) => (
+                    <div key={index} className="p-4 bg-slate-50 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                          <LightbulbIcon className="h-4 w-4 text-yellow-600" />
+                        </div>
+                        <h4 className="font-medium text-gray-900">{practice.title}</h4>
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-900 mb-1">{question.question}</h4>
-                        <p className="text-sm text-gray-600">{question.description}</p>
-                        {question.type === 'rating' && (
-                          <div className="flex space-x-2 mt-3">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <div key={star} className="flex flex-col items-center">
-                                <StarIcon className="w-8 h-8 text-yellow-400 fill-current" />
-                                <span className="text-xs text-gray-500 mt-1">{star}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {question.type === 'text' && (
-                          <div className="mt-3 border border-gray-300 rounded p-3 bg-gray-50 text-sm text-gray-500">
-                            Textområde för kundens feedback...
-                          </div>
-                        )}
+                      <p className="text-gray-600 text-sm mb-3">{practice.description}</p>
+                      <ul className="space-y-2">
+                        {practice.tips.map((tip, tipIndex) => (
+                          <li key={tipIndex} className="flex items-start text-sm text-gray-600">
+                            <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
+                            {tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+
+          {/* Industry Benchmarks */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <CardHeader
+              className="cursor-pointer"
+              onClick={() => toggleSection('benchmarks')}
+            >
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center space-x-3">
+                  <BarChart3Icon className="h-5 w-5 text-slate-600" />
+                  <span>Branschbenchmarks</span>
+                </CardTitle>
+                {expandedSections.benchmarks ?
+                  <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                  <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                }
+              </div>
+            </CardHeader>
+            {expandedSections.benchmarks && (
+              <CardContent className="pt-0">
+                <p className="text-gray-600 mb-4">
+                  Jämför din CSAT-poäng med branschgenomsnittet för att förstå din position på marknaden.
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Bransch</th>
+                        <th className="text-center py-3 px-4 font-semibold text-gray-900">Genomsnitt</th>
+                        <th className="text-center py-3 px-4 font-semibold text-gray-900">Utmärkt</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {industryBenchmarks.map((benchmark, index) => (
+                        <tr key={index} className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4 font-medium text-gray-900">{benchmark.industry}</td>
+                          <td className="py-3 px-4 text-center">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-slate-100 text-slate-800">
+                              {benchmark.average}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                              {benchmark.excellent}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            )}
+          </Card>
+
+          {/* Survey Template */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <CardHeader
+              className="cursor-pointer"
+              onClick={() => toggleSection('template')}
+            >
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center space-x-3">
+                  <TargetIcon className="h-5 w-5 text-slate-600" />
+                  <span>Enkätmall</span>
+                </CardTitle>
+                {expandedSections.template ?
+                  <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
+                  <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                }
+              </div>
+            </CardHeader>
+            {expandedSections.template && (
+              <CardContent className="pt-0">
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-900 mb-2">{csatTemplate.title}</h4>
+                  <p className="text-gray-600 text-sm">{csatTemplate.description}</p>
+                </div>
+                <div className="space-y-6">
+                  {csatTemplate.questions.map((question, index) => (
+                    <div key={index} className="border-l-4 border-l-gray-200 pl-4">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-sm font-medium text-gray-600">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900 mb-1">{question.question}</h4>
+                          <p className="text-sm text-gray-600">{question.description}</p>
+                          {question.type === 'rating' && (
+                            <div className="flex space-x-2 mt-3 flex-wrap">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <div key={star} className="flex flex-col items-center">
+                                  <StarIcon className="w-8 h-8 text-yellow-400 fill-current" />
+                                  <span className="text-xs text-gray-500 mt-1">{star}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {question.type === 'text' && (
+                            <div className="mt-3 border border-gray-300 rounded p-3 bg-gray-50 text-sm text-gray-500">
+                              Textområde för kundens feedback...
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
 
-              <div className="mt-6 pt-6 border-t text-center">
-                <Link href="/insights/survey-builder">
-                  <Button variant="primary" className="mr-3">
-                    Använd denna mall
+                <div className="mt-6 pt-6 border-t text-center">
+                  <Link href="/insights/survey-builder">
+                    <Button variant="primary" className="mr-3">
+                      <PlayIcon className="h-4 w-4 mr-2" />
+                      Använd denna mall
+                    </Button>
+                  </Link>
+                  <Button variant="outline">
+                    Anpassa mallen
                   </Button>
-                </Link>
-                <Button variant="outline">
-                  Anpassa mallen
-                </Button>
-              </div>
-            </CardContent>
+                </div>
+              </CardContent>
+            )}
           </Card>
         </div>
 
