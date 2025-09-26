@@ -14,7 +14,7 @@ export function RowTypePalette({
   className = '',
   'data-onboarding': dataOnboarding
 }: RowTypePaletteProps) {
-  const [selectedColor, setSelectedColor] = useState(ROW_COLORS[0].id)
+  const [selectedColor, setSelectedColor] = useState('bg-slate-50')
 
   // Group row types by category for better organization
   const basicTypes = ROW_TYPES.filter(type => ['text', 'number', 'status'].includes(type.id))

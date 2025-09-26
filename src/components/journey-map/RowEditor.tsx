@@ -26,12 +26,16 @@ export function RowEditor({ isOpen, onClose, row, onSave, onDelete, isNewRow = f
 
   const handleSave = () => {
     if (!formData.category.trim()) return
-    
+
+    // Journey categories always get white background
+    const isJourneyCategory = ['actions', 'touchpoints', 'emotions', 'pain-points', 'opportunities', 'backstage'].includes(formData.category.toLowerCase())
+    const finalColor = isJourneyCategory ? 'bg-slate-50' : formData.color
+
     onSave({
       category: formData.category.trim(),
       description: formData.description.trim(),
       type: formData.type as any,
-      color: formData.color
+      color: finalColor
     })
     onClose()
   }
@@ -45,6 +49,7 @@ export function RowEditor({ isOpen, onClose, row, onSave, onDelete, isNewRow = f
 
   const selectedRowType = ROW_TYPES.find(type => type.id === formData.type)
   const selectedColor = ROW_COLORS.find(color => color.id === formData.color)
+  const isJourneyCategory = ['actions', 'touchpoints', 'emotions', 'pain-points', 'opportunities', 'backstage'].includes(formData.category.toLowerCase())
 
   return (
     <Modal
@@ -98,34 +103,36 @@ export function RowEditor({ isOpen, onClose, row, onSave, onDelete, isNewRow = f
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Row color
-          </label>
-          <div className="grid grid-cols-4 gap-2">
-            {ROW_COLORS.map((color) => (
-              <button
-                key={color.id}
-                onClick={() => setFormData(prev => ({ ...prev, color: color.id }))}
-                className={`p-3 rounded-lg border-2 transition-all ${color.class} ${
-                  formData.color === color.id
-                    ? 'border-slate-500 ring-2 ring-slate-200'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-                title={color.name}
-              >
-                <div className="text-sm font-medium text-gray-700">{color.name}</div>
-              </button>
-            ))}
+        {!isJourneyCategory && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Row color
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {ROW_COLORS.map((color) => (
+                <button
+                  key={color.id}
+                  onClick={() => setFormData(prev => ({ ...prev, color: color.id }))}
+                  className={`p-3 rounded-lg border-2 transition-all ${color.class} ${
+                    formData.color === color.id
+                      ? 'border-slate-500 ring-2 ring-slate-200'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  title={color.name}
+                >
+                  <div className="text-sm font-medium text-gray-700">{color.name}</div>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Preview */}
         <div className="border-t pt-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Preview
           </label>
-          <div className={`p-3 rounded-lg border ${formData.color}`}>
+          <div className={`p-3 rounded-lg border ${isJourneyCategory ? 'bg-slate-50' : formData.color}`}>
             <div className="font-medium text-gray-900 mb-1">
               {formData.category || 'Row name'}
             </div>

@@ -125,7 +125,9 @@ export const ROW_TYPES = [
 
 // Available row colors
 export const ROW_COLORS = [
-  { id: 'bg-slate-200', name: 'Gray', class: 'bg-slate-200' },
+  { id: 'bg-slate-50', name: 'Light Gray', class: 'bg-slate-50' },
+  { id: 'bg-blue-200', name: 'Blue', class: 'bg-blue-200' },
+  { id: 'bg-indigo-200', name: 'Indigo', class: 'bg-indigo-200' },
   { id: 'bg-slate-300', name: 'Light Blue', class: 'bg-slate-300' },
   { id: 'bg-emerald-200', name: 'Green', class: 'bg-emerald-200' },
   { id: 'bg-rose-200', name: 'Rose', class: 'bg-rose-200' },

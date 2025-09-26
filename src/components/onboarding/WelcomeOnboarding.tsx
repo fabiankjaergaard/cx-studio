@@ -38,14 +38,14 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
           </button>
           
           <div className="text-center">
-            <div className="-mb-2">
+            <div className="mb-2">
               <img
                 src="/Kustra.png"
                 alt="Kustra"
-                className="h-36 w-auto mx-auto filter brightness-0 invert"
+                className="h-48 w-auto mx-auto filter brightness-0 invert"
               />
             </div>
-            <h1 className="text-3xl font-bold mb-2 flex items-center justify-center gap-2">
+            <h1 className="text-2xl font-bold mb-2 flex items-center justify-center gap-2">
               {t('onboarding.welcome')}{userName ? `, ${userName.split('@')[0]}` : ''}!
               <Zap className="w-7 h-7 text-slate-200" />
             </h1>

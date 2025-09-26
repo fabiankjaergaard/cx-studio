@@ -2671,7 +2671,7 @@ export default function JourneyMapBuilderPage() {
                     <React.Fragment key={`row-section-${row.id}`}>
                       <tr key={row.id} className="border-b border-gray-100">
                       <td
-                        className={`${isCompactView ? 'p-2' : 'p-4'} ${showGridLines ? 'border-r border-gray-200' : ''} ${row.color} group relative hover:bg-white transition-colors`}
+                        className={`${isCompactView ? 'p-2' : 'p-4'} ${showGridLines ? 'border-r border-gray-200' : ''} bg-slate-50 group relative hover:bg-white transition-colors`}
                         data-onboarding={rowIndex === 0 ? "categories" : undefined}
                       >
                         <div className="space-y-1">
