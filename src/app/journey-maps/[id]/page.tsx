@@ -424,10 +424,10 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'awareness': return '😊:75'    // Happy, positioned at 75% (positive)
-        case 'purchase': return '🤔:45'     // Thinking, positioned at 45% (below neutral)
-        case 'usage': return '😍:90'       // Heart eyes, positioned at 90% (very positive)
-        case 'advocacy': return '😊:80'    // Happy, positioned at 80% (very positive)
+        case 'awareness': return '😊:25'    // Happy, positioned at 25% (positive)
+        case 'purchase': return '🤔:55'     // Thinking, positioned at 55% (slightly below neutral)
+        case 'usage': return '😍:10'       // Heart eyes, positioned at 10% (very positive)
+        case 'advocacy': return '😊:20'    // Happy, positioned at 20% (very positive)
         default: return ''
       }
     }
@@ -473,10 +473,10 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'awareness': return '😊:70'    // Curious, positioned at 70% (positive)
+        case 'awareness': return '😊:30'    // Curious, positioned at 30% (positive)
         case 'evaluation': return '😐:50'   // Neutral, positioned at 50% (neutral)
-        case 'onboarding': return '😅:40'   // Overwhelmed, positioned at 40% (below neutral)
-        case 'usage': return '😊:80'       // Competent, positioned at 80% (very positive)
+        case 'onboarding': return '😅:60'   // Overwhelmed, positioned at 60% (below neutral)
+        case 'usage': return '😊:20'       // Competent, positioned at 20% (very positive)
         default: return ''
       }
     }
@@ -505,11 +505,11 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'contact': return '😰:20'        // Frustrated, positioned at 20% (very negative)
-        case 'identification': return '😔:25' // Worried, positioned at 25% (negative)
-        case 'solution': return '🤔:55'       // Hopeful, positioned at 55% (slightly positive)
-        case 'followup': return '😊:80'       // Relieved, positioned at 80% (very positive)
-        case 'reflection': return '😄:90'     // Satisfied, positioned at 90% (extremely positive)
+        case 'contact': return '😰:80'        // Frustrated, positioned at 80% (very negative)
+        case 'identification': return '😔:75' // Worried, positioned at 75% (negative)
+        case 'solution': return '🤔:45'       // Hopeful, positioned at 45% (slightly positive)
+        case 'followup': return '😊:20'       // Relieved, positioned at 20% (very positive)
+        case 'reflection': return '😄:10'     // Satisfied, positioned at 10% (extremely positive)
         default: return ''
       }
     }
@@ -550,12 +550,12 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'inspiration': return '😋:75'     // Hungry/excited, positioned at 75% (positive)
+        case 'inspiration': return '😋:25'     // Hungry/excited, positioned at 25% (positive)
         case 'search': return '🤔:50'         // Thoughtful, positioned at 50% (neutral)
-        case 'booking': return '😊:70'        // Expectant, positioned at 70% (positive)
-        case 'arrival': return '😍:85'        // Impressed, positioned at 85% (very positive)
-        case 'meal': return '😄:90'          // Satisfied, positioned at 90% (extremely positive)
-        case 'departure': return '😊:75'      // Content, positioned at 75% (positive)
+        case 'booking': return '😊:30'        // Expectant, positioned at 30% (positive)
+        case 'arrival': return '😍:15'        // Impressed, positioned at 15% (very positive)
+        case 'meal': return '😄:10'          // Satisfied, positioned at 10% (extremely positive)
+        case 'departure': return '😊:25'      // Content, positioned at 25% (positive)
         default: return ''
       }
     }
@@ -608,11 +608,11 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'need': return '🤔:45'           // Uncertain, positioned at 45% (below neutral)
-        case 'exploration': return '😰:25'    // Stressed, positioned at 25% (negative)
-        case 'application': return '🤞:60'    // Hopeful, positioned at 60% (positive)
-        case 'approval': return '😰:30'       // Nervous, positioned at 30% (negative)
-        case 'usage': return '😊:80'         // Secure, positioned at 80% (very positive)
+        case 'need': return '🤔:55'           // Uncertain, positioned at 55% (below neutral)
+        case 'exploration': return '😰:75'    // Stressed, positioned at 75% (negative)
+        case 'application': return '🤞:40'    // Hopeful, positioned at 40% (positive)
+        case 'approval': return '😰:70'       // Nervous, positioned at 70% (negative)
+        case 'usage': return '😊:20'         // Secure, positioned at 20% (very positive)
         default: return ''
       }
     }
@@ -663,12 +663,12 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'symptoms': return '😟:30'       // Worried, positioned at 30% (negative)
-        case 'assessment': return '😰:20'     // Anxious, positioned at 20% (very negative)
-        case 'booking': return '🤞:60'        // Hopeful, positioned at 60% (positive)
-        case 'visit': return '😌:70'         // Secure, positioned at 70% (positive)
-        case 'treatment': return '😊:80'      // Relieved, positioned at 80% (very positive)
-        case 'followup': return '😊:85'       // Strengthened, positioned at 85% (very positive)
+        case 'symptoms': return '😟:70'       // Worried, positioned at 70% (negative)
+        case 'assessment': return '😰:80'     // Anxious, positioned at 80% (very negative)
+        case 'booking': return '🤞:40'        // Hopeful, positioned at 40% (positive)
+        case 'visit': return '😌:30'         // Secure, positioned at 30% (positive)
+        case 'treatment': return '😊:20'      // Relieved, positioned at 20% (very positive)
+        case 'followup': return '😊:15'       // Strengthened, positioned at 15% (very positive)
         default: return ''
       }
     }
@@ -723,13 +723,13 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'prospecting': return '🤔:45'     // Uncertain, positioned at 45%
-        case 'qualification': return '😊:65'   // Interested, positioned at 65%
-        case 'proposal': return '😮:70'       // Impressed, positioned at 70%
-        case 'negotiation': return '😰:40'    // Stressed, positioned at 40%
-        case 'decision': return '🤞:55'       // Hopeful, positioned at 55%
-        case 'implementation': return '😌:75' // Confident, positioned at 75%
-        case 'relationship': return '😊:85'   // Satisfied, positioned at 85%
+        case 'prospecting': return '🤔:55'     // Uncertain, positioned at 55%
+        case 'qualification': return '😊:35'   // Interested, positioned at 35%
+        case 'proposal': return '😮:30'       // Impressed, positioned at 30%
+        case 'negotiation': return '😰:60'    // Stressed, positioned at 60%
+        case 'decision': return '🤞:45'       // Hopeful, positioned at 45%
+        case 'implementation': return '😌:25' // Confident, positioned at 25%
+        case 'relationship': return '😊:15'   // Satisfied, positioned at 15%
         default: return ''
       }
     }
@@ -786,10 +786,10 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     if (categoryId === 'emotions') {
       switch (stageId) {
         case 'discovery': return '🤔:50'      // Curious, positioned at 50%
-        case 'registration': return '😊:65'   // Excited, positioned at 65%
-        case 'learning': return '😤:60'       // Focused, positioned at 60%
-        case 'assessment': return '😰:35'     // Nervous, positioned at 35%
-        case 'completion': return '🎉:90'     // Proud, positioned at 90%
+        case 'registration': return '😊:35'   // Excited, positioned at 35%
+        case 'learning': return '😤:40'       // Focused, positioned at 40%
+        case 'assessment': return '😰:65'     // Nervous, positioned at 65%
+        case 'completion': return '🎉:10'     // Proud, positioned at 10%
         default: return ''
       }
     }
@@ -838,10 +838,10 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'download': return '😊:70'       // Excited, positioned at 70%
+        case 'download': return '😊:30'       // Excited, positioned at 30%
         case 'signup': return '😐:50'         // Neutral, positioned at 50%
-        case 'onboarding': return '🤓:65'     // Learning, positioned at 65%
-        case 'firstuse': return '😍:85'       // Delighted, positioned at 85%
+        case 'onboarding': return '🤓:35'     // Learning, positioned at 35%
+        case 'firstuse': return '😍:15'       // Delighted, positioned at 15%
         default: return ''
       }
     }
@@ -889,12 +889,12 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'planning': return '🤔:55'         // Thinking, positioned at 55%
-        case 'registration': return '😊:70'     // Happy, positioned at 70%
-        case 'preparation': return '😰:45'      // Nervous, positioned at 45%
-        case 'arrival': return '😍:75'         // Excited, positioned at 75%
-        case 'participation': return '🤓:80'    // Learning, positioned at 80%
-        case 'followup': return '😊:85'        // Satisfied, positioned at 85%
+        case 'planning': return '🤔:45'         // Thinking, positioned at 45%
+        case 'registration': return '😊:30'     // Happy, positioned at 30%
+        case 'preparation': return '😰:55'      // Nervous, positioned at 55%
+        case 'arrival': return '😍:25'         // Excited, positioned at 25%
+        case 'participation': return '🤓:20'    // Learning, positioned at 20%
+        case 'followup': return '😊:15'        // Satisfied, positioned at 15%
         default: return ''
       }
     }
@@ -947,11 +947,11 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'discovery': return '😊:60'         // Hopeful, positioned at 60%
-        case 'application': return '🤞:55'       // Hopeful, positioned at 55%
-        case 'screening': return '😰:40'        // Anxious, positioned at 40%
-        case 'interview': return '😅:45'        // Nervous, positioned at 45%
-        case 'decision': return '😍:90'         // Excited (if positive), positioned at 90%
+        case 'discovery': return '😊:40'         // Hopeful, positioned at 40%
+        case 'application': return '🤞:45'       // Hopeful, positioned at 45%
+        case 'screening': return '😰:60'        // Anxious, positioned at 60%
+        case 'interview': return '😅:55'        // Nervous, positioned at 55%
+        case 'decision': return '😍:10'         // Excited (if positive), positioned at 10%
         default: return ''
       }
     }
@@ -1001,11 +1001,11 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
     }
     if (categoryId === 'emotions') {
       switch (stageId) {
-        case 'incident': return '😱:20'          // Shocked, positioned at 20%
-        case 'reporting': return '😰:35'         // Worried, positioned at 35%
-        case 'documentation': return '😤:40'     // Frustrated, positioned at 40%
+        case 'incident': return '😱:80'          // Shocked, positioned at 80%
+        case 'reporting': return '😰:65'         // Worried, positioned at 65%
+        case 'documentation': return '😤:60'     // Frustrated, positioned at 60%
         case 'assessment': return '🤞:50'        // Hopeful, positioned at 50%
-        case 'resolution': return '😊:80'        // Relieved, positioned at 80%
+        case 'resolution': return '😊:20'        // Relieved, positioned at 20%
         default: return ''
       }
     }

@@ -109,12 +109,12 @@ export default function TemplatesPage() {
   }
 
   const handleUseTemplate = (template: any) => {
-    // Create journey map ID and navigate directly to new journey map with template data
+    // Create journey map ID and navigate directly to journey map editor with template data
     const templateId = template.id
     const journeyMapId = `template-${templateId}-${Date.now()}`
 
-    // Navigate to journey-maps with template parameter
-    router.push(`/journey-maps/new?template=${templateId}&name=${encodeURIComponent(template.name)}`)
+    // Navigate directly to journey map editor with template parameter
+    router.push(`/journey-maps/${journeyMapId}?template=${templateId}&name=${encodeURIComponent(template.name)}`)
   }
   return (
     <div className="h-full flex flex-col bg-gray-50">
