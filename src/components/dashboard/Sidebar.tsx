@@ -144,10 +144,24 @@ export function Sidebar() {
   const navigation = getNavigation(t)
   
   const toggleSection = (sectionName: string) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [sectionName]: !prev[sectionName]
-    }))
+    setExpandedSections(prev => {
+      const isCurrentlyExpanded = prev[sectionName]
+      if (isCurrentlyExpanded) {
+        // If clicking on already expanded section, close it
+        return {
+          ...prev,
+          [sectionName]: false
+        }
+      } else {
+        // If opening a new section, close all others and open this one
+        const newState: {[key: string]: boolean} = {}
+        Object.keys(prev).forEach(key => {
+          newState[key] = false
+        })
+        newState[sectionName] = true
+        return newState
+      }
+    })
   }
   
   const toggleCategory = (categoryName: string) => {
@@ -234,9 +248,10 @@ export function Sidebar() {
                   >
                     <item.icon
                       className={cn(
-                        'h-5 w-5 transition-colors',
+                        'h-5 w-5 transition-all duration-300 ease-out',
                         isCollapsed ? 'mx-auto' : 'mr-3',
-                        'text-gray-400 hover:text-gray-500'
+                        'text-gray-500',
+                        isExpanded && 'scale-110 text-slate-500 rotate-12'
                       )}
                     />
                     {!isCollapsed && (
@@ -271,7 +286,12 @@ export function Sidebar() {
                               onClick={() => toggleCategory(category.name)}
                               onMouseEnter={() => setHoveredCategory(category.name)}
                               onMouseLeave={() => setHoveredCategory(null)}
-                              className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors"
+                              className={cn(
+                                "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                                isCategoryExpanded
+                                  ? "bg-slate-100 text-slate-700 border border-slate-200"
+                                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                              )}
                             >
                               <span className="flex-1 text-left">{category.name}</span>
                               <div className="w-3 h-3 flex items-center justify-center">
@@ -405,14 +425,23 @@ export function Sidebar() {
                 >
                   <item.icon
                     className={cn(
-                      'h-5 w-5 transition-colors',
+                      'h-5 w-5 transition-all duration-300 ease-out',
                       isCollapsed ? 'mx-auto' : 'mr-3',
                       isActive
-                        ? 'text-slate-600'
-                        : 'text-gray-400 group-hover:text-gray-500'
+                        ? 'text-slate-600 scale-110 rotate-12'
+                        : 'text-gray-500'
                     )}
                   />
-                  {!isCollapsed && item.name}
+                  {!isCollapsed && (
+                    <div className="flex items-center justify-between flex-1">
+                      <span>{item.name}</span>
+                      {item.name === t('nav.analytics') && (
+                        <span className="ml-2 px-1 py-0.5 border border-slate-400 text-slate-600 text-[8px] font-medium rounded-full">
+                          Coming Soon
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </Link>
               </li>
             )

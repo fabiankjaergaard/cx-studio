@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { EyeIcon, EyeOffIcon } from 'lucide-react'
+import { EyeIcon, EyeOffIcon, Zap } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [debugInfo, setDebugInfo] = useState('')
   
-  const { signIn, user, loading } = useAuth()
+  const { signIn, signInAsBetaTester, user, loading } = useAuth()
   const router = useRouter()
 
   // Redirect if user is already logged in
@@ -45,10 +45,10 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     setIsSubmitting(true)
     setError('')
-    
+
     // Enhanced debug logging for environment variables
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -61,7 +61,7 @@ export default function LoginPage() {
       setDebugInfo(prev => prev + '\nCalling signIn...')
       const result = await signIn(email, password)
       setDebugInfo(prev => prev + `\nSignIn result: ${result.error ? 'ERROR' : 'SUCCESS'}`)
-      
+
       if (result.error) {
         setError(`Login failed: ${result.error.message}`)
         setDebugInfo(prev => prev + `\nError details: ${result.error.message}`)
@@ -80,8 +80,14 @@ export default function LoginPage() {
       setError(`Login failed: ${errorMsg}`)
       setDebugInfo(prev => prev + `\nException: ${errorMsg}`)
     }
-    
+
     setIsSubmitting(false)
+  }
+
+  const handleBetaTesterLogin = () => {
+    // Sign in as beta tester using AuthContext
+    signInAsBetaTester()
+    router.replace('/')
   }
 
 
@@ -188,6 +194,32 @@ export default function LoginPage() {
 
           </CardContent>
         </Card>
+
+        {/* Beta Tester Access */}
+        <div className="text-center">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-gray-50 text-gray-500">or</span>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <Button
+              onClick={handleBetaTesterLogin}
+              variant="outline"
+              className="w-full bg-gradient-to-r from-slate-100 to-slate-200 border-slate-300 text-slate-700 hover:from-slate-200 hover:to-slate-300 hover:border-slate-400 hover:scale-105 hover:shadow-md transition-all duration-300 ease-out flex items-center justify-center gap-2"
+            >
+              <Zap className="w-4 h-4" />
+              I'm a beta tester
+            </Button>
+            <p className="mt-2 text-xs text-gray-500">
+              Skip registration and explore the platform
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

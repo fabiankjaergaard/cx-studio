@@ -12,6 +12,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error: any }>
   signOut: () => Promise<void>
   setFirstLogin: (value: boolean) => void
+  signInAsBetaTester: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -33,6 +34,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
+    // Check if user is a beta tester first
+    if (typeof window !== 'undefined' && localStorage.getItem('cx-studio-beta-tester') === 'true') {
+      const mockUser = {
+        id: 'beta-tester-001',
+        email: 'betatester@example.com',
+        aud: 'authenticated',
+        role: 'authenticated',
+        user_metadata: {
+          name: '',
+          avatar_url: null
+        },
+        app_metadata: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      } as User
+
+      setUser(mockUser)
+      setLoading(false)
+      return
+    }
+
     // Skip if Supabase credentials are not configured
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       setLoading(false)
@@ -108,13 +130,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
+    // Check if user is a beta tester
+    if (typeof window !== 'undefined' && localStorage.getItem('cx-studio-beta-tester') === 'true') {
+      localStorage.removeItem('cx-studio-beta-tester')
+      sessionStorage.removeItem('cx-studio-first-login')
+      setUser(null)
+      setIsFirstLogin(false)
+
+      // Redirect to login page after logout using current origin
+      const loginUrl = `${window.location.origin}/auth/login`
+      window.location.href = loginUrl
+      return
+    }
+
     // Check if Supabase is configured
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       return
     }
-    
+
     await supabase.auth.signOut()
-    
+
     // Redirect to login page after logout using current origin
     const loginUrl = `${window.location.origin}/auth/login`
     window.location.href = loginUrl
@@ -134,6 +169,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const signInAsBetaTester = () => {
+    // Create a mock user for beta testing
+    const mockUser = {
+      id: 'beta-tester-001',
+      email: 'betatester@example.com',
+      aud: 'authenticated',
+      role: 'authenticated',
+      user_metadata: {
+        name: '',
+        avatar_url: null
+      },
+      app_metadata: {},
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    } as User
+
+    setUser(mockUser)
+    setIsFirstLogin(true)
+    setFirstLogin(true)
+    localStorage.setItem('cx-studio-beta-tester', 'true')
+  }
+
   const value = {
     user,
     loading,
@@ -142,6 +199,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signOut,
     setFirstLogin,
+    signInAsBetaTester,
   }
 
   return (

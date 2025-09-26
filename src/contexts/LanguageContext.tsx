@@ -136,12 +136,12 @@ const translations: Record<Language, Record<string, string>> = {
         'settings.saved': 'Inställningar sparade!',
 
         // Onboarding
-        'onboarding.welcome': 'Välkommen till Kustra',
-        'onboarding.subtitle': 'Din plattform för Customer Experience Excellence',
-        'onboarding.introVideo': 'Introduktionsvideo',
-        'onboarding.description': 'Lär dig hur du använder Kustra för att skapa exceptionella kundupplevelser',
-        'onboarding.startTour': 'Starta guidad rundtur',
-        'onboarding.skipTour': 'Hoppa över rundturen',
+        'onboarding.welcome': 'Hello there',
+        'onboarding.subtitle': 'Your platform for Customer Experience Excellence',
+        'onboarding.introVideo': 'Placeholder video',
+        'onboarding.description': 'Learn how to use Kustra to create exceptional customer experiences',
+        'onboarding.startTour': 'Start guided tour',
+        'onboarding.skipTour': 'Skip the tour',
 
         // Tour
         'tour.dashboard': 'Dashboard',
@@ -2067,9 +2067,9 @@ const translations: Record<Language, Record<string, string>> = {
         'settings.saved': 'Settings saved!',
 
         // Onboarding
-        'onboarding.welcome': 'Welcome to Kustra',
+        'onboarding.welcome': 'Hello there',
         'onboarding.subtitle': 'Your platform for Customer Experience Excellence',
-        'onboarding.introVideo': 'Introduction video',
+        'onboarding.introVideo': 'Placeholder video',
         'onboarding.description': 'Learn how to use Kustra to create exceptional customer experiences',
         'onboarding.startTour': 'Start guided tour',
         'onboarding.skipTour': 'Skip the tour',
