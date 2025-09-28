@@ -40,7 +40,10 @@ import {
   PlusIcon,
   PlayIcon,
   FolderIcon,
-  CircleIcon
+  CircleIcon,
+  MessageCircleIcon,
+  BugIcon,
+  SparklesIcon
 } from 'lucide-react'
 
 const getNavigation = (t: (key: string) => string) => [
@@ -116,6 +119,7 @@ const getNavigation = (t: (key: string) => string) => [
     ]
   },
   { name: t('nav.glossary'), href: '/glossary', icon: BookOpenIcon, tourId: 'glossary' },
+  { name: 'Beta-testare', href: '/beta', icon: SparklesIcon },
   { name: t('nav.settings'), href: '/settings', icon: SettingsIcon, tourId: 'settings' },
 ]
 

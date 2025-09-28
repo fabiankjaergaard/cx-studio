@@ -330,27 +330,27 @@ export default function JourneyMapsPage() {
         ) : (
           /* Getting Started Guide */
           <div className="flex items-center justify-center h-full">
-            <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200 max-w-2xl w-full mx-auto">
-              <CardContent className="pt-6 h-full flex flex-col">
-                <div className="text-center py-12 flex-1 flex flex-col justify-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-2xl flex items-center justify-center">
-                    <RouteIcon className="w-8 h-8 text-slate-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    {t('journeyMaps.gettingStarted.title')}
-                  </h3>
-                  <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                    {t('journeyMaps.gettingStarted.description')}
-                  </p>
-                  <Link href="/journey-maps/new">
+            <Link href="/journey-maps/new" className="max-w-2xl w-full mx-auto">
+              <Card className="group border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer">
+                <CardContent className="pt-6 h-full flex flex-col">
+                  <div className="text-center py-12 flex-1 flex flex-col justify-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-2xl flex items-center justify-center group-hover:bg-slate-200 group-hover:scale-110 transition-all duration-300 ease-out">
+                      <RouteIcon className="w-8 h-8 text-slate-400 group-hover:text-slate-600 transition-colors duration-300" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-slate-700 transition-colors duration-200">
+                      {t('journeyMaps.gettingStarted.title')}
+                    </h3>
+                    <p className="text-gray-600 mb-6 max-w-2xl mx-auto group-hover:text-gray-700 transition-colors duration-200">
+                      {t('journeyMaps.gettingStarted.description')}
+                    </p>
                     <Button variant="primary">
                       <PlusIcon className="mr-2 h-4 w-4" />
                       {t('journeyMaps.gettingStarted.createFirst')}
                     </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
         )}
       </div>
