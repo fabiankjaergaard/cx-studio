@@ -38,13 +38,17 @@ export function saveResearchProject(project: ResearchProject): void {
 export function deleteResearchProject(projectId: string): void {
   try {
     const projects = getSavedResearchProjects()
-    const filtered = projects.filter(p => p.id !== projectId)
-    localStorage.setItem(RESEARCH_PROJECTS_KEY, JSON.stringify(filtered))
+    const updatedProjects = projects.filter(p => p.id !== projectId)
+    localStorage.setItem(RESEARCH_PROJECTS_KEY, JSON.stringify(updatedProjects))
 
-    // Also remove all research items in this project
+    // Also update any research items that were linked to this project
     const items = getSavedResearchItems()
-    const filteredItems = items.filter(item => item.folderId !== projectId)
-    localStorage.setItem(RESEARCH_ITEMS_KEY, JSON.stringify(filteredItems))
+    const updatedItems = items.map(item =>
+      item.folderId === projectId
+        ? { ...item, folderId: undefined }
+        : item
+    )
+    localStorage.setItem(RESEARCH_ITEMS_KEY, JSON.stringify(updatedItems))
   } catch (error) {
     console.error('Error deleting research project:', error)
   }

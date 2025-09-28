@@ -75,6 +75,7 @@ export default function ResearchPage() {
   const [newFolderName, setNewFolderName] = useState('')
   const [newFolderDescription, setNewFolderDescription] = useState('')
   const [selectedColor, setSelectedColor] = useState('#6B7280')
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
   const subtleColors = [
     '#6B7280', '#64748B', '#78716C', '#71717A', '#6B7280',
@@ -88,7 +89,7 @@ export default function ResearchPage() {
       icon: MicIcon,
       color: 'text-gray-600',
       bg: 'bg-gray-50',
-      href: '/insights/interviews?tab=create'
+      href: '/insights/interview-builder?tab=create'
     },
     {
       type: 'survey' as const,
@@ -142,6 +143,18 @@ export default function ResearchPage() {
     return () => window.removeEventListener('storage', handleStorageChange)
   }, [])
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openDropdown) {
+        setOpenDropdown(null)
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [openDropdown])
+
   const handleCreateFolder = () => {
     if (newFolderName.trim()) {
       const newFolder: ResearchProject = {
@@ -160,6 +173,15 @@ export default function ResearchPage() {
       setIsNewFolderModalOpen(false)
       setNewFolderName('')
       setNewFolderDescription('')
+    }
+  }
+
+  const handleDeleteProject = (projectId: string) => {
+    if (confirm('Är du säker på att du vill ta bort detta projekt? Alla tillhörande intervjuer kommer att bli projektlösa.')) {
+      const { deleteResearchProject } = require('@/services/researchProjectStorage')
+      deleteResearchProject(projectId)
+      setFolders(prev => prev.filter(folder => folder.id !== projectId))
+      setOpenDropdown(null)
     }
   }
 
@@ -242,19 +264,21 @@ export default function ResearchPage() {
 
             {/* Research Items */}
             {folderItems.length === 0 ? (
-              <div className="text-center py-16">
-                <FileIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Ingen forskning i detta projekt</h3>
-                <p className="text-gray-600 mb-6">Börja genom att skapa ny forskning eller flytta befintlig hit</p>
-                <div className="flex justify-center space-x-3">
-                  {researchTypes.slice(0, 2).map((type) => (
-                    <Link key={type.type} href={type.href}>
-                      <Button variant="primary">
-                        <type.icon className="mr-2 h-4 w-4" />
-                        Ny {type.name}
-                      </Button>
-                    </Link>
-                  ))}
+              <div className="flex items-center justify-center min-h-[calc(100vh-300px)]">
+                <div className="text-center">
+                  <FileIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Ingen forskning i detta projekt</h3>
+                  <p className="text-gray-600 mb-6">Börja genom att skapa ny forskning eller flytta befintlig hit</p>
+                  <div className="flex justify-center space-x-3">
+                    {researchTypes.slice(0, 2).map((type) => (
+                      <Link key={type.type} href={type.href}>
+                        <Button variant="primary">
+                          <type.icon className="mr-2 h-4 w-4" />
+                          Ny {type.name}
+                        </Button>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -331,58 +355,33 @@ export default function ResearchPage() {
 
       <div className="flex-1 p-8 overflow-auto bg-gray-50">
         <div className="space-y-8">
-          {/* Quick Actions */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Skapa ny forskning</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {researchTypes.map((type) => (
-                <Link key={type.type} href={type.href}>
-                  <Card className="border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer group">
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 rounded-lg ${type.bg} flex items-center justify-center`}>
-                          <type.icon className={`h-5 w-5 ${type.color}`} />
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-gray-900 group-hover:text-slate-700 transition-colors">
-                            {type.name}
-                          </h3>
-                          <p className="text-sm text-gray-600">Skapa ny</p>
-                        </div>
-                        <ArrowRightIcon className="h-4 w-4 text-gray-400 ml-auto group-hover:text-slate-600 transition-colors" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </div>
+          {/* Search and Actions - only show when there are projects */}
+          {folders.length > 0 && (
+            <div className="flex items-center justify-between">
+              <div className="relative">
+                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <input
+                  type="text"
+                  placeholder="Sök projekt..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent w-64"
+                />
+              </div>
 
-          {/* Search and Actions */}
-          <div className="flex items-center justify-between">
-            <div className="relative">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Sök projekt..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent w-64"
-              />
+              <Button
+                variant="primary"
+                onClick={() => setIsNewFolderModalOpen(true)}
+              >
+                <FolderPlusIcon className="mr-2 h-4 w-4" />
+                Nytt projekt
+              </Button>
             </div>
-
-            <Button
-              variant="primary"
-              onClick={() => setIsNewFolderModalOpen(true)}
-            >
-              <FolderPlusIcon className="mr-2 h-4 w-4" />
-              Nytt projekt
-            </Button>
-          </div>
+          )}
 
           {/* Folders Grid */}
           {folders.length === 0 ? (
-            <div className="flex items-center justify-center h-96">
+            <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
               <div className="text-center">
                 <FolderIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">
@@ -424,17 +423,36 @@ export default function ResearchPage() {
                         </div>
                       </div>
 
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="p-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          // Handle folder menu
-                        }}
-                      >
-                        <MoreVerticalIcon className="h-3 w-3" />
-                      </Button>
+                      <div className="relative">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setOpenDropdown(openDropdown === folder.id ? null : folder.id)
+                          }}
+                        >
+                          <MoreVerticalIcon className="h-3 w-3" />
+                        </Button>
+
+                        {openDropdown === folder.id && (
+                          <div className="absolute right-0 top-10 z-50 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+                            <div className="py-1">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleDeleteProject(folder.id)
+                                }}
+                                className="w-full flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                              >
+                                <TrashIcon className="h-4 w-4 mr-2" />
+                                Ta bort projekt
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <p className="text-sm text-gray-600 line-clamp-2 mb-4">
@@ -488,62 +506,6 @@ export default function ResearchPage() {
             </div>
           )}
 
-          {/* Quick Stats */}
-          {folders.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="border-0 bg-white">
-                <CardContent className="p-4">
-                  <div className="flex items-center">
-                    <FolderIcon className="h-8 w-8 text-blue-600" />
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-600">Projekt</p>
-                      <p className="text-2xl font-bold text-gray-900">{folders.length}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 bg-white">
-                <CardContent className="p-4">
-                  <div className="flex items-center">
-                    <FileTextIcon className="h-8 w-8 text-green-600" />
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-600">Total forskning</p>
-                      <p className="text-2xl font-bold text-gray-900">{researchItems.length}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 bg-white">
-                <CardContent className="p-4">
-                  <div className="flex items-center">
-                    <MicIcon className="h-8 w-8 text-purple-600" />
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-600">Intervjuer</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {researchItems.filter(item => item.type === 'interview').length}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 bg-white">
-                <CardContent className="p-4">
-                  <div className="flex items-center">
-                    <ClipboardListIcon className="h-8 w-8 text-orange-600" />
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-600">Enkäter</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {researchItems.filter(item => item.type === 'survey').length}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
         </div>
       </div>
 

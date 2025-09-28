@@ -43,7 +43,8 @@ import {
   CircleIcon,
   MessageCircleIcon,
   BugIcon,
-  SparklesIcon
+  SparklesIcon,
+  LockIcon
 } from 'lucide-react'
 
 const getNavigation = (t: (key: string) => string) => [
@@ -72,49 +73,51 @@ const getNavigation = (t: (key: string) => string) => [
     children: [
       { name: 'Research Projects', href: '/research', icon: FolderIcon },
       {
-        name: t('nav.quantitativeMethods'),
+        name: 'Surveys',
+        href: '/insights/survey-builder',
+        icon: WrenchIcon,
+        isExpandable: true,
         children: [
-          { name: t('nav.npssurveys'), href: '/insights/nps', icon: TrendingUpIcon },
-          { name: t('nav.csatSurveys'), href: '/insights/csat', icon: StarIcon },
-          { name: t('nav.cesSurveys'), href: '/insights/ces', icon: BarChart3Icon }
+          { name: 'Overview', href: '/insights/survey-builder', icon: HomeIcon },
+          { name: 'Create', href: '/insights/survey-builder?tab=create', icon: PlusIcon },
+          { name: 'Analyze', href: '/insights/survey-builder?tab=analyze', icon: BarChart3Icon }
         ]
       },
       {
-        name: t('nav.qualitativeMethods'),
+        name: 'Interviews',
+        href: '/insights/interview-builder',
+        icon: MicIcon,
+        isExpandable: true,
         children: [
-          {
-            name: t('nav.interviews'),
-            href: '/insights/interviews',
-            icon: MicIcon,
-            isExpandable: true,
-            children: [
-              { name: 'Översikt', href: '/insights/interviews', icon: HomeIcon },
-              { name: 'Skapa guide', href: '/insights/interviews?tab=create', icon: PlusIcon },
-              { name: 'Genomför', href: '/insights/interviews?tab=conduct', icon: PlayIcon },
-              { name: 'Analysera', href: '/insights/interviews?tab=analyze', icon: BarChart3Icon },
-              { name: 'Mina intervjuer', href: '/research', icon: FolderIcon },
-              { name: 'Mallar', href: '/insights/interviews?tab=templates', icon: BookTemplateIcon },
-              { name: 'Lär dig intervjua', href: '/insights/interviews/guide', icon: BookOpenIcon }
-            ]
-          },
-          { name: t('nav.focusGroups'), href: '/insights/focus-groups', icon: UsersIcon },
-          { name: t('nav.observation'), href: '/insights/observation', icon: EyeIcon }
-        ]
-      },
-      {
-        name: t('nav.toolsTemplates'),
-        children: [
-          { name: t('nav.surveyBuilder'), href: '/insights/survey-builder', icon: WrenchIcon },
-          { name: t('nav.researchPlanner'), href: '/insights/research-planner', icon: FileTextIcon },
-          { name: t('nav.dataDashboard'), href: '/insights/dashboard', icon: PieChartIcon },
-          { name: t('nav.insightsLibrary'), href: '/insights/library', icon: DatabaseIcon }
+          { name: 'Overview', href: '/insights/interview-builder', icon: HomeIcon },
+          { name: 'Create', href: '/insights/interview-builder?tab=create', icon: PlusIcon },
+          { name: 'Conduct', href: '/insights/interview-builder?tab=conduct', icon: PlayIcon },
+          { name: 'Analyze', href: '/insights/interview-builder?tab=analyze', icon: BarChart3Icon }
         ]
       },
       {
         name: t('nav.guides'),
         children: [
           { name: t('nav.gettingStarted'), href: '/insights/getting-started', icon: BookIcon },
-          { name: t('nav.bestPractices'), href: '/insights/best-practices', icon: BookOpenIcon }
+          { name: t('nav.bestPractices'), href: '/insights/best-practices', icon: BookOpenIcon },
+          {
+            name: t('nav.quantitativeMethods'),
+            icon: BarChart3Icon,
+            children: [
+              { name: t('nav.npssurveys'), href: '/insights/nps', icon: TrendingUpIcon },
+              { name: t('nav.csatSurveys'), href: '/insights/csat', icon: StarIcon },
+              { name: t('nav.cesSurveys'), href: '/insights/ces', icon: BarChart3Icon }
+            ]
+          },
+          {
+            name: t('nav.qualitativeMethods'),
+            icon: MessageSquareIcon,
+            children: [
+              { name: t('nav.interviews'), href: '/insights/interviews/guide', icon: MicIcon },
+              { name: t('nav.focusGroups'), href: '/insights/focus-groups', icon: UsersIcon },
+              { name: t('nav.observation'), href: '/insights/observation', icon: EyeIcon }
+            ]
+          }
         ]
       }
     ]
@@ -293,46 +296,99 @@ export function Sidebar() {
               
               return (
                 <li key={item.name}>
-                  {/* Main expandable button */}
-                  <button
-                    onClick={() => toggleSection(item.name)}
-                    onMouseEnter={() => setHoveredSection(item.name)}
-                    onMouseLeave={() => setHoveredSection(null)}
-                    data-tour={item.tourId}
-                    className={cn(
-                      'w-full flex items-center rounded-lg text-sm font-medium transition-colors',
-                      isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
-                      'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                    )}
-                    title={isCollapsed ? item.name : undefined}
-                  >
-                    <item.icon
-                      className={cn(
-                        'h-5 w-5 transition-all duration-300 ease-out',
-                        isCollapsed ? 'mx-auto' : 'mr-3',
-                        'text-gray-500',
-                        isExpanded && 'scale-110 text-slate-500 rotate-12'
+                  {/* Main expandable item */}
+                  {item.href ? (
+                    // If item has href, render as Link with expand button
+                    <div className="flex items-center w-full">
+                      <Link
+                        href={item.href}
+                        onMouseEnter={() => setHoveredSection(item.name)}
+                        onMouseLeave={() => setHoveredSection(null)}
+                        data-tour={item.tourId}
+                        className={cn(
+                          'flex items-center rounded-l-lg text-sm font-medium transition-colors flex-1',
+                          isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
+                          pathname === item.href || pathname.startsWith(item.href + '?')
+                            ? 'bg-slate-100 text-slate-700'
+                            : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                        )}
+                        title={isCollapsed ? item.name : undefined}
+                      >
+                        <item.icon
+                          className={cn(
+                            'h-5 w-5 transition-all duration-300 ease-out',
+                            isCollapsed ? 'mx-auto' : 'mr-3',
+                            pathname === item.href || pathname.startsWith(item.href + '?')
+                              ? 'text-slate-600 scale-110 rotate-12'
+                              : 'text-gray-500'
+                          )}
+                        />
+                        {!isCollapsed && <span className="text-left">{item.name}</span>}
+                      </Link>
+                      {!isCollapsed && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            toggleSection(item.name)
+                          }}
+                          className={cn(
+                            "px-3 py-2 text-gray-400 hover:text-gray-600 transition-colors rounded-r-lg",
+                            pathname === item.href || pathname.startsWith(item.href + '?')
+                              ? 'bg-slate-100 hover:bg-slate-200'
+                              : 'hover:bg-gray-50'
+                          )}
+                        >
+                          {isExpanded ? (
+                            <ChevronUpIcon className="h-4 w-4" />
+                          ) : (
+                            <ChevronDownIcon className="h-4 w-4" />
+                          )}
+                        </button>
                       )}
-                    />
-                    {!isCollapsed && (
-                      <>
-                        <span className="flex-1 text-left">{item.name}</span>
-                        <div className="w-4 h-4 flex items-center justify-center">
-                            {isExpanded ? (
-                              <ChevronUpIcon className={cn(
-                                "h-4 w-4 text-gray-400 transition-opacity",
-                                hoveredSection === item.name ? "opacity-100" : "opacity-0"
-                              )} />
-                            ) : (
-                              <ChevronDownIcon className={cn(
-                                "h-4 w-4 text-gray-400 transition-opacity",
-                                hoveredSection === item.name ? "opacity-100" : "opacity-0"
-                              )} />
-                            )}
-                          </div>
-                      </>
-                    )}
-                  </button>
+                    </div>
+                  ) : (
+                    // If no href, render as button only
+                    <button
+                      onClick={() => toggleSection(item.name)}
+                      onMouseEnter={() => setHoveredSection(item.name)}
+                      onMouseLeave={() => setHoveredSection(null)}
+                      data-tour={item.tourId}
+                      className={cn(
+                        'w-full flex items-center rounded-lg text-sm font-medium transition-colors',
+                        isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
+                        'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                      )}
+                      title={isCollapsed ? item.name : undefined}
+                    >
+                      <item.icon
+                        className={cn(
+                          'h-5 w-5 transition-all duration-300 ease-out',
+                          isCollapsed ? 'mx-auto' : 'mr-3',
+                          'text-gray-500',
+                          isExpanded && 'scale-110 text-slate-500 rotate-12'
+                        )}
+                      />
+                      {!isCollapsed && (
+                        <>
+                          <span className="flex-1 text-left">{item.name}</span>
+                          <div className="w-4 h-4 flex items-center justify-center">
+                              {isExpanded ? (
+                                <ChevronUpIcon className={cn(
+                                  "h-4 w-4 text-gray-400 transition-opacity",
+                                  hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                                )} />
+                              ) : (
+                                <ChevronDownIcon className={cn(
+                                  "h-4 w-4 text-gray-400 transition-opacity",
+                                  hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                                )} />
+                              )}
+                            </div>
+                        </>
+                      )}
+                    </button>
+                  )}
                   
                   {/* Expandable content - Level 1: Main categories */}
                   {!isCollapsed && isExpanded && (
@@ -420,7 +476,20 @@ export function Sidebar() {
                             {isCategoryExpanded && category.children && (
                               <div className="ml-4 mt-1 space-y-1">
                                 {category.children.map((subItem) => {
-                                  const isSubActive = pathname === subItem.href || pathname.startsWith(subItem.href + '?')
+                                  // Better URL matching for tab-based navigation
+                                  const isSubActive = (() => {
+                                    const currentTab = searchParams.get('tab')
+
+                                    if (subItem.href.includes('?tab=')) {
+                                      // For tab-based URLs, match the tab parameter
+                                      const itemTab = subItem.href.split('?tab=')[1]
+                                      const baseUrl = subItem.href.split('?')[0]
+                                      return pathname === baseUrl && currentTab === itemTab
+                                    } else {
+                                      // For base URLs, match only if no tab parameter is present or tab is null
+                                      return pathname === subItem.href && (!currentTab || currentTab === '')
+                                    }
+                                  })()
 
                                   // Handle expandable sub-items (like interviews)
                                   if (subItem.isExpandable && subItem.children) {
@@ -458,6 +527,90 @@ export function Sidebar() {
                                                   key={subSubItem.name}
                                                   href={subSubItem.href}
                                                   className={cn(
+                                                    'group flex items-center justify-between rounded-lg text-sm font-medium transition-colors px-3 py-2',
+                                                    isSubSubActive
+                                                      ? 'bg-slate-100 text-slate-700'
+                                                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                  )}
+                                                >
+                                                  <div className="flex items-center">
+                                                    <subSubItem.icon
+                                                      className={cn(
+                                                        'h-4 w-4 transition-colors mr-3',
+                                                        isSubSubActive
+                                                          ? 'text-slate-600'
+                                                          : 'text-gray-400 group-hover:text-gray-500'
+                                                      )}
+                                                    />
+                                                    {subSubItem.name}
+                                                  </div>
+                                                  {subSubItem.name === 'Analyze' && (
+                                                    <LockIcon
+                                                      className={cn(
+                                                        'h-3 w-3 transition-colors',
+                                                        isSubSubActive
+                                                          ? 'text-slate-500'
+                                                          : 'text-gray-400'
+                                                      )}
+                                                    />
+                                                  )}
+                                                </Link>
+                                              )
+                                            })}
+                                          </div>
+                                        )}
+                                      </div>
+                                    )
+                                  }
+
+                                  // Handle categories that have only children (no direct href)
+                                  if (!subItem.href && subItem.children) {
+                                    const isCategoryExpanded = expandedCategories[subItem.name]
+                                    return (
+                                      <div key={subItem.name}>
+                                        {/* Category header - clickable to expand/collapse */}
+                                        <button
+                                          onClick={() => toggleCategory(subItem.name)}
+                                          onMouseEnter={() => setHoveredCategory(subItem.name)}
+                                          onMouseLeave={() => setHoveredCategory(null)}
+                                          className={cn(
+                                            "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                                            isCategoryExpanded
+                                              ? "bg-slate-100 text-slate-700 border border-slate-200"
+                                              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                          )}
+                                        >
+                                          <div className="flex items-center flex-1">
+                                            {subItem.icon && (
+                                              <subItem.icon className="h-4 w-4 text-gray-400 mr-3" />
+                                            )}
+                                            <span className="flex-1 text-left">{subItem.name}</span>
+                                          </div>
+                                          <div className="w-3 h-3 flex items-center justify-center">
+                                            {isCategoryExpanded ? (
+                                              <ChevronUpIcon className={cn(
+                                                "h-3 w-3 text-gray-400 transition-opacity",
+                                                hoveredCategory === subItem.name ? "opacity-100" : "opacity-0"
+                                              )} />
+                                            ) : (
+                                              <ChevronDownIcon className={cn(
+                                                "h-3 w-3 text-gray-400 transition-opacity",
+                                                hoveredCategory === subItem.name ? "opacity-100" : "opacity-0"
+                                              )} />
+                                            )}
+                                          </div>
+                                        </button>
+
+                                        {/* Sub-category items */}
+                                        {isCategoryExpanded && subItem.children && (
+                                          <div className="ml-4 mt-1 space-y-1">
+                                            {subItem.children.map((subSubItem) => {
+                                              const isSubSubActive = pathname === subSubItem.href || pathname.startsWith(subSubItem.href + '?')
+                                              return (
+                                                <Link
+                                                  key={subSubItem.name}
+                                                  href={subSubItem.href}
+                                                  className={cn(
                                                     'group flex items-center rounded-lg text-sm font-medium transition-colors px-3 py-2',
                                                     isSubSubActive
                                                       ? 'bg-slate-100 text-slate-700'
@@ -482,7 +635,7 @@ export function Sidebar() {
                                     )
                                   }
 
-                                  // Handle regular sub-items
+                                  // Handle regular sub-items with href
                                   return (
                                     <Link
                                       key={subItem.name}

@@ -66,7 +66,7 @@ const getQualitativeMethods = (t: (key: string) => string) => [
     description: t('insights.interviews.description'),
     icon: MicIcon,
     color: 'bg-slate-50 text-slate-600',
-    href: '/insights/interviews',
+    href: '/insights/interview-builder',
     features: [
       t('insights.interviews.feature1'),
       t('insights.interviews.feature2'),

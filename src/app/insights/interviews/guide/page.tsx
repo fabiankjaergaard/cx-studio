@@ -23,9 +23,9 @@ export default function InterviewGuidePage() {
         title="Lär dig intervjua"
         description="Komplett guide för att genomföra effektiva användarintervjuer"
         actions={
-          <Link href="/insights/interviews">
+          <Link href="/insights/interview-builder">
             <Button variant="primary">
-              Tillbaka till intervjuer
+              Börja skapa intervjuer
             </Button>
           </Link>
         }
@@ -302,16 +302,16 @@ export default function InterviewGuidePage() {
                 Nu när du har lärt dig grunderna - börja med att skapa en intervjuguide och planera din första session.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/insights/interviews?tab=create">
+                <Link href="/insights/interview-builder?tab=create">
                   <Button variant="primary" className="hover:scale-[1.02] transition-transform duration-200">
                     <LightbulbIcon className="mr-2 h-4 w-4" />
                     Skapa intervjuguide
                   </Button>
                 </Link>
-                <Link href="/insights/interviews">
+                <Link href="/insights/interview-builder">
                   <Button variant="outline" className="hover:bg-gray-100 transition-colors duration-200">
                     <BookOpenIcon className="mr-2 h-4 w-4" />
-                    Tillbaka till översikt
+                    Öppna Interview Builder
                   </Button>
                 </Link>
               </div>
