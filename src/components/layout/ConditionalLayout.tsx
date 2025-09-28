@@ -21,9 +21,9 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   // Regular pages and journey maps: with sidebar
   return (
     <SidebarProvider initialCollapsed={isJourneyMapRoute}>
-      <div className="flex h-screen bg-gray-50">
+      <div className="flex h-screen bg-white">
         <Sidebar />
-        <main className="flex-1 overflow-hidden bg-gray-50 transition-all duration-300">
+        <main className="flex-1 overflow-hidden bg-white transition-all duration-300">
           {children}
         </main>
       </div>

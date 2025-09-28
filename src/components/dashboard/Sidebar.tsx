@@ -712,7 +712,7 @@ export function Sidebar() {
       </nav>
       
       {/* User Section */}
-      <div className="border-t border-gray-200 p-4">
+      <div className="border-t border-gray-200 p-4 bg-white">
         {user ? (
           <div className="space-y-2">
             {/* User Info */}

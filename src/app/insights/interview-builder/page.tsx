@@ -1623,43 +1623,75 @@ function InterviewsContent() {
 
   const Dashboard = () => (
     <div className="space-y-8">
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {quickActions.map((action, index) => (
-          <Card
-            key={index}
-            className={`group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ${
-              action.primary ? 'bg-slate-50 border-slate-200' : 'bg-white'
-            }`}
-            onClick={() => setActiveTab(action.action)}
-          >
-            <CardContent className="p-6">
-              <div className="flex items-start space-x-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors duration-300 ${
-                  action.primary ? 'bg-slate-100 group-hover:bg-slate-200' : 'bg-gray-50 group-hover:bg-gray-100'
-                }`}>
-                  <action.icon className="h-6 w-6 text-gray-600 transition-transform duration-300 group-hover:scale-110" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1 transition-colors duration-200 group-hover:text-slate-700">
-                    {action.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm transition-colors duration-200 group-hover:text-gray-700">
-                    {action.description}
-                  </p>
-                </div>
+      {/* Interview Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="group border-0 bg-gradient-to-br from-white to-gray-50 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500 mb-2">Totala intervjuer</p>
+                <p className="text-3xl font-bold text-gray-900">{completedInterviews.length}</p>
               </div>
-            </CardContent>
-          </Card>
-        ))}
+              <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <MicIcon className="h-6 w-6 text-gray-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="group border-0 bg-gradient-to-br from-white to-gray-50 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500 mb-2">Aktiva projekt</p>
+                <p className="text-3xl font-bold text-gray-900">2</p>
+              </div>
+              <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <FolderIcon className="h-6 w-6 text-gray-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="group border-0 bg-gradient-to-br from-white to-gray-50 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500 mb-2">Totala insights</p>
+                <p className="text-3xl font-bold text-gray-900">{generatedInsights.length}</p>
+              </div>
+              <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <LightbulbIcon className="h-6 w-6 text-gray-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="group border-0 bg-gradient-to-br from-white to-gray-50 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-500 mb-2">Genomsnittlig längd</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {completedInterviews.length > 0 ? Math.round(completedInterviews.reduce((acc, interview) => acc + interview.duration, 0) / completedInterviews.length / 60) : 0}min
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <ClockIcon className="h-6 w-6 text-gray-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Recent Interviews */}
-      <Card className="group border-0 bg-white rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
-        <CardHeader>
+      <Card className="group border-0 bg-gradient-to-br from-white to-gray-50 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300">
+        <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
-            <CardTitle className="transition-colors duration-200 group-hover:text-slate-700">Senaste intervjuer ({completedInterviews.length})</CardTitle>
-            <Button variant="outline" size="sm" className="hover:bg-gray-100 transition-colors duration-200">
+            <CardTitle className="text-xl font-semibold text-gray-900 transition-colors duration-200 group-hover:text-slate-700">
+              Senaste intervjuer ({completedInterviews.length})
+            </CardTitle>
+            <Button variant="outline" size="sm" className="hover:bg-gray-100 hover:scale-105 transition-all duration-200 rounded-xl" onClick={() => setActiveTab('my-interviews')}>
               <EyeIcon className="h-4 w-4 mr-2" />
               Visa alla
             </Button>
@@ -1667,34 +1699,45 @@ function InterviewsContent() {
         </CardHeader>
         <CardContent>
           {completedInterviews.length === 0 ? (
-            <div className="text-center py-8">
-              <MicIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Inga intervjuer än</h3>
-              <p className="text-gray-600 mb-4">Skapa din första intervju för att börja samla insights</p>
-              <Button variant="primary" onClick={() => setActiveTab('create-guide')}>
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <MicIcon className="h-8 w-8 text-gray-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Inga intervjuer än</h3>
+              <p className="text-gray-600 mb-6 max-w-sm mx-auto">Skapa din första intervju för att börja samla insights från användarna</p>
+              <Button
+                variant="primary"
+                onClick={() => setActiveTab('create-guide')}
+                className="hover:scale-105 transition-transform duration-200"
+              >
+                <PlusIcon className="h-4 w-4 mr-2" />
                 Skapa intervju
               </Button>
             </div>
           ) : (
-            <div className="space-y-3">
-              {completedInterviews.slice(0, 5).map((interview) => (
+            <div className="space-y-4">
+              {completedInterviews.slice(0, 3).map((interview) => (
                 <div
                   key={interview.id}
-                  className="group/interview flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all duration-200 hover:shadow-sm cursor-pointer"
+                  className="group/interview flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
                 >
-                  <div className="flex items-center space-x-3">
-                    <UserIcon className="h-5 w-5 text-gray-600 transition-transform duration-200 group-hover/interview:scale-110" />
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover/interview:scale-110 bg-gradient-to-br from-gray-100 to-gray-200">
+                      <UserIcon className="h-6 w-6 text-gray-600" />
+                    </div>
                     <div>
-                      <p className="font-medium text-gray-900 transition-colors duration-200 group-hover/interview:text-slate-700">
+                      <p className="font-semibold text-gray-900 transition-colors duration-200 group-hover/interview:text-slate-700">
                         {interview.participant}
                       </p>
-                      <p className="text-sm text-gray-600">{interview.date} · {Math.floor(interview.duration / 60)} min</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {interview.date} · {interview.questions.length} frågor · {Math.floor(interview.duration / 60)} min
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 transition-all duration-200 group-hover/interview:bg-green-200">
-                      Klar
-                    </div>
+                    <span className="px-3 py-1.5 rounded-full text-xs font-semibold transition-colors duration-200 bg-gray-100 text-gray-800">
+                      {interview.status === 'completed' ? 'Slutförd' : 'Pågående'}
+                    </span>
                   </div>
                 </div>
               ))}
