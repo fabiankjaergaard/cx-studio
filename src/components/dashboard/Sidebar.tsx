@@ -70,6 +70,7 @@ const getNavigation = (t: (key: string) => string) => [
     tourId: 'insights',
     isExpandable: true,
     children: [
+      { name: 'Research Projects', href: '/research', icon: FolderIcon },
       {
         name: t('nav.quantitativeMethods'),
         children: [
@@ -91,7 +92,7 @@ const getNavigation = (t: (key: string) => string) => [
               { name: 'Skapa guide', href: '/insights/interviews?tab=create', icon: PlusIcon },
               { name: 'Genomför', href: '/insights/interviews?tab=conduct', icon: PlayIcon },
               { name: 'Analysera', href: '/insights/interviews?tab=analyze', icon: BarChart3Icon },
-              { name: 'Mina intervjuer', href: '/insights/interviews?tab=my-interviews', icon: FolderIcon },
+              { name: 'Mina intervjuer', href: '/research', icon: FolderIcon },
               { name: 'Mallar', href: '/insights/interviews?tab=templates', icon: BookTemplateIcon },
               { name: 'Lär dig intervjua', href: '/insights/interviews/guide', icon: BookOpenIcon }
             ]
@@ -359,6 +360,25 @@ export function Sidebar() {
                                     : 'text-gray-400 group-hover:text-gray-500'
                                 )}
                               />
+                              {category.name}
+                            </Link>
+                          )
+                        }
+
+                        // Special handling for Research Projects - render as direct link
+                        if (category.name === 'Research Projects' && category.href) {
+                          const isSubActive = pathname === category.href || pathname.startsWith(category.href + '?')
+                          return (
+                            <Link
+                              key={category.name}
+                              href={category.href}
+                              className={cn(
+                                'group flex items-center rounded-lg text-sm font-medium transition-colors px-3 py-2',
+                                isSubActive
+                                  ? 'bg-slate-100 text-slate-700'
+                                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                              )}
+                            >
                               {category.name}
                             </Link>
                           )

@@ -14,6 +14,16 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, children, title, className, maxWidth = 'md' }: ModalProps) {
+  // Prevent background scroll when modal is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = 'unset'
+      }
+    }
+  }, [isOpen])
+
   if (!isOpen) return null
 
   const getMaxWidthClass = (size: string) => {
@@ -32,11 +42,11 @@ export function Modal({ isOpen, onClose, children, title, className, maxWidth = 
 
   return (
     <div className="fixed inset-0 z-[9999] overflow-y-auto">
-      <div className="flex min-h-full items-center justify-center p-4">
+      <div className="flex min-h-full items-start justify-center p-4 py-8">
         <div className="fixed inset-0" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }} onClick={onClose} />
 
         <div className={cn(
-          "relative bg-white rounded-xl shadow-lg border border-gray-100 w-full mx-auto transform transition-all",
+          "relative bg-white rounded-xl shadow-lg border border-gray-100 w-full mx-auto transform transition-all my-auto",
           getMaxWidthClass(maxWidth),
           className
         )}>
@@ -51,7 +61,7 @@ export function Modal({ isOpen, onClose, children, title, className, maxWidth = 
               </button>
             </div>
           )}
-          
+
           <div className="p-4 max-h-[70vh] overflow-y-auto">
             {children}
           </div>

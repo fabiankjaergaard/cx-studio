@@ -13,6 +13,7 @@ interface CompletedInterview {
   status: 'completed' | 'analyzing'
   createdAt: string
   updatedAt: string
+  folderId?: string // Research project ID
 }
 
 const STORAGE_KEY = 'completed_interviews'
@@ -23,6 +24,25 @@ export function saveCompletedInterview(interview: CompletedInterview): void {
     const updatedInterviews = [interview, ...existingInterviews.filter(i => i.id !== interview.id)]
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedInterviews))
     console.log('Interview saved successfully:', interview.id)
+
+    // Also save to research items if we have the service available
+    try {
+      const { saveResearchItem } = require('./researchProjectStorage')
+      const researchItem = {
+        id: interview.id,
+        type: 'interview' as const,
+        title: `Intervju med ${interview.participant}`,
+        participant: interview.participant,
+        date: interview.date,
+        duration: interview.duration,
+        status: interview.status as 'completed' | 'in-progress',
+        folderId: interview.folderId,
+        insights: interview.insights?.length || 0
+      }
+      saveResearchItem(researchItem)
+    } catch (syncError) {
+      console.warn('Could not sync interview to research items:', syncError)
+    }
   } catch (error) {
     console.error('Error saving interview:', error)
     throw new Error('Failed to save interview')

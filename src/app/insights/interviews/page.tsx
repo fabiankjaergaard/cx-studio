@@ -6,6 +6,9 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { Modal } from '@/components/ui/Modal'
+import { Input } from '@/components/ui/Input'
+import { ProjectSelector } from '@/components/ui/ProjectSelector'
 import {
   MicIcon,
   PlusIcon,
@@ -43,7 +46,9 @@ import {
   HeadphonesIcon,
   SmileIcon,
   MehIcon,
-  FrownIcon
+  FrownIcon,
+  CopyIcon,
+  TrashIcon
 } from 'lucide-react'
 import Link from 'next/link'
 import { saveCompletedInterview, getCompletedInterviews, generateInsightsFromInterviews, type CompletedInterview } from '@/services/interviewStorage'
@@ -348,7 +353,8 @@ function LiveInterview({
   interviewTimer,
   currentNote,
   setCurrentNote,
-  onInterviewComplete
+  onInterviewComplete,
+  setShowSaveModal
 }: {
   sharedQuestions: string[],
   currentQuestionIndex: number,
@@ -358,7 +364,8 @@ function LiveInterview({
   interviewTimer: number,
   currentNote: string,
   setCurrentNote: (note: string) => void,
-  onInterviewComplete: () => void
+  onInterviewComplete: () => void,
+  setShowSaveModal: (show: boolean) => void
 }) {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -516,25 +523,7 @@ function LiveInterview({
             </p>
             <Button
               variant="primary"
-              onClick={() => {
-                const participantName = prompt('Vad heter deltagaren?') || 'Okänd deltagare'
-
-                const completedInterview: CompletedInterview = {
-                  id: Date.now().toString(),
-                  participant: participantName,
-                  date: new Date().toISOString().split('T')[0],
-                  duration: interviewTimer,
-                  questions: sharedQuestions,
-                  notes: currentNote,
-                  insights: [], // Could be parsed from notes later
-                  status: 'completed',
-                  createdAt: new Date().toISOString(),
-                  updatedAt: new Date().toISOString()
-                }
-
-                saveCompletedInterview(completedInterview)
-                onInterviewComplete()
-              }}
+              onClick={() => setShowSaveModal(true)}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
               <CheckCircleIcon className="h-4 w-4 mr-2" />
@@ -547,10 +536,215 @@ function LiveInterview({
   )
 }
 
+// Interview Library View Component
+function InterviewLibraryView({ completedInterviews }: { completedInterviews: CompletedInterview[] }) {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedProject, setSelectedProject] = useState<string>('all')
+  const [selectedStatus, setSelectedStatus] = useState<string>('all')
+
+  // Group interviews by project (mock projects for now)
+  const projects = [
+    { id: 'all', name: 'Alla projekt', count: completedInterviews.length },
+    { id: 'onboarding', name: 'Onboarding UX', count: Math.floor(completedInterviews.length * 0.4) },
+    { id: 'checkout', name: 'Checkout Flow', count: Math.floor(completedInterviews.length * 0.3) },
+    { id: 'mobile', name: 'Mobilapp', count: Math.floor(completedInterviews.length * 0.3) }
+  ]
+
+  const filteredInterviews = completedInterviews.filter(interview => {
+    const matchesSearch = interview.participant.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         interview.notes.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesProject = selectedProject === 'all' ||
+                          (selectedProject === 'onboarding' && interview.id.includes('1')) ||
+                          (selectedProject === 'checkout' && interview.id.includes('2')) ||
+                          (selectedProject === 'mobile' && interview.id.includes('3'))
+    const matchesStatus = selectedStatus === 'all' || interview.status === selectedStatus
+
+    return matchesSearch && matchesProject && matchesStatus
+  })
+
+  if (completedInterviews.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="max-w-2xl w-full mx-auto">
+          <Card className="group border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer">
+            <CardContent className="pt-6 h-full flex flex-col">
+              <div className="text-center py-12 flex-1 flex flex-col justify-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-2xl flex items-center justify-center group-hover:bg-slate-200 group-hover:scale-110 transition-all duration-300 ease-out">
+                  <FolderIcon className="w-8 h-8 text-slate-400 group-hover:text-slate-600 transition-colors duration-300" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-slate-700 transition-colors duration-200">
+                  Kom igång med dina intervjuer
+                </h3>
+                <p className="text-gray-600 mb-6 max-w-2xl mx-auto group-hover:text-gray-700 transition-colors duration-200">
+                  Skapa och organisera dina användarintervjuer i projekt. Här kommer alla dina genomförda intervjuer att visas strukturerat.
+                </p>
+                <Button variant="primary">
+                  <PlusIcon className="mr-2 h-4 w-4" />
+                  Skapa första intervjun
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Search and Filters */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Search */}
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Sök intervjuer..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+            />
+          </div>
+
+          {/* Project Filter */}
+          <div className="lg:w-48">
+            <select
+              value={selectedProject}
+              onChange={(e) => setSelectedProject(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+            >
+              {projects.map(project => (
+                <option key={project.id} value={project.id}>
+                  {project.name} ({project.count})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Status Filter */}
+          <div className="lg:w-48">
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+            >
+              <option value="all">Alla statusar</option>
+              <option value="completed">Slutförd</option>
+              <option value="analyzing">Analyseras</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Interview Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredInterviews.map((interview) => (
+          <Card key={interview.id} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-80 group cursor-pointer">
+            <CardContent className="pt-6 h-full flex flex-col">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <h3 className="text-lg font-medium text-gray-900">{interview.participant}</h3>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      interview.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {interview.status === 'completed' ? 'Slutförd' : 'Analyseras'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                    {interview.notes.substring(0, 100)}...
+                  </p>
+                </div>
+                <div className="flex space-x-1 ml-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="p-2"
+                    title="Kopiera intervju"
+                  >
+                    <CopyIcon className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="p-2 text-red-600 hover:text-red-700"
+                    title="Ta bort intervju"
+                  >
+                    <TrashIcon className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-3 flex-1">
+                <div className="text-sm">
+                  <div className="font-medium text-gray-700 mb-1">Genomförd</div>
+                  <div className="space-y-1 text-gray-500">
+                    <div className="flex items-center">
+                      <CalendarIcon className="h-3 w-3 mr-1" />
+                      {interview.date}
+                    </div>
+                    <div className="flex items-center">
+                      <ClockIcon className="h-3 w-3 mr-1" />
+                      {Math.floor(interview.duration / 60)} minuter
+                    </div>
+                    <div className="flex items-center">
+                      <ClipboardListIcon className="h-3 w-3 mr-1" />
+                      {interview.questions.length} frågor
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                <span>Projekt: Onboarding UX</span>
+                <span>{interview.insights?.length || 0} insights</span>
+              </div>
+
+              <div className="flex space-x-2 pt-4 border-t border-gray-100">
+                <Button variant="primary" size="sm" className="flex-1">
+                  <EyeIcon className="h-3 w-3 mr-1" />
+                  Visa
+                </Button>
+                <Button variant="outline" size="sm">
+                  <MessageCircleIcon className="h-3 w-3" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+
+        {/* Add New Interview Card */}
+        <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-80 cursor-pointer group hover:bg-slate-50/30">
+          <CardContent className="pt-6 h-full flex flex-col">
+            <div className="text-center py-12 flex-1 flex flex-col justify-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-110 transition-all duration-300 ease-out">
+                <PlusIcon className="w-8 h-8 text-gray-400 group-hover:text-slate-600 transition-colors duration-200" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">
+                Ny intervju
+              </h3>
+              <p className="text-sm text-gray-400 group-hover:text-slate-600 transition-colors duration-200">
+                Skapa en ny intervju
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
 function InterviewsContent() {
   const { t } = useLanguage()
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState('overview')
+
+  // Helper function to format time
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
   const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({})
   const [sharedQuestions, setSharedQuestions] = useState([''])
 
@@ -568,6 +762,17 @@ function InterviewsContent() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [completedInterviews, setCompletedInterviews] = useState<CompletedInterview[]>([])
   const [generatedInsights, setGeneratedInsights] = useState<Array<{theme: string, sentiment: 'positive' | 'negative' | 'neutral', frequency: number}>>([])
+
+  // Save interview modal state
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [saveParticipantName, setSaveParticipantName] = useState('')
+  const [saveSelectedProject, setSaveSelectedProject] = useState<string | null>(null)
+
+  // Create new project state
+  const [showCreateProject, setShowCreateProject] = useState(false)
+  const [newProjectName, setNewProjectName] = useState('')
+  const [newProjectDescription, setNewProjectDescription] = useState('')
+  const [newProjectColor, setNewProjectColor] = useState('#6B7280')
 
   // Load completed interviews on mount
   useEffect(() => {
@@ -620,6 +825,64 @@ function InterviewsContent() {
 
     // Go to analysis view
     setActiveTab('analyze')
+  }
+
+  // Function to handle saving interview with project assignment
+  const handleSaveInterview = () => {
+    if (!saveParticipantName.trim()) return
+
+    const completedInterview: CompletedInterview = {
+      id: Date.now().toString(),
+      participant: saveParticipantName.trim(),
+      date: new Date().toISOString().split('T')[0],
+      duration: interviewTimer,
+      questions: sharedQuestions,
+      notes: currentNote,
+      insights: [], // Could be parsed from notes later
+      status: 'completed',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      folderId: saveSelectedProject || undefined
+    }
+
+    saveCompletedInterview(completedInterview)
+
+    // Reset modal state
+    setShowSaveModal(false)
+    setSaveParticipantName('')
+    setSaveSelectedProject(null)
+    setShowCreateProject(false)
+    setNewProjectName('')
+    setNewProjectDescription('')
+    setNewProjectColor('#6B7280')
+
+    handleInterviewComplete()
+  }
+
+  // Function to create new project
+  const handleCreateProject = () => {
+    if (!newProjectName.trim()) return
+
+    const { saveResearchProject } = require('@/services/researchProjectStorage')
+
+    const newProject = {
+      id: Date.now().toString(),
+      name: newProjectName.trim(),
+      description: newProjectDescription.trim(),
+      color: newProjectColor,
+      createdAt: new Date().toISOString().split('T')[0],
+      itemCount: 0,
+      lastActivity: new Date().toISOString().split('T')[0],
+      types: []
+    }
+
+    saveResearchProject(newProject)
+    setSaveSelectedProject(newProject.id)
+    setShowCreateProject(false)
+    setNewProjectName('')
+    setNewProjectDescription('')
+    setNewProjectColor('#6B7280')
+    setShowSaveModal(true) // Go back to save modal
   }
 
   const quickActions = [
@@ -780,27 +1043,13 @@ function InterviewsContent() {
                           onClick={() => {
                             const button = document.querySelector('#quick-insight-sentiment') as HTMLElement;
                             if (button) {
-                              button.innerHTML = '<span class="flex items-center space-x-2"><svg class="h-4 w-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg><span>Positiv</span></span><svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
-                              button.setAttribute('data-value', 'positive');
-                            }
-                            document.getElementById('sentiment-dropdown')?.classList.add('hidden');
-                          }}
-                        >
-                          <SmileIcon className="h-4 w-4 text-green-600" />
-                          <span>Positiv</span>
-                        </div>
-                        <div
-                          className="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center space-x-2"
-                          onClick={() => {
-                            const button = document.querySelector('#quick-insight-sentiment') as HTMLElement;
-                            if (button) {
-                              button.innerHTML = '<span class="flex items-center space-x-2"><svg class="h-4 w-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg><span>Negativ</span></span><svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
+                              button.innerHTML = '<span class="flex items-center space-x-2"><svg class="h-4 w-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path></svg><span>Negativ</span></span><svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
                               button.setAttribute('data-value', 'negative');
                             }
                             document.getElementById('sentiment-dropdown')?.classList.add('hidden');
                           }}
                         >
-                          <FrownIcon className="h-4 w-4 text-red-600" />
+                          <FrownIcon className="h-4 w-4 text-gray-600" />
                           <span>Negativ</span>
                         </div>
                         <div
@@ -808,7 +1057,7 @@ function InterviewsContent() {
                           onClick={() => {
                             const button = document.querySelector('#quick-insight-sentiment') as HTMLElement;
                             if (button) {
-                              button.innerHTML = '<span class="flex items-center space-x-2"><svg class="h-4 w-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg><span>Neutral</span></span><svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
+                              button.innerHTML = '<span class="flex items-center space-x-2"><svg class="h-4 w-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="15" x2="16" y2="15"></line></svg><span>Neutral</span></span><svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
                               button.setAttribute('data-value', 'neutral');
                             }
                             document.getElementById('sentiment-dropdown')?.classList.add('hidden');
@@ -816,6 +1065,20 @@ function InterviewsContent() {
                         >
                           <MehIcon className="h-4 w-4 text-gray-600" />
                           <span>Neutral</span>
+                        </div>
+                        <div
+                          className="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center space-x-2"
+                          onClick={() => {
+                            const button = document.querySelector('#quick-insight-sentiment') as HTMLElement;
+                            if (button) {
+                              button.innerHTML = '<span class="flex items-center space-x-2"><svg class="h-4 w-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path></svg><span>Positiv</span></span><svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
+                              button.setAttribute('data-value', 'positive');
+                            }
+                            document.getElementById('sentiment-dropdown')?.classList.add('hidden');
+                          }}
+                        >
+                          <SmileIcon className="h-4 w-4 text-gray-600" />
+                          <span>Positiv</span>
                         </div>
                       </div>
                     </div>
@@ -860,10 +1123,8 @@ function InterviewsContent() {
                               <span className="text-gray-900">{insight.theme}</span>
                             </div>
                             <div className="flex items-center space-x-2 flex-shrink-0">
-                              <span className="text-sm flex items-center">
-                                {insight.sentiment === 'positive' ? <SmileIcon className="h-4 w-4 text-green-600" /> :
-                                 insight.sentiment === 'negative' ? <FrownIcon className="h-4 w-4 text-red-600" /> :
-                                 <MehIcon className="h-4 w-4 text-gray-600" />}
+                              <span className="text-sm">
+                                {insight.sentiment === 'positive' ? '🙂' : insight.sentiment === 'negative' ? '🙁' : '😐'}
                               </span>
                               <button
                                 onClick={() => setManualInsights(manualInsights.filter((_, i) => i !== index))}
@@ -921,8 +1182,8 @@ function InterviewsContent() {
                   onClick={() => setAnalysisMode('manual')}
                 >
                   <CardContent className="p-8 text-center">
-                    <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-100 transition-colors duration-300">
-                      <Users2Icon className="h-6 w-6 text-blue-600 group-hover:scale-110 transition-transform duration-300" />
+                    <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-gray-100 transition-colors duration-300">
+                      <Users2Icon className="h-6 w-6 text-gray-600 group-hover:scale-110 transition-transform duration-300" />
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-slate-700 transition-colors duration-200">
                       Manuell analys
@@ -944,8 +1205,8 @@ function InterviewsContent() {
                   onClick={() => setAnalysisMode('ai')}
                 >
                   <CardContent className="p-8 text-center">
-                    <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-100 transition-colors duration-300">
-                      <LightbulbIcon className="h-6 w-6 text-purple-600 group-hover:scale-110 transition-transform duration-300" />
+                    <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-gray-100 transition-colors duration-300">
+                      <LightbulbIcon className="h-6 w-6 text-gray-600 group-hover:scale-110 transition-transform duration-300" />
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-slate-700 transition-colors duration-200">
                       AI-assisterad analys
@@ -1220,8 +1481,8 @@ function InterviewsContent() {
                         id="new-insight-sentiment"
                         defaultValue="neutral"
                       >
-                        <option value="positive">😊 Positiv</option>
-                        <option value="negative">😟 Negativ</option>
+                        <option value="positive">🙂 Positiv</option>
+                        <option value="negative">🙁 Negativ</option>
                         <option value="neutral">😐 Neutral</option>
                       </select>
                       <input
@@ -1299,9 +1560,7 @@ function InterviewsContent() {
                               insight.sentiment === 'negative' ? 'bg-red-100 text-red-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
-                              {insight.sentiment === 'positive' ? <SmileIcon className="h-3 w-3" /> :
-                               insight.sentiment === 'negative' ? <FrownIcon className="h-3 w-3" /> :
-                               <MehIcon className="h-3 w-3" />}
+                              {insight.sentiment === 'positive' ? '🙂' : insight.sentiment === 'negative' ? '🙁' : '😐'}
                             </div>
                             <button
                               onClick={() => {
@@ -1487,20 +1746,12 @@ function InterviewsContent() {
             currentNote={currentNote}
             setCurrentNote={setCurrentNote}
             onInterviewComplete={handleInterviewComplete}
+            setShowSaveModal={setShowSaveModal}
           />
         )}
         {activeTab === 'analyze' && <AnalysisView />}
 
-        {activeTab === 'my-interviews' && (
-          <div className="text-center py-12">
-            <FolderIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Mina intervjuer</h3>
-            <p className="text-gray-600 mb-4">Här kommer alla dina genomförda intervjuer att visas</p>
-            <Button variant="primary" onClick={() => setActiveTab('create')}>
-              Skapa första intervjun
-            </Button>
-          </div>
-        )}
+        {activeTab === 'my-interviews' && <InterviewLibraryView completedInterviews={completedInterviews} />}
 
         {activeTab === 'templates' && (
           <div className="text-center py-12">
@@ -1513,6 +1764,146 @@ function InterviewsContent() {
           </div>
         )}
       </div>
+
+      {/* Save Interview Modal */}
+      <Modal
+        isOpen={showSaveModal}
+        onClose={() => {
+          setShowSaveModal(false)
+          setSaveParticipantName('')
+          setSaveSelectedProject(null)
+        }}
+        title="Spara intervju"
+        maxWidth="4xl"
+        className="!max-w-4xl"
+      >
+        <div className="space-y-5">
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <div className="flex items-center space-x-2 text-gray-700">
+              <ClockIcon className="h-4 w-4" />
+              <span className="text-sm font-medium">Intervju genomförd: {formatTime(interviewTimer)}</span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Deltagarens namn <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={saveParticipantName}
+              onChange={(e) => setSaveParticipantName(e.target.value)}
+              placeholder="T.ex. Anna Andersson"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+              required
+              autoFocus
+            />
+          </div>
+
+          <ProjectSelector
+            selectedProjectId={saveSelectedProject}
+            onProjectChange={setSaveSelectedProject}
+            placeholder="Välj projekt (valfritt)"
+            showCreateNew={true}
+            onCreateNew={() => {
+              setShowSaveModal(false)
+              setShowCreateProject(true)
+            }}
+          />
+
+          <div className="flex justify-end space-x-3 pt-3 border-t border-gray-200 mt-6">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowSaveModal(false)
+                setSaveParticipantName('')
+                setSaveSelectedProject(null)
+              }}
+            >
+              Avbryt
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleSaveInterview}
+              disabled={!saveParticipantName.trim()}
+              className="bg-gray-900 hover:bg-gray-800"
+            >
+              <CheckCircleIcon className="h-4 w-4 mr-2" />
+              Spara intervju
+            </Button>
+          </div>
+
+          {/* Extra space at bottom to ensure scrolling works */}
+          <div className="h-4"></div>
+        </div>
+      </Modal>
+
+      {/* Create Project Modal */}
+      <Modal
+        isOpen={showCreateProject}
+        onClose={() => {
+          setShowCreateProject(false)
+          setNewProjectName('')
+          setNewProjectDescription('')
+          setNewProjectColor('#6B7280')
+          setShowSaveModal(true) // Go back to save modal
+        }}
+        title="Skapa nytt projekt"
+        maxWidth="lg"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Projektnamn <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+              placeholder="T.ex. Checkout-optimering"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+              autoFocus
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Beskrivning
+            </label>
+            <input
+              type="text"
+              value={newProjectDescription}
+              onChange={(e) => setNewProjectDescription(e.target.value)}
+              placeholder="Kort beskrivning av projektet"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+            />
+          </div>
+
+
+          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowCreateProject(false)
+                setNewProjectName('')
+                setNewProjectDescription('')
+                setNewProjectColor('#6B7280')
+                setShowSaveModal(true)
+              }}
+            >
+              Avbryt
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleCreateProject}
+              disabled={!newProjectName.trim()}
+              className="bg-gray-900 hover:bg-gray-800"
+            >
+              Skapa projekt
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }
