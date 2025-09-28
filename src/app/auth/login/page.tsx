@@ -7,7 +7,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { EyeIcon, EyeOffIcon, Zap } from 'lucide-react'
+import { Modal } from '@/components/ui/Modal'
+import { EyeIcon, EyeOffIcon, Zap, SparklesIcon } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -16,6 +17,9 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [debugInfo, setDebugInfo] = useState('')
+  const [showBetaCodeModal, setShowBetaCodeModal] = useState(false)
+  const [betaCode, setBetaCode] = useState(['', '', '', ''])
+  const [betaCodeError, setBetaCodeError] = useState('')
   
   const { signIn, signInAsBetaTester, user, loading } = useAuth()
   const router = useRouter()
@@ -84,10 +88,47 @@ export default function LoginPage() {
     setIsSubmitting(false)
   }
 
+  const handleBetaCodeChange = (index: number, value: string) => {
+    if (!/^\d?$/.test(value)) return // Only allow digits
+
+    const newCode = [...betaCode]
+    newCode[index] = value
+    setBetaCode(newCode)
+    setBetaCodeError('')
+
+    // Auto-focus next input
+    if (value && index < 3) {
+      const nextInput = document.getElementById(`beta-code-${index + 1}`)
+      nextInput?.focus()
+    }
+  }
+
+  const handleBetaCodeSubmit = () => {
+    const code = betaCode.join('')
+    if (code === '1111') {
+      setShowBetaCodeModal(false)
+      setBetaCode(['', '', '', ''])
+      setBetaCodeError('')
+      signInAsBetaTester()
+      router.replace('/')
+    } else {
+      setBetaCodeError('Invalid code. Please try again.')
+    }
+  }
+
+  const handleBetaCodeKeyPress = (e: React.KeyboardEvent, index: number) => {
+    if (e.key === 'Enter') {
+      if (index === 3 && betaCode.every(digit => digit !== '')) {
+        handleBetaCodeSubmit()
+      }
+    } else if (e.key === 'Backspace' && !betaCode[index] && index > 0) {
+      const prevInput = document.getElementById(`beta-code-${index - 1}`)
+      prevInput?.focus()
+    }
+  }
+
   const handleBetaTesterLogin = () => {
-    // Sign in as beta tester using AuthContext
-    signInAsBetaTester()
-    router.replace('/')
+    setShowBetaCodeModal(true)
   }
 
 
@@ -220,6 +261,81 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
+
+        {/* Beta Code Modal */}
+        <Modal
+          isOpen={showBetaCodeModal}
+          onClose={() => {
+            setShowBetaCodeModal(false)
+            setBetaCode(['', '', '', ''])
+            setBetaCodeError('')
+          }}
+          title=""
+          maxWidth="md"
+        >
+          <div className="space-y-6">
+            <div className="text-center">
+              <div className="flex justify-center mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center">
+                  <SparklesIcon className="h-8 w-8 text-gray-600" />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Beta Tester Access</h3>
+              <p className="text-gray-600">Enter your 4-digit access code</p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex justify-center space-x-3">
+                {betaCode.map((digit, index) => (
+                  <input
+                    key={index}
+                    id={`beta-code-${index}`}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleBetaCodeChange(index, e.target.value)}
+                    onKeyDown={(e) => handleBetaCodeKeyPress(e, index)}
+                    className="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-slate-500 focus:outline-none transition-colors"
+                    autoFocus={index === 0}
+                  />
+                ))}
+              </div>
+
+              {betaCodeError && (
+                <div className="text-center">
+                  <p className="text-red-600 text-sm">{betaCodeError}</p>
+                </div>
+              )}
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <p className="text-gray-600 text-sm text-center">
+                  Need access? Contact your administrator for a beta tester code.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-center space-x-3 pt-4 border-t border-gray-200">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowBetaCodeModal(false)
+                  setBetaCode(['', '', '', ''])
+                  setBetaCodeError('')
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleBetaCodeSubmit}
+                disabled={!betaCode.every(digit => digit !== '')}
+              >
+                Verify Code
+              </Button>
+            </div>
+          </div>
+        </Modal>
       </div>
     </div>
   )

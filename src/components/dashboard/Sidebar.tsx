@@ -44,8 +44,11 @@ import {
   MessageCircleIcon,
   BugIcon,
   SparklesIcon,
-  LockIcon
+  LockIcon,
+  CheckCircleIcon
 } from 'lucide-react'
+import { Modal } from '@/components/ui/Modal'
+import { Button } from '@/components/ui/Button'
 
 const getNavigation = (t: (key: string) => string) => [
   { name: t('nav.dashboard'), href: '/', icon: HomeIcon, tourId: 'dashboard' },
@@ -139,7 +142,8 @@ export function Sidebar() {
   const [expandedSubItems, setExpandedSubItems] = useState<{[key: string]: boolean}>({})
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [hoveredSection, setHoveredSection] = useState<string | null>(null)
-  
+  const [showInsightsPopup, setShowInsightsPopup] = useState(false)
+
   const toggleSection = (sectionName: string) => {
     setExpandedSections(prev => {
       const isCurrentlyExpanded = prev[sectionName]
@@ -350,7 +354,13 @@ export function Sidebar() {
                   ) : (
                     // If no href, render as button only
                     <button
-                      onClick={() => toggleSection(item.name)}
+                      onClick={() => {
+                        if (item.name === t('nav.insights')) {
+                          setShowInsightsPopup(true)
+                        } else {
+                          toggleSection(item.name)
+                        }
+                      }}
                       onMouseEnter={() => setHoveredSection(item.name)}
                       onMouseLeave={() => setHoveredSection(null)}
                       data-tour={item.tourId}
@@ -372,19 +382,26 @@ export function Sidebar() {
                       {!isCollapsed && (
                         <>
                           <span className="flex-1 text-left">{item.name}</span>
-                          <div className="w-4 h-4 flex items-center justify-center">
-                              {isExpanded ? (
-                                <ChevronUpIcon className={cn(
-                                  "h-4 w-4 text-gray-400 transition-opacity",
-                                  hoveredSection === item.name ? "opacity-100" : "opacity-0"
-                                )} />
-                              ) : (
-                                <ChevronDownIcon className={cn(
-                                  "h-4 w-4 text-gray-400 transition-opacity",
-                                  hoveredSection === item.name ? "opacity-100" : "opacity-0"
-                                )} />
-                              )}
-                            </div>
+                          <div className="flex items-center justify-end space-x-2">
+                            {item.name === t('nav.insights') && (
+                              <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
+                                Beta
+                              </span>
+                            )}
+                            <div className="w-4 h-4 flex items-center justify-center">
+                                {isExpanded ? (
+                                  <ChevronUpIcon className={cn(
+                                    "h-4 w-4 text-gray-400 transition-opacity",
+                                    hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                                  )} />
+                                ) : (
+                                  <ChevronDownIcon className={cn(
+                                    "h-4 w-4 text-gray-400 transition-opacity",
+                                    hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                                  )} />
+                                )}
+                              </div>
+                          </div>
                         </>
                       )}
                     </button>
@@ -673,38 +690,60 @@ export function Sidebar() {
             // Handle regular menu items
             return (
               <li key={item.name}>
-                <Link
-                  href={item.href}
-                  data-tour={item.tourId}
-                  className={cn(
-                    'group flex items-center rounded-lg text-sm font-medium transition-colors',
-                    isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
-                    isActive
-                      ? 'bg-slate-100 text-slate-700'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                  )}
-                  title={isCollapsed ? item.name : undefined}
-                >
-                  <item.icon
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    data-tour={item.tourId}
                     className={cn(
-                      'h-5 w-5 transition-all duration-300 ease-out',
-                      isCollapsed ? 'mx-auto' : 'mr-3',
+                      'group flex items-center rounded-lg text-sm font-medium transition-colors',
+                      isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
                       isActive
-                        ? 'text-slate-600 scale-110 rotate-12'
-                        : 'text-gray-500'
+                        ? 'bg-slate-100 text-slate-700'
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                     )}
-                  />
-                  {!isCollapsed && (
-                    <div className="flex items-center justify-between flex-1">
-                      <span>{item.name}</span>
-                      {item.name === t('nav.analytics') && (
-                        <span className="ml-2 px-1 py-0.5 border border-slate-400 text-slate-600 text-[8px] font-medium rounded-full">
-                          Coming Soon
-                        </span>
+                    title={isCollapsed ? item.name : undefined}
+                  >
+                    <item.icon
+                      className={cn(
+                        'h-5 w-5 transition-all duration-300 ease-out',
+                        isCollapsed ? 'mx-auto' : 'mr-3',
+                        isActive
+                          ? 'text-slate-600 scale-110 rotate-12'
+                          : 'text-gray-500'
                       )}
-                    </div>
-                  )}
-                </Link>
+                    />
+                    {!isCollapsed && (
+                      <div className="flex items-center justify-between flex-1">
+                        <span>{item.name}</span>
+                        {item.name === t('nav.analytics') && (
+                          <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
+                            Coming Soon
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </Link>
+                ) : (
+                  <Link
+                    href="/beta"
+                    data-tour={item.tourId}
+                    className={cn(
+                      'group flex items-center rounded-lg text-sm font-medium transition-colors',
+                      isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
+                      'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                    )}
+                    title={isCollapsed ? item.name : undefined}
+                  >
+                    <item.icon
+                      className={cn(
+                        'h-5 w-5 transition-all duration-300 ease-out',
+                        isCollapsed ? 'mx-auto' : 'mr-3',
+                        'text-gray-500'
+                      )}
+                    />
+                    {!isCollapsed && <span>{item.name}</span>}
+                  </Link>
+                )}
               </li>
             )
           })}
@@ -784,6 +823,77 @@ export function Sidebar() {
           </Link>
         )}
       </div>
+
+      {/* Insights Beta Modal */}
+      <Modal
+        isOpen={showInsightsPopup}
+        onClose={() => setShowInsightsPopup(false)}
+        title=""
+        maxWidth="2xl"
+      >
+        <div className="space-y-8">
+          <div className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center">
+                <ClipboardIcon className="h-8 w-8 text-gray-600" />
+              </div>
+            </div>
+            <div className="flex items-center justify-center space-x-3 mb-2">
+              <h3 className="text-2xl font-bold text-gray-900">Insights</h3>
+              <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-semibold rounded-full">
+                Beta
+              </span>
+            </div>
+            <p className="text-lg text-gray-600">Work in Progress</p>
+          </div>
+
+          <div className="space-y-6 max-w-2xl mx-auto">
+            <div className="text-center space-y-4">
+              <h4 className="text-lg font-semibold text-gray-900">We're actively working on this section!</h4>
+              <p className="text-gray-700 leading-relaxed">
+                The Insights section is currently under development. While some features may be missing or not work as expected,
+                we encourage you to explore and test around. Your feedback helps us improve the experience.
+              </p>
+            </div>
+
+            <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+              <div className="flex items-start space-x-3">
+                <LightbulbIcon className="h-6 w-6 text-gray-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h5 className="font-semibold text-gray-900 mb-2">What you can expect:</h5>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• Some features may be incomplete or in testing</li>
+                    <li>• Data and functionality might change during development</li>
+                    <li>• Your exploration and feedback helps us build better features</li>
+                    <li>• Most functionality is still being built and refined</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center space-x-4 pt-6 border-t border-gray-200">
+            <Button
+              variant="outline"
+              onClick={() => setShowInsightsPopup(false)}
+              size="lg"
+            >
+              Not now
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setShowInsightsPopup(false)
+                toggleSection(t('nav.insights'))
+              }}
+              size="lg"
+            >
+              Explore anyway
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
     </div>
   )
 }
