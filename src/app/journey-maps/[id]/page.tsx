@@ -1301,6 +1301,13 @@ export default function JourneyMapBuilderPage() {
   const handleIconChange = (rowId: string, cellId: string, icon: string) => {
     if (!journeyMap) return
 
+    // Debug: Find current cell to see what we're working with
+    const currentCell = journeyMap.rows
+      .find(row => row.id === rowId)?.cells
+      .find(cell => cell.id === cellId)
+
+    console.log('handleIconChange called:', { rowId, cellId, icon, currentCell })
+
     const updatedJourneyMap = {
       ...journeyMap,
       rows: journeyMap.rows.map(row =>
@@ -1310,6 +1317,54 @@ export default function JourneyMapBuilderPage() {
               cells: row.cells.map(cell =>
                 cell.id === cellId ? { ...cell, icon } : cell
               )
+            }
+          : row
+      ),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save after a short delay (debounced)
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+        // Don't show UI feedback for auto-save failures
+      })
+    }, 2000) // Auto-save after 2 seconds of inactivity
+  }
+
+  const handleColorChange = (rowId: string, cellId: string, backgroundColor: string) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId
+          ? {
+              ...row,
+              cells: row.cells.map(cell => {
+                if (cell.id === cellId) {
+                  // Debug: Log what we're preserving
+                  console.log('handleColorChange - preserving cell data:', cell)
+                  console.log('handleColorChange - adding backgroundColor:', backgroundColor)
+
+                  // Explicitly preserve all existing properties, especially icon
+                  const updatedCell = {
+                    ...cell,
+                    backgroundColor,
+                    // Explicitly preserve icon if it exists
+                    ...(cell.icon && { icon: cell.icon })
+                  }
+                  console.log('handleColorChange - final cell:', updatedCell)
+                  return updatedCell
+                }
+                return cell
+              })
             }
           : row
       ),
@@ -3059,10 +3114,11 @@ export default function JourneyMapBuilderPage() {
                               id={cell.id}
                               content={cell.content}
                               type={row.type}
-                              backgroundColor={row.color}
+                              backgroundColor={cell.backgroundColor || row.color}
                               selectedIcon={cell.icon}
                               onChange={(content) => handleCellChange(row.id, cell.id, content)}
                               onIconChange={(icon) => handleIconChange(row.id, cell.id, icon)}
+                              onColorChange={(backgroundColor) => handleColorChange(row.id, cell.id, backgroundColor)}
                               onClear={() => handleCellClear(row.id, cell.id)}
                               placeholder=""
                               colSpan={cell.colSpan}

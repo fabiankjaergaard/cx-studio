@@ -2,6 +2,7 @@ export interface JourneyMapCell {
   id: string
   content: string
   icon?: string
+  backgroundColor?: string
   isEditing?: boolean
   colSpan?: number  // How many columns this cell spans
   position?: number // Position within the row (for drag & drop)

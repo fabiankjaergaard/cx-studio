@@ -32,6 +32,7 @@ import { PainPointsVisualization } from './PainPointsVisualization'
 import { OpportunitiesVisualization } from './OpportunitiesVisualization'
 import { MetricsVisualization } from './MetricsVisualization'
 import { ChannelsVisualization } from './ChannelsVisualization'
+import { ROW_COLORS } from '@/types/journey-map'
 
 interface JourneyMapCellProps {
   id: string
@@ -39,6 +40,7 @@ interface JourneyMapCellProps {
   type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics' | 'channels'
   onChange: (content: string) => void
   onIconChange?: (icon: string) => void
+  onColorChange?: (color: string) => void
   onClear?: () => void
   selectedIcon?: string
   placeholder?: string
@@ -124,6 +126,7 @@ export function JourneyMapCell({
   type,
   onChange,
   onIconChange,
+  onColorChange,
   onClear,
   selectedIcon,
   placeholder = 'Click to edit...',
@@ -170,22 +173,36 @@ export function JourneyMapCell({
   const handleResizeStart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    console.log('Resize start', { colSpan, clientX: e.clientX })
-    setIsResizing(true)
-    setStartX(e.clientX)
-    setStartColSpan(colSpan)
+
+    const startX = e.clientX
+    const originalColSpan = colSpan
+    let hasStartedResizing = false
+
+    console.log('Resize start', { originalColSpan, startX })
 
     const handleResizeMove = (e: MouseEvent) => {
-      if (!isResizing && !document.body.classList.contains('resizing')) return
       e.preventDefault()
 
-      const deltaX = e.clientX - startX
-      // More sensitive calculation
-      const cellWidth = 150 // Smaller threshold for more responsive resizing
-      const deltaColumns = Math.floor(deltaX / cellWidth)
-      const newColSpan = Math.max(1, Math.min(8, startColSpan + deltaColumns)) // Max 8 columns
+      const currentX = e.clientX
+      const deltaX = currentX - startX
 
-      console.log('Resize move', { deltaX, deltaColumns, newColSpan, currentColSpan: colSpan })
+      // Only start resizing after dragging at least 20 pixels
+      if (!hasStartedResizing && Math.abs(deltaX) < 20) {
+        return
+      }
+
+      if (!hasStartedResizing) {
+        hasStartedResizing = true
+        setIsResizing(true)
+        console.log('Starting resize after sufficient drag')
+      }
+
+      // Calculate new column span based on drag distance
+      // Every 100 pixels = 1 column change
+      const columnsToChange = Math.floor(deltaX / 100)
+      const newColSpan = Math.max(1, Math.min(8, originalColSpan + columnsToChange))
+
+      console.log('Resize move', { deltaX, columnsToChange, newColSpan, originalColSpan })
 
       if (newColSpan !== colSpan && onColSpanChange) {
         onColSpanChange(newColSpan)
@@ -193,7 +210,7 @@ export function JourneyMapCell({
     }
 
     const handleResizeEnd = () => {
-      console.log('Resize end')
+      console.log('Resize end', { hasStartedResizing })
       setIsResizing(false)
       document.body.classList.remove('resizing')
       document.body.style.cursor = ''
@@ -216,6 +233,37 @@ export function JourneyMapCell({
     }
   }, [])
 
+  // Close icon picker when clicking outside
+  useEffect(() => {
+    if (!isIconPickerOpen) return
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+
+      // Don't close if clicking on the cell itself or the icon picker
+      if (cellRef.current?.contains(target)) return
+
+      // Don't close if clicking on any icon picker popup
+      const iconPickers = document.querySelectorAll('[data-icon-picker]')
+      for (const picker of iconPickers) {
+        if (picker.contains(target)) return
+      }
+
+      // Close the icon picker
+      setIsIconPickerOpen(false)
+    }
+
+    // Add event listener after a short delay to avoid immediate closure
+    const timer = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside)
+    }, 100)
+
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isIconPickerOpen])
+
   const handleStartEditing = () => {
     setIsEditing(true)
   }
@@ -226,13 +274,8 @@ export function JourneyMapCell({
   }
 
   const handleFinishEditing = () => {
-    // Clear any existing timeout
-    if (closeTimeoutRef.current) {
-      clearTimeout(closeTimeoutRef.current)
-    }
-
-    // Set new timeout to close icon picker
-    closeTimeoutRef.current = setTimeout(() => setIsIconPickerOpen(false), 200)
+    // DON'T automatically close icon picker when finishing editing
+    // Let user manually close it with "Klar" button or by clicking outside
 
     // If no content, clear the cell entirely (including icon)
     if (!content.trim()) {
@@ -273,13 +316,14 @@ export function JourneyMapCell({
     setCurrentIcon(iconName || undefined)
     console.log('Set currentIcon to:', iconName || undefined)
 
-    // Update parent component
+    // Update parent component IMMEDIATELY and WAIT for it to complete before continuing
     if (onIconChange) {
       onIconChange(iconName)
+      console.log('Called onIconChange with:', iconName)
     }
 
-    // Close icon picker
-    setIsIconPickerOpen(false)
+    // DON'T close icon picker - let user choose color too
+    // setIsIconPickerOpen(false)
 
     // Stay in editing mode and focus textarea
     setIsEditing(true)
@@ -290,8 +334,30 @@ export function JourneyMapCell({
     }, 50)
   }
 
+  const handleColorSelect = (colorClass: string) => {
+    console.log('handleColorSelect called with:', colorClass)
+    console.log('Current icon state before color change:', { currentIcon, selectedIcon })
+
+    // Update parent component
+    if (onColorChange) {
+      onColorChange(colorClass)
+    }
+
+    // DON'T close icon picker - let user choose more things
+    // setIsIconPickerOpen(false)
+
+    // Stay in editing mode
+    setIsEditing(true)
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus()
+      }
+    }, 50)
+  }
+
   const getSelectedIconComponent = () => {
-    const iconToShow = currentIcon || selectedIcon
+    // Prioritize currentIcon (local state) over selectedIcon (prop) to avoid sync issues
+    const iconToShow = currentIcon !== undefined ? currentIcon : selectedIcon
     console.log('getSelectedIconComponent called', { currentIcon, selectedIcon, iconToShow })
     if (!iconToShow) return null
     const iconData = AVAILABLE_ICONS.find(icon => icon.name === iconToShow)
@@ -303,9 +369,21 @@ export function JourneyMapCell({
     return <IconComponent className="h-5 w-5 text-slate-600" />
   }
 
-  // Sync currentIcon with prop when it changes
+  // Sync currentIcon with prop when it changes, but never reset to undefined if we have a current icon
   useEffect(() => {
-    setCurrentIcon(selectedIcon)
+    console.log('Syncing currentIcon with selectedIcon:', { currentIcon, selectedIcon })
+    // Only update currentIcon if selectedIcon has a REAL value (not undefined)
+    // Never reset currentIcon to undefined if it currently has a value
+    if (selectedIcon !== undefined) {
+      setCurrentIcon(selectedIcon)
+      console.log('Updated currentIcon from selectedIcon:', selectedIcon)
+    } else if (currentIcon === undefined && selectedIcon === undefined) {
+      // Only set to undefined if both are undefined (initial state)
+      setCurrentIcon(undefined)
+      console.log('Both icons undefined, setting currentIcon to undefined')
+    } else {
+      console.log('Preserving currentIcon because selectedIcon is undefined but currentIcon has value:', currentIcon)
+    }
   }, [selectedIcon])
 
   useEffect(() => {
@@ -421,9 +499,94 @@ export function JourneyMapCell({
               </div>
             </div>
 
-            {/* Simple icon picker above cell */}
+            {/* Icon and color picker above cell */}
             {isIconPickerOpen && (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2">
+              <div data-icon-picker className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-3">
+                {/* Icons Section */}
+                <div className="mb-3">
+                  <h3 className="text-xs font-medium text-gray-700 mb-2">Choose Icon</h3>
+                  <div className="grid grid-cols-9 gap-1 w-80">
+                    {AVAILABLE_ICONS.map((iconData) => {
+                      const IconComponent = iconData.icon
+                      return (
+                        <button
+                          key={iconData.name}
+                          onClick={(e) => {
+                          console.log('Icon button clicked:', iconData.name)
+                          e.stopPropagation()
+                          handleIconSelect(iconData.name)
+                        }}
+                          className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
+                            (currentIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
+                          }`}
+                          title={iconData.name}
+                        >
+                          <IconComponent className="h-4 w-4 text-slate-600" />
+                        </button>
+                      )
+                    })}
+                    {(currentIcon || selectedIcon) && (
+                      <button
+                        onClick={(e) => {
+                        e.stopPropagation()
+                        handleIconSelect('')
+                      }}
+                        className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
+                        title="Remove icon"
+                      >
+                        <XCircleIcon className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Colors Section */}
+                <div className="border-t border-gray-100 pt-3">
+                  <h3 className="text-xs font-medium text-gray-700 mb-2">Choose Color</h3>
+                  <div className="grid grid-cols-5 gap-2 mb-3">
+                    {ROW_COLORS.map((color) => (
+                      <button
+                        key={color.id}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleColorSelect(color.class)
+                        }}
+                        className={`w-8 h-8 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-colors ${color.class}`}
+                        title={color.name}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Done button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setIsIconPickerOpen(false)
+                    }}
+                    className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs py-2 rounded transition-colors"
+                  >
+                    Klar
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )
+      }
+
+
+      return (
+        <div className="relative">
+          {/* Icon and color picker above cell */}
+          {isIconPickerOpen && (
+            <div
+              data-icon-picker
+              className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-3 mb-2"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Icons Section */}
+              <div className="mb-3">
+                <h3 className="text-xs font-medium text-gray-700 mb-2">Choose Icon</h3>
                 <div className="grid grid-cols-9 gap-1 w-80">
                   {AVAILABLE_ICONS.map((iconData) => {
                     const IconComponent = iconData.icon
@@ -431,10 +594,10 @@ export function JourneyMapCell({
                       <button
                         key={iconData.name}
                         onClick={(e) => {
-                        console.log('Icon button clicked:', iconData.name)
-                        e.stopPropagation()
-                        handleIconSelect(iconData.name)
-                      }}
+                          console.log('Icon button clicked:', iconData.name)
+                          e.stopPropagation()
+                          handleIconSelect(iconData.name)
+                        }}
                         className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
                           (currentIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
                         }`}
@@ -447,9 +610,9 @@ export function JourneyMapCell({
                   {(currentIcon || selectedIcon) && (
                     <button
                       onClick={(e) => {
-                      e.stopPropagation()
-                      handleIconSelect('')
-                    }}
+                        e.stopPropagation()
+                        handleIconSelect('')
+                      }}
                       className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
                       title="Remove icon"
                     >
@@ -458,52 +621,34 @@ export function JourneyMapCell({
                   )}
                 </div>
               </div>
-            )}
-          </>
-        )
-      }
 
-
-      return (
-        <div className="relative">
-          {/* Icon picker above cell */}
-          {isIconPickerOpen && (
-            <div
-              className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2 mb-2"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="grid grid-cols-9 gap-1 w-80">
-                {AVAILABLE_ICONS.map((iconData) => {
-                  const IconComponent = iconData.icon
-                  return (
+              {/* Colors Section */}
+              <div className="border-t border-gray-100 pt-3">
+                <h3 className="text-xs font-medium text-gray-700 mb-2">Choose Color</h3>
+                <div className="grid grid-cols-5 gap-2 mb-3">
+                  {ROW_COLORS.map((color) => (
                     <button
-                      key={iconData.name}
+                      key={color.id}
                       onClick={(e) => {
-                        console.log('Icon button clicked:', iconData.name)
                         e.stopPropagation()
-                        handleIconSelect(iconData.name)
+                        handleColorSelect(color.class)
                       }}
-                      className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
-                        (currentIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
-                      }`}
-                      title={iconData.name}
-                    >
-                      <IconComponent className="h-4 w-4 text-slate-600" />
-                    </button>
-                  )
-                })}
-                {(currentIcon || selectedIcon) && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleIconSelect('')
-                    }}
-                    className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
-                    title="Remove icon"
-                  >
-                    <XCircleIcon className="h-4 w-4" />
-                  </button>
-                )}
+                      className={`w-8 h-8 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-colors ${color.class}`}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
+
+                {/* Done button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setIsIconPickerOpen(false)
+                  }}
+                  className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs py-2 rounded transition-colors"
+                >
+                  Klar
+                </button>
               </div>
               {/* Small arrow pointing up */}
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-200"></div>
@@ -613,44 +758,78 @@ export function JourneyMapCell({
           style={style}
           className={`relative ${isDragging ? 'z-50' : ''} ${isDragging ? 'opacity-75' : ''}`}
         >
-          {/* Icon picker above cell */}
+          {/* Icon and color picker above cell */}
           {isIconPickerOpen && (
             <div
-              className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2 mb-2"
+              data-icon-picker
+              className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-3 mb-2"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="grid grid-cols-9 gap-1 w-80">
-                {AVAILABLE_ICONS.map((iconData) => {
-                  const IconComponent = iconData.icon
-                  return (
+              {/* Icons Section */}
+              <div className="mb-3">
+                <h3 className="text-xs font-medium text-gray-700 mb-2">Choose Icon</h3>
+                <div className="grid grid-cols-9 gap-1 w-80">
+                  {AVAILABLE_ICONS.map((iconData) => {
+                    const IconComponent = iconData.icon
+                    return (
+                      <button
+                        key={iconData.name}
+                        onClick={(e) => {
+                          console.log('Icon button clicked:', iconData.name)
+                          e.stopPropagation()
+                          handleIconSelect(iconData.name)
+                        }}
+                        className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
+                          (currentIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
+                        }`}
+                        title={iconData.name}
+                      >
+                        <IconComponent className="h-4 w-4 text-slate-600" />
+                      </button>
+                    )
+                  })}
+                  {(currentIcon || selectedIcon) && (
                     <button
-                      key={iconData.name}
                       onClick={(e) => {
-                        console.log('Icon button clicked:', iconData.name)
                         e.stopPropagation()
-                        handleIconSelect(iconData.name)
+                        handleIconSelect('')
                       }}
-                      className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
-                        (currentIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
-                      }`}
-                      title={iconData.name}
+                      className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
+                      title="Remove icon"
                     >
-                      <IconComponent className="h-4 w-4 text-slate-600" />
+                      <XCircleIcon className="h-4 w-4" />
                     </button>
-                  )
-                })}
-                {(currentIcon || selectedIcon) && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleIconSelect('')
-                    }}
-                    className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
-                    title="Remove icon"
-                  >
-                    <XCircleIcon className="h-4 w-4" />
-                  </button>
-                )}
+                  )}
+                </div>
+              </div>
+
+              {/* Colors Section */}
+              <div className="border-t border-gray-100 pt-3">
+                <h3 className="text-xs font-medium text-gray-700 mb-2">Choose Color</h3>
+                <div className="grid grid-cols-5 gap-2 mb-3">
+                  {ROW_COLORS.map((color) => (
+                    <button
+                      key={color.id}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleColorSelect(color.class)
+                      }}
+                      className={`w-8 h-8 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-colors ${color.class}`}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
+
+                {/* Done button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setIsIconPickerOpen(false)
+                  }}
+                  className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs py-2 rounded transition-colors"
+                >
+                  Klar
+                </button>
               </div>
               {/* Small arrow pointing up */}
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-200"></div>
