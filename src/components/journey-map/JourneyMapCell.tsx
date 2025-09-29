@@ -1,7 +1,28 @@
 'use client'
 
-import { useState } from 'react'
-import { StarIcon, CheckCircleIcon, AlertCircleIcon, XCircleIcon, RefreshCwIcon, PauseCircleIcon } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
+import {
+  StarIcon, CheckCircleIcon, AlertCircleIcon, XCircleIcon, RefreshCwIcon, PauseCircleIcon, PlusIcon,
+  CloudIcon, HeartIcon, LightbulbIcon, ShoppingCartIcon, MessageCircleIcon, UserIcon,
+  MapPinIcon, PhoneIcon, MailIcon, GlobeIcon, SmartphoneIcon, MonitorIcon,
+  TruckIcon, CreditCardIcon, ShieldIcon, AwardIcon, ZapIcon, TrendingUpIcon,
+  CalendarIcon, ClockIcon, TargetIcon, BookIcon, CameraIcon, FileIcon,
+  HomeIcon, BuildingIcon, CarIcon, PlaneIcon, TrainIcon, WifiIcon,
+  BatteryIcon, SearchIcon, SettingsIcon, BellIcon, LockIcon, KeyIcon,
+  ThumbsUpIcon, ThumbsDownIcon, EyeIcon, MicIcon, VideoIcon, HeadphonesIcon,
+  SmileIcon, FrownIcon, MehIcon, SunIcon, MoonIcon,
+  AlertTriangleIcon, InfoIcon, MinusCircleIcon, HelpCircleIcon, FlagIcon,
+  TrendingDownIcon, ArrowUpIcon, ArrowDownIcon, CircleIcon, SquareIcon,
+  ZapIcon as FlashIcon, CoffeeIcon, UmbrellaIcon,
+  // CX-specific icons
+  UsersIcon, UserCheckIcon, UserXIcon, BrainIcon,
+  CompassIcon, RouteIcon, NavigationIcon, MegaphoneIcon,
+  MessageSquareIcon, ClipboardListIcon, ClipboardCheckIcon,
+  BarChartIcon, PieChartIcon, ActivityIcon,
+  RocketIcon, SparklesIcon, GiftIcon, BadgeIcon,
+  Angry as AngryFaceIcon, Laugh as LaughFaceIcon
+} from 'lucide-react'
 import { EmotionCurve } from './EmotionCurve'
 import { PainPointsVisualization } from './PainPointsVisualization'
 import { OpportunitiesVisualization } from './OpportunitiesVisualization'
@@ -12,11 +33,87 @@ interface JourneyMapCellProps {
   content: string
   type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics' | 'channels'
   onChange: (content: string) => void
+  onIconChange?: (icon: string) => void
+  selectedIcon?: string
   placeholder?: string
   stageCount?: number
   isEmotionCurveCell?: boolean
   backgroundColor?: string
 }
+
+const AVAILABLE_ICONS = [
+  { name: 'cloud', icon: CloudIcon },
+  { name: 'lightbulb', icon: LightbulbIcon },
+  { name: 'shopping-cart', icon: ShoppingCartIcon },
+  { name: 'message', icon: MessageCircleIcon },
+  { name: 'user', icon: UserIcon },
+  { name: 'map-pin', icon: MapPinIcon },
+  { name: 'phone', icon: PhoneIcon },
+  { name: 'mail', icon: MailIcon },
+  { name: 'globe', icon: GlobeIcon },
+  { name: 'smartphone', icon: SmartphoneIcon },
+  { name: 'monitor', icon: MonitorIcon },
+  { name: 'truck', icon: TruckIcon },
+  { name: 'credit-card', icon: CreditCardIcon },
+  { name: 'shield', icon: ShieldIcon },
+  { name: 'award', icon: AwardIcon },
+  { name: 'zap', icon: ZapIcon },
+  { name: 'trending-up', icon: TrendingUpIcon },
+  { name: 'calendar', icon: CalendarIcon },
+  { name: 'clock', icon: ClockIcon },
+  { name: 'target', icon: TargetIcon },
+  { name: 'book', icon: BookIcon },
+  { name: 'camera', icon: CameraIcon },
+  { name: 'file', icon: FileIcon },
+  { name: 'home', icon: HomeIcon },
+  { name: 'building', icon: BuildingIcon },
+  { name: 'car', icon: CarIcon },
+  { name: 'plane', icon: PlaneIcon },
+  { name: 'train', icon: TrainIcon },
+  { name: 'wifi', icon: WifiIcon },
+  { name: 'battery', icon: BatteryIcon },
+  { name: 'search', icon: SearchIcon },
+  { name: 'settings', icon: SettingsIcon },
+  { name: 'bell', icon: BellIcon },
+  { name: 'lock', icon: LockIcon },
+  { name: 'key', icon: KeyIcon },
+  { name: 'thumbs-up', icon: ThumbsUpIcon },
+  { name: 'thumbs-down', icon: ThumbsDownIcon },
+  { name: 'eye', icon: EyeIcon },
+  { name: 'mic', icon: MicIcon },
+  { name: 'video', icon: VideoIcon },
+  { name: 'headphones', icon: HeadphonesIcon },
+  // NEW CX-specific icons (unique names only)
+  { name: 'smile', icon: SmileIcon },
+  { name: 'frown', icon: FrownIcon },
+  { name: 'meh', icon: MehIcon },
+  { name: 'angry-face', icon: AngryFaceIcon },
+  { name: 'laugh-face', icon: LaughFaceIcon },
+  { name: 'heart-emotion', icon: HeartIcon },
+  { name: 'route', icon: RouteIcon },
+  { name: 'compass', icon: CompassIcon },
+  { name: 'navigation', icon: NavigationIcon },
+  { name: 'rocket', icon: RocketIcon },
+  { name: 'sparkles', icon: SparklesIcon },
+  { name: 'message-square', icon: MessageSquareIcon },
+  { name: 'brain', icon: BrainIcon },
+  { name: 'megaphone', icon: MegaphoneIcon },
+  { name: 'clipboard-list', icon: ClipboardListIcon },
+  { name: 'clipboard-check', icon: ClipboardCheckIcon },
+  { name: 'bar-chart', icon: BarChartIcon },
+  { name: 'pie-chart', icon: PieChartIcon },
+  { name: 'activity', icon: ActivityIcon },
+  { name: 'trending-down', icon: TrendingDownIcon },
+  { name: 'users', icon: UsersIcon },
+  { name: 'user-check', icon: UserCheckIcon },
+  { name: 'user-x', icon: UserXIcon },
+  { name: 'alert-triangle', icon: AlertTriangleIcon },
+  { name: 'info', icon: InfoIcon },
+  { name: 'flag', icon: FlagIcon },
+  { name: 'flash', icon: FlashIcon },
+  { name: 'badge', icon: BadgeIcon },
+  { name: 'gift', icon: GiftIcon },
+]
 
 const STATUS_OPTIONS = [
   { value: 'Good', label: 'Good', icon: CheckCircleIcon, color: 'text-green-600' },
@@ -30,12 +127,63 @@ export function JourneyMapCell({
   content,
   type,
   onChange,
+  onIconChange,
+  selectedIcon,
   placeholder = 'Click to edit...',
   stageCount = 4,
   isEmotionCurveCell = false,
   backgroundColor
 }: JourneyMapCellProps) {
   const [isStatusPickerOpen, setIsStatusPickerOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [isIconPickerOpen, setIsIconPickerOpen] = useState(false)
+  const [pickerPosition, setPickerPosition] = useState({ x: 0, y: 0 })
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const cellRef = useRef<HTMLDivElement>(null)
+
+  const handleStartEditing = () => {
+    setIsEditing(true)
+  }
+
+  const handlePlusClick = (e?: React.MouseEvent) => {
+    // Always show BOTH icon picker AND start editing
+    setIsIconPickerOpen(true)
+    setIsEditing(true)
+  }
+
+  const handleFinishEditing = () => {
+    setIsEditing(false)
+    // Close icon picker when finishing editing
+    setTimeout(() => setIsIconPickerOpen(false), 100)
+  }
+
+  const handleIconSelect = (iconName: string) => {
+    if (onIconChange) {
+      onIconChange(iconName)
+    }
+    setIsIconPickerOpen(false)
+    // Start editing after selecting icon
+    setIsEditing(true)
+  }
+
+  const getSelectedIconComponent = () => {
+    if (!selectedIcon) return null
+    const iconData = AVAILABLE_ICONS.find(icon => icon.name === selectedIcon)
+    if (!iconData) return null
+    const IconComponent = iconData.icon
+    return <IconComponent className="h-5 w-5 text-slate-600" />
+  }
+
+  useEffect(() => {
+    if (isEditing) {
+      if (type === 'number' && inputRef.current) {
+        inputRef.current.focus()
+      } else if (type === 'text' && textareaRef.current) {
+        textareaRef.current.focus()
+      }
+    }
+  }, [isEditing, type])
 
   const handleRatingClick = (rating: number) => {
     onChange(rating.toString())
@@ -119,14 +267,143 @@ export function JourneyMapCell({
 
 
     case 'number':
+      if (!content && !isEditing && !selectedIcon) {
+        return (
+          <>
+            <div
+              ref={cellRef}
+              className={`w-full min-h-20 group cursor-pointer transition-all duration-200 relative`}
+              onClick={handlePlusClick}
+            >
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div
+                  className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gray-50 group-hover:bg-gray-100 rounded-lg p-3 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePlusClick(e);
+                  }}
+                >
+                  <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90 pointer-events-none" />
+                </div>
+              </div>
+            </div>
+
+            {/* Simple icon picker above cell */}
+            {isIconPickerOpen && (
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2">
+                <div className="grid grid-cols-10 gap-1 w-80">
+                  {AVAILABLE_ICONS.map((iconData) => {
+                    const IconComponent = iconData.icon
+                    return (
+                      <button
+                        key={iconData.name}
+                        onClick={() => handleIconSelect(iconData.name)}
+                        className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
+                          selectedIcon === iconData.name ? 'bg-slate-100' : ''
+                        }`}
+                        title={iconData.name}
+                      >
+                        <IconComponent className="h-4 w-4 text-slate-600" />
+                      </button>
+                    )
+                  })}
+                  {selectedIcon && (
+                    <button
+                      onClick={() => handleIconSelect('')}
+                      className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
+                      title="Remove icon"
+                    >
+                      <XCircleIcon className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </>
+        )
+      }
+
+      // Show cell with only icon (no content)
+      if (!content && !isEditing && selectedIcon) {
+        return (
+          <div
+            className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative cursor-pointer hover:border-slate-300 hover:shadow-sm ${backgroundColor || 'bg-white'}`}
+            onClick={handleStartEditing}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              {getSelectedIconComponent()}
+            </div>
+          </div>
+        )
+      }
+
       return (
-        <input
-          type="number"
-          value={content}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className={`w-full min-h-20 p-2 text-sm text-gray-900 placeholder-gray-400 border border-gray-200 rounded text-center focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200 ${backgroundColor || 'bg-white'}`}
-        />
+        <div className="relative">
+          {/* Icon picker above cell */}
+          {isIconPickerOpen && (
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2 mb-2">
+              <div className="grid grid-cols-10 gap-1 w-80">
+                {AVAILABLE_ICONS.map((iconData) => {
+                  const IconComponent = iconData.icon
+                  return (
+                    <button
+                      key={iconData.name}
+                      onClick={() => handleIconSelect(iconData.name)}
+                      className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
+                        selectedIcon === iconData.name ? 'bg-slate-100' : ''
+                      }`}
+                      title={iconData.name}
+                    >
+                      <IconComponent className="h-4 w-4 text-slate-600" />
+                    </button>
+                  )
+                })}
+                {selectedIcon && (
+                  <button
+                    onClick={() => handleIconSelect('')}
+                    className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
+                    title="Remove icon"
+                  >
+                    <XCircleIcon className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              {/* Small arrow pointing up */}
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-200"></div>
+            </div>
+          )}
+
+          <div className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative ${backgroundColor || 'bg-white'}`}>
+            {selectedIcon && (
+              <div className="absolute top-2 right-2 z-10">
+                {getSelectedIconComponent()}
+              </div>
+            )}
+            <input
+              ref={inputRef}
+              type="number"
+              value={content}
+              onChange={(e) => onChange(e.target.value)}
+              onFocus={handleStartEditing}
+              onBlur={handleFinishEditing}
+              placeholder={placeholder}
+              className={`w-full min-h-20 p-2 ${selectedIcon ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded text-center focus:outline-none focus:ring-2 focus:ring-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200`}
+            />
+          </div>
+
+          {/* Icon picker toggle button - only show during editing if not already open */}
+          {isEditing && onIconChange && !isIconPickerOpen && (
+            <div className="absolute top-2 left-2 z-20">
+              <button
+                onClick={() => setIsIconPickerOpen(true)}
+                className="p-1 text-gray-400 hover:text-slate-600 hover:bg-gray-100 rounded transition-colors duration-200"
+                title="Add icon"
+              >
+                <PlusIcon className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+        </div>
       )
 
     case 'rating':
@@ -187,14 +464,108 @@ export function JourneyMapCell({
       )
 
     default: // 'text'
+      if (!content && !isEditing && !selectedIcon) {
+        return (
+          <div
+            className={`w-full min-h-20 group cursor-pointer transition-all duration-200 relative`}
+            onClick={handlePlusClick}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div
+                className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gray-50 group-hover:bg-gray-100 rounded-lg p-3 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePlusClick();
+                }}
+              >
+                <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90 pointer-events-none" />
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      // Show cell with only icon (no content)
+      if (!content && !isEditing && selectedIcon) {
+        return (
+          <div
+            className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative cursor-pointer hover:border-slate-300 hover:shadow-sm ${backgroundColor || 'bg-white'}`}
+            onClick={handleStartEditing}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              {getSelectedIconComponent()}
+            </div>
+          </div>
+        )
+      }
+
       return (
-        <textarea
-          value={content}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className={`w-full min-h-20 p-2 text-sm text-gray-900 placeholder-gray-400 border border-gray-200 rounded resize-none focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200 ${backgroundColor || 'bg-white'}`}
-          rows={3}
-        />
+        <div className="relative">
+          {/* Icon picker above cell */}
+          {isIconPickerOpen && (
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2 mb-2">
+              <div className="grid grid-cols-10 gap-1 w-80">
+                {AVAILABLE_ICONS.map((iconData) => {
+                  const IconComponent = iconData.icon
+                  return (
+                    <button
+                      key={iconData.name}
+                      onClick={() => handleIconSelect(iconData.name)}
+                      className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
+                        selectedIcon === iconData.name ? 'bg-slate-100' : ''
+                      }`}
+                      title={iconData.name}
+                    >
+                      <IconComponent className="h-4 w-4 text-slate-600" />
+                    </button>
+                  )
+                })}
+                {selectedIcon && (
+                  <button
+                    onClick={() => handleIconSelect('')}
+                    className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
+                    title="Remove icon"
+                  >
+                    <XCircleIcon className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              {/* Small arrow pointing up */}
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-200"></div>
+            </div>
+          )}
+
+          <div className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'}`}>
+            {selectedIcon && (
+              <div className="absolute top-2 right-2 z-10">
+                {getSelectedIconComponent()}
+              </div>
+            )}
+            <textarea
+              ref={textareaRef}
+              value={content}
+              onChange={(e) => onChange(e.target.value)}
+              onFocus={handleStartEditing}
+              onBlur={handleFinishEditing}
+              placeholder={placeholder}
+              className={`w-full min-h-20 p-2 ${selectedIcon ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded resize-none focus:outline-none focus:ring-2 focus:ring-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200`}
+              rows={3}
+            />
+          </div>
+
+          {/* Icon picker toggle button - only show during editing if not already open */}
+          {isEditing && onIconChange && !isIconPickerOpen && (
+            <div className="absolute top-2 left-2 z-20">
+              <button
+                onClick={() => setIsIconPickerOpen(true)}
+                className="p-1 text-gray-400 hover:text-slate-600 hover:bg-gray-100 rounded transition-colors duration-200"
+                title="Add icon"
+              >
+                <PlusIcon className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+        </div>
       )
   }
 }

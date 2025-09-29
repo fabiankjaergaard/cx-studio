@@ -1255,6 +1255,39 @@ export default function JourneyMapBuilderPage() {
     }, 2000) // Auto-save after 2 seconds of inactivity
   }
 
+  const handleIconChange = (rowId: string, cellId: string, icon: string) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId
+          ? {
+              ...row,
+              cells: row.cells.map(cell =>
+                cell.id === cellId ? { ...cell, icon } : cell
+              )
+            }
+          : row
+      ),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save after a short delay (debounced)
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+        // Don't show UI feedback for auto-save failures
+      })
+    }, 2000) // Auto-save after 2 seconds of inactivity
+  }
+
   const handlePhaseNameChange = (phaseId: string, newName: string) => {
     if (!journeyMap) return
 
@@ -2813,8 +2846,10 @@ export default function JourneyMapBuilderPage() {
                               content={cell.content}
                               type={row.type}
                               backgroundColor={row.color}
+                              selectedIcon={cell.icon}
                               onChange={(content) => handleCellChange(row.id, cell.id, content)}
-                              placeholder="Klicka för att redigera..."
+                              onIconChange={(icon) => handleIconChange(row.id, cell.id, icon)}
+                              placeholder=""
                             />
 
                             {/* Cell actions dropdown - appears on hover */}

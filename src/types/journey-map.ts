@@ -1,6 +1,7 @@
 export interface JourneyMapCell {
   id: string
   content: string
+  icon?: string
   isEditing?: boolean
 }
 
