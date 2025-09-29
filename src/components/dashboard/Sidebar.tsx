@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSidebar } from '@/contexts/SidebarContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { useGuidedTour } from '@/hooks/useGuidedTour'
@@ -50,7 +50,15 @@ import {
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 
-const getNavigation = (t: (key: string) => string) => [
+function SidebarContent() {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const { isCollapsed, setIsCollapsed } = useSidebar()
+  const { user, signOut } = useAuth()
+  const { startTour } = useGuidedTour()
+  const { t } = useLanguage()
+
+  const navigation = [
   { name: t('nav.dashboard'), href: '/', icon: HomeIcon, tourId: 'dashboard' },
   { name: t('nav.journeyMaps'), href: '/journey-maps', icon: RouteIcon, tourId: 'journey-maps' },
   { name: t('nav.templates'), href: '/templates', icon: BookTemplateIcon, tourId: 'templates' },
@@ -129,14 +137,6 @@ const getNavigation = (t: (key: string) => string) => [
   { name: 'Beta Tester', href: '/beta', icon: SparklesIcon, tourId: 'beta-tester' },
   { name: t('nav.settings'), href: '/settings', icon: SettingsIcon, tourId: 'settings' },
 ]
-
-export function Sidebar() {
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const { isCollapsed, setIsCollapsed } = useSidebar()
-  const { user, signOut } = useAuth()
-  const { startTour } = useGuidedTour()
-  const { t } = useLanguage()
   const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({})
   const [expandedCategories, setExpandedCategories] = useState<{[key: string]: boolean}>({})
   const [expandedSubItems, setExpandedSubItems] = useState<{[key: string]: boolean}>({})
@@ -181,7 +181,6 @@ export function Sidebar() {
 
   // Auto-expand sections based on current pathname
   useEffect(() => {
-    const navigation = getNavigation(t)
 
     const autoExpandSections = () => {
       const newExpandedSections: {[key: string]: boolean} = {}
@@ -243,7 +242,6 @@ export function Sidebar() {
     autoExpandSections()
   }, [pathname, t])
 
-  const navigation = getNavigation(t)
 
   return (
     <div className={cn(
@@ -895,5 +893,13 @@ export function Sidebar() {
       </Modal>
 
     </div>
+  )
+}
+
+export function Sidebar() {
+  return (
+    <Suspense fallback={<div className="w-64 bg-white border-r border-gray-200">Loading...</div>}>
+      <SidebarContent />
+    </Suspense>
   )
 }
