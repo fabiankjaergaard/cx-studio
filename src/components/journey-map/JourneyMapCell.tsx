@@ -362,15 +362,15 @@ export function JourneyMapCell({
     if (!cellRef.current) return { left: '50%', transform: 'translateX(-50%)', top: '0px' }
 
     const cellRect = cellRef.current.getBoundingClientRect()
-    const toolbarWidth = 320
-    const toolbarHeight = 200 // Approximate toolbar height
+    const toolbarWidth = 500 // Much wider toolbar
+    const toolbarHeight = 140 // Even shorter height
     const viewportWidth = window.innerWidth
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop
 
     // Calculate ideal center position above the cell with enough space to see the whole cell
     const cellCenterX = cellRect.left + cellRect.width / 2
     const toolbarLeft = cellCenterX - toolbarWidth / 2
-    const toolbarTop = cellRect.top - 330 // Position toolbar above so you can see the entire cell
+    const toolbarTop = cellRect.top - 330 // Much higher up to see the entire cell clearly
 
     // Check if toolbar would be clipped on the right
     if (toolbarLeft + toolbarWidth > viewportWidth - 20) {
@@ -826,16 +826,16 @@ export function JourneyMapCell({
       {isEditing && createPortal(
         <div
           data-toolbar
-          className="fixed z-[9999] bg-white border border-gray-200/60 rounded-xl shadow-xl backdrop-blur-sm p-4"
+          className="fixed z-[9999] bg-white border border-gray-200/60 rounded-xl shadow-xl backdrop-blur-sm p-3"
           style={{
             left: toolbarPosition.left,
             transform: toolbarPosition.transform,
             top: toolbarPosition.top,
-            width: '320px'
+            width: '500px'
           }}
         >
           {/* Icons */}
-          <div className="mb-3">
+          <div className="mb-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">Ikoner</label>
 
             {/* Recently Used Section */}
@@ -869,7 +869,7 @@ export function JourneyMapCell({
             {/* All Icons Section */}
             <div className="text-xs font-medium text-gray-600 mb-1">Alla ikoner</div>
             <div className="overflow-x-auto pb-2 -mx-1 px-1" style={{ scrollbarWidth: 'thin' }}>
-              <div className="grid grid-rows-2 grid-flow-col gap-1.5 w-max">
+              <div className="grid grid-rows-1 grid-flow-col gap-1.5 w-max">
                 <button
                   onClick={() => handleIconSelect('')}
                   className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 bg-white hover:bg-gray-100 hover:border-gray-400 transition-all shadow-sm"
@@ -899,9 +899,9 @@ export function JourneyMapCell({
           </div>
 
           {/* Colors */}
-          <div className="mb-4">
+          <div className="mb-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">Bakgrundsfärg</label>
-            <div className="grid grid-cols-8 gap-1.5">
+            <div className="grid grid-cols-12 gap-1.5">
               <button
                 onClick={() => handleColorSelect('')}
                 className="w-8 h-8 rounded-lg border-2 border-dashed border-gray-300 bg-white hover:border-gray-400 transition-all shadow-sm flex items-center justify-center"
@@ -925,18 +925,23 @@ export function JourneyMapCell({
           </div>
 
           {/* Action buttons */}
-          <div className="flex justify-between items-center border-t border-gray-100 pt-3 -mx-4 px-4 -mb-4 pb-4 bg-gray-50/30 rounded-b-xl">
+          <div className="flex justify-between items-center border-t border-gray-100 pt-2 -mx-3 px-3 -mb-3 pb-3 bg-gray-50/30 rounded-b-xl">
             <button
               onClick={() => {
-                if (onClear) {
-                  onClear()
-                }
+                // Clear text content
+                onChange('')
+                // Clear icon
                 setCurrentIcon(undefined)
                 if (onIconChange) {
                   onIconChange('')
                 }
+                // Clear background color
                 if (onColorChange) {
                   onColorChange('')
+                }
+                // Clear via parent callback if provided
+                if (onClear) {
+                  onClear()
                 }
                 setIsEditing(false)
               }}
