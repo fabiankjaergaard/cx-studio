@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import {
   StarIcon, CheckCircleIcon, AlertCircleIcon, XCircleIcon, RefreshCwIcon, PauseCircleIcon, PlusIcon,
   CloudIcon, HeartIcon, LightbulbIcon, ShoppingCartIcon, MessageCircleIcon, UserIcon,
@@ -21,7 +23,9 @@ import {
   MessageSquareIcon, ClipboardListIcon, ClipboardCheckIcon,
   BarChartIcon, PieChartIcon, ActivityIcon,
   RocketIcon, SparklesIcon, GiftIcon, BadgeIcon,
-  Angry as AngryFaceIcon, Laugh as LaughFaceIcon
+  Angry as AngryFaceIcon, Laugh as LaughFaceIcon,
+  // Resize & drag icons
+  ChevronLeftIcon, ChevronRightIcon
 } from 'lucide-react'
 import { EmotionCurve } from './EmotionCurve'
 import { PainPointsVisualization } from './PainPointsVisualization'
@@ -30,15 +34,21 @@ import { MetricsVisualization } from './MetricsVisualization'
 import { ChannelsVisualization } from './ChannelsVisualization'
 
 interface JourneyMapCellProps {
+  id: string
   content: string
   type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics' | 'channels'
   onChange: (content: string) => void
   onIconChange?: (icon: string) => void
+  onClear?: () => void
   selectedIcon?: string
   placeholder?: string
   stageCount?: number
   isEmotionCurveCell?: boolean
   backgroundColor?: string
+  colSpan?: number
+  onColSpanChange?: (colSpan: number) => void
+  isDraggable?: boolean
+  position?: number
 }
 
 const AVAILABLE_ICONS = [
@@ -124,23 +134,101 @@ const STATUS_OPTIONS = [
 ]
 
 export function JourneyMapCell({
+  id,
   content,
   type,
   onChange,
   onIconChange,
+  onClear,
   selectedIcon,
   placeholder = 'Click to edit...',
   stageCount = 4,
   isEmotionCurveCell = false,
-  backgroundColor
+  backgroundColor,
+  colSpan = 1,
+  onColSpanChange,
+  isDraggable = false,
+  position
 }: JourneyMapCellProps) {
   const [isStatusPickerOpen, setIsStatusPickerOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [isIconPickerOpen, setIsIconPickerOpen] = useState(false)
   const [pickerPosition, setPickerPosition] = useState({ x: 0, y: 0 })
+  const [isResizing, setIsResizing] = useState(false)
+  const [startX, setStartX] = useState(0)
+  const [startColSpan, setStartColSpan] = useState(colSpan)
+  const [justSelectedIcon, setJustSelectedIcon] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const cellRef = useRef<HTMLDivElement>(null)
+
+  // Drag & drop functionality
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: id,
+    disabled: !isDraggable || isEditing
+  })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  // Resize functionality
+  const handleResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    console.log('Resize start', { colSpan, clientX: e.clientX })
+    setIsResizing(true)
+    setStartX(e.clientX)
+    setStartColSpan(colSpan)
+
+    const handleResizeMove = (e: MouseEvent) => {
+      if (!isResizing && !document.body.classList.contains('resizing')) return
+      e.preventDefault()
+
+      const deltaX = e.clientX - startX
+      // More sensitive calculation
+      const cellWidth = 150 // Smaller threshold for more responsive resizing
+      const deltaColumns = Math.floor(deltaX / cellWidth)
+      const newColSpan = Math.max(1, Math.min(8, startColSpan + deltaColumns)) // Max 8 columns
+
+      console.log('Resize move', { deltaX, deltaColumns, newColSpan, currentColSpan: colSpan })
+
+      if (newColSpan !== colSpan && onColSpanChange) {
+        onColSpanChange(newColSpan)
+      }
+    }
+
+    const handleResizeEnd = () => {
+      console.log('Resize end')
+      setIsResizing(false)
+      document.body.classList.remove('resizing')
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+      document.removeEventListener('mousemove', handleResizeMove)
+      document.removeEventListener('mouseup', handleResizeEnd)
+    }
+
+    document.body.classList.add('resizing')
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+    document.addEventListener('mousemove', handleResizeMove)
+    document.addEventListener('mouseup', handleResizeEnd)
+  }
+
+  // Cleanup event listeners on unmount
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove('resizing')
+    }
+  }, [])
 
   const handleStartEditing = () => {
     setIsEditing(true)
@@ -156,6 +244,40 @@ export function JourneyMapCell({
     setIsEditing(false)
     // Close icon picker when finishing editing
     setTimeout(() => setIsIconPickerOpen(false), 100)
+
+    // Only auto-clear if both content AND icon are empty
+    // Don't clear if user just selected an icon (even without text)
+    if (!content.trim() && !selectedIcon && !justSelectedIcon && onClear) {
+      setTimeout(() => onClear(), 100)
+    }
+
+    // Reset the justSelectedIcon flag
+    if (justSelectedIcon) {
+      setTimeout(() => setJustSelectedIcon(false), 200)
+    }
+  }
+
+  const handleContentChange = (newContent: string) => {
+    onChange(newContent)
+
+    // Only auto-clear if content becomes empty AND we're not in editing mode
+    // This prevents clearing when user just selected an icon and is about to type
+    if (!newContent.trim() && !isEditing && (selectedIcon || (colSpan && colSpan > 1)) && onClear) {
+      setTimeout(() => onClear(), 100) // Small delay to ensure smooth UX
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // If cell is empty and user presses Delete or Backspace, clear the cell entirely
+    if ((e.key === 'Delete' || e.key === 'Backspace') && !content.trim() && !selectedIcon && onClear) {
+      e.preventDefault()
+      onClear()
+    }
+    // If user presses Ctrl+Delete or Cmd+Delete, always clear cell
+    else if ((e.key === 'Delete') && (e.ctrlKey || e.metaKey) && onClear) {
+      e.preventDefault()
+      onClear()
+    }
   }
 
   const handleIconSelect = (iconName: string) => {
@@ -163,8 +285,15 @@ export function JourneyMapCell({
       onIconChange(iconName)
     }
     setIsIconPickerOpen(false)
-    // Start editing after selecting icon
+    // Mark that we just selected an icon to prevent auto-clearing
+    setJustSelectedIcon(true)
+    // Keep editing mode active and focus textarea after selecting icon
     setIsEditing(true)
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus()
+      }
+    }, 50)
   }
 
   const getSelectedIconComponent = () => {
@@ -391,18 +520,6 @@ export function JourneyMapCell({
             />
           </div>
 
-          {/* Icon picker toggle button - only show during editing if not already open */}
-          {isEditing && onIconChange && !isIconPickerOpen && (
-            <div className="absolute top-2 left-2 z-20">
-              <button
-                onClick={() => setIsIconPickerOpen(true)}
-                className="p-1 text-gray-400 hover:text-slate-600 hover:bg-gray-100 rounded transition-colors duration-200"
-                title="Add icon"
-              >
-                <PlusIcon className="h-4 w-4" />
-              </button>
-            </div>
-          )}
         </div>
       )
 
@@ -500,7 +617,11 @@ export function JourneyMapCell({
       }
 
       return (
-        <div className="relative">
+        <div
+          ref={setNodeRef}
+          style={style}
+          className={`relative ${isDragging ? 'z-50' : ''} ${isDragging ? 'opacity-75' : ''}`}
+        >
           {/* Icon picker above cell */}
           {isIconPickerOpen && (
             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2 mb-2">
@@ -535,7 +656,11 @@ export function JourneyMapCell({
             </div>
           )}
 
-          <div className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'}`}>
+          <div
+            className={`w-full h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} relative ${isDraggable && !isEditing && (content || selectedIcon) ? 'cursor-grab active:cursor-grabbing' : ''}`}
+            {...(isDraggable && !isEditing && (content || selectedIcon) ? { ...attributes, ...listeners } : {})}
+          >
+
             {selectedIcon && (
               <div className="absolute top-2 right-2 z-10">
                 {getSelectedIconComponent()}
@@ -544,25 +669,30 @@ export function JourneyMapCell({
             <textarea
               ref={textareaRef}
               value={content}
-              onChange={(e) => onChange(e.target.value)}
+              onChange={(e) => handleContentChange(e.target.value)}
               onFocus={handleStartEditing}
               onBlur={handleFinishEditing}
+              onKeyDown={handleKeyDown}
               placeholder={placeholder}
-              className={`w-full min-h-20 p-2 ${selectedIcon ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded resize-none focus:outline-none focus:ring-2 focus:ring-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200`}
+              className={`w-full h-full p-2 ${selectedIcon ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded resize-none focus:outline-none focus:ring-2 focus:ring-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200`}
               rows={3}
             />
           </div>
 
-          {/* Icon picker toggle button - only show during editing if not already open */}
-          {isEditing && onIconChange && !isIconPickerOpen && (
-            <div className="absolute top-2 left-2 z-20">
-              <button
-                onClick={() => setIsIconPickerOpen(true)}
-                className="p-1 text-gray-400 hover:text-slate-600 hover:bg-gray-100 rounded transition-colors duration-200"
-                title="Add icon"
-              >
-                <PlusIcon className="h-4 w-4" />
-              </button>
+
+          {/* Drag-to-resize handle - only show when not editing and has content */}
+          {onColSpanChange && !isEditing && (content || selectedIcon) && (
+            <div
+              className={`absolute top-0 right-0 w-4 h-full cursor-col-resize z-30 opacity-0 group-hover:opacity-100 hover:opacity-100 transition-all duration-300 flex items-center justify-center ${isResizing ? 'opacity-100 bg-slate-100' : ''}`}
+              onMouseDown={handleResizeStart}
+              title="Drag to resize column width"
+            >
+              {/* Center grip dots */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col space-y-0.5">
+                <div className={`w-1 h-1 bg-slate-400 hover:bg-slate-600 rounded-full transition-all duration-300 ${isResizing ? 'bg-slate-700' : ''}`}></div>
+                <div className={`w-1 h-1 bg-slate-400 hover:bg-slate-600 rounded-full transition-all duration-300 ${isResizing ? 'bg-slate-700' : ''}`}></div>
+                <div className={`w-1 h-1 bg-slate-400 hover:bg-slate-600 rounded-full transition-all duration-300 ${isResizing ? 'bg-slate-700' : ''}`}></div>
+              </div>
             </div>
           )}
         </div>

@@ -2,6 +2,25 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import {
+  useSortable,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -98,9 +117,11 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string, 
         description: category.description,
         type: category.type,
         color: category.color,
-        cells: baseJourneyMap.stages.map(stage => ({
+        cells: baseJourneyMap.stages.map((stage, index) => ({
           id: `${category.id}-${stage.id}`,
-          content: getTemplateContent(templateId, category.id, stage.id)
+          content: getTemplateContent(templateId, category.id, stage.id),
+          colSpan: 1,
+          position: index
         }))
       }))
       break
@@ -122,9 +143,11 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string, 
         description: category.description,
         type: category.type,
         color: category.color,
-        cells: baseJourneyMap.stages.map(stage => ({
+        cells: baseJourneyMap.stages.map((stage, index) => ({
           id: `${category.id}-${stage.id}`,
-          content: getTemplateContent(templateId, category.id, stage.id)
+          content: getTemplateContent(templateId, category.id, stage.id),
+          colSpan: 1,
+          position: index
         }))
       }))
       break
@@ -147,9 +170,11 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string, 
         description: category.description,
         type: category.type,
         color: category.color,
-        cells: baseJourneyMap.stages.map(stage => ({
+        cells: baseJourneyMap.stages.map((stage, index) => ({
           id: `${category.id}-${stage.id}`,
-          content: getTemplateContent(templateId, category.id, stage.id)
+          content: getTemplateContent(templateId, category.id, stage.id),
+          colSpan: 1,
+          position: index
         }))
       }))
       break
@@ -174,9 +199,11 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string, 
         description: category.description,
         type: category.type,
         color: category.color,
-        cells: baseJourneyMap.stages.map(stage => ({
+        cells: baseJourneyMap.stages.map((stage, index) => ({
           id: `${category.id}-${stage.id}`,
-          content: getTemplateContent(templateId, category.id, stage.id)
+          content: getTemplateContent(templateId, category.id, stage.id),
+          colSpan: 1,
+          position: index
         }))
       }))
       break
@@ -200,9 +227,11 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string, 
         description: category.description,
         type: category.type,
         color: category.color,
-        cells: baseJourneyMap.stages.map(stage => ({
+        cells: baseJourneyMap.stages.map((stage, index) => ({
           id: `${category.id}-${stage.id}`,
-          content: getTemplateContent(templateId, category.id, stage.id)
+          content: getTemplateContent(templateId, category.id, stage.id),
+          colSpan: 1,
+          position: index
         }))
       }))
       break
@@ -227,9 +256,11 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string, 
         description: category.description,
         type: category.type,
         color: category.color,
-        cells: baseJourneyMap.stages.map(stage => ({
+        cells: baseJourneyMap.stages.map((stage, index) => ({
           id: `${category.id}-${stage.id}`,
-          content: getTemplateContent(templateId, category.id, stage.id)
+          content: getTemplateContent(templateId, category.id, stage.id),
+          colSpan: 1,
+          position: index
         }))
       }))
       break
@@ -255,9 +286,11 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string, 
         description: category.description,
         type: category.type,
         color: category.color,
-        cells: baseJourneyMap.stages.map(stage => ({
+        cells: baseJourneyMap.stages.map((stage, index) => ({
           id: `${category.id}-${stage.id}`,
-          content: getTemplateContent(templateId, category.id, stage.id)
+          content: getTemplateContent(templateId, category.id, stage.id),
+          colSpan: 1,
+          position: index
         }))
       }))
       break
@@ -281,9 +314,11 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string, 
         description: category.description,
         type: category.type,
         color: category.color,
-        cells: baseJourneyMap.stages.map(stage => ({
+        cells: baseJourneyMap.stages.map((stage, index) => ({
           id: `${category.id}-${stage.id}`,
-          content: getTemplateContent(templateId, category.id, stage.id)
+          content: getTemplateContent(templateId, category.id, stage.id),
+          colSpan: 1,
+          position: index
         }))
       }))
       break
@@ -306,9 +341,11 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string, 
         description: category.description,
         type: category.type,
         color: category.color,
-        cells: baseJourneyMap.stages.map(stage => ({
+        cells: baseJourneyMap.stages.map((stage, index) => ({
           id: `${category.id}-${stage.id}`,
-          content: getTemplateContent(templateId, category.id, stage.id)
+          content: getTemplateContent(templateId, category.id, stage.id),
+          colSpan: 1,
+          position: index
         }))
       }))
       break
@@ -333,9 +370,11 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string, 
         description: category.description,
         type: category.type,
         color: category.color,
-        cells: baseJourneyMap.stages.map(stage => ({
+        cells: baseJourneyMap.stages.map((stage, index) => ({
           id: `${category.id}-${stage.id}`,
-          content: getTemplateContent(templateId, category.id, stage.id)
+          content: getTemplateContent(templateId, category.id, stage.id),
+          colSpan: 1,
+          position: index
         }))
       }))
       break
@@ -359,9 +398,11 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string, 
         description: category.description,
         type: category.type,
         color: category.color,
-        cells: baseJourneyMap.stages.map(stage => ({
+        cells: baseJourneyMap.stages.map((stage, index) => ({
           id: `${category.id}-${stage.id}`,
-          content: getTemplateContent(templateId, category.id, stage.id)
+          content: getTemplateContent(templateId, category.id, stage.id),
+          colSpan: 1,
+          position: index
         }))
       }))
       break
@@ -385,9 +426,11 @@ const createJourneyMapFromTemplate = (templateId: string, templateName: string, 
         description: category.description,
         type: category.type,
         color: category.color,
-        cells: baseJourneyMap.stages.map(stage => ({
+        cells: baseJourneyMap.stages.map((stage, index) => ({
           id: `${category.id}-${stage.id}`,
-          content: getTemplateContent(templateId, category.id, stage.id)
+          content: getTemplateContent(templateId, category.id, stage.id),
+          colSpan: 1,
+          position: index
         }))
       }))
       break
@@ -1288,6 +1331,145 @@ export default function JourneyMapBuilderPage() {
     }, 2000) // Auto-save after 2 seconds of inactivity
   }
 
+  const handleCellColSpanChange = (rowId: string, cellId: string, colSpan: number) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId
+          ? {
+              ...row,
+              cells: row.cells.map(cell =>
+                cell.id === cellId ? { ...cell, colSpan } : cell
+              )
+            }
+          : row
+      ),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save after a short delay (debounced)
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+      })
+    }, 2000)
+  }
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (!over || !journeyMap) return
+
+    const activeId = active.id as string
+    const overId = over.id as string
+
+    if (activeId === overId) return
+
+    // Find which row contains the active and over cells
+    let sourceRow: JourneyMapRow | null = null
+    let targetRow: JourneyMapRow | null = null
+
+    for (const row of journeyMap.rows) {
+      if (row.cells.some(cell => cell.id === activeId)) {
+        sourceRow = row
+      }
+      if (row.cells.some(cell => cell.id === overId)) {
+        targetRow = row
+      }
+    }
+
+    if (!sourceRow || !targetRow || sourceRow.id !== targetRow.id) {
+      // Don't allow dragging between different rows for now
+      return
+    }
+
+    // Reorder cells within the same row
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row => {
+        if (row.id === sourceRow!.id) {
+          const oldIndex = row.cells.findIndex(cell => cell.id === activeId)
+          const newIndex = row.cells.findIndex(cell => cell.id === overId)
+
+          const reorderedCells = arrayMove(row.cells, oldIndex, newIndex)
+
+          // Update positions
+          return {
+            ...row,
+            cells: reorderedCells.map((cell, index) => ({
+              ...cell,
+              position: index
+            }))
+          }
+        }
+        return row
+      }),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+      })
+    }, 2000)
+  }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
+  const handleCellClear = (rowId: string, cellId: string) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId
+          ? {
+              ...row,
+              cells: row.cells.map(cell =>
+                cell.id === cellId
+                  ? { ...cell, content: '', icon: undefined, colSpan: 1 }
+                  : cell
+              )
+            }
+          : row
+      ),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save after a short delay (debounced)
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+      })
+    }, 2000)
+  }
+
   const handlePhaseNameChange = (phaseId: string, newName: string) => {
     if (!journeyMap) return
 
@@ -1564,7 +1746,10 @@ export default function JourneyMapBuilderPage() {
       color: rowToDuplicate.color,
       cells: rowToDuplicate.cells.map((cell, index) => ({
         id: `${newRowId}-${journeyMap.stages[index]?.id || index}`,
-        content: cell.content
+        content: cell.content,
+        colSpan: cell.colSpan || 1,
+        position: index,
+        icon: cell.icon
       }))
     }
 
@@ -2043,9 +2228,11 @@ export default function JourneyMapBuilderPage() {
       description: item.description,
       type: item.rowType as any,
       color: item.color,
-      cells: journeyMap.stages.map(stage => ({
+      cells: journeyMap.stages.map((stage, index) => ({
         id: `${newRowId}-${stage.id}`,
-        content: ''
+        content: '',
+        colSpan: 1,
+        position: index
       }))
     }
 
@@ -2068,9 +2255,11 @@ export default function JourneyMapBuilderPage() {
       description: item.description,
       type: item.rowType as any,
       color: item.color,
-      cells: journeyMap.stages.map(stage => ({
+      cells: journeyMap.stages.map((stage, index) => ({
         id: `${newRowId}-${stage.id}`,
-        content: ''
+        content: '',
+        colSpan: 1,
+        position: index
       }))
     }
 
@@ -2433,7 +2622,12 @@ export default function JourneyMapBuilderPage() {
             <Card className="overflow-hidden journey-map-content rounded-t-none border-t-0" data-export="journey-map">
               <CardContent className="p-0 border-b-2 border-gray-200">
                 <div className="overflow-x-auto">
-                  <table className="w-full border-collapse">
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <table className="w-full border-collapse">
                 {/* Phase Header Row */}
                 <thead>
                   {/* Phases Row */}
@@ -2817,11 +3011,30 @@ export default function JourneyMapBuilderPage() {
                         </td>
                       ) : (
                         // For other types, show individual cells
-                        row.cells.map((cell, cellIndex) => (
+                        <SortableContext
+                          items={row.cells.map(cell => cell.id)}
+                          strategy={horizontalListSortingStrategy}
+                        >
+                          {row.cells.map((cell, cellIndex) => {
+                            // Skip rendering if this cell is covered by a previous spanning cell
+                            let isSkipped = false
+                            for (let i = 0; i < cellIndex; i++) {
+                              const prevCell = row.cells[i]
+                              const prevColSpan = prevCell.colSpan || 1
+                              if (i + prevColSpan > cellIndex) {
+                                isSkipped = true
+                                break
+                              }
+                            }
+
+                            if (isSkipped) return null
+
+                            return (
                           <td
                             key={cell.id}
                             className={`${isCompactView ? 'p-1' : 'p-2'} ${showGridLines ? 'border-r border-gray-200' : ''} align-middle group relative`}
                             data-onboarding={rowIndex === 0 && cellIndex === 0 ? "cells" : undefined}
+                            colSpan={cell.colSpan || 1}
                             onDragOver={(e) => handleStageHover(e, cellIndex)}
                             onDrop={(e) => {
                               const rect = e.currentTarget.getBoundingClientRect()
@@ -2843,13 +3056,19 @@ export default function JourneyMapBuilderPage() {
                               </>
                             )}
                             <JourneyMapCellComponent
+                              id={cell.id}
                               content={cell.content}
                               type={row.type}
                               backgroundColor={row.color}
                               selectedIcon={cell.icon}
                               onChange={(content) => handleCellChange(row.id, cell.id, content)}
                               onIconChange={(icon) => handleIconChange(row.id, cell.id, icon)}
+                              onClear={() => handleCellClear(row.id, cell.id)}
                               placeholder=""
+                              colSpan={cell.colSpan}
+                              onColSpanChange={(colSpan) => handleCellColSpanChange(row.id, cell.id, colSpan)}
+                              isDraggable={true}
+                              position={cell.position}
                             />
 
                             {/* Cell actions dropdown - appears on hover */}
@@ -2897,7 +3116,9 @@ export default function JourneyMapBuilderPage() {
                             </div>
                             )}
                           </td>
-                        ))
+                            )
+                          })}
+                        </SortableContext>
                       )}
                         <td className={`${isCompactView ? 'p-2' : 'p-4'} bg-slate-50`}></td>
                       </tr>
@@ -2917,6 +3138,7 @@ export default function JourneyMapBuilderPage() {
                   
                 </tbody>
               </table>
+                  </DndContext>
             </div>
           </CardContent>
           </Card>

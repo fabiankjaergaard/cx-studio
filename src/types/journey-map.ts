@@ -3,6 +3,8 @@ export interface JourneyMapCell {
   content: string
   icon?: string
   isEditing?: boolean
+  colSpan?: number  // How many columns this cell spans
+  position?: number // Position within the row (for drag & drop)
 }
 
 export interface JourneyMapRow {
