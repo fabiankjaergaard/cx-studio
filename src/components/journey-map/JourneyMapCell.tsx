@@ -51,37 +51,20 @@ interface JourneyMapCellProps {
   position?: number
 }
 
+// Actions icons - matching the drag-and-drop panel from the image
 const AVAILABLE_ICONS = [
-  { name: 'cloud', icon: CloudIcon },
-  { name: 'lightbulb', icon: LightbulbIcon },
-  { name: 'shopping-cart', icon: ShoppingCartIcon },
-  { name: 'message', icon: MessageCircleIcon },
-  { name: 'user', icon: UserIcon },
-  { name: 'map-pin', icon: MapPinIcon },
-  { name: 'phone', icon: PhoneIcon },
-  { name: 'mail', icon: MailIcon },
-  { name: 'globe', icon: GlobeIcon },
-  { name: 'smartphone', icon: SmartphoneIcon },
+  // First row - basic actions/objects
   { name: 'monitor', icon: MonitorIcon },
-  { name: 'truck', icon: TruckIcon },
-  { name: 'credit-card', icon: CreditCardIcon },
-  { name: 'shield', icon: ShieldIcon },
-  { name: 'award', icon: AwardIcon },
-  { name: 'zap', icon: ZapIcon },
-  { name: 'trending-up', icon: TrendingUpIcon },
-  { name: 'calendar', icon: CalendarIcon },
-  { name: 'clock', icon: ClockIcon },
-  { name: 'target', icon: TargetIcon },
-  { name: 'book', icon: BookIcon },
   { name: 'camera', icon: CameraIcon },
   { name: 'file', icon: FileIcon },
   { name: 'home', icon: HomeIcon },
   { name: 'building', icon: BuildingIcon },
   { name: 'car', icon: CarIcon },
   { name: 'plane', icon: PlaneIcon },
-  { name: 'train', icon: TrainIcon },
   { name: 'wifi', icon: WifiIcon },
-  { name: 'battery', icon: BatteryIcon },
+  { name: 'video', icon: VideoIcon },
+
+  // Second row - tools/actions
   { name: 'search', icon: SearchIcon },
   { name: 'settings', icon: SettingsIcon },
   { name: 'bell', icon: BellIcon },
@@ -91,9 +74,9 @@ const AVAILABLE_ICONS = [
   { name: 'thumbs-down', icon: ThumbsDownIcon },
   { name: 'eye', icon: EyeIcon },
   { name: 'mic', icon: MicIcon },
-  { name: 'video', icon: VideoIcon },
   { name: 'headphones', icon: HeadphonesIcon },
-  // NEW CX-specific icons (unique names only)
+
+  // Third row - emotions
   { name: 'smile', icon: SmileIcon },
   { name: 'frown', icon: FrownIcon },
   { name: 'meh', icon: MehIcon },
@@ -102,18 +85,20 @@ const AVAILABLE_ICONS = [
   { name: 'heart-emotion', icon: HeartIcon },
   { name: 'route', icon: RouteIcon },
   { name: 'compass', icon: CompassIcon },
-  { name: 'navigation', icon: NavigationIcon },
   { name: 'rocket', icon: RocketIcon },
-  { name: 'sparkles', icon: SparklesIcon },
-  { name: 'message-square', icon: MessageSquareIcon },
+
+  // Fourth row - communication/business
+  { name: 'message', icon: MessageCircleIcon },
   { name: 'brain', icon: BrainIcon },
   { name: 'megaphone', icon: MegaphoneIcon },
   { name: 'clipboard-list', icon: ClipboardListIcon },
   { name: 'clipboard-check', icon: ClipboardCheckIcon },
   { name: 'bar-chart', icon: BarChartIcon },
-  { name: 'pie-chart', icon: PieChartIcon },
   { name: 'activity', icon: ActivityIcon },
+  { name: 'trending-up', icon: TrendingUpIcon },
   { name: 'trending-down', icon: TrendingDownIcon },
+
+  // Fifth row - users/info
   { name: 'users', icon: UsersIcon },
   { name: 'user-check', icon: UserCheckIcon },
   { name: 'user-x', icon: UserXIcon },
@@ -439,7 +424,7 @@ export function JourneyMapCell({
             {/* Simple icon picker above cell */}
             {isIconPickerOpen && (
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2">
-                <div className="grid grid-cols-10 gap-1 w-80">
+                <div className="grid grid-cols-9 gap-1 w-80">
                   {AVAILABLE_ICONS.map((iconData) => {
                     const IconComponent = iconData.icon
                     return (
@@ -487,7 +472,7 @@ export function JourneyMapCell({
               className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2 mb-2"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="grid grid-cols-10 gap-1 w-80">
+              <div className="grid grid-cols-9 gap-1 w-80">
                 {AVAILABLE_ICONS.map((iconData) => {
                   const IconComponent = iconData.icon
                   return (
@@ -634,7 +619,7 @@ export function JourneyMapCell({
               className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2 mb-2"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="grid grid-cols-10 gap-1 w-80">
+              <div className="grid grid-cols-9 gap-1 w-80">
                 {AVAILABLE_ICONS.map((iconData) => {
                   const IconComponent = iconData.icon
                   return (
