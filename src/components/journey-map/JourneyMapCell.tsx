@@ -338,9 +338,21 @@ export function JourneyMapCell({
     console.log('handleColorSelect called with:', colorClass)
     console.log('Current icon state before color change:', { currentIcon, selectedIcon })
 
-    // Update parent component
-    if (onColorChange) {
-      onColorChange(colorClass)
+    // CRITICAL: If we have a currentIcon but no selectedIcon, we need to save the icon first!
+    if (currentIcon && !selectedIcon && onIconChange) {
+      console.log('Saving currentIcon before color change:', currentIcon)
+      onIconChange(currentIcon)
+      // Small delay to ensure icon is saved before color change
+      setTimeout(() => {
+        if (onColorChange) {
+          onColorChange(colorClass)
+        }
+      }, 10)
+    } else {
+      // Normal case - just update color
+      if (onColorChange) {
+        onColorChange(colorClass)
+      }
     }
 
     // DON'T close icon picker - let user choose more things
