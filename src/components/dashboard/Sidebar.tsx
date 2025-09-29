@@ -126,7 +126,7 @@ const getNavigation = (t: (key: string) => string) => [
     ]
   },
   { name: t('nav.glossary'), href: '/glossary', icon: BookOpenIcon, tourId: 'glossary' },
-  { name: 'Beta-testare', href: '/beta', icon: SparklesIcon },
+  { name: 'Beta Tester', href: '/beta', icon: SparklesIcon, tourId: 'beta-tester' },
   { name: t('nav.settings'), href: '/settings', icon: SettingsIcon, tourId: 'settings' },
 ]
 
@@ -385,7 +385,7 @@ export function Sidebar() {
                           <div className="flex items-center justify-end space-x-2">
                             {item.name === t('nav.insights') && (
                               <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
-                                Beta
+                                WIP
                               </span>
                             )}
                             <div className="w-4 h-4 flex items-center justify-center">
@@ -841,7 +841,7 @@ export function Sidebar() {
             <div className="flex items-center justify-center space-x-3 mb-2">
               <h3 className="text-2xl font-bold text-gray-900">Insights</h3>
               <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-semibold rounded-full">
-                Beta
+                WIP
               </span>
             </div>
             <p className="text-lg text-gray-600">Work in Progress</p>
@@ -849,10 +849,10 @@ export function Sidebar() {
 
           <div className="space-y-6 max-w-2xl mx-auto">
             <div className="text-center space-y-4">
-              <h4 className="text-lg font-semibold text-gray-900">We're actively working on this section!</h4>
+              <h4 className="text-lg font-semibold text-gray-900">This section is under active development!</h4>
               <p className="text-gray-700 leading-relaxed">
-                The Insights section is currently under development. While some features may be missing or not work as expected,
-                we encourage you to explore and test around. Your feedback helps us improve the experience.
+                The Insights section is currently being built. While some features may be missing or not work as expected,
+                you're encouraged to explore and test around. Your feedback helps improve the experience.
               </p>
             </div>
 
@@ -864,7 +864,7 @@ export function Sidebar() {
                   <ul className="text-gray-700 text-sm space-y-1">
                     <li>• Some features may be incomplete or in testing</li>
                     <li>• Data and functionality might change during development</li>
-                    <li>• Your exploration and feedback helps us build better features</li>
+                    <li>• Your exploration and feedback helps build better features</li>
                     <li>• Most functionality is still being built and refined</li>
                   </ul>
                 </div>

@@ -62,6 +62,14 @@ const getTourSteps = (t: (key: string) => string) => [
     }
   },
   {
+    element: '[data-tour="beta-tester"]',
+    popover: {
+      title: 'Beta Tester',
+      description: 'Access beta testing information, feedback submission, and help improve the platform. This section contains important information for beta testers.',
+      position: 'bottom'
+    }
+  },
+  {
     element: '[data-tour="settings"]',
     popover: {
       title: t('tour.settings'),

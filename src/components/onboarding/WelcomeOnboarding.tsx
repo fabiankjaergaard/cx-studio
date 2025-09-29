@@ -14,8 +14,11 @@ interface WelcomeOnboardingProps {
 
 export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: WelcomeOnboardingProps) {
   const { t } = useLanguage()
-  
+
   if (!isOpen) return null
+
+  // Check if user is a beta tester
+  const isBetaTester = userName === 'betatester@example.com'
 
   const handleStartTour = () => {
     onClose()
@@ -26,8 +29,8 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/20 backdrop-blur-sm">
-      <div className="mx-4 max-w-lg w-full max-h-[80vh] bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/20 backdrop-blur-sm overflow-hidden">
+      <div className="mx-4 max-w-2xl w-full max-h-[85vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
         <div className="relative bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-6 text-white">
           <button
@@ -44,17 +47,23 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
               className="h-40 w-auto mx-auto filter brightness-0 invert"
             />
             <h1 className="text-lg font-bold mb-1 flex items-center justify-center gap-2 -mt-10">
-              {t('onboarding.welcome')}{userName ? `, ${userName.split('@')[0]}` : ''}!
+              {isBetaTester
+                ? `Hello there, betatester!`
+                : `${t('onboarding.welcome')}${userName ? `, ${userName.split('@')[0]}` : ''}!`
+              }
               <Zap className="w-4 h-4 text-slate-200" />
             </h1>
             <p className="text-slate-200 text-sm">
-              {t('onboarding.subtitle')}
+              {isBetaTester
+                ? 'Your platform for Customer Experience Excellence'
+                : t('onboarding.subtitle')
+              }
             </p>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1">
           {/* Video Placeholder */}
           <div className="mb-5 relative">
             <div className="h-40 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg overflow-hidden relative">
@@ -85,9 +94,35 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
 
           {/* Description */}
           <div className="text-center mb-6">
-            <p className="text-gray-600 leading-relaxed">
-              {t('onboarding.description')}
-            </p>
+            {isBetaTester ? (
+              <div className="space-y-4">
+                <p className="text-gray-700 leading-relaxed font-medium">
+                  Learn how to use Kustra to create exceptional customer experiences
+                </p>
+
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-left">
+                  <div className="flex items-start space-x-2">
+                    <Zap className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-amber-900 mb-2">Welcome to Beta Testing!</h4>
+                      <p className="text-amber-800 text-sm leading-relaxed mb-3">
+                        You're experiencing Kustra in its beta phase. Some features may not work as expected or might be missing entirely.
+                        Additionally, certain UI elements are not fully finalized, resulting in a more stripped-down design and limited color palette.
+                        This is all part of the beta testing process to help us identify what needs to be improved.
+                      </p>
+                      <p className="text-amber-800 text-sm leading-relaxed">
+                        <strong>Your feedback is greatly appreciated!</strong> You can find more information about how to submit feedback
+                        in the menu under "Beta Tester".
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-gray-600 leading-relaxed">
+                {t('onboarding.description')}
+              </p>
+            )}
           </div>
 
           {/* CTA Button */}
