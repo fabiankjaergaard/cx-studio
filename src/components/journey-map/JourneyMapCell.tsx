@@ -158,6 +158,7 @@ export function JourneyMapCell({
   const [startX, setStartX] = useState(0)
   const [startColSpan, setStartColSpan] = useState(colSpan)
   const [justSelectedIcon, setJustSelectedIcon] = useState(false)
+  const [localSelectedIcon, setLocalSelectedIcon] = useState<string | undefined>(selectedIcon)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const cellRef = useRef<HTMLDivElement>(null)
@@ -245,12 +246,6 @@ export function JourneyMapCell({
     // Close icon picker when finishing editing
     setTimeout(() => setIsIconPickerOpen(false), 100)
 
-    // Only auto-clear if both content AND icon are empty
-    // Don't clear if user just selected an icon (even without text)
-    if (!content.trim() && !selectedIcon && !justSelectedIcon && onClear) {
-      setTimeout(() => onClear(), 100)
-    }
-
     // Reset the justSelectedIcon flag
     if (justSelectedIcon) {
       setTimeout(() => setJustSelectedIcon(false), 200)
@@ -259,12 +254,6 @@ export function JourneyMapCell({
 
   const handleContentChange = (newContent: string) => {
     onChange(newContent)
-
-    // Only auto-clear if content becomes empty AND we're not in editing mode
-    // This prevents clearing when user just selected an icon and is about to type
-    if (!newContent.trim() && !isEditing && (selectedIcon || (colSpan && colSpan > 1)) && onClear) {
-      setTimeout(() => onClear(), 100) // Small delay to ensure smooth UX
-    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -281,28 +270,44 @@ export function JourneyMapCell({
   }
 
   const handleIconSelect = (iconName: string) => {
+    // Update local state immediately
+    setLocalSelectedIcon(iconName || undefined)
+
+    // Update parent component
     if (onIconChange) {
       onIconChange(iconName)
     }
+
     setIsIconPickerOpen(false)
-    // Mark that we just selected an icon to prevent auto-clearing
     setJustSelectedIcon(true)
-    // Keep editing mode active and focus textarea after selecting icon
+
+    // Keep editing mode active
     setIsEditing(true)
-    setTimeout(() => {
-      if (textareaRef.current) {
-        textareaRef.current.focus()
-      }
-    }, 50)
+
+    // Focus textarea after selecting icon (unless removing icon)
+    if (iconName) {
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.focus()
+        }
+      }, 50)
+    }
   }
 
   const getSelectedIconComponent = () => {
-    if (!selectedIcon) return null
-    const iconData = AVAILABLE_ICONS.find(icon => icon.name === selectedIcon)
+    // Use local state as primary, fallback to prop
+    const currentIcon = localSelectedIcon || selectedIcon
+    if (!currentIcon) return null
+    const iconData = AVAILABLE_ICONS.find(icon => icon.name === currentIcon)
     if (!iconData) return null
     const IconComponent = iconData.icon
     return <IconComponent className="h-5 w-5 text-slate-600" />
   }
+
+  // Sync local state with prop
+  useEffect(() => {
+    setLocalSelectedIcon(selectedIcon)
+  }, [selectedIcon])
 
   useEffect(() => {
     if (isEditing) {
@@ -452,19 +457,6 @@ export function JourneyMapCell({
         )
       }
 
-      // Show cell with only icon (no content)
-      if (!content && !isEditing && selectedIcon) {
-        return (
-          <div
-            className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative cursor-pointer hover:border-slate-300 hover:shadow-sm ${backgroundColor || 'bg-white'}`}
-            onClick={handleStartEditing}
-          >
-            <div className="absolute inset-0 flex items-center justify-center">
-              {getSelectedIconComponent()}
-            </div>
-          </div>
-        )
-      }
 
       return (
         <div className="relative">
@@ -479,7 +471,7 @@ export function JourneyMapCell({
                       key={iconData.name}
                       onClick={() => handleIconSelect(iconData.name)}
                       className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
-                        selectedIcon === iconData.name ? 'bg-slate-100' : ''
+                        (localSelectedIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
                       }`}
                       title={iconData.name}
                     >
@@ -487,7 +479,7 @@ export function JourneyMapCell({
                     </button>
                   )
                 })}
-                {selectedIcon && (
+                {(localSelectedIcon || selectedIcon) && (
                   <button
                     onClick={() => handleIconSelect('')}
                     className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
@@ -503,7 +495,7 @@ export function JourneyMapCell({
           )}
 
           <div className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative ${backgroundColor || 'bg-white'}`}>
-            {selectedIcon && (
+            {(localSelectedIcon || selectedIcon) && (
               <div className="absolute top-2 right-2 z-10">
                 {getSelectedIconComponent()}
               </div>
@@ -581,42 +573,9 @@ export function JourneyMapCell({
       )
 
     default: // 'text'
-      if (!content && !isEditing && !selectedIcon) {
+      // Show cell if we have content OR icon (local or prop) OR are editing
+      if (content || localSelectedIcon || selectedIcon || isEditing) {
         return (
-          <div
-            className={`w-full min-h-20 group cursor-pointer transition-all duration-200 relative`}
-            onClick={handlePlusClick}
-          >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div
-                className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gray-50 group-hover:bg-gray-100 rounded-lg p-3 cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePlusClick();
-                }}
-              >
-                <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90 pointer-events-none" />
-              </div>
-            </div>
-          </div>
-        )
-      }
-
-      // Show cell with only icon (no content)
-      if (!content && !isEditing && selectedIcon) {
-        return (
-          <div
-            className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative cursor-pointer hover:border-slate-300 hover:shadow-sm ${backgroundColor || 'bg-white'}`}
-            onClick={handleStartEditing}
-          >
-            <div className="absolute inset-0 flex items-center justify-center">
-              {getSelectedIconComponent()}
-            </div>
-          </div>
-        )
-      }
-
-      return (
         <div
           ref={setNodeRef}
           style={style}
@@ -633,7 +592,7 @@ export function JourneyMapCell({
                       key={iconData.name}
                       onClick={() => handleIconSelect(iconData.name)}
                       className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
-                        selectedIcon === iconData.name ? 'bg-slate-100' : ''
+                        (localSelectedIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
                       }`}
                       title={iconData.name}
                     >
@@ -641,7 +600,7 @@ export function JourneyMapCell({
                     </button>
                   )
                 })}
-                {selectedIcon && (
+                {(localSelectedIcon || selectedIcon) && (
                   <button
                     onClick={() => handleIconSelect('')}
                     className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
@@ -659,9 +618,14 @@ export function JourneyMapCell({
           <div
             className={`w-full h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} relative ${isDraggable && !isEditing && (content || selectedIcon) ? 'cursor-grab active:cursor-grabbing' : ''}`}
             {...(isDraggable && !isEditing && (content || selectedIcon) ? { ...attributes, ...listeners } : {})}
+            onClick={() => {
+              if (!isEditing && (localSelectedIcon || selectedIcon) && !content) {
+                handleStartEditing()
+              }
+            }}
           >
 
-            {selectedIcon && (
+            {(localSelectedIcon || selectedIcon) && (
               <div className="absolute top-2 right-2 z-10">
                 {getSelectedIconComponent()}
               </div>
@@ -695,6 +659,27 @@ export function JourneyMapCell({
               </div>
             </div>
           )}
+        </div>
+      )
+      }
+
+      // Show plus icon if nothing is selected and not editing
+      return (
+        <div
+          className={`w-full min-h-20 group cursor-pointer transition-all duration-200 relative`}
+          onClick={handlePlusClick}
+        >
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div
+              className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gray-50 group-hover:bg-gray-100 rounded-lg p-3 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePlusClick();
+              }}
+            >
+              <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90 pointer-events-none" />
+            </div>
+          </div>
         </div>
       )
   }
