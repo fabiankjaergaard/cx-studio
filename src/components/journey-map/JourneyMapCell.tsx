@@ -53,63 +53,119 @@ interface JourneyMapCellProps {
   position?: number
 }
 
-// Actions icons - matching the drag-and-drop panel from the image
+// Actions icons - CX-optimized ordering with most relevant icons first
 const AVAILABLE_ICONS = [
-  // First row - basic actions/objects
-  { name: 'monitor', icon: MonitorIcon },
-  { name: 'camera', icon: CameraIcon },
-  { name: 'file', icon: FileIcon },
-  { name: 'home', icon: HomeIcon },
-  { name: 'building', icon: BuildingIcon },
-  { name: 'car', icon: CarIcon },
-  { name: 'plane', icon: PlaneIcon },
-  { name: 'wifi', icon: WifiIcon },
-  { name: 'video', icon: VideoIcon },
-
-  // Second row - tools/actions
-  { name: 'search', icon: SearchIcon },
-  { name: 'settings', icon: SettingsIcon },
-  { name: 'bell', icon: BellIcon },
-  { name: 'lock', icon: LockIcon },
-  { name: 'key', icon: KeyIcon },
-  { name: 'thumbs-up', icon: ThumbsUpIcon },
-  { name: 'thumbs-down', icon: ThumbsDownIcon },
-  { name: 'eye', icon: EyeIcon },
-  { name: 'mic', icon: MicIcon },
-  { name: 'headphones', icon: HeadphonesIcon },
-
-  // Third row - emotions
+  // MOST CX-RELEVANT - Customer emotions & feedback
   { name: 'smile', icon: SmileIcon },
   { name: 'frown', icon: FrownIcon },
   { name: 'meh', icon: MehIcon },
   { name: 'angry-face', icon: AngryFaceIcon },
   { name: 'laugh-face', icon: LaughFaceIcon },
   { name: 'heart-emotion', icon: HeartIcon },
+  { name: 'thumbs-up', icon: ThumbsUpIcon },
+  { name: 'thumbs-down', icon: ThumbsDownIcon },
+
+  // CX Journey & touchpoints
+  { name: 'users', icon: UsersIcon },
+  { name: 'user', icon: UserIcon },
+  { name: 'user-check', icon: UserCheckIcon },
+  { name: 'user-x', icon: UserXIcon },
   { name: 'route', icon: RouteIcon },
   { name: 'compass', icon: CompassIcon },
-  { name: 'rocket', icon: RocketIcon },
+  { name: 'navigation', icon: NavigationIcon },
+  { name: 'map-pin', icon: MapPinIcon },
+  { name: 'target', icon: TargetIcon },
 
-  // Fourth row - communication/business
+  // Communication & feedback channels
   { name: 'message', icon: MessageCircleIcon },
-  { name: 'brain', icon: BrainIcon },
+  { name: 'message-square', icon: MessageSquareIcon },
+  { name: 'phone', icon: PhoneIcon },
+  { name: 'mail', icon: MailIcon },
   { name: 'megaphone', icon: MegaphoneIcon },
-  { name: 'clipboard-list', icon: ClipboardListIcon },
-  { name: 'clipboard-check', icon: ClipboardCheckIcon },
+  { name: 'bell', icon: BellIcon },
+
+  // Analytics & insights
+  { name: 'brain', icon: BrainIcon },
   { name: 'bar-chart', icon: BarChartIcon },
+  { name: 'pie-chart', icon: PieChartIcon },
   { name: 'activity', icon: ActivityIcon },
   { name: 'trending-up', icon: TrendingUpIcon },
   { name: 'trending-down', icon: TrendingDownIcon },
+  { name: 'eye', icon: EyeIcon },
 
-  // Fifth row - users/info
-  { name: 'users', icon: UsersIcon },
-  { name: 'user-check', icon: UserCheckIcon },
-  { name: 'user-x', icon: UserXIcon },
+  // Digital touchpoints
+  { name: 'monitor', icon: MonitorIcon },
+  { name: 'smartphone', icon: SmartphoneIcon },
+  { name: 'globe', icon: GlobeIcon },
+  { name: 'wifi', icon: WifiIcon },
+  { name: 'video', icon: VideoIcon },
+  { name: 'search', icon: SearchIcon },
+
+  // Actions & processes
+  { name: 'shopping-cart', icon: ShoppingCartIcon },
+  { name: 'credit-card', icon: CreditCardIcon },
+  { name: 'clipboard-list', icon: ClipboardListIcon },
+  { name: 'clipboard-check', icon: ClipboardCheckIcon },
+  { name: 'check-circle', icon: CheckCircleIcon },
+  { name: 'x-circle', icon: XCircleIcon },
+
+  // Status & alerts
   { name: 'alert-triangle', icon: AlertTriangleIcon },
+  { name: 'alert-circle', icon: AlertCircleIcon },
   { name: 'info', icon: InfoIcon },
+  { name: 'help-circle', icon: HelpCircleIcon },
   { name: 'flag', icon: FlagIcon },
-  { name: 'flash', icon: FlashIcon },
+
+  // Achievements & goals
+  { name: 'star', icon: StarIcon },
+  { name: 'award', icon: AwardIcon },
   { name: 'badge', icon: BadgeIcon },
   { name: 'gift', icon: GiftIcon },
+  { name: 'rocket', icon: RocketIcon },
+  { name: 'sparkles', icon: SparklesIcon },
+  { name: 'zap', icon: ZapIcon },
+
+  // SUPPORTING ICONS - General business & objects
+  { name: 'lightbulb', icon: LightbulbIcon },
+  { name: 'calendar', icon: CalendarIcon },
+  { name: 'clock', icon: ClockIcon },
+  { name: 'book', icon: BookIcon },
+  { name: 'file', icon: FileIcon },
+  { name: 'camera', icon: CameraIcon },
+  { name: 'settings', icon: SettingsIcon },
+
+  // Transport & location
+  { name: 'home', icon: HomeIcon },
+  { name: 'building', icon: BuildingIcon },
+  { name: 'car', icon: CarIcon },
+  { name: 'plane', icon: PlaneIcon },
+  { name: 'train', icon: TrainIcon },
+  { name: 'truck', icon: TruckIcon },
+
+  // Tech & security
+  { name: 'lock', icon: LockIcon },
+  { name: 'key', icon: KeyIcon },
+  { name: 'shield', icon: ShieldIcon },
+  { name: 'battery', icon: BatteryIcon },
+  { name: 'cloud', icon: CloudIcon },
+
+  // Misc & lifestyle
+  { name: 'mic', icon: MicIcon },
+  { name: 'headphones', icon: HeadphonesIcon },
+  { name: 'coffee', icon: CoffeeIcon },
+  { name: 'sun', icon: SunIcon },
+  { name: 'moon', icon: MoonIcon },
+  { name: 'umbrella', icon: UmbrellaIcon },
+
+  // Shapes & arrows
+  { name: 'circle', icon: CircleIcon },
+  { name: 'square', icon: SquareIcon },
+  { name: 'arrow-up', icon: ArrowUpIcon },
+  { name: 'arrow-down', icon: ArrowDownIcon },
+  { name: 'flash', icon: FlashIcon },
+  { name: 'minus-circle', icon: MinusCircleIcon },
+  { name: 'refresh-cw', icon: RefreshCwIcon },
+  { name: 'pause-circle', icon: PauseCircleIcon },
 ]
 
 const STATUS_OPTIONS = [
@@ -145,6 +201,24 @@ export function JourneyMapCell({
   const [currentIcon, setCurrentIcon] = useState<string | undefined>(selectedIcon)
   const [modalContent, setModalContent] = useState<string>(content)
   const [toolbarPosition, setToolbarPosition] = useState({ left: '50%', transform: 'translateX(-50%)', top: '0px' })
+  const [recentlyUsedIcons, setRecentlyUsedIcons] = useState<string[]>([])
+
+  // Load recently used icons from localStorage on mount
+  useEffect(() => {
+    const loadRecentIcons = () => {
+      try {
+        const saved = localStorage.getItem('cx-app-recent-icons')
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          setRecentlyUsedIcons(Array.isArray(parsed) ? parsed : [])
+        }
+      } catch (error) {
+        console.warn('Failed to load recent icons:', error)
+      }
+    }
+
+    loadRecentIcons()
+  }, [])
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const cellRef = useRef<HTMLDivElement>(null)
@@ -329,6 +403,18 @@ export function JourneyMapCell({
 
   const handlePlusClick = (e?: React.MouseEvent) => {
     setIsEditing(true)
+
+    // Refresh recent icons when starting to edit
+    try {
+      const saved = localStorage.getItem('cx-app-recent-icons')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        setRecentlyUsedIcons(Array.isArray(parsed) ? parsed : [])
+      }
+    } catch (error) {
+      console.warn('Failed to refresh recent icons:', error)
+    }
+
     // Calculate position when editing starts
     setTimeout(() => {
       setToolbarPosition(calculateToolbarPosition())
@@ -355,6 +441,20 @@ export function JourneyMapCell({
     // Save to parent component to persist the change
     if (onIconChange) {
       onIconChange(iconName)
+    }
+
+    // Update recently used icons (only for non-empty icons)
+    if (iconName && iconName.trim()) {
+      setRecentlyUsedIcons(prev => {
+        const updated = [iconName, ...prev.filter(icon => icon !== iconName)].slice(0, 8) // Keep max 8 recent
+        // Save to localStorage
+        try {
+          localStorage.setItem('cx-app-recent-icons', JSON.stringify(updated))
+        } catch (error) {
+          console.warn('Failed to save recent icons:', error)
+        }
+        return updated
+      })
     }
 
     // Force a small re-render to ensure icon appears immediately
@@ -737,31 +837,64 @@ export function JourneyMapCell({
           {/* Icons */}
           <div className="mb-3">
             <label className="block text-sm font-medium text-gray-700 mb-2">Ikoner</label>
-            <div className="grid grid-cols-8 gap-1.5">
-              <button
-                onClick={() => handleIconSelect('')}
-                className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 bg-white hover:bg-gray-100 hover:border-gray-400 transition-all shadow-sm"
-                title="Ingen ikon"
-              >
-                <XCircleIcon className="h-4 w-4 text-gray-400" />
-              </button>
-              {AVAILABLE_ICONS.slice(0, 15).map((iconData) => {
-                const IconComponent = iconData.icon
-                return (
-                  <button
-                    key={iconData.name}
-                    onClick={() => handleIconSelect(iconData.name)}
-                    className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-all shadow-sm ${
-                      (currentIcon || selectedIcon) === iconData.name
-                        ? 'bg-blue-500 border-blue-500 text-white'
-                        : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
-                    }`}
-                    title={iconData.name}
-                  >
-                    <IconComponent className="h-4 w-4" />
-                  </button>
-                )
-              })}
+
+            {/* Recently Used Section */}
+            {recentlyUsedIcons.length > 0 && (
+              <div className="mb-3">
+                <div className="text-xs font-medium text-gray-600 mb-1">Senast använda</div>
+                <div className="flex gap-1.5 flex-wrap">
+                  {recentlyUsedIcons.map((iconName) => {
+                    const iconData = AVAILABLE_ICONS.find(icon => icon.name === iconName)
+                    if (!iconData) return null
+                    const IconComponent = iconData.icon
+                    return (
+                      <button
+                        key={`recent-${iconName}`}
+                        onClick={() => handleIconSelect(iconName)}
+                        className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-all shadow-sm ${
+                          (currentIcon || selectedIcon) === iconName
+                            ? 'bg-blue-500 border-blue-500 text-white'
+                            : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
+                        }`}
+                        title={iconName}
+                      >
+                        <IconComponent className="h-4 w-4" />
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* All Icons Section */}
+            <div className="text-xs font-medium text-gray-600 mb-1">Alla ikoner</div>
+            <div className="overflow-x-auto pb-2 -mx-1 px-1" style={{ scrollbarWidth: 'thin' }}>
+              <div className="grid grid-rows-2 grid-flow-col gap-1.5 w-max">
+                <button
+                  onClick={() => handleIconSelect('')}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 bg-white hover:bg-gray-100 hover:border-gray-400 transition-all shadow-sm"
+                  title="Ingen ikon"
+                >
+                  <XCircleIcon className="h-4 w-4 text-gray-400" />
+                </button>
+                {AVAILABLE_ICONS.map((iconData) => {
+                  const IconComponent = iconData.icon
+                  return (
+                    <button
+                      key={iconData.name}
+                      onClick={() => handleIconSelect(iconData.name)}
+                      className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-all shadow-sm ${
+                        (currentIcon || selectedIcon) === iconData.name
+                          ? 'bg-blue-500 border-blue-500 text-white'
+                          : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
+                      }`}
+                      title={iconData.name}
+                    >
+                      <IconComponent className="h-4 w-4" />
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </div>
 
