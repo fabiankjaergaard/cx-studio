@@ -141,15 +141,13 @@ export function JourneyMapCell({
   const [isStatusPickerOpen, setIsStatusPickerOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [isIconPickerOpen, setIsIconPickerOpen] = useState(false)
-  const [pickerPosition, setPickerPosition] = useState({ x: 0, y: 0 })
   const [isResizing, setIsResizing] = useState(false)
-  const [startX, setStartX] = useState(0)
-  const [startColSpan, setStartColSpan] = useState(colSpan)
   const [currentIcon, setCurrentIcon] = useState<string | undefined>(selectedIcon)
+  const [modalContent, setModalContent] = useState<string>(content)
+  const [toolbarPosition, setToolbarPosition] = useState({ left: '50%', transform: 'translateX(-50%)', top: '0px' })
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const cellRef = useRef<HTMLDivElement>(null)
-  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Drag & drop functionality
   const {
@@ -233,127 +231,103 @@ export function JourneyMapCell({
     }
   }, [])
 
-  // Close icon picker when clicking outside
+  // Recalculate toolbar position on resize/scroll when editing
   useEffect(() => {
-    if (!isIconPickerOpen) return
+    if (!isEditing) return
 
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element
-
-      // Don't close if clicking on the cell itself or the icon picker
-      if (cellRef.current?.contains(target)) return
-
-      // Don't close if clicking on any icon picker popup
-      const iconPickers = document.querySelectorAll('[data-icon-picker]')
-      for (const picker of iconPickers) {
-        if (picker.contains(target)) return
-      }
-
-      // Close the icon picker
-      setIsIconPickerOpen(false)
+    const handleReposition = () => {
+      setToolbarPosition(calculateToolbarPosition())
     }
 
-    // Add event listener after a short delay to avoid immediate closure
-    const timer = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside)
-    }, 100)
+    window.addEventListener('resize', handleReposition)
+    window.addEventListener('scroll', handleReposition)
 
     return () => {
-      clearTimeout(timer)
-      document.removeEventListener('mousedown', handleClickOutside)
+      window.removeEventListener('resize', handleReposition)
+      window.removeEventListener('scroll', handleReposition)
     }
-  }, [isIconPickerOpen])
+  }, [isEditing])
 
   const handleStartEditing = () => {
     setIsEditing(true)
   }
 
+  // Calculate toolbar position to prevent clipping
+  const calculateToolbarPosition = () => {
+    if (!cellRef.current) return { left: '50%', transform: 'translateX(-50%)', top: '0px' }
+
+    const cellRect = cellRef.current.getBoundingClientRect()
+    const toolbarWidth = 320
+    const toolbarHeight = 200 // Approximate toolbar height
+    const viewportWidth = window.innerWidth
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+
+    // Calculate ideal center position above the cell with enough space to see the whole cell
+    const cellCenterX = cellRect.left + cellRect.width / 2
+    const toolbarLeft = cellCenterX - toolbarWidth / 2
+    const toolbarTop = cellRect.top - 330 // Position toolbar above so you can see the entire cell
+
+    // Check if toolbar would be clipped on the right
+    if (toolbarLeft + toolbarWidth > viewportWidth - 20) {
+      // Position toolbar so it's 20px from right edge but still above the cell
+      const adjustedLeft = viewportWidth - toolbarWidth - 20
+      return {
+        left: `${adjustedLeft}px`,
+        transform: 'none',
+        top: `${toolbarTop}px`
+      }
+    }
+
+    // Check if toolbar would be clipped on the left
+    if (toolbarLeft < 20) {
+      // Position toolbar 20px from left edge but still above the cell
+      return {
+        left: '20px',
+        transform: 'none',
+        top: `${toolbarTop}px`
+      }
+    }
+
+    // Default centered position above the cell with enough space
+    return {
+      left: `${cellCenterX}px`,
+      transform: 'translateX(-50%)',
+      top: `${toolbarTop}px`
+    }
+  }
+
   const handlePlusClick = (e?: React.MouseEvent) => {
-    setIsIconPickerOpen(true)
     setIsEditing(true)
+    // Calculate position when editing starts
+    setTimeout(() => {
+      setToolbarPosition(calculateToolbarPosition())
+      if (type === 'number' && inputRef.current) {
+        inputRef.current.focus()
+      } else if (textareaRef.current) {
+        textareaRef.current.focus()
+      }
+    }, 0)
   }
 
   const handleFinishEditing = () => {
-    // Simply close editing - NEVER auto-clear anything
     setIsEditing(false)
-  }
-
-  const handleTextBlur = () => {
-    // If no text content, clear everything (icon and background color)
-    if (!content.trim()) {
-      console.log('No text content, clearing icon and background color')
-      if (onIconChange) {
-        onIconChange('') // Clear the icon
-      }
-      setCurrentIcon(undefined) // Clear local icon state
-      if (onColorChange) {
-        onColorChange('') // Clear background color
-      }
-    }
-    handleFinishEditing()
   }
 
   const handleContentChange = (newContent: string) => {
     onChange(newContent)
-
-    // If content becomes empty, clear icon and background color immediately
-    if (!newContent.trim()) {
-      console.log('Content is empty, clearing icon and background color')
-      if (onIconChange) {
-        onIconChange('') // Clear the icon
-      }
-      setCurrentIcon(undefined) // Clear local icon state
-      if (onColorChange) {
-        onColorChange('') // Clear background color
-      }
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Only clear cell if user presses Ctrl+Delete or Cmd+Delete (explicit clear command)
-    if ((e.key === 'Delete') && (e.ctrlKey || e.metaKey) && onClear) {
-      e.preventDefault()
-      console.log('Ctrl+Delete pressed, clearing entire cell')
-      if (onIconChange) {
-        onIconChange('') // Clear the icon
-      }
-      setCurrentIcon(undefined) // Clear local icon state
-      if (onColorChange) {
-        onColorChange('') // Clear the background color
-      }
-      onClear() // Clear the entire cell
-    }
-    // For regular Delete/Backspace, let the normal text deletion happen - don't clear the whole cell
   }
 
   const handleIconSelect = (iconName: string) => {
-    console.log('handleIconSelect called with:', iconName)
-
-    // Update local state immediately so icon shows right away
     setCurrentIcon(iconName || undefined)
-    console.log('Set currentIcon to:', iconName || undefined)
-
-    // ALWAYS save to parent component immediately - this makes the icon permanent
     if (onIconChange) {
       onIconChange(iconName)
-      console.log('IMMEDIATELY saved icon to parent:', iconName)
     }
-
-    // DON'T close icon picker - let user choose color too
-    // setIsIconPickerOpen(false)
-
-    // Stay in editing mode - but don't force focus to textarea since user might want to select color next
     setIsEditing(true)
   }
 
   const handleColorSelect = (colorClass: string) => {
-    console.log('handleColorSelect called with:', colorClass)
-    console.log('Current icon state:', { currentIcon, selectedIcon })
-
-    // Simply update the background color - no other side effects
     if (onColorChange) {
       onColorChange(colorClass)
-      console.log('Color updated to:', colorClass)
     }
   }
 
@@ -371,32 +345,43 @@ export function JourneyMapCell({
     return <IconComponent className="h-5 w-5 text-slate-600" />
   }
 
-  // Sync currentIcon with prop when it changes, but never reset to undefined if we have a current icon
+  // Sync currentIcon with prop when it changes
   useEffect(() => {
-    console.log('Syncing currentIcon with selectedIcon:', { currentIcon, selectedIcon })
-    // Only update currentIcon if selectedIcon has a REAL value (not undefined)
-    // Never reset currentIcon to undefined if it currently has a value
     if (selectedIcon !== undefined) {
       setCurrentIcon(selectedIcon)
-      console.log('Updated currentIcon from selectedIcon:', selectedIcon)
-    } else if (currentIcon === undefined && selectedIcon === undefined) {
-      // Only set to undefined if both are undefined (initial state)
-      setCurrentIcon(undefined)
-      console.log('Both icons undefined, setting currentIcon to undefined')
-    } else {
-      console.log('Preserving currentIcon because selectedIcon is undefined but currentIcon has value:', currentIcon)
     }
   }, [selectedIcon])
 
+  // Sync modalContent with content when modal opens
   useEffect(() => {
-    if (isEditing) {
-      if (type === 'number' && inputRef.current) {
-        inputRef.current.focus()
-      } else if (type === 'text' && textareaRef.current) {
-        textareaRef.current.focus()
-      }
+    if (isIconPickerOpen) {
+      setModalContent(content)
     }
-  }, [isEditing, type])
+  }, [isIconPickerOpen, content])
+
+  // Close icon picker when clicking outside
+  useEffect(() => {
+    if (!isIconPickerOpen) return
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      if (cellRef.current?.contains(target)) return
+      const iconPickers = document.querySelectorAll('[data-icon-picker]')
+      for (const picker of iconPickers) {
+        if (picker.contains(target)) return
+      }
+      setIsIconPickerOpen(false)
+    }
+
+    const timer = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside)
+    }, 100)
+
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isIconPickerOpen])
 
   const handleRatingClick = (rating: number) => {
     onChange(rating.toString())
@@ -420,7 +405,8 @@ export function JourneyMapCell({
     )
   }
 
-  switch (type) {
+  function renderCellContent() {
+    switch (type) {
     case 'emoji':
       if (isEmotionCurveCell) {
         // Parse emotions from content (comma separated), preserving empty slots
@@ -482,201 +468,40 @@ export function JourneyMapCell({
     case 'number':
       if (!content && !isEditing && !selectedIcon) {
         return (
-          <>
-            <div
-              ref={cellRef}
-              className={`w-full min-h-20 group cursor-pointer transition-all duration-200 relative`}
-              onClick={handlePlusClick}
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div
-                  className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gray-50 group-hover:bg-gray-100 rounded-lg p-3 cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePlusClick(e);
-                  }}
-                >
-                  <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90 pointer-events-none" />
-                </div>
+          <div
+            ref={cellRef}
+            className={`w-full min-h-20 group cursor-pointer transition-all duration-200 relative border border-gray-200 rounded ${backgroundColor || 'bg-white'} hover:border-slate-300 hover:shadow-sm`}
+            onClick={handlePlusClick}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div
+                className="opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer p-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePlusClick();
+                }}
+              >
+                <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90 pointer-events-none" />
               </div>
             </div>
-
-            {/* Icon and color picker above cell */}
-            {isIconPickerOpen && (
-              <div data-icon-picker className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-3">
-                {/* Icons Section */}
-                <div className="mb-3">
-                  <h3 className="text-xs font-medium text-gray-700 mb-2">Choose Icon</h3>
-                  <div className="grid grid-cols-9 gap-1 w-80">
-                    {AVAILABLE_ICONS.map((iconData) => {
-                      const IconComponent = iconData.icon
-                      return (
-                        <button
-                          key={iconData.name}
-                          onClick={(e) => {
-                          console.log('Icon button clicked:', iconData.name)
-                          e.stopPropagation()
-                          handleIconSelect(iconData.name)
-                        }}
-                          className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
-                            (currentIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
-                          }`}
-                          title={iconData.name}
-                        >
-                          <IconComponent className="h-4 w-4 text-slate-600" />
-                        </button>
-                      )
-                    })}
-                    {(currentIcon || selectedIcon) && (
-                      <button
-                        onClick={(e) => {
-                        e.stopPropagation()
-                        handleIconSelect('')
-                      }}
-                        className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
-                        title="Remove icon"
-                      >
-                        <XCircleIcon className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Colors Section */}
-                <div className="border-t border-gray-100 pt-3">
-                  <h3 className="text-xs font-medium text-gray-700 mb-2">Choose Color</h3>
-                  <div className="grid grid-cols-5 gap-2 mb-3">
-                    {ROW_COLORS.map((color) => (
-                      <button
-                        key={color.id}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleColorSelect(color.class)
-                        }}
-                        className={`w-8 h-8 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-colors ${color.class}`}
-                        title={color.name}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Done button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setIsIconPickerOpen(false)
-                    }}
-                    className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs py-2 rounded transition-colors"
-                  >
-                    Klar
-                  </button>
-                </div>
-              </div>
-            )}
-          </>
+          </div>
         )
       }
 
-
       return (
         <div className="relative">
-          {/* Icon and color picker above cell */}
-          {isIconPickerOpen && (
-            <div
-              data-icon-picker
-              className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-3 mb-2"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Icons Section */}
-              <div className="mb-3">
-                <h3 className="text-xs font-medium text-gray-700 mb-2">Choose Icon</h3>
-                <div className="grid grid-cols-9 gap-1 w-80">
-                  {AVAILABLE_ICONS.map((iconData) => {
-                    const IconComponent = iconData.icon
-                    return (
-                      <button
-                        key={iconData.name}
-                        onClick={(e) => {
-                          console.log('Icon button clicked:', iconData.name)
-                          e.stopPropagation()
-                          handleIconSelect(iconData.name)
-                        }}
-                        className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
-                          (currentIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
-                        }`}
-                        title={iconData.name}
-                      >
-                        <IconComponent className="h-4 w-4 text-slate-600" />
-                      </button>
-                    )
-                  })}
-                  {(currentIcon || selectedIcon) && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleIconSelect('')
-                      }}
-                      className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
-                      title="Remove icon"
-                    >
-                      <XCircleIcon className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
 
-              {/* Colors Section */}
-              <div className="border-t border-gray-100 pt-3">
-                <h3 className="text-xs font-medium text-gray-700 mb-2">Choose Color</h3>
-                <div className="grid grid-cols-5 gap-2 mb-3">
-                  {ROW_COLORS.map((color) => (
-                    <button
-                      key={color.id}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleColorSelect(color.class)
-                      }}
-                      className={`w-8 h-8 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-colors ${color.class}`}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
-
-                {/* Done button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setIsIconPickerOpen(false)
-                  }}
-                  className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs py-2 rounded transition-colors"
-                >
-                  Klar
-                </button>
-              </div>
-              {/* Small arrow pointing up */}
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-200"></div>
-            </div>
-          )}
-
-          <div className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative ${backgroundColor || 'bg-white'}`}>
-            {(currentIcon || selectedIcon) && (
+          <div className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative ${backgroundColor || 'bg-white'} ${isEditing ? 'ring-2 ring-blue-500' : ''}`}>
+            {(currentIcon || selectedIcon) && !isEditing && (
               <div
-                className="absolute top-1 right-1 z-50 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
-                onMouseDown={(e) => {
-                  e.stopPropagation()
-                  e.preventDefault()
-                }}
+                className="absolute top-1 right-1 z-10 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
                 onClick={(e) => {
                   e.stopPropagation()
                   e.preventDefault()
-                  // Clear any pending close timeout
-                  if (closeTimeoutRef.current) {
-                    clearTimeout(closeTimeoutRef.current)
-                    closeTimeoutRef.current = null
-                  }
-                  setIsIconPickerOpen(true)
                   setIsEditing(true)
+                  setTimeout(() => setToolbarPosition(calculateToolbarPosition()), 0)
                 }}
-                title="Click to change icon"
+                title="Click to edit"
               >
                 {getSelectedIconComponent()}
               </div>
@@ -685,14 +510,24 @@ export function JourneyMapCell({
               ref={inputRef}
               type="number"
               value={content}
-              onChange={(e) => onChange(e.target.value)}
-              onFocus={handleStartEditing}
-              onBlur={handleTextBlur}
+              onChange={(e) => handleContentChange(e.target.value)}
+              onFocus={() => {
+                setIsEditing(true)
+                setTimeout(() => setToolbarPosition(calculateToolbarPosition()), 0)
+              }}
+              onBlur={(e) => {
+                // Don't close if clicking on toolbar
+                const relatedTarget = e.relatedTarget as HTMLElement
+                if (relatedTarget?.closest('.absolute.-top-40')) {
+                  return
+                }
+                // Don't auto-close editing mode - let user choose when to finish
+                // setTimeout(() => setIsEditing(false), 100)
+              }}
               placeholder={placeholder}
-              className={`w-full min-h-20 p-2 ${selectedIcon ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded text-center focus:outline-none focus:ring-2 focus:ring-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200`}
+              className={`w-full min-h-20 p-2 ${selectedIcon && !isEditing ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded text-center focus:outline-none transition-all duration-200`}
             />
           </div>
-
         </div>
       )
 
@@ -754,166 +589,85 @@ export function JourneyMapCell({
       )
 
     default: // 'text'
+      if (!content && !isEditing && !selectedIcon) {
+        return (
+          <div
+            className={`w-full group cursor-pointer transition-all duration-200 relative ${
+              backgroundColor && backgroundColor.trim() && backgroundColor !== '' && backgroundColor !== 'bg-white'
+                ? backgroundColor + ' h-20 rounded border border-gray-200'
+                : ''
+            }`}
+            style={{
+              minHeight: backgroundColor && backgroundColor.trim() && backgroundColor !== '' && backgroundColor !== 'bg-white' ? '80px' : '80px'
+            }}
+            onClick={handlePlusClick}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div
+                className="opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer p-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePlusClick();
+                }}
+              >
+                <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90 pointer-events-none" />
+              </div>
+            </div>
+          </div>
+        )
+      }
+
       return (
         <div
-          ref={setNodeRef}
+          ref={(el) => {
+            setNodeRef(el)
+            cellRef.current = el
+          }}
           style={style}
           className={`relative ${isDragging ? 'z-50' : ''} ${isDragging ? 'opacity-75' : ''}`}
         >
-          {/* Icon and color picker above cell */}
-          {isIconPickerOpen && (
-            <div
-              data-icon-picker
-              className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-3 mb-2"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Icons Section */}
-              <div className="mb-3">
-                <h3 className="text-xs font-medium text-gray-700 mb-2">Choose Icon</h3>
-                <div className="grid grid-cols-9 gap-1 w-80">
-                  {AVAILABLE_ICONS.map((iconData) => {
-                    const IconComponent = iconData.icon
-                    return (
-                      <button
-                        key={iconData.name}
-                        onClick={(e) => {
-                          console.log('Icon button clicked:', iconData.name)
-                          e.stopPropagation()
-                          handleIconSelect(iconData.name)
-                        }}
-                        className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
-                          (currentIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
-                        }`}
-                        title={iconData.name}
-                      >
-                        <IconComponent className="h-4 w-4 text-slate-600" />
-                      </button>
-                    )
-                  })}
-                  {(currentIcon || selectedIcon) && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleIconSelect('')
-                      }}
-                      className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
-                      title="Remove icon"
-                    >
-                      <XCircleIcon className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
+
+
+          <div className={`w-full h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} ${isEditing ? 'ring-2 ring-blue-500' : ''} relative group`}>
+            {(currentIcon || selectedIcon) && !isEditing && (
+              <div
+                className="absolute top-1 right-1 z-10 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  setIsEditing(true)
+                  setTimeout(() => setToolbarPosition(calculateToolbarPosition()), 0)
+                }}
+                title="Click to edit"
+              >
+                {getSelectedIconComponent()}
               </div>
-
-              {/* Colors Section */}
-              <div className="border-t border-gray-100 pt-3">
-                <h3 className="text-xs font-medium text-gray-700 mb-2">Choose Color</h3>
-                <div className="grid grid-cols-5 gap-2 mb-3">
-                  {ROW_COLORS.map((color) => (
-                    <button
-                      key={color.id}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleColorSelect(color.class)
-                      }}
-                      className={`w-8 h-8 rounded-full border-2 border-gray-300 hover:border-gray-400 transition-colors ${color.class}`}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
-
-                {/* Done button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setIsIconPickerOpen(false)
-                  }}
-                  className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs py-2 rounded transition-colors"
-                >
-                  Klar
-                </button>
-              </div>
-              {/* Small arrow pointing up */}
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-200"></div>
-            </div>
-          )}
-
-          {/* Always show icon if it exists, even when not editing */}
-          {(currentIcon || selectedIcon) && (
-            <div
-              className="absolute top-1 right-1 z-50 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
-              onMouseDown={(e) => {
-                e.stopPropagation()
-                e.preventDefault()
-              }}
-              onClick={(e) => {
-                e.stopPropagation()
-                e.preventDefault()
-                // Clear any pending close timeout
-                if (closeTimeoutRef.current) {
-                  clearTimeout(closeTimeoutRef.current)
-                  closeTimeoutRef.current = null
-                }
-                setIsIconPickerOpen(true)
+            )}
+            <textarea
+              ref={textareaRef}
+              value={content}
+              onChange={(e) => handleContentChange(e.target.value)}
+              onFocus={() => {
                 setIsEditing(true)
+                setTimeout(() => setToolbarPosition(calculateToolbarPosition()), 0)
               }}
-              title="Click to change icon"
-            >
-              {getSelectedIconComponent()}
-            </div>
-          )}
-
-          {/* Show textarea cell ONLY with content/editing/icon */}
-          {(content || isEditing || currentIcon || selectedIcon) ? (
-            <div
-              className={`w-full h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} relative group ${isDraggable && !isEditing && (content || selectedIcon) ? 'cursor-grab active:cursor-grabbing' : ''}`}
-              {...(isDraggable && !isEditing && (content || selectedIcon) ? { ...attributes, ...listeners } : {})}
-              onClick={() => {
-                if (!isEditing && (currentIcon || selectedIcon) && !content) {
-                  handleStartEditing()
+              onBlur={(e) => {
+                // Don't close if clicking on toolbar
+                const relatedTarget = e.relatedTarget as HTMLElement
+                if (relatedTarget?.closest('.absolute.-top-40')) {
+                  return
                 }
+                // Don't auto-close editing mode - let user choose when to finish
+                // setTimeout(() => setIsEditing(false), 100)
               }}
-            >
-              <textarea
-                ref={textareaRef}
-                value={content}
-                onChange={(e) => handleContentChange(e.target.value)}
-                onFocus={handleStartEditing}
-                onBlur={handleTextBlur}
-                onKeyDown={handleKeyDown}
-                placeholder={placeholder}
-                className={`w-full h-full p-2 ${selectedIcon ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded resize-none focus:outline-none focus:ring-2 focus:ring-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200`}
-                rows={3}
-              />
-            </div>
-          ) : (
-            <div
-              className={`w-full group cursor-pointer transition-all duration-200 relative ${
-                backgroundColor && backgroundColor.trim() && backgroundColor !== '' && backgroundColor !== 'bg-white'
-                  ? backgroundColor + ' h-20 rounded border border-gray-200'
-                  : ''
-              }`}
-              style={{
-                minHeight: backgroundColor && backgroundColor.trim() && backgroundColor !== '' && backgroundColor !== 'bg-white' ? '80px' : '80px'
-              }}
-              onClick={handlePlusClick}
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div
-                  className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gray-50 group-hover:bg-gray-100 rounded-lg p-3 cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePlusClick();
-                  }}
-                >
-                  <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90 pointer-events-none" />
-                </div>
-              </div>
-            </div>
-          )}
+              placeholder={placeholder}
+              className={`w-full h-full p-2 ${selectedIcon && !isEditing ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded resize-none focus:outline-none transition-all duration-200`}
+              {...(isDraggable && !isEditing ? { ...attributes, ...listeners } : {})}
+            />
+          </div>
 
           {/* Invisible drag-to-resize handle - only show when not editing and has content */}
-          {onColSpanChange && !isEditing && (content || selectedIcon) && (
+          {onColSpanChange && (content || selectedIcon) && !isEditing && (
             <div
               className={`absolute top-0 right-0 w-4 h-full cursor-col-resize z-30 ${isResizing ? 'bg-slate-100 opacity-30' : ''}`}
               onMouseDown={handleResizeStart}
@@ -923,5 +677,220 @@ export function JourneyMapCell({
           )}
         </div>
       )
+
+      {/* Add the modal - this needs to be outside the switch but inside the component */}
   }
-}
+  }
+
+  return (
+    <>
+      {renderCellContent()}
+
+      {/* Toolbar portal - rendered at document.body level */}
+      {isEditing && createPortal(
+        <div
+          className="fixed z-[9999] bg-white border border-gray-200/60 rounded-xl shadow-xl backdrop-blur-sm p-4"
+          style={{
+            left: toolbarPosition.left,
+            transform: toolbarPosition.transform,
+            top: toolbarPosition.top,
+            width: '320px'
+          }}
+        >
+          {/* Icons */}
+          <div className="mb-3">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Ikoner</label>
+            <div className="grid grid-cols-8 gap-1.5">
+              <button
+                onClick={() => handleIconSelect('')}
+                className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 bg-white hover:bg-gray-100 hover:border-gray-400 transition-all shadow-sm"
+                title="Ingen ikon"
+              >
+                <XCircleIcon className="h-4 w-4 text-gray-400" />
+              </button>
+              {AVAILABLE_ICONS.slice(0, 15).map((iconData) => {
+                const IconComponent = iconData.icon
+                return (
+                  <button
+                    key={iconData.name}
+                    onClick={() => handleIconSelect(iconData.name)}
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-all shadow-sm ${
+                      (currentIcon || selectedIcon) === iconData.name
+                        ? 'bg-blue-500 border-blue-500 text-white'
+                        : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
+                    }`}
+                    title={iconData.name}
+                  >
+                    <IconComponent className="h-4 w-4" />
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Colors */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Bakgrundsfärg</label>
+            <div className="grid grid-cols-8 gap-1.5">
+              <button
+                onClick={() => handleColorSelect('')}
+                className="w-8 h-8 rounded-lg border-2 border-dashed border-gray-300 bg-white hover:border-gray-400 transition-all shadow-sm flex items-center justify-center"
+                title="Ingen färg"
+              >
+                <XCircleIcon className="h-4 w-4 text-gray-400" />
+              </button>
+              {ROW_COLORS.slice(0, 15).map((color) => (
+                <button
+                  key={color.id}
+                  onClick={() => handleColorSelect(color.class)}
+                  className={`w-8 h-8 ${color.class} rounded-lg border-2 transition-all shadow-sm hover:scale-105 ${
+                    backgroundColor === color.class
+                      ? 'border-gray-800 ring-2 ring-gray-300'
+                      : 'border-gray-300 hover:border-gray-400'
+                  }`}
+                  title={color.name}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Done button */}
+          <div className="flex justify-end border-t border-gray-100 pt-3 -mx-4 px-4 -mb-4 pb-4 bg-gray-50/30 rounded-b-xl">
+            <button
+              onClick={() => setIsEditing(false)}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-all shadow-sm"
+            >
+              Klar
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* ICON PICKER POPUP */}
+      {isIconPickerOpen && (
+        <div
+          data-icon-picker
+          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] bg-white rounded-xl shadow-xl border border-gray-200/60 backdrop-blur-sm"
+          style={{ width: '600px' }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Modern header */}
+          <div className="px-6 py-4 border-b border-gray-100">
+            <div className="text-lg font-semibold text-gray-900">Redigera cell</div>
+          </div>
+
+          <div className="p-6 space-y-5">
+            {/* Text input first */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Text</label>
+              {type === 'number' ? (
+                <input
+                  type="number"
+                  value={modalContent}
+                  onChange={(e) => setModalContent(e.target.value)}
+                  placeholder={placeholder}
+                  className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white shadow-sm"
+                />
+              ) : (
+                <textarea
+                  value={modalContent}
+                  onChange={(e) => setModalContent(e.target.value)}
+                  placeholder={placeholder}
+                  rows={3}
+                  className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none bg-white shadow-sm"
+                />
+              )}
+            </div>
+
+            {/* Icons in modern grid */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Ikoner</label>
+              <div className="grid grid-cols-14 gap-2 p-4 bg-gray-50/50 rounded-lg border border-gray-200">
+                <button
+                  onClick={() => handleIconSelect('')}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-all shadow-sm"
+                  title="Ingen ikon"
+                >
+                  <XCircleIcon className="h-4 w-4 text-gray-400" />
+                </button>
+                {AVAILABLE_ICONS.map((iconData) => {
+                  const IconComponent = iconData.icon
+                  return (
+                    <button
+                      key={iconData.name}
+                      onClick={() => handleIconSelect(iconData.name)}
+                      className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-all shadow-sm ${
+                        (currentIcon || selectedIcon) === iconData.name
+                          ? 'bg-blue-500 border-blue-500 text-white'
+                          : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
+                      }`}
+                      title={iconData.name}
+                    >
+                      <IconComponent className="h-4 w-4" />
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Colors in modern layout */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Bakgrundsfärg</label>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => handleColorSelect('')}
+                  className="w-10 h-10 rounded-lg border-2 border-dashed border-gray-300 bg-white hover:border-gray-400 transition-all shadow-sm flex items-center justify-center"
+                  title="Ingen färg"
+                >
+                  <XCircleIcon className="h-4 w-4 text-gray-400" />
+                </button>
+                {ROW_COLORS.slice(0, 11).map((color) => (
+                  <button
+                    key={color.id}
+                    onClick={() => handleColorSelect(color.class)}
+                    className={`w-10 h-10 ${color.class} rounded-lg border-2 transition-all shadow-sm hover:scale-105 ${
+                      backgroundColor === color.class
+                        ? 'border-gray-800 ring-2 ring-gray-300'
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                    title={color.name}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Modern bottom actions */}
+          <div className="px-6 py-4 bg-gray-50/30 border-t border-gray-100 flex justify-between rounded-b-xl">
+            <button
+              onClick={() => {
+                setModalContent('')
+                onChange('')
+                handleIconSelect('')
+                handleColorSelect('')
+                if (onClear) {
+                  onClear()
+                }
+                setIsIconPickerOpen(false)
+                setIsEditing(false)
+              }}
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm"
+            >
+              Rensa
+            </button>
+            <button
+              onClick={() => {
+                onChange(modalContent)
+                setIsIconPickerOpen(false)
+                setIsEditing(false)
+              }}
+              className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all shadow-sm"
+            >
+              Spara
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  )
