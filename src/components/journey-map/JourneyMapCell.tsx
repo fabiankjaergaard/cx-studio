@@ -157,8 +157,7 @@ export function JourneyMapCell({
   const [isResizing, setIsResizing] = useState(false)
   const [startX, setStartX] = useState(0)
   const [startColSpan, setStartColSpan] = useState(colSpan)
-  const [justSelectedIcon, setJustSelectedIcon] = useState(false)
-  const [localSelectedIcon, setLocalSelectedIcon] = useState<string | undefined>(selectedIcon)
+  const [currentIcon, setCurrentIcon] = useState<string | undefined>(selectedIcon)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const cellRef = useRef<HTMLDivElement>(null)
@@ -236,20 +235,21 @@ export function JourneyMapCell({
   }
 
   const handlePlusClick = (e?: React.MouseEvent) => {
-    // Always show BOTH icon picker AND start editing
     setIsIconPickerOpen(true)
     setIsEditing(true)
   }
 
   const handleFinishEditing = () => {
-    setIsEditing(false)
-    // Close icon picker when finishing editing
-    setTimeout(() => setIsIconPickerOpen(false), 100)
+    // Close icon picker
+    setIsIconPickerOpen(false)
 
-    // Reset the justSelectedIcon flag
-    if (justSelectedIcon) {
-      setTimeout(() => setJustSelectedIcon(false), 200)
+    // If we have an icon but no content, keep editing open
+    if ((currentIcon || selectedIcon) && !content.trim()) {
+      return // Stay in editing mode
     }
+
+    // Otherwise close editing
+    setIsEditing(false)
   }
 
   const handleContentChange = (newContent: string) => {
@@ -270,43 +270,45 @@ export function JourneyMapCell({
   }
 
   const handleIconSelect = (iconName: string) => {
-    // Update local state immediately
-    setLocalSelectedIcon(iconName || undefined)
+    console.log('handleIconSelect called with:', iconName)
+
+    // Update local state immediately so icon shows right away
+    setCurrentIcon(iconName || undefined)
+    console.log('Set currentIcon to:', iconName || undefined)
 
     // Update parent component
     if (onIconChange) {
       onIconChange(iconName)
     }
 
+    // Close icon picker
     setIsIconPickerOpen(false)
-    setJustSelectedIcon(true)
 
-    // Keep editing mode active
+    // Stay in editing mode and focus textarea
     setIsEditing(true)
-
-    // Focus textarea after selecting icon (unless removing icon)
-    if (iconName) {
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.focus()
-        }
-      }, 50)
-    }
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus()
+      }
+    }, 50)
   }
 
   const getSelectedIconComponent = () => {
-    // Use local state as primary, fallback to prop
-    const currentIcon = localSelectedIcon || selectedIcon
-    if (!currentIcon) return null
-    const iconData = AVAILABLE_ICONS.find(icon => icon.name === currentIcon)
-    if (!iconData) return null
+    const iconToShow = currentIcon || selectedIcon
+    console.log('getSelectedIconComponent called', { currentIcon, selectedIcon, iconToShow })
+    if (!iconToShow) return null
+    const iconData = AVAILABLE_ICONS.find(icon => icon.name === iconToShow)
+    if (!iconData) {
+      console.log('Icon not found in AVAILABLE_ICONS:', iconToShow)
+      return null
+    }
     const IconComponent = iconData.icon
     return <IconComponent className="h-5 w-5 text-slate-600" />
   }
 
-  // Sync local state with prop
+  // Sync currentIcon with prop when it changes
   useEffect(() => {
-    setLocalSelectedIcon(selectedIcon)
+    setCurrentIcon(selectedIcon)
   }, [selectedIcon])
 
   useEffect(() => {
@@ -431,9 +433,13 @@ export function JourneyMapCell({
                     return (
                       <button
                         key={iconData.name}
-                        onClick={() => handleIconSelect(iconData.name)}
+                        onClick={(e) => {
+                        console.log('Icon button clicked:', iconData.name)
+                        e.stopPropagation()
+                        handleIconSelect(iconData.name)
+                      }}
                         className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
-                          selectedIcon === iconData.name ? 'bg-slate-100' : ''
+                          (currentIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
                         }`}
                         title={iconData.name}
                       >
@@ -441,9 +447,12 @@ export function JourneyMapCell({
                       </button>
                     )
                   })}
-                  {selectedIcon && (
+                  {(currentIcon || selectedIcon) && (
                     <button
-                      onClick={() => handleIconSelect('')}
+                      onClick={(e) => {
+                      e.stopPropagation()
+                      handleIconSelect('')
+                    }}
                       className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
                       title="Remove icon"
                     >
@@ -462,16 +471,23 @@ export function JourneyMapCell({
         <div className="relative">
           {/* Icon picker above cell */}
           {isIconPickerOpen && (
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2 mb-2">
+            <div
+              className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2 mb-2"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="grid grid-cols-10 gap-1 w-80">
                 {AVAILABLE_ICONS.map((iconData) => {
                   const IconComponent = iconData.icon
                   return (
                     <button
                       key={iconData.name}
-                      onClick={() => handleIconSelect(iconData.name)}
+                      onClick={(e) => {
+                        console.log('Icon button clicked:', iconData.name)
+                        e.stopPropagation()
+                        handleIconSelect(iconData.name)
+                      }}
                       className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
-                        (localSelectedIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
+                        (currentIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
                       }`}
                       title={iconData.name}
                     >
@@ -479,9 +495,12 @@ export function JourneyMapCell({
                     </button>
                   )
                 })}
-                {(localSelectedIcon || selectedIcon) && (
+                {(currentIcon || selectedIcon) && (
                   <button
-                    onClick={() => handleIconSelect('')}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleIconSelect('')
+                    }}
                     className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
                     title="Remove icon"
                   >
@@ -495,8 +514,16 @@ export function JourneyMapCell({
           )}
 
           <div className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative ${backgroundColor || 'bg-white'}`}>
-            {(localSelectedIcon || selectedIcon) && (
-              <div className="absolute top-2 right-2 z-10">
+            {(currentIcon || selectedIcon) && (
+              <div
+                className="absolute top-1 right-1 z-50 cursor-pointer hover:bg-gray-100 rounded p-2 transition-colors w-8 h-8 flex items-center justify-center"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setIsIconPickerOpen(true)
+                  setIsEditing(true)
+                }}
+                title="Click to change icon"
+              >
                 {getSelectedIconComponent()}
               </div>
             )}
@@ -573,8 +600,8 @@ export function JourneyMapCell({
       )
 
     default: // 'text'
-      // Show cell if we have content OR icon (local or prop) OR are editing
-      if (content || localSelectedIcon || selectedIcon || isEditing) {
+      // Show cell if we have content OR icon OR are editing
+      if (content || currentIcon || selectedIcon || isEditing) {
         return (
         <div
           ref={setNodeRef}
@@ -583,16 +610,23 @@ export function JourneyMapCell({
         >
           {/* Icon picker above cell */}
           {isIconPickerOpen && (
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2 mb-2">
+            <div
+              className="absolute bottom-full left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg shadow-xl p-2 mb-2"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="grid grid-cols-10 gap-1 w-80">
                 {AVAILABLE_ICONS.map((iconData) => {
                   const IconComponent = iconData.icon
                   return (
                     <button
                       key={iconData.name}
-                      onClick={() => handleIconSelect(iconData.name)}
+                      onClick={(e) => {
+                        console.log('Icon button clicked:', iconData.name)
+                        e.stopPropagation()
+                        handleIconSelect(iconData.name)
+                      }}
                       className={`p-2 rounded hover:bg-gray-100 transition-colors duration-200 ${
-                        (localSelectedIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
+                        (currentIcon || selectedIcon) === iconData.name ? 'bg-slate-100' : ''
                       }`}
                       title={iconData.name}
                     >
@@ -600,9 +634,12 @@ export function JourneyMapCell({
                     </button>
                   )
                 })}
-                {(localSelectedIcon || selectedIcon) && (
+                {(currentIcon || selectedIcon) && (
                   <button
-                    onClick={() => handleIconSelect('')}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleIconSelect('')
+                    }}
                     className="p-2 rounded hover:bg-gray-100 transition-colors duration-200 text-red-500"
                     title="Remove icon"
                   >
@@ -619,14 +656,22 @@ export function JourneyMapCell({
             className={`w-full h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} relative ${isDraggable && !isEditing && (content || selectedIcon) ? 'cursor-grab active:cursor-grabbing' : ''}`}
             {...(isDraggable && !isEditing && (content || selectedIcon) ? { ...attributes, ...listeners } : {})}
             onClick={() => {
-              if (!isEditing && (localSelectedIcon || selectedIcon) && !content) {
+              if (!isEditing && (currentIcon || selectedIcon) && !content) {
                 handleStartEditing()
               }
             }}
           >
 
-            {(localSelectedIcon || selectedIcon) && (
-              <div className="absolute top-2 right-2 z-10">
+            {(currentIcon || selectedIcon) && (
+              <div
+                className="absolute top-1 right-1 z-50 cursor-pointer hover:bg-gray-100 rounded p-2 transition-colors w-8 h-8 flex items-center justify-center"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setIsIconPickerOpen(true)
+                  setIsEditing(true)
+                }}
+                title="Click to change icon"
+              >
                 {getSelectedIconComponent()}
               </div>
             )}
@@ -644,19 +689,13 @@ export function JourneyMapCell({
           </div>
 
 
-          {/* Drag-to-resize handle - only show when not editing and has content */}
+          {/* Invisible drag-to-resize handle - only show when not editing and has content */}
           {onColSpanChange && !isEditing && (content || selectedIcon) && (
             <div
-              className={`absolute top-0 right-0 w-4 h-full cursor-col-resize z-30 opacity-0 group-hover:opacity-100 hover:opacity-100 transition-all duration-300 flex items-center justify-center ${isResizing ? 'opacity-100 bg-slate-100' : ''}`}
+              className={`absolute top-0 right-0 w-4 h-full cursor-col-resize z-30 ${isResizing ? 'bg-slate-100 opacity-30' : ''}`}
               onMouseDown={handleResizeStart}
               title="Drag to resize column width"
             >
-              {/* Center grip dots */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col space-y-0.5">
-                <div className={`w-1 h-1 bg-slate-400 hover:bg-slate-600 rounded-full transition-all duration-300 ${isResizing ? 'bg-slate-700' : ''}`}></div>
-                <div className={`w-1 h-1 bg-slate-400 hover:bg-slate-600 rounded-full transition-all duration-300 ${isResizing ? 'bg-slate-700' : ''}`}></div>
-                <div className={`w-1 h-1 bg-slate-400 hover:bg-slate-600 rounded-full transition-all duration-300 ${isResizing ? 'bg-slate-700' : ''}`}></div>
-              </div>
             </div>
           )}
         </div>
