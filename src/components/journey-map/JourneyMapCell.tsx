@@ -249,12 +249,18 @@ export function JourneyMapCell({
     // Set new timeout to close icon picker
     closeTimeoutRef.current = setTimeout(() => setIsIconPickerOpen(false), 200)
 
-    // If we have an icon but no content, keep editing open
-    if ((currentIcon || selectedIcon) && !content.trim()) {
-      return // Stay in editing mode
+    // If no content, clear the cell entirely (including icon)
+    if (!content.trim()) {
+      if (onIconChange) {
+        onIconChange('') // Clear the icon
+      }
+      setCurrentIcon(undefined) // Clear local icon state
+      if (onClear) {
+        onClear() // Clear the entire cell
+      }
     }
 
-    // Otherwise close editing
+    // Close editing
     setIsEditing(false)
   }
 
