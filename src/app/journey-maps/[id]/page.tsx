@@ -1113,7 +1113,7 @@ export default function JourneyMapBuilderPage() {
   const [isDraggingStage, setIsDraggingStage] = useState(false)
   const [isDragDropMode, setIsDragDropMode] = useState(true) // true for drag-drop, false for plus-button mode
   const [isCompactView, setIsCompactView] = useState(false)
-  const [showGridLines, setShowGridLines] = useState(true)
+  const [showGridLines, setShowGridLines] = useState(false)
   const [isAdvancedMode, setIsAdvancedMode] = useState(false)
   const [showTooltips, setShowTooltips] = useState(true)
 
@@ -1315,7 +1315,7 @@ export default function JourneyMapBuilderPage() {
           ? {
               ...row,
               cells: row.cells.map(cell =>
-                cell.id === cellId ? { ...cell, icon } : cell
+                cell.id === cellId ? { ...cell, icon: icon === '' ? undefined : icon } : cell
               )
             }
           : row
@@ -1356,7 +1356,7 @@ export default function JourneyMapBuilderPage() {
                   // Explicitly preserve all existing properties, especially icon
                   const updatedCell = {
                     ...cell,
-                    backgroundColor,
+                    backgroundColor: backgroundColor === '' ? undefined : backgroundColor,
                     // Explicitly preserve icon if it exists
                     ...(cell.icon && { icon: cell.icon })
                   }
@@ -1502,7 +1502,7 @@ export default function JourneyMapBuilderPage() {
               ...row,
               cells: row.cells.map(cell =>
                 cell.id === cellId
-                  ? { ...cell, content: '', icon: undefined, colSpan: 1 }
+                  ? { ...cell, content: '', icon: undefined, backgroundColor: undefined, colSpan: 1 }
                   : cell
               )
             }

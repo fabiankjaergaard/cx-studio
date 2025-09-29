@@ -274,39 +274,56 @@ export function JourneyMapCell({
   }
 
   const handleFinishEditing = () => {
-    // DON'T automatically close icon picker when finishing editing
-    // Let user manually close it with "Klar" button or by clicking outside
+    // Simply close editing - NEVER auto-clear anything
+    setIsEditing(false)
+  }
 
-    // If no content, clear the cell entirely (including icon)
+  const handleTextBlur = () => {
+    // If no text content, clear everything (icon and background color)
     if (!content.trim()) {
+      console.log('No text content, clearing icon and background color')
       if (onIconChange) {
         onIconChange('') // Clear the icon
       }
       setCurrentIcon(undefined) // Clear local icon state
-      if (onClear) {
-        onClear() // Clear the entire cell
+      if (onColorChange) {
+        onColorChange('') // Clear background color
       }
     }
-
-    // Close editing
-    setIsEditing(false)
+    handleFinishEditing()
   }
 
   const handleContentChange = (newContent: string) => {
     onChange(newContent)
+
+    // If content becomes empty, clear icon and background color immediately
+    if (!newContent.trim()) {
+      console.log('Content is empty, clearing icon and background color')
+      if (onIconChange) {
+        onIconChange('') // Clear the icon
+      }
+      setCurrentIcon(undefined) // Clear local icon state
+      if (onColorChange) {
+        onColorChange('') // Clear background color
+      }
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // If cell is empty and user presses Delete or Backspace, clear the cell entirely
-    if ((e.key === 'Delete' || e.key === 'Backspace') && !content.trim() && !selectedIcon && onClear) {
+    // Only clear cell if user presses Ctrl+Delete or Cmd+Delete (explicit clear command)
+    if ((e.key === 'Delete') && (e.ctrlKey || e.metaKey) && onClear) {
       e.preventDefault()
-      onClear()
+      console.log('Ctrl+Delete pressed, clearing entire cell')
+      if (onIconChange) {
+        onIconChange('') // Clear the icon
+      }
+      setCurrentIcon(undefined) // Clear local icon state
+      if (onColorChange) {
+        onColorChange('') // Clear the background color
+      }
+      onClear() // Clear the entire cell
     }
-    // If user presses Ctrl+Delete or Cmd+Delete, always clear cell
-    else if ((e.key === 'Delete') && (e.ctrlKey || e.metaKey) && onClear) {
-      e.preventDefault()
-      onClear()
-    }
+    // For regular Delete/Backspace, let the normal text deletion happen - don't clear the whole cell
   }
 
   const handleIconSelect = (iconName: string) => {
@@ -316,55 +333,28 @@ export function JourneyMapCell({
     setCurrentIcon(iconName || undefined)
     console.log('Set currentIcon to:', iconName || undefined)
 
-    // Update parent component IMMEDIATELY and WAIT for it to complete before continuing
+    // ALWAYS save to parent component immediately - this makes the icon permanent
     if (onIconChange) {
       onIconChange(iconName)
-      console.log('Called onIconChange with:', iconName)
+      console.log('IMMEDIATELY saved icon to parent:', iconName)
     }
 
     // DON'T close icon picker - let user choose color too
     // setIsIconPickerOpen(false)
 
-    // Stay in editing mode and focus textarea
+    // Stay in editing mode - but don't force focus to textarea since user might want to select color next
     setIsEditing(true)
-    setTimeout(() => {
-      if (textareaRef.current) {
-        textareaRef.current.focus()
-      }
-    }, 50)
   }
 
   const handleColorSelect = (colorClass: string) => {
     console.log('handleColorSelect called with:', colorClass)
-    console.log('Current icon state before color change:', { currentIcon, selectedIcon })
+    console.log('Current icon state:', { currentIcon, selectedIcon })
 
-    // CRITICAL: If we have a currentIcon but no selectedIcon, we need to save the icon first!
-    if (currentIcon && !selectedIcon && onIconChange) {
-      console.log('Saving currentIcon before color change:', currentIcon)
-      onIconChange(currentIcon)
-      // Small delay to ensure icon is saved before color change
-      setTimeout(() => {
-        if (onColorChange) {
-          onColorChange(colorClass)
-        }
-      }, 10)
-    } else {
-      // Normal case - just update color
-      if (onColorChange) {
-        onColorChange(colorClass)
-      }
+    // Simply update the background color - no other side effects
+    if (onColorChange) {
+      onColorChange(colorClass)
+      console.log('Color updated to:', colorClass)
     }
-
-    // DON'T close icon picker - let user choose more things
-    // setIsIconPickerOpen(false)
-
-    // Stay in editing mode
-    setIsEditing(true)
-    setTimeout(() => {
-      if (textareaRef.current) {
-        textareaRef.current.focus()
-      }
-    }, 50)
   }
 
   const getSelectedIconComponent = () => {
@@ -697,7 +687,7 @@ export function JourneyMapCell({
               value={content}
               onChange={(e) => onChange(e.target.value)}
               onFocus={handleStartEditing}
-              onBlur={handleFinishEditing}
+              onBlur={handleTextBlur}
               placeholder={placeholder}
               className={`w-full min-h-20 p-2 ${selectedIcon ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded text-center focus:outline-none focus:ring-2 focus:ring-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200`}
             />
@@ -873,10 +863,10 @@ export function JourneyMapCell({
             </div>
           )}
 
-          {/* Show cell with content/editing OR plus icon for empty cells */}
-          {(content || isEditing) ? (
+          {/* Show textarea cell ONLY with content/editing/icon */}
+          {(content || isEditing || currentIcon || selectedIcon) ? (
             <div
-              className={`w-full h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} relative ${isDraggable && !isEditing && (content || selectedIcon) ? 'cursor-grab active:cursor-grabbing' : ''}`}
+              className={`w-full h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} relative group ${isDraggable && !isEditing && (content || selectedIcon) ? 'cursor-grab active:cursor-grabbing' : ''}`}
               {...(isDraggable && !isEditing && (content || selectedIcon) ? { ...attributes, ...listeners } : {})}
               onClick={() => {
                 if (!isEditing && (currentIcon || selectedIcon) && !content) {
@@ -889,7 +879,7 @@ export function JourneyMapCell({
                 value={content}
                 onChange={(e) => handleContentChange(e.target.value)}
                 onFocus={handleStartEditing}
-                onBlur={handleFinishEditing}
+                onBlur={handleTextBlur}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
                 className={`w-full h-full p-2 ${selectedIcon ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded resize-none focus:outline-none focus:ring-2 focus:ring-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200`}
@@ -898,7 +888,14 @@ export function JourneyMapCell({
             </div>
           ) : (
             <div
-              className={`w-full min-h-20 group cursor-pointer transition-all duration-200 relative`}
+              className={`w-full group cursor-pointer transition-all duration-200 relative ${
+                backgroundColor && backgroundColor.trim() && backgroundColor !== '' && backgroundColor !== 'bg-white'
+                  ? backgroundColor + ' h-20 rounded border border-gray-200'
+                  : ''
+              }`}
+              style={{
+                minHeight: backgroundColor && backgroundColor.trim() && backgroundColor !== '' && backgroundColor !== 'bg-white' ? '80px' : '80px'
+              }}
               onClick={handlePlusClick}
             >
               <div className="absolute inset-0 flex items-center justify-center">
