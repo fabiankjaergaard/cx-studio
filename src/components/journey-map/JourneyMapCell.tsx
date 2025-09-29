@@ -248,6 +248,37 @@ export function JourneyMapCell({
     }
   }, [isEditing])
 
+  // Close toolbar when clicking outside and save changes
+  useEffect(() => {
+    if (!isEditing) return
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+
+      // Don't close if clicking on the cell itself
+      if (cellRef.current?.contains(target)) return
+
+      // Don't close if clicking on the toolbar
+      const toolbars = document.querySelectorAll('[data-toolbar]')
+      for (const toolbar of toolbars) {
+        if (toolbar.contains(target)) return
+      }
+
+      // Auto-save and close when clicking outside
+      setIsEditing(false)
+    }
+
+    // Add event listener after a short delay to avoid immediate closure
+    const timer = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside)
+    }, 100)
+
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isEditing])
+
   const handleStartEditing = () => {
     setIsEditing(true)
   }
@@ -318,10 +349,19 @@ export function JourneyMapCell({
   }
 
   const handleIconSelect = (iconName: string) => {
+    // Update local state immediately for instant visual feedback
     setCurrentIcon(iconName || undefined)
+
+    // Save to parent component to persist the change
     if (onIconChange) {
       onIconChange(iconName)
     }
+
+    // Force a small re-render to ensure icon appears immediately
+    setTimeout(() => {
+      setCurrentIcon(iconName || undefined)
+    }, 0)
+
     setIsEditing(true)
   }
 
@@ -334,13 +374,9 @@ export function JourneyMapCell({
   const getSelectedIconComponent = () => {
     // Prioritize currentIcon (local state) over selectedIcon (prop) to avoid sync issues
     const iconToShow = currentIcon !== undefined ? currentIcon : selectedIcon
-    console.log('getSelectedIconComponent called', { currentIcon, selectedIcon, iconToShow })
     if (!iconToShow) return null
     const iconData = AVAILABLE_ICONS.find(icon => icon.name === iconToShow)
-    if (!iconData) {
-      console.log('Icon not found in AVAILABLE_ICONS:', iconToShow)
-      return null
-    }
+    if (!iconData) return null
     const IconComponent = iconData.icon
     return <IconComponent className="h-5 w-5 text-slate-600" />
   }
@@ -492,7 +528,7 @@ export function JourneyMapCell({
         <div className="relative">
 
           <div className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative ${backgroundColor || 'bg-white'} ${isEditing ? 'ring-2 ring-blue-500' : ''}`}>
-            {(currentIcon || selectedIcon) && !isEditing && (
+            {(currentIcon || selectedIcon) && (
               <div
                 className="absolute top-1 right-1 z-10 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
                 onClick={(e) => {
@@ -629,7 +665,7 @@ export function JourneyMapCell({
 
 
           <div className={`w-full h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} ${isEditing ? 'ring-2 ring-blue-500' : ''} relative group`}>
-            {(currentIcon || selectedIcon) && !isEditing && (
+            {(currentIcon || selectedIcon) && (
               <div
                 className="absolute top-1 right-1 z-10 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
                 onClick={(e) => {
@@ -689,6 +725,7 @@ export function JourneyMapCell({
       {/* Toolbar portal - rendered at document.body level */}
       {isEditing && createPortal(
         <div
+          data-toolbar
           className="fixed z-[9999] bg-white border border-gray-200/60 rounded-xl shadow-xl backdrop-blur-sm p-4"
           style={{
             left: toolbarPosition.left,
@@ -754,13 +791,31 @@ export function JourneyMapCell({
             </div>
           </div>
 
-          {/* Done button */}
-          <div className="flex justify-end border-t border-gray-100 pt-3 -mx-4 px-4 -mb-4 pb-4 bg-gray-50/30 rounded-b-xl">
+          {/* Action buttons */}
+          <div className="flex justify-between items-center border-t border-gray-100 pt-3 -mx-4 px-4 -mb-4 pb-4 bg-gray-50/30 rounded-b-xl">
+            <button
+              onClick={() => {
+                if (onClear) {
+                  onClear()
+                }
+                setCurrentIcon(undefined)
+                if (onIconChange) {
+                  onIconChange('')
+                }
+                if (onColorChange) {
+                  onColorChange('')
+                }
+                setIsEditing(false)
+              }}
+              className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-300 hover:border-red-400 rounded-lg transition-all shadow-sm"
+            >
+              Delete
+            </button>
             <button
               onClick={() => setIsEditing(false)}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-all shadow-sm"
+              className="px-4 py-2 text-sm font-medium text-white bg-slate-700 hover:bg-slate-800 rounded-lg transition-all shadow-sm"
             >
-              Klar
+              Save
             </button>
           </div>
         </div>,
