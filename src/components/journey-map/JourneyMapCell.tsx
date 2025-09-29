@@ -161,6 +161,7 @@ export function JourneyMapCell({
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const cellRef = useRef<HTMLDivElement>(null)
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Drag & drop functionality
   const {
@@ -240,8 +241,13 @@ export function JourneyMapCell({
   }
 
   const handleFinishEditing = () => {
-    // Close icon picker
-    setIsIconPickerOpen(false)
+    // Clear any existing timeout
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current)
+    }
+
+    // Set new timeout to close icon picker
+    closeTimeoutRef.current = setTimeout(() => setIsIconPickerOpen(false), 200)
 
     // If we have an icon but no content, keep editing open
     if ((currentIcon || selectedIcon) && !content.trim()) {
@@ -516,9 +522,19 @@ export function JourneyMapCell({
           <div className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative ${backgroundColor || 'bg-white'}`}>
             {(currentIcon || selectedIcon) && (
               <div
-                className="absolute top-1 right-1 z-50 cursor-pointer hover:bg-gray-100 rounded p-2 transition-colors w-8 h-8 flex items-center justify-center"
+                className="absolute top-1 right-1 z-50 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
+                onMouseDown={(e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                }}
                 onClick={(e) => {
                   e.stopPropagation()
+                  e.preventDefault()
+                  // Clear any pending close timeout
+                  if (closeTimeoutRef.current) {
+                    clearTimeout(closeTimeoutRef.current)
+                    closeTimeoutRef.current = null
+                  }
                   setIsIconPickerOpen(true)
                   setIsEditing(true)
                 }}
@@ -600,9 +616,7 @@ export function JourneyMapCell({
       )
 
     default: // 'text'
-      // Show cell if we have content OR icon OR are editing
-      if (content || currentIcon || selectedIcon || isEditing) {
-        return (
+      return (
         <div
           ref={setNodeRef}
           style={style}
@@ -652,42 +666,72 @@ export function JourneyMapCell({
             </div>
           )}
 
-          <div
-            className={`w-full h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} relative ${isDraggable && !isEditing && (content || selectedIcon) ? 'cursor-grab active:cursor-grabbing' : ''}`}
-            {...(isDraggable && !isEditing && (content || selectedIcon) ? { ...attributes, ...listeners } : {})}
-            onClick={() => {
-              if (!isEditing && (currentIcon || selectedIcon) && !content) {
-                handleStartEditing()
-              }
-            }}
-          >
+          {/* Always show icon if it exists, even when not editing */}
+          {(currentIcon || selectedIcon) && (
+            <div
+              className="absolute top-1 right-1 z-50 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
+              onMouseDown={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
+              }}
+              onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
+                // Clear any pending close timeout
+                if (closeTimeoutRef.current) {
+                  clearTimeout(closeTimeoutRef.current)
+                  closeTimeoutRef.current = null
+                }
+                setIsIconPickerOpen(true)
+                setIsEditing(true)
+              }}
+              title="Click to change icon"
+            >
+              {getSelectedIconComponent()}
+            </div>
+          )}
 
-            {(currentIcon || selectedIcon) && (
-              <div
-                className="absolute top-1 right-1 z-50 cursor-pointer hover:bg-gray-100 rounded p-2 transition-colors w-8 h-8 flex items-center justify-center"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setIsIconPickerOpen(true)
-                  setIsEditing(true)
-                }}
-                title="Click to change icon"
-              >
-                {getSelectedIconComponent()}
+          {/* Show cell with content/editing OR plus icon for empty cells */}
+          {(content || isEditing) ? (
+            <div
+              className={`w-full h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} relative ${isDraggable && !isEditing && (content || selectedIcon) ? 'cursor-grab active:cursor-grabbing' : ''}`}
+              {...(isDraggable && !isEditing && (content || selectedIcon) ? { ...attributes, ...listeners } : {})}
+              onClick={() => {
+                if (!isEditing && (currentIcon || selectedIcon) && !content) {
+                  handleStartEditing()
+                }
+              }}
+            >
+              <textarea
+                ref={textareaRef}
+                value={content}
+                onChange={(e) => handleContentChange(e.target.value)}
+                onFocus={handleStartEditing}
+                onBlur={handleFinishEditing}
+                onKeyDown={handleKeyDown}
+                placeholder={placeholder}
+                className={`w-full h-full p-2 ${selectedIcon ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded resize-none focus:outline-none focus:ring-2 focus:ring-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200`}
+                rows={3}
+              />
+            </div>
+          ) : (
+            <div
+              className={`w-full min-h-20 group cursor-pointer transition-all duration-200 relative`}
+              onClick={handlePlusClick}
+            >
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div
+                  className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gray-50 group-hover:bg-gray-100 rounded-lg p-3 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePlusClick();
+                  }}
+                >
+                  <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90 pointer-events-none" />
+                </div>
               </div>
-            )}
-            <textarea
-              ref={textareaRef}
-              value={content}
-              onChange={(e) => handleContentChange(e.target.value)}
-              onFocus={handleStartEditing}
-              onBlur={handleFinishEditing}
-              onKeyDown={handleKeyDown}
-              placeholder={placeholder}
-              className={`w-full h-full p-2 ${selectedIcon ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded resize-none focus:outline-none focus:ring-2 focus:ring-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200`}
-              rows={3}
-            />
-          </div>
-
+            </div>
+          )}
 
           {/* Invisible drag-to-resize handle - only show when not editing and has content */}
           {onColSpanChange && !isEditing && (content || selectedIcon) && (
@@ -698,27 +742,6 @@ export function JourneyMapCell({
             >
             </div>
           )}
-        </div>
-      )
-      }
-
-      // Show plus icon if nothing is selected and not editing
-      return (
-        <div
-          className={`w-full min-h-20 group cursor-pointer transition-all duration-200 relative`}
-          onClick={handlePlusClick}
-        >
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div
-              className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gray-50 group-hover:bg-gray-100 rounded-lg p-3 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                handlePlusClick();
-              }}
-            >
-              <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90 pointer-events-none" />
-            </div>
-          </div>
         </div>
       )
   }
