@@ -5,8 +5,11 @@ import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { MessageCircleIcon, StarIcon, SendIcon } from 'lucide-react'
+import { feedbackStorage } from '@/services/feedbackStorage'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function BetaFeedbackPage() {
+  const { user } = useAuth()
   const [feedback, setFeedback] = useState('')
   const [rating, setRating] = useState(0)
   const [category, setCategory] = useState('')
@@ -14,8 +17,21 @@ export default function BetaFeedbackPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the feedback to your backend
-    console.log({ feedback, rating, category })
+
+    // Save feedback to storage
+    feedbackStorage.addFeedback({
+      type: 'feedback',
+      data: {
+        feedback,
+        rating,
+        category
+      },
+      userInfo: {
+        isBetaTester: user?.isBetaTester || false,
+        userId: user?.email || 'anonymous'
+      }
+    })
+
     setSubmitted(true)
 
     // Reset form after a delay

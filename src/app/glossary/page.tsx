@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { getGlossaryTerms, GlossaryTerm } from '@/data/glossary'
-import { SearchIcon, BookOpenIcon, TagIcon, FilterIcon } from 'lucide-react'
+import { SearchIcon, BookOpenIcon, TagIcon } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 const getCategoryLabels = (t: (key: string) => string) => ({
@@ -18,11 +18,35 @@ const getCategoryLabels = (t: (key: string) => string) => ({
 })
 
 const categoryColors = {
-  general: 'bg-slate-100 text-slate-800',
-  journey: 'bg-green-100 text-green-800',
-  touchpoint: 'bg-purple-100 text-purple-800',
-  emotion: 'bg-orange-100 text-orange-800',
-  metrics: 'bg-red-100 text-red-800'
+  general: 'bg-slate-50 text-slate-600 border-slate-200',
+  journey: 'bg-blue-50 text-blue-700 border-blue-200',
+  touchpoint: 'bg-violet-50 text-violet-700 border-violet-200',
+  emotion: 'bg-amber-50 text-amber-700 border-amber-200',
+  metrics: 'bg-indigo-50 text-indigo-700 border-indigo-200'
+}
+
+const categoryHoverColors = {
+  general: 'hover:bg-slate-100 hover:border-slate-300 hover:shadow-slate-200/50',
+  journey: 'hover:bg-blue-100 hover:border-blue-300 hover:shadow-blue-200/50',
+  touchpoint: 'hover:bg-violet-100 hover:border-violet-300 hover:shadow-violet-200/50',
+  emotion: 'hover:bg-amber-100 hover:border-amber-300 hover:shadow-amber-200/50',
+  metrics: 'hover:bg-indigo-100 hover:border-indigo-300 hover:shadow-indigo-200/50'
+}
+
+const categoryBorderColors = {
+  general: 'border-l-slate-400',
+  journey: 'border-l-blue-400',
+  touchpoint: 'border-l-violet-400',
+  emotion: 'border-l-amber-400',
+  metrics: 'border-l-indigo-400'
+}
+
+const categoryBackgroundColors = {
+  general: 'bg-slate-50',
+  journey: 'bg-blue-50',
+  touchpoint: 'bg-violet-50',
+  emotion: 'bg-amber-50',
+  metrics: 'bg-indigo-50'
 }
 
 export default function GlossaryPage() {
@@ -81,47 +105,23 @@ export default function GlossaryPage() {
         description={t('glossary.subtitle')}
       />
       
-      <div className="flex-1 p-8 overflow-auto bg-gray-50">
+      <div className="flex-1 p-8 overflow-auto bg-white">
         {/* Search and Filter Section */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="flex flex-col lg:flex-row gap-6">
-              {/* Search */}
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('glossary.searchLabel')}
-                </label>
-                <div className="relative">
-                  <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <Input
-                    placeholder={t('glossary.searchPlaceholder')}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-11 h-11"
-                  />
-                </div>
-              </div>
-
-              {/* Category Filter */}
-              <div className="lg:w-64">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('glossary.categoryLabel')}
-                </label>
-                <div className="relative">
-                  <FilterIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white"
-                  >
-                    <option value="all">{t('glossary.allCategories')}</option>
-                    {categories.map(category => (
-                      <option key={category} value={category}>
-                        {categoryLabels[category]}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+        <Card className="mb-8 border-0 shadow-lg bg-gradient-to-br from-slate-50 to-gray-50">
+          <CardContent className="p-8">
+            {/* Search */}
+            <div className="w-full">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('glossary.searchLabel')}
+              </label>
+              <div className="relative">
+                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Input
+                  placeholder={t('glossary.searchPlaceholder')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-11 h-12 border-gray-300 focus:border-slate-400 focus:ring-slate-200 bg-white shadow-sm"
+                />
               </div>
             </div>
 
@@ -137,10 +137,10 @@ export default function GlossaryPage() {
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(selectedCategory === category ? 'all' : category)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                      selectedCategory === category 
-                        ? categoryColors[category] 
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 border ${
+                      selectedCategory === category
+                        ? `${categoryColors[category]} shadow-md scale-105`
+                        : `bg-white text-gray-600 border-gray-300 hover:scale-105 hover:shadow-md hover:border-gray-400`
                     }`}
                   >
                     {categoryLabels[category]} ({count})
@@ -152,19 +152,19 @@ export default function GlossaryPage() {
         </Card>
 
         {/* Terms Grid */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {filteredTerms.map((term) => (
-            <Card key={term.id} id={`term-${term.id}`} className="border-l-4" style={{borderLeftColor: categoryColors[term.category].split(' ')[0].replace('bg-', '#').replace('blue', '3b82f6').replace('green', '10b981').replace('purple', '8b5cf6').replace('orange', 'f59e0b').replace('red', 'ef4444').replace('-100', '')}}>
+            <Card key={term.id} id={`term-${term.id}`} className={`border-0 border-l-4 shadow-lg hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300 overflow-hidden cursor-pointer bg-white ${categoryBorderColors[term.category]}`}>
               <CardContent className="p-0">
                 <button
                   onClick={() => toggleExpanded(term.id)}
-                  className="w-full text-left p-6 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
+                  className="w-full text-left p-8 focus:outline-none transition-all duration-300 group cursor-pointer"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">{term.term}</h3>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[term.category]}`}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <h3 className="text-xl font-bold text-gray-900">{term.term}</h3>
+                        <span className={`px-3 py-1.5 rounded-full text-xs font-semibold border ${categoryColors[term.category]}`}>
                           {categoryLabels[term.category]}
                         </span>
                       </div>
@@ -172,13 +172,18 @@ export default function GlossaryPage() {
                         {expandedTerms.has(term.id) ? term.definition : `${term.definition.slice(0, 150)}${term.definition.length > 150 ? '...' : ''}`}
                       </p>
                     </div>
-                    <BookOpenIcon className={`h-5 w-5 text-gray-400 ml-4 flex-shrink-0 transition-transform ${expandedTerms.has(term.id) ? 'rotate-180' : ''}`} />
+                    <div className="ml-6 flex-shrink-0 flex flex-col items-center">
+                      <BookOpenIcon className={`h-6 w-6 text-gray-400 transition-all duration-300 group-hover:text-gray-600 group-hover:scale-110 ${expandedTerms.has(term.id) ? 'rotate-180' : ''}`} />
+                      <span className="text-xs text-gray-400 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        {expandedTerms.has(term.id) ? 'Collapse' : 'Expand'}
+                      </span>
+                    </div>
                   </div>
                 </button>
 
                 {/* Expanded details */}
                 {expandedTerms.has(term.id) && (
-                  <div className="px-6 pb-6 border-t border-gray-100">
+                  <div className="px-8 pb-8 border-t border-gray-200 bg-gradient-to-br from-slate-50/50 to-white">
                     {term.examples && (
                       <div className="mb-4">
                         <h4 className="font-semibold text-gray-900 mb-2">{t('glossary.examplesLabel')}</h4>
@@ -200,7 +205,7 @@ export default function GlossaryPage() {
                               <button
                                 key={relatedId}
                                 onClick={() => handleRelatedTermClick(relatedId)}
-                                className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm hover:bg-slate-200 transition-colors"
+                                className={`inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm hover:scale-105 hover:shadow-md transition-all duration-200 border ${categoryColors[relatedTerm.category]}`}
                               >
                                 <TagIcon className="h-3 w-3" />
                                 {relatedTerm.term}
@@ -218,17 +223,20 @@ export default function GlossaryPage() {
         </div>
 
         {filteredTerms.length === 0 && (
-          <Card>
-            <CardContent className="text-center py-12">
-              <BookOpenIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('glossary.noTermsFound')}</h3>
-              <p className="text-gray-500 mb-4">{t('glossary.noTermsFoundDesc')}</p>
-              <Button 
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-slate-50 to-gray-50">
+            <CardContent className="text-center py-16">
+              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center">
+                <BookOpenIcon className="h-10 w-10 text-gray-500" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{t('glossary.noTermsFound')}</h3>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto leading-relaxed">{t('glossary.noTermsFoundDesc')}</p>
+              <Button
                 variant="outline"
                 onClick={() => {
                   setSearchTerm('')
                   setSelectedCategory('all')
                 }}
+                className="bg-white hover:bg-gray-50 border-gray-300 hover:border-gray-400 hover:scale-105 hover:shadow-md transition-all duration-200"
               >
                 {t('glossary.clearFilters')}
               </Button>

@@ -70,6 +70,14 @@ const getTourSteps = (t: (key: string) => string) => [
     }
   },
   {
+    element: '[data-tour="admin"]',
+    popover: {
+      title: 'Admin',
+      description: 'Administrative panel for managing and reviewing user feedback, feature requests, and bug reports. Protected access for administrators only.',
+      position: 'bottom'
+    }
+  },
+  {
     element: '[data-tour="settings"]',
     popover: {
       title: t('tour.settings'),

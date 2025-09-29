@@ -2747,7 +2747,7 @@ export default function JourneyMapBuilderPage() {
                         // For visualization components, create one cell spanning all stages
                         <td 
                           key={`${row.id}-emotion-curve`} 
-                          className={`${isCompactView ? 'p-1' : 'p-2'} align-top ${row.color}`}
+                          className={`${isCompactView ? 'p-1' : 'p-2'} align-top`}
                           colSpan={journeyMap.stages.length}
                         >
                           <JourneyMapCellComponent
@@ -2787,7 +2787,7 @@ export default function JourneyMapBuilderPage() {
                         row.cells.map((cell, cellIndex) => (
                           <td
                             key={cell.id}
-                            className={`${isCompactView ? 'p-1' : 'p-2'} ${showGridLines ? 'border-r border-gray-200' : ''} align-middle ${row.color} group relative`}
+                            className={`${isCompactView ? 'p-1' : 'p-2'} ${showGridLines ? 'border-r border-gray-200' : ''} align-middle group relative`}
                             data-onboarding={rowIndex === 0 && cellIndex === 0 ? "cells" : undefined}
                             onDragOver={(e) => handleStageHover(e, cellIndex)}
                             onDrop={(e) => {

@@ -18,7 +18,8 @@ import {
   ClockIcon,
   UserIcon,
   UsersIcon,
-  ExternalLinkIcon
+  ExternalLinkIcon,
+  MoreVerticalIcon
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -61,6 +62,7 @@ export default function JourneyMapsPage() {
   const [isNewMapModalOpen, setIsNewMapModalOpen] = useState(false)
   const [newMapName, setNewMapName] = useState('')
   const [newMapDescription, setNewMapDescription] = useState('')
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
 
   // Load saved journey maps on component mount
   useEffect(() => {
@@ -120,6 +122,18 @@ export default function JourneyMapsPage() {
       window.removeEventListener('focus', handleFocus)
     }
   }, [])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setActiveDropdown(null)
+    }
+
+    if (activeDropdown) {
+      document.addEventListener('click', handleClickOutside)
+      return () => document.removeEventListener('click', handleClickOutside)
+    }
+  }, [activeDropdown])
 
   const handleCreateJourneyMap = () => {
     if (newMapName.trim()) {
@@ -189,25 +203,46 @@ export default function JourneyMapsPage() {
                     </div>
                     <p className="text-sm text-gray-600 line-clamp-2">{journeyMap.description}</p>
                   </div>
-                  <div className="flex space-x-1 ml-2">
+                  <div className="relative ml-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDuplicateJourneyMap(journeyMap)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setActiveDropdown(activeDropdown === journeyMap.id ? null : journeyMap.id)
+                      }}
                       className="p-2"
-                      title={t('journeyMaps.actions.duplicate')}
+                      title="More actions"
                     >
-                      <CopyIcon className="h-3 w-3" />
+                      <MoreVerticalIcon className="h-3 w-3" />
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteJourneyMap(journeyMap.id)}
-                      className="p-2 text-red-600 hover:text-red-700"
-                      title={t('journeyMaps.actions.delete')}
-                    >
-                      <TrashIcon className="h-3 w-3" />
-                    </Button>
+
+                    {activeDropdown === journeyMap.id && (
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDuplicateJourneyMap(journeyMap)
+                            setActiveDropdown(null)
+                          }}
+                          className="w-full px-3 py-2 text-left hover:bg-gray-50 text-sm flex items-center"
+                        >
+                          <CopyIcon className="h-4 w-4 mr-2" />
+                          {t('journeyMaps.actions.duplicate')}
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDeleteJourneyMap(journeyMap.id)
+                            setActiveDropdown(null)
+                          }}
+                          className="w-full px-3 py-2 text-left hover:bg-gray-50 text-sm flex items-center text-red-600 hover:text-red-700"
+                        >
+                          <TrashIcon className="h-4 w-4 mr-2" />
+                          {t('journeyMaps.actions.delete')}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 

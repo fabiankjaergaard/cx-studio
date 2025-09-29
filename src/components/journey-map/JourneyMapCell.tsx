@@ -15,6 +15,7 @@ interface JourneyMapCellProps {
   placeholder?: string
   stageCount?: number
   isEmotionCurveCell?: boolean
+  backgroundColor?: string
 }
 
 const STATUS_OPTIONS = [
@@ -31,7 +32,8 @@ export function JourneyMapCell({
   onChange,
   placeholder = 'Click to edit...',
   stageCount = 4,
-  isEmotionCurveCell = false
+  isEmotionCurveCell = false,
+  backgroundColor
 }: JourneyMapCellProps) {
   const [isStatusPickerOpen, setIsStatusPickerOpen] = useState(false)
 
@@ -123,14 +125,14 @@ export function JourneyMapCell({
           value={content}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full min-h-20 p-2 text-sm text-gray-900 placeholder-gray-400 border border-gray-200 rounded text-center focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white hover:border-slate-300 hover:shadow-sm transition-all duration-200"
+          className={`w-full min-h-20 p-2 text-sm text-gray-900 placeholder-gray-400 border border-gray-200 rounded text-center focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200 ${backgroundColor || 'bg-white'}`}
         />
       )
 
     case 'rating':
       const currentRating = parseInt(content) || 0
       return (
-        <div className="w-full min-h-20 p-2 border border-gray-200 rounded bg-white flex items-center justify-center hover:border-slate-300 hover:shadow-sm transition-all duration-200">
+        <div className={`w-full min-h-20 p-2 border border-gray-200 rounded flex items-center justify-center hover:border-slate-300 hover:shadow-sm transition-all duration-200 ${backgroundColor || 'bg-white'}`}>
           <div className="flex space-x-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <StarIcon
@@ -151,7 +153,7 @@ export function JourneyMapCell({
       return (
         <div className="relative">
           <div
-            className="w-full min-h-20 p-2 text-sm border border-gray-200 rounded cursor-pointer hover:border-slate-400 hover:shadow-sm hover:scale-[1.02] transition-all duration-200 bg-white flex items-center justify-center"
+            className={`w-full min-h-20 p-2 text-sm border border-gray-200 rounded cursor-pointer hover:border-slate-400 hover:shadow-sm hover:scale-[1.02] transition-all duration-200 flex items-center justify-center ${backgroundColor || 'bg-white'}`}
             onClick={() => setIsStatusPickerOpen(!isStatusPickerOpen)}
           >
             {content ? getStatusDisplay(content) : <span className="text-gray-400">Select status</span>}
@@ -190,7 +192,7 @@ export function JourneyMapCell({
           value={content}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full min-h-20 p-2 text-sm text-gray-900 placeholder-gray-400 border border-gray-200 rounded resize-none focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white hover:border-slate-300 hover:shadow-sm transition-all duration-200"
+          className={`w-full min-h-20 p-2 text-sm text-gray-900 placeholder-gray-400 border border-gray-200 rounded resize-none focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 hover:border-slate-300 hover:shadow-sm transition-all duration-200 ${backgroundColor || 'bg-white'}`}
           rows={3}
         />
       )

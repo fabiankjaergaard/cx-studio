@@ -5,8 +5,11 @@ import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { LightbulbIcon, SendIcon, SparklesIcon } from 'lucide-react'
+import { feedbackStorage } from '@/services/feedbackStorage'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function FeatureRequestPage() {
+  const { user } = useAuth()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [useCase, setUseCase] = useState('')
@@ -15,8 +18,22 @@ export default function FeatureRequestPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the feature request to your backend
-    console.log({ title, description, useCase, priority })
+
+    // Save feature request to storage
+    feedbackStorage.addFeedback({
+      type: 'feature-request',
+      data: {
+        title,
+        description,
+        useCase,
+        priority
+      },
+      userInfo: {
+        isBetaTester: user?.isBetaTester || false,
+        userId: user?.email || 'anonymous'
+      }
+    })
+
     setSubmitted(true)
 
     // Reset form after a delay

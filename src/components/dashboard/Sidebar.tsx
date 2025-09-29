@@ -45,7 +45,8 @@ import {
   BugIcon,
   SparklesIcon,
   LockIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  ShieldCheckIcon
 } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
@@ -135,6 +136,7 @@ function SidebarContent() {
   },
   { name: t('nav.glossary'), href: '/glossary', icon: BookOpenIcon, tourId: 'glossary' },
   { name: 'Beta Tester', href: '/beta', icon: SparklesIcon, tourId: 'beta-tester' },
+  { name: 'Admin', href: '/admin', icon: ShieldCheckIcon, tourId: 'admin' },
   { name: t('nav.settings'), href: '/settings', icon: SettingsIcon, tourId: 'settings' },
 ]
   const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({})
