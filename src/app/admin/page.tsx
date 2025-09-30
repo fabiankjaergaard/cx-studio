@@ -16,7 +16,10 @@ import {
   TrendingUpIcon,
   ShieldCheckIcon,
   KeyIcon,
-  LogOutIcon
+  LogOutIcon,
+  XIcon,
+  EyeIcon,
+  ImageIcon
 } from 'lucide-react'
 import { feedbackStorage, FeedbackItem } from '@/services/feedbackStorage'
 
@@ -30,6 +33,7 @@ export default function AdminPage() {
 
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([])
   const [selectedType, setSelectedType] = useState<'all' | 'feedback' | 'feature-request' | 'bug-report'>('all')
+  const [selectedItem, setSelectedItem] = useState<FeedbackItem | null>(null)
   const [stats, setStats] = useState({
     total: 0,
     feedback: 0,
@@ -354,7 +358,7 @@ export default function AdminPage() {
             {feedbackItems.map((item) => {
               const TypeIcon = getTypeIcon(item.type)
               return (
-                <Card key={item.id} className="border-0 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
+                <Card key={item.id} className="border-0 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer" onClick={() => setSelectedItem(item)}>
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
@@ -389,14 +393,30 @@ export default function AdminPage() {
                           </div>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(item.id)}
-                        className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </Button>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setSelectedItem(item)
+                          }}
+                          className="text-slate-600 hover:bg-slate-50 hover:text-slate-700"
+                        >
+                          <EyeIcon className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDelete(item.id)
+                          }}
+                          className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
 
                     <div className="space-y-4">
@@ -465,6 +485,204 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
+
+      {/* Detail Modal */}
+      {selectedItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getTypeColor(selectedItem.type)}`}>
+                  {(() => {
+                    const TypeIcon = getTypeIcon(selectedItem.type)
+                    return <TypeIcon className="h-5 w-5" />
+                  })()}
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {selectedItem.data.title || getTypeLabel(selectedItem.type)}
+                  </h2>
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <span>{formatDate(selectedItem.timestamp)}</span>
+                    <span>•</span>
+                    <span>{selectedItem.userInfo?.userName || selectedItem.userInfo?.userId || 'Anonym'}</span>
+                    {selectedItem.userInfo?.isBetaTester && (
+                      <>
+                        <span>•</span>
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                          Beta
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                onClick={() => setSelectedItem(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <XIcon className="h-6 w-6" />
+              </Button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Type and Priority */}
+              <div className="flex flex-wrap gap-3">
+                <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getTypeColor(selectedItem.type)}`}>
+                  {getTypeLabel(selectedItem.type)}
+                </span>
+                {selectedItem.data.priority && (
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedItem.data.priority)}`}>
+                    {selectedItem.data.priority}
+                  </span>
+                )}
+              </div>
+
+              {/* Category and Rating */}
+              {(selectedItem.data.category || selectedItem.data.rating) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {selectedItem.data.category && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                      <div className="flex items-center space-x-2">
+                        <TagIcon className="h-4 w-4 text-gray-500" />
+                        <span className="text-gray-900">{selectedItem.data.category}</span>
+                      </div>
+                    </div>
+                  )}
+                  {selectedItem.data.rating && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Betyg</label>
+                      <div className="flex items-center space-x-2">
+                        <div className="flex space-x-1">
+                          {renderStars(selectedItem.data.rating)}
+                        </div>
+                        <span className="text-gray-900">({selectedItem.data.rating}/5)</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Main Content */}
+              {(selectedItem.data.description || selectedItem.data.feedback) && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {selectedItem.type === 'feedback' ? 'Feedback' : 'Beskrivning'}
+                  </label>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
+                      {selectedItem.data.description || selectedItem.data.feedback}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Bug Report Specific */}
+              {selectedItem.type === 'bug-report' && (
+                <div className="space-y-6">
+                  {selectedItem.data.steps && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Steg för att återskapa</label>
+                      <div className="bg-red-50 p-4 rounded-lg">
+                        <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
+                          {selectedItem.data.steps}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {selectedItem.data.expected && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Förväntat resultat</label>
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
+                            {selectedItem.data.expected}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedItem.data.actual && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Faktiskt resultat</label>
+                        <div className="bg-yellow-50 p-4 rounded-lg">
+                          <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
+                            {selectedItem.data.actual}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Feature Request Specific */}
+              {selectedItem.type === 'feature-request' && selectedItem.data.useCase && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Use Case</label>
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
+                      {selectedItem.data.useCase}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Images */}
+              {selectedItem.data.images && selectedItem.data.images.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Bifogade bilder ({selectedItem.data.images.length})
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {selectedItem.data.images.map((image, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={image}
+                          alt={`Bild ${index + 1}`}
+                          className="w-full h-48 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => window.open(image, '_blank')}
+                        />
+                        <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+                          {index + 1}/{selectedItem.data.images?.length}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Klicka på en bild för att öppna den i fullstorlek
+                  </p>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                <Button
+                  variant="ghost"
+                  onClick={() => setSelectedItem(null)}
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  Stäng
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    handleDelete(selectedItem.id)
+                    setSelectedItem(null)
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  <TrashIcon className="h-4 w-4 mr-2" />
+                  Radera
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

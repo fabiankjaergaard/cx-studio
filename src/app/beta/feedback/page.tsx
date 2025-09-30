@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { MessageCircleIcon, StarIcon, SendIcon } from 'lucide-react'
+import { MessageCircleIcon, StarIcon, SendIcon, ImageIcon, XIcon } from 'lucide-react'
 import { feedbackStorage } from '@/services/feedbackStorage'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -13,7 +13,27 @@ export default function BetaFeedbackPage() {
   const [feedback, setFeedback] = useState('')
   const [rating, setRating] = useState(0)
   const [category, setCategory] = useState('')
+  const [images, setImages] = useState<string[]>([])
   const [submitted, setSubmitted] = useState(false)
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files) return
+
+    Array.from(files).forEach(file => {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setImages(prev => [...prev, event.target!.result as string])
+        }
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,7 +49,8 @@ export default function BetaFeedbackPage() {
       data: {
         feedback,
         rating,
-        category
+        category,
+        images
       },
       userInfo: {
         isBetaTester: true,
@@ -46,6 +67,7 @@ export default function BetaFeedbackPage() {
       setFeedback('')
       setRating(0)
       setCategory('')
+      setImages([])
     }, 3000)
   }
 
@@ -59,8 +81,8 @@ export default function BetaFeedbackPage() {
         <div className="flex-1 flex items-center justify-center">
           <Card className="max-w-md">
             <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MessageCircleIcon className="h-8 w-8 text-green-600" />
+              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MessageCircleIcon className="h-8 w-8 text-slate-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Feedback skickat!
@@ -87,8 +109,8 @@ export default function BetaFeedbackPage() {
           <Card className="border-0 bg-white rounded-xl shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <MessageCircleIcon className="h-5 w-5 text-blue-600" />
-                Din feedback är viktig för oss
+                <MessageCircleIcon className="h-5 w-5 text-gray-600" />
+                Din feedback är viktig för mig
               </CardTitle>
               <p className="text-gray-600">
                 Som beta-testare spelar din åsikt en avgörande roll i utvecklingen av Kustra.
@@ -117,7 +139,7 @@ export default function BetaFeedbackPage() {
                         onClick={() => setCategory(cat)}
                         className={`p-3 text-left border rounded-lg transition-all duration-200 ${
                           category === cat
-                            ? 'border-blue-500 bg-blue-50 text-blue-900'
+                            ? 'border-slate-500 bg-slate-50 text-slate-900'
                             : 'border-gray-300 hover:border-gray-400 text-gray-700'
                         }`}
                       >
@@ -162,9 +184,60 @@ export default function BetaFeedbackPage() {
                     onChange={(e) => setFeedback(e.target.value)}
                     placeholder="Vad fungerar bra? Vad kan förbättras? Vilka funktioner saknar du? Dela gärna specifika exempel..."
                     rows={6}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
                     required
                   />
+                </div>
+
+                {/* Image Upload */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    Skärmdumpar (valfritt)
+                  </label>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Bilder hjälper mig förstå din feedback bättre. Du kan ladda upp flera bilder.
+                  </p>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        id="feedback-image-upload"
+                      />
+                      <label
+                        htmlFor="feedback-image-upload"
+                        className="cursor-pointer flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <ImageIcon className="h-4 w-4 text-gray-500" />
+                        Välj bilder
+                      </label>
+                    </div>
+
+                    {images.length > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {images.map((image, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={image}
+                              alt={`Screenshot ${index + 1}`}
+                              className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <XIcon className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Submit Button */}
@@ -184,47 +257,6 @@ export default function BetaFeedbackPage() {
           </Card>
 
 
-          {/* Info Card */}
-          <Card className="mt-6 border-0 bg-blue-50 rounded-xl">
-            <CardContent className="p-6">
-              <h3 className="font-semibold text-blue-900 mb-2">
-                Vad händer med min feedback?
-              </h3>
-              <ul className="text-blue-800 text-sm space-y-1">
-                <li>• Vi läser all feedback noggrant</li>
-                <li>• Vanliga förslag prioriteras i utvecklingen</li>
-                <li>• Du kan få uppföljning via email</li>
-                <li>• Din feedback hjälper oss forma framtiden för Kustra</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Beta Community Stats */}
-          <Card className="mt-6 border-0 bg-purple-50 rounded-xl">
-            <CardContent className="p-6">
-              <h3 className="font-semibold text-purple-900 mb-4">
-                🚀 Beta-community statistik
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-purple-700">47</div>
-                  <div className="text-sm text-purple-600">Aktiva beta-testare</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-700">156</div>
-                  <div className="text-sm text-purple-600">Feedback skickad</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-700">23</div>
-                  <div className="text-sm text-purple-600">Features implementerade</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-700">89%</div>
-                  <div className="text-sm text-purple-600">Nöjdhetsgrad</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>

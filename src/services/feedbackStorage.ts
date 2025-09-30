@@ -15,6 +15,7 @@ export interface FeedbackItem {
     steps?: string
     expected?: string
     actual?: string
+    images?: string[]
   }
   userInfo?: {
     isBetaTester: boolean
@@ -42,7 +43,8 @@ class FeedbackStorageService {
           use_case: feedback.data.useCase || null,
           steps: feedback.data.steps || null,
           expected_result: feedback.data.expected || null,
-          actual_result: feedback.data.actual || null
+          actual_result: feedback.data.actual || null,
+          images: feedback.data.images ? JSON.stringify(feedback.data.images) : null
         })
         .select('id')
         .single()
@@ -179,7 +181,8 @@ class FeedbackStorageService {
         useCase: item.use_case,
         steps: item.steps,
         expected: item.expected_result,
-        actual: item.actual_result
+        actual: item.actual_result,
+        images: item.images ? JSON.parse(item.images) : []
       },
       userInfo: {
         isBetaTester: item.is_beta_tester,

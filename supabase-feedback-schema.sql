@@ -27,7 +27,10 @@ CREATE TABLE IF NOT EXISTS feedback (
   -- Bug report specific
   steps TEXT,
   expected_result TEXT,
-  actual_result TEXT
+  actual_result TEXT,
+
+  -- Image attachments
+  images JSONB -- Array of image URLs/paths
 );
 
 -- Create index for faster queries
