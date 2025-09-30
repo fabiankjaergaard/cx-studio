@@ -135,9 +135,9 @@ export default function BugReportPage() {
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {[
-                      { value: 'low', label: 'Låg - Mindre problem', color: 'green' },
-                      { value: 'medium', label: 'Medium - Påverkar funktionalitet', color: 'yellow' },
-                      { value: 'high', label: 'Hög - Blockerar arbete', color: 'red' }
+                      { value: 'nice-to-have', label: 'Låg - Mindre problem', color: 'green' },
+                      { value: 'important', label: 'Medium - Påverkar funktionalitet', color: 'yellow' },
+                      { value: 'critical', label: 'Hög - Blockerar arbete', color: 'red' }
                     ].map((s) => (
                       <button
                         key={s.value}
