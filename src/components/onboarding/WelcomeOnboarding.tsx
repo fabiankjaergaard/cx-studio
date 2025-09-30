@@ -19,6 +19,7 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
 
   // Check if user is a beta tester
   const isBetaTester = userName === 'betatester@example.com'
+  const betaTesterName = typeof window !== 'undefined' ? localStorage.getItem('cx-studio-beta-tester-name') : null
 
   const handleStartTour = () => {
     onClose()
@@ -29,115 +30,61 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/20 backdrop-blur-sm overflow-hidden">
-      <div className="mx-4 max-w-2xl w-full max-h-[85vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="relative bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-6 text-white">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/10 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-          
-          <div className="text-center">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/20 backdrop-blur-sm overflow-hidden p-4">
+      <div className="max-w-2xl w-full max-h-[85vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+        {/* Content */}
+        <div className="p-8 overflow-y-auto flex-1">
+          {/* Logo & Title */}
+          <div className="text-center mb-6">
             <img
               src="/Kustra.png"
               alt="Kustra"
-              className="h-40 w-auto mx-auto filter brightness-0 invert"
+              className="h-40 w-auto mx-auto -mb-6"
             />
-            <h1 className="text-lg font-bold mb-1 flex items-center justify-center gap-2 -mt-10">
+            <h1 className="text-xl font-bold text-gray-900 mb-1">
               {isBetaTester
-                ? `Hello there, betatester!`
+                ? `Hello there${betaTesterName ? `, ${betaTesterName}` : ''}!`
                 : `${t('onboarding.welcome')}${userName ? `, ${userName.split('@')[0]}` : ''}!`
               }
-              <Zap className="w-4 h-4 text-slate-200" />
             </h1>
-            <p className="text-slate-200 text-sm">
+            <p className="text-gray-600">
               {isBetaTester
-                ? 'Your platform for Customer Experience Excellence'
+                ? 'Welcome to Kustra, your go-to CX platform'
                 : t('onboarding.subtitle')
               }
             </p>
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto flex-1">
-          {/* Video Placeholder */}
-          <div className="mb-5 relative">
-            <div className="h-40 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg overflow-hidden relative">
-              {/* Blurred background pattern */}
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-gray-200 to-slate-300 blur-sm opacity-60"></div>
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent blur-md"></div>
-
-              {/* Content overlay */}
-              <div className="relative h-full flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-14 h-14 mx-auto mb-3 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
-                    <svg className="w-7 h-7 text-slate-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                  </div>
-                  <p className="text-slate-700 font-semibold">{t('onboarding.introVideo')}</p>
-                </div>
-              </div>
-
-              {/* Coming Soon Badge */}
-              <div className="absolute top-4 right-4">
-                <div className="px-3 py-1 bg-slate-600 text-white text-xs font-semibold rounded-full shadow-lg backdrop-blur-sm">
-                  Coming Soon
+          {isBetaTester && (
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start space-x-3">
+                <Zap className="w-5 h-5 text-slate-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-slate-900 mb-2">Beta Testing</h4>
+                  <p className="text-slate-700 text-sm leading-relaxed mb-2">
+                    You're experiencing Kustra in its beta phase. Some features may not work as expected or might be missing entirely. The visual identity is also not yet finalized, so the app may feel quite minimal.
+                  </p>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    <strong>Your feedback is greatly appreciated!</strong> Find more information in the menu under "Beta Tester".
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Description */}
-          <div className="text-center mb-6">
-            {isBetaTester ? (
-              <div className="space-y-4">
-                <p className="text-gray-700 leading-relaxed font-medium">
-                  Learn how to use Kustra to create exceptional customer experiences
-                </p>
-
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-left">
-                  <div className="flex items-start space-x-2">
-                    <Zap className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-semibold text-amber-900 mb-2">Welcome to Beta Testing!</h4>
-                      <p className="text-amber-800 text-sm leading-relaxed mb-3">
-                        You're experiencing Kustra in its beta phase. Some features may not work as expected or might be missing entirely.
-                        Additionally, certain UI elements are not fully finalized, resulting in a more stripped-down design and limited color palette.
-                        This is all part of the beta testing process to help us identify what needs to be improved.
-                      </p>
-                      <p className="text-amber-800 text-sm leading-relaxed">
-                        <strong>Your feedback is greatly appreciated!</strong> You can find more information about how to submit feedback
-                        in the menu under "Beta Tester".
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <p className="text-gray-600 leading-relaxed">
-                {t('onboarding.description')}
-              </p>
-            )}
-          </div>
-
-          {/* CTA Button */}
-          <div className="flex flex-col gap-3">
+          {/* CTA Buttons */}
+          <div className="space-y-3">
             <button
               onClick={handleStartTour}
-              className="w-full flex items-center justify-center px-6 py-3 bg-slate-600 text-white rounded-lg hover:bg-slate-700 hover:scale-105 hover:shadow-lg transition-all duration-300 ease-out font-medium"
+              className="w-full flex items-center justify-center px-6 py-3 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors font-medium"
             >
               {t('onboarding.startTour')}
               <ChevronRight className="w-5 h-5 ml-2" />
             </button>
-            
+
             <button
               onClick={onClose}
-              className="w-full px-6 py-3 text-gray-500 hover:text-gray-700 transition-colors font-medium text-sm"
+              className="w-full px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors font-medium text-sm"
             >
               {t('onboarding.skipTour')}
             </button>

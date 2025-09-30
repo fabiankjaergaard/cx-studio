@@ -766,7 +766,7 @@ function SidebarContent() {
               {!isCollapsed && (
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-700 truncate">
-                    {user.email?.split('@')[0] || 'User'}
+                    {user.user_metadata?.name || user.email?.split('@')[0] || 'User'}
                   </p>
                   <p className="text-xs text-gray-500 truncate">{t('common.loggedIn')}</p>
                 </div>

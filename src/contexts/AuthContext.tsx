@@ -12,7 +12,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error: any }>
   signOut: () => Promise<void>
   setFirstLogin: (value: boolean) => void
-  signInAsBetaTester: () => void
+  signInAsBetaTester: (name?: string) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -36,13 +36,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check if user is a beta tester first
     if (typeof window !== 'undefined' && localStorage.getItem('cx-studio-beta-tester') === 'true') {
+      const betaTesterName = localStorage.getItem('cx-studio-beta-tester-name') || ''
       const mockUser = {
         id: 'beta-tester-001',
         email: 'betatester@example.com',
         aud: 'authenticated',
         role: 'authenticated',
         user_metadata: {
-          name: '',
+          name: betaTesterName,
           avatar_url: null
         },
         app_metadata: {},
@@ -169,7 +170,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signInAsBetaTester = () => {
+  const signInAsBetaTester = (name?: string) => {
     // Create a mock user for beta testing
     const mockUser = {
       id: 'beta-tester-001',
@@ -177,7 +178,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       aud: 'authenticated',
       role: 'authenticated',
       user_metadata: {
-        name: '',
+        name: name || '',
         avatar_url: null
       },
       app_metadata: {},
@@ -189,6 +190,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsFirstLogin(true)
     setFirstLogin(true)
     localStorage.setItem('cx-studio-beta-tester', 'true')
+    if (name) {
+      localStorage.setItem('cx-studio-beta-tester-name', name)
+    }
   }
 
   const value = {

@@ -62,7 +62,7 @@ export function Modal({ isOpen, onClose, children, title, className, maxWidth = 
             </div>
           )}
 
-          <div className="p-4 max-h-[70vh] overflow-y-auto">
+          <div className="p-4">
             {children}
           </div>
         </div>

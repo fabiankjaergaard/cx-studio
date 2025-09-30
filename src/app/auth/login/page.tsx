@@ -20,6 +20,7 @@ export default function LoginPage() {
   const [showBetaCodeModal, setShowBetaCodeModal] = useState(false)
   const [betaCode, setBetaCode] = useState(['', '', '', ''])
   const [betaCodeError, setBetaCodeError] = useState('')
+  const [betaTesterName, setBetaTesterName] = useState('')
   
   const { signIn, signInAsBetaTester, user, loading } = useAuth()
   const router = useRouter()
@@ -109,7 +110,7 @@ export default function LoginPage() {
       setShowBetaCodeModal(false)
       setBetaCode(['', '', '', ''])
       setBetaCodeError('')
-      signInAsBetaTester()
+      signInAsBetaTester(betaTesterName)
       router.replace('/')
     } else {
       setBetaCodeError('Invalid code. Please try again.')
@@ -269,50 +270,63 @@ export default function LoginPage() {
             setShowBetaCodeModal(false)
             setBetaCode(['', '', '', ''])
             setBetaCodeError('')
+            setBetaTesterName('')
           }}
           title=""
-          maxWidth="md"
+          maxWidth="xl"
         >
-          <div className="space-y-6">
+          <div className="space-y-6 p-2">
             <div className="text-center">
               <div className="flex justify-center mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center">
-                  <SparklesIcon className="h-8 w-8 text-gray-600" />
+                <div className="w-20 h-20 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 rounded-2xl flex items-center justify-center shadow-lg">
+                  <SparklesIcon className="h-10 w-10 text-slate-700" />
                 </div>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Beta Tester Access</h3>
-              <p className="text-gray-600">Enter your 4-digit access code</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Welcome, Beta Tester!</h3>
+              <p className="text-gray-600">Please enter your details to continue</p>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex justify-center space-x-3">
-                {betaCode.map((digit, index) => (
-                  <input
-                    key={index}
-                    id={`beta-code-${index}`}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleBetaCodeChange(index, e.target.value)}
-                    onKeyDown={(e) => handleBetaCodeKeyPress(e, index)}
-                    className="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-slate-500 focus:outline-none transition-colors"
-                    autoFocus={index === 0}
-                  />
-                ))}
+            <div className="space-y-5 px-2">
+              <div className="bg-gradient-to-br from-slate-50 to-gray-50 p-6 rounded-xl border border-slate-200">
+                <label htmlFor="beta-tester-name" className="block text-sm font-semibold text-gray-800 mb-3">
+                  Full Name
+                </label>
+                <Input
+                  id="beta-tester-name"
+                  type="text"
+                  value={betaTesterName}
+                  onChange={(e) => setBetaTesterName(e.target.value)}
+                  placeholder="Enter your full name"
+                  className="w-full text-base"
+                />
+              </div>
+
+              <div className="bg-gradient-to-br from-slate-50 to-gray-50 p-6 rounded-xl border border-slate-200">
+                <label className="block text-sm font-semibold text-gray-800 mb-3 text-center">
+                  4-Digit Access Code
+                </label>
+                <div className="flex justify-center space-x-3">
+                  {betaCode.map((digit, index) => (
+                    <input
+                      key={index}
+                      id={`beta-code-${index}`}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleBetaCodeChange(index, e.target.value)}
+                      onKeyDown={(e) => handleBetaCodeKeyPress(e, index)}
+                      className="w-16 h-16 text-center text-2xl font-bold border-2 border-slate-300 rounded-xl focus:border-slate-500 focus:ring-2 focus:ring-slate-200 focus:outline-none transition-all bg-white shadow-sm"
+                    />
+                  ))}
+                </div>
               </div>
 
               {betaCodeError && (
-                <div className="text-center">
-                  <p className="text-red-600 text-sm">{betaCodeError}</p>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-red-700 text-sm font-medium text-center">{betaCodeError}</p>
                 </div>
               )}
-
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-600 text-sm text-center">
-                  Need access? Contact your administrator for a beta tester code.
-                </p>
-              </div>
             </div>
 
             <div className="flex justify-center space-x-3 pt-4 border-t border-gray-200">
@@ -322,16 +336,19 @@ export default function LoginPage() {
                   setShowBetaCodeModal(false)
                   setBetaCode(['', '', '', ''])
                   setBetaCodeError('')
+                  setBetaTesterName('')
                 }}
+                className="px-6"
               >
                 Cancel
               </Button>
               <Button
                 variant="primary"
                 onClick={handleBetaCodeSubmit}
-                disabled={!betaCode.every(digit => digit !== '')}
+                disabled={!betaCode.every(digit => digit !== '') || !betaTesterName.trim()}
+                className="px-6 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800"
               >
-                Verify Code
+                Verify & Continue
               </Button>
             </div>
           </div>
