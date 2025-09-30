@@ -5,8 +5,11 @@ import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { BugIcon, SendIcon, AlertTriangleIcon, CheckCircleIcon } from 'lucide-react'
+import { feedbackStorage } from '@/services/feedbackStorage'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function BugReportPage() {
+  const { user } = useAuth()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [steps, setSteps] = useState('')
@@ -16,10 +19,33 @@ export default function BugReportPage() {
   const [browser, setBrowser] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the bug report to your backend
-    console.log({ title, description, steps, expected, actual, severity, browser })
+
+    // Get beta tester name from localStorage
+    const betaTesterName = typeof window !== 'undefined'
+      ? localStorage.getItem('cx-studio-beta-tester-name')
+      : null
+
+    // Save bug report to Supabase
+    await feedbackStorage.addFeedback({
+      type: 'bug-report',
+      data: {
+        title,
+        description,
+        steps,
+        expected,
+        actual,
+        priority: severity,
+        category: browser
+      },
+      userInfo: {
+        isBetaTester: true,
+        userId: user?.email || 'anonymous',
+        userName: betaTesterName || undefined
+      }
+    })
+
     setSubmitted(true)
 
     // Reset form after a delay

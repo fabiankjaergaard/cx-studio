@@ -16,11 +16,16 @@ export default function FeatureRequestPage() {
   const [priority, setPriority] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Save feature request to storage
-    feedbackStorage.addFeedback({
+    // Get beta tester name from localStorage
+    const betaTesterName = typeof window !== 'undefined'
+      ? localStorage.getItem('cx-studio-beta-tester-name')
+      : null
+
+    // Save feature request to Supabase
+    await feedbackStorage.addFeedback({
       type: 'feature-request',
       data: {
         title,
@@ -29,8 +34,9 @@ export default function FeatureRequestPage() {
         priority
       },
       userInfo: {
-        isBetaTester: user?.isBetaTester || false,
-        userId: user?.email || 'anonymous'
+        isBetaTester: true,
+        userId: user?.email || 'anonymous',
+        userName: betaTesterName || undefined
       }
     })
 
