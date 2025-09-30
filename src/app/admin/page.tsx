@@ -90,18 +90,19 @@ export default function AdminPage() {
     loadFeedback()
   }, [selectedType])
 
-  const loadFeedback = () => {
+  const loadFeedback = async () => {
     const allFeedback = selectedType === 'all'
-      ? feedbackStorage.getAllFeedback()
-      : feedbackStorage.getFeedbackByType(selectedType)
+      ? await feedbackStorage.getAllFeedback()
+      : await feedbackStorage.getFeedbackByType(selectedType)
 
     setFeedbackItems(allFeedback)
-    setStats(feedbackStorage.getStats())
+    const statsData = await feedbackStorage.getStats()
+    setStats(statsData)
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Är du säker på att du vill ta bort denna feedback?')) {
-      feedbackStorage.deleteFeedback(id)
+      await feedbackStorage.deleteFeedback(id)
       loadFeedback()
     }
   }
@@ -378,7 +379,7 @@ export default function AdminPage() {
                             </div>
                             <div className="flex items-center space-x-1">
                               <UserIcon className="h-4 w-4" />
-                              <span>{item.userInfo?.userId || 'Anonym'}</span>
+                              <span>{item.userInfo?.userName || item.userInfo?.userId || 'Anonym'}</span>
                               {item.userInfo?.isBetaTester && (
                                 <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium">
                                   Beta

@@ -15,11 +15,16 @@ export default function BetaFeedbackPage() {
   const [category, setCategory] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Save feedback to storage
-    feedbackStorage.addFeedback({
+    // Get beta tester name from localStorage
+    const betaTesterName = typeof window !== 'undefined'
+      ? localStorage.getItem('cx-studio-beta-tester-name')
+      : null
+
+    // Save feedback to Supabase
+    await feedbackStorage.addFeedback({
       type: 'feedback',
       data: {
         feedback,
@@ -27,8 +32,9 @@ export default function BetaFeedbackPage() {
         category
       },
       userInfo: {
-        isBetaTester: user?.isBetaTester || false,
-        userId: user?.email || 'anonymous'
+        isBetaTester: true,
+        userId: user?.email || 'anonymous',
+        userName: betaTesterName || undefined
       }
     })
 
