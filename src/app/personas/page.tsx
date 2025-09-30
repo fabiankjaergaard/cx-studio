@@ -29,110 +29,6 @@ interface Persona {
   motivations: string[]
 }
 
-const getSamplePersonas = (t: (key: string) => string): Persona[] => [
-  {
-    id: '1',
-    name: 'Anna Andersson',
-    age: '32',
-    location: 'Stockholm',
-    occupation: 'Produktchef',
-    avatar: '',
-    goals: [
-      t('personas.sampleData.anna.goals.0'),
-      t('personas.sampleData.anna.goals.1'),
-      t('personas.sampleData.anna.goals.2')
-    ],
-    painPoints: [
-      t('personas.sampleData.anna.painPoints.0'),
-      t('personas.sampleData.anna.painPoints.1'),
-      t('personas.sampleData.anna.painPoints.2')
-    ],
-    description: t('personas.sampleData.anna.description'),
-    demographics: {
-      income: '45 000 - 60 000 kr/mån',
-      education: 'Högskola/Universitet',
-      family: 'Gift, 1 barn'
-    },
-    behaviors: [
-      t('personas.sampleData.anna.behaviors.0'),
-      t('personas.sampleData.anna.behaviors.1'),
-      t('personas.sampleData.anna.behaviors.2')
-    ],
-    motivations: [
-      t('personas.sampleData.anna.motivations.0'),
-      t('personas.sampleData.anna.motivations.1'),
-      t('personas.sampleData.anna.motivations.2')
-    ]
-  },
-  {
-    id: '2',
-    name: 'Erik Nilsson',
-    age: '28',
-    location: 'Göteborg',
-    occupation: 'Freelance Designer',
-    avatar: '',
-    goals: [
-      t('personas.sampleData.erik.goals.0'),
-      t('personas.sampleData.erik.goals.1'),
-      t('personas.sampleData.erik.goals.2')
-    ],
-    painPoints: [
-      t('personas.sampleData.erik.painPoints.0'),
-      t('personas.sampleData.erik.painPoints.1'),
-      t('personas.sampleData.erik.painPoints.2')
-    ],
-    description: t('personas.sampleData.erik.description'),
-    demographics: {
-      income: '25 000 - 40 000 kr/mån',
-      education: 'Yrkeshögskola',
-      family: 'Singel'
-    },
-    behaviors: [
-      t('personas.sampleData.erik.behaviors.0'),
-      t('personas.sampleData.erik.behaviors.1'),
-      t('personas.sampleData.erik.behaviors.2')
-    ],
-    motivations: [
-      t('personas.sampleData.erik.motivations.0'),
-      t('personas.sampleData.erik.motivations.1'),
-      t('personas.sampleData.erik.motivations.2')
-    ]
-  },
-  {
-    id: '3',
-    name: 'Maria Johansson',
-    age: '45',
-    location: 'Malmö',
-    occupation: 'Verksamhetschef',
-    avatar: '',
-    goals: [
-      t('personas.sampleData.maria.goals.0'),
-      t('personas.sampleData.maria.goals.1'),
-      t('personas.sampleData.maria.goals.2')
-    ],
-    painPoints: [
-      t('personas.sampleData.maria.painPoints.0'),
-      t('personas.sampleData.maria.painPoints.1'),
-      t('personas.sampleData.maria.painPoints.2')
-    ],
-    description: t('personas.sampleData.maria.description'),
-    demographics: {
-      income: '60 000 - 80 000 kr/mån',
-      education: 'Högskola/Universitet + MBA',
-      family: 'Gift, 2 vuxna barn'
-    },
-    behaviors: [
-      t('personas.sampleData.maria.behaviors.0'),
-      t('personas.sampleData.maria.behaviors.1'),
-      t('personas.sampleData.maria.behaviors.2')
-    ],
-    motivations: [
-      t('personas.sampleData.maria.motivations.0'),
-      t('personas.sampleData.maria.motivations.1'),
-      t('personas.sampleData.maria.motivations.2')
-    ]
-  }
-]
 
 export default function PersonasPage() {
   const { t } = useLanguage()
@@ -141,15 +37,14 @@ export default function PersonasPage() {
   const [editingPersona, setEditingPersona] = useState<Persona | null>(null)
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null)
 
-  // Load personas from localStorage and combine with sample personas
+  // Load personas from localStorage (user-created only)
   useEffect(() => {
-    const samplePersonas = getSamplePersonas(t)
     try {
       const userPersonas = JSON.parse(localStorage.getItem('user-personas') || '[]')
-      setPersonas([...samplePersonas, ...userPersonas])
+      setPersonas(userPersonas)
     } catch (error) {
       console.error('Error loading personas from localStorage:', error)
-      setPersonas(samplePersonas)
+      setPersonas([])
     }
   }, [t])
 
@@ -187,8 +82,17 @@ export default function PersonasPage() {
         behaviors: newPersona.behaviors?.filter(Boolean) || [],
         motivations: newPersona.motivations?.filter(Boolean) || []
       }
-      
-      setPersonas([...personas, persona])
+
+      const updatedPersonas = [...personas, persona]
+      setPersonas(updatedPersonas)
+
+      // Save to localStorage
+      try {
+        localStorage.setItem('user-personas', JSON.stringify(updatedPersonas))
+      } catch (error) {
+        console.error('Error saving persona to localStorage:', error)
+      }
+
       setIsNewPersonaModalOpen(false)
       setNewPersona({
         name: '',
@@ -207,15 +111,13 @@ export default function PersonasPage() {
   }
 
   const handleDeletePersona = (id: string) => {
-    // Remove from state
+    // Remove from state and localStorage
     const updatedPersonas = personas.filter(p => p.id !== id)
     setPersonas(updatedPersonas)
 
-    // Also remove from localStorage if it's a user-created persona
+    // Save updated list to localStorage
     try {
-      const userPersonas = JSON.parse(localStorage.getItem('user-personas') || '[]')
-      const updatedUserPersonas = userPersonas.filter((p: Persona) => p.id !== id)
-      localStorage.setItem('user-personas', JSON.stringify(updatedUserPersonas))
+      localStorage.setItem('user-personas', JSON.stringify(updatedPersonas))
     } catch (error) {
       console.error('Error updating localStorage:', error)
     }
