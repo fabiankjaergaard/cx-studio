@@ -202,6 +202,7 @@ export function JourneyMapCell({
   const [modalContent, setModalContent] = useState<string>(content)
   const [toolbarPosition, setToolbarPosition] = useState({ left: '50%', transform: 'translateX(-50%)', top: '0px' })
   const [recentlyUsedIcons, setRecentlyUsedIcons] = useState<string[]>([])
+  const [iconSearchQuery, setIconSearchQuery] = useState<string>('')
 
   // Load recently used icons from localStorage on mount
   useEffect(() => {
@@ -222,6 +223,8 @@ export function JourneyMapCell({
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const cellRef = useRef<HTMLDivElement>(null)
+  const iconContainerRef = useRef<HTMLDivElement>(null)
+  const modalIconContainerRef = useRef<HTMLDivElement>(null)
 
   // Drag & drop functionality
   const {
@@ -481,6 +484,15 @@ export function JourneyMapCell({
     return <IconComponent className="h-5 w-5 text-slate-600" />
   }
 
+  const getFilteredIcons = () => {
+    if (!iconSearchQuery.trim()) return AVAILABLE_ICONS
+
+    const query = iconSearchQuery.toLowerCase().trim()
+    return AVAILABLE_ICONS.filter(icon =>
+      icon.name.toLowerCase().includes(query)
+    )
+  }
+
   // Sync currentIcon with prop when it changes
   useEffect(() => {
     if (selectedIcon !== undefined) {
@@ -494,6 +506,28 @@ export function JourneyMapCell({
       setModalContent(content)
     }
   }, [isIconPickerOpen, content])
+
+  // Auto-scroll to first matching icon when search query changes
+  useEffect(() => {
+    if (iconSearchQuery.trim()) {
+      const filteredIcons = getFilteredIcons()
+      if (filteredIcons.length > 0) {
+        const firstIconName = filteredIcons[0].name
+
+        // Scroll in toolbar
+        const toolbarIcon = document.querySelector(`[title="${firstIconName}"]`)
+        if (toolbarIcon && iconContainerRef.current) {
+          toolbarIcon.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+        }
+
+        // Scroll in modal
+        const modalIcon = document.querySelector(`[data-modal-icon="${firstIconName}"]`)
+        if (modalIcon && modalIconContainerRef.current) {
+          modalIcon.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        }
+      }
+    }
+  }, [iconSearchQuery])
 
   // Close icon picker when clicking outside
   useEffect(() => {
@@ -836,12 +870,21 @@ export function JourneyMapCell({
         >
           {/* Icons */}
           <div className="mb-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Ikoner</label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700">Icons</label>
+              <input
+                type="text"
+                value={iconSearchQuery}
+                onChange={(e) => setIconSearchQuery(e.target.value)}
+                placeholder="Search icons..."
+                className="text-xs px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-all w-32 bg-white shadow-sm"
+              />
+            </div>
 
             {/* Recently Used Section */}
             {recentlyUsedIcons.length > 0 && (
               <div className="mb-3">
-                <div className="text-xs font-medium text-gray-600 mb-1">Senast använda</div>
+                <div className="text-xs font-medium text-gray-600 mb-1">Recently used</div>
                 <div className="flex gap-1.5 flex-wrap">
                   {recentlyUsedIcons.map((iconName) => {
                     const iconData = AVAILABLE_ICONS.find(icon => icon.name === iconName)
@@ -867,17 +910,21 @@ export function JourneyMapCell({
             )}
 
             {/* All Icons Section */}
-            <div className="text-xs font-medium text-gray-600 mb-1">Alla ikoner</div>
+            <div className="text-xs font-medium text-gray-600 mb-1">
+              {iconSearchQuery ? `Results for "${iconSearchQuery}"` : 'All icons'}
+            </div>
             <div className="overflow-x-auto pb-2 -mx-1 px-1" style={{ scrollbarWidth: 'thin' }}>
-              <div className="grid grid-rows-1 grid-flow-col gap-1.5 w-max">
-                <button
-                  onClick={() => handleIconSelect('')}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 bg-white hover:bg-gray-100 hover:border-gray-400 transition-all shadow-sm"
-                  title="Ingen ikon"
-                >
-                  <XCircleIcon className="h-4 w-4 text-gray-400" />
-                </button>
-                {AVAILABLE_ICONS.map((iconData) => {
+              <div ref={iconContainerRef} className="grid grid-rows-1 grid-flow-col gap-1.5 w-max">
+                {!iconSearchQuery && (
+                  <button
+                    onClick={() => handleIconSelect('')}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 bg-white hover:bg-gray-100 hover:border-gray-400 transition-all shadow-sm"
+                    title="No icon"
+                  >
+                    <XCircleIcon className="h-4 w-4 text-gray-400" />
+                  </button>
+                )}
+                {getFilteredIcons().map((iconData) => {
                   const IconComponent = iconData.icon
                   return (
                     <button
@@ -894,18 +941,23 @@ export function JourneyMapCell({
                     </button>
                   )
                 })}
+                {getFilteredIcons().length === 0 && iconSearchQuery && (
+                  <div className="text-xs text-gray-500 px-2 py-1 italic">
+                    No icons found for "{iconSearchQuery}"
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
           {/* Colors */}
           <div className="mb-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Bakgrundsfärg</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Background color</label>
             <div className="grid grid-cols-12 gap-1.5">
               <button
                 onClick={() => handleColorSelect('')}
                 className="w-8 h-8 rounded-lg border-2 border-dashed border-gray-300 bg-white hover:border-gray-400 transition-all shadow-sm flex items-center justify-center"
-                title="Ingen färg"
+                title="No color"
               >
                 <XCircleIcon className="h-4 w-4 text-gray-400" />
               </button>
@@ -970,7 +1022,7 @@ export function JourneyMapCell({
         >
           {/* Modern header */}
           <div className="px-6 py-4 border-b border-gray-100">
-            <div className="text-lg font-semibold text-gray-900">Redigera cell</div>
+            <div className="text-lg font-semibold text-gray-900">Edit cell</div>
           </div>
 
           <div className="p-6 space-y-5">
@@ -998,16 +1050,27 @@ export function JourneyMapCell({
 
             {/* Icons in modern grid */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">Ikoner</label>
-              <div className="grid grid-cols-14 gap-2 p-4 bg-gray-50/50 rounded-lg border border-gray-200">
-                <button
-                  onClick={() => handleIconSelect('')}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-all shadow-sm"
-                  title="Ingen ikon"
-                >
-                  <XCircleIcon className="h-4 w-4 text-gray-400" />
-                </button>
-                {AVAILABLE_ICONS.map((iconData) => {
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-sm font-medium text-gray-700">Icons</label>
+                <input
+                  type="text"
+                  value={iconSearchQuery}
+                  onChange={(e) => setIconSearchQuery(e.target.value)}
+                  placeholder="Search icons..."
+                  className="text-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-all w-40 bg-white shadow-sm"
+                />
+              </div>
+              <div ref={modalIconContainerRef} className="grid grid-cols-14 gap-2 p-4 bg-gray-50/50 rounded-lg border border-gray-200 max-h-48 overflow-y-auto">
+                {!iconSearchQuery && (
+                  <button
+                    onClick={() => handleIconSelect('')}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-all shadow-sm"
+                    title="No icon"
+                  >
+                    <XCircleIcon className="h-4 w-4 text-gray-400" />
+                  </button>
+                )}
+                {getFilteredIcons().map((iconData) => {
                   const IconComponent = iconData.icon
                   return (
                     <button
@@ -1019,22 +1082,28 @@ export function JourneyMapCell({
                           : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
                       }`}
                       title={iconData.name}
+                      data-modal-icon={iconData.name}
                     >
                       <IconComponent className="h-4 w-4" />
                     </button>
                   )
                 })}
+                {getFilteredIcons().length === 0 && iconSearchQuery && (
+                  <div className="col-span-14 text-center text-gray-500 py-4 italic">
+                    No icons found for "{iconSearchQuery}"
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Colors in modern layout */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">Bakgrundsfärg</label>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Background color</label>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => handleColorSelect('')}
                   className="w-10 h-10 rounded-lg border-2 border-dashed border-gray-300 bg-white hover:border-gray-400 transition-all shadow-sm flex items-center justify-center"
-                  title="Ingen färg"
+                  title="No color"
                 >
                   <XCircleIcon className="h-4 w-4 text-gray-400" />
                 </button>
@@ -1070,7 +1139,7 @@ export function JourneyMapCell({
               }}
               className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm"
             >
-              Rensa
+              Clear
             </button>
             <button
               onClick={() => {
@@ -1080,7 +1149,7 @@ export function JourneyMapCell({
               }}
               className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all shadow-sm"
             >
-              Spara
+              Save
             </button>
           </div>
         </div>

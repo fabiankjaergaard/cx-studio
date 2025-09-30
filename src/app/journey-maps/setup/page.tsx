@@ -152,6 +152,16 @@ function JourneyMapSetupContent() {
             />
           </div>
 
+          {/* Step Title */}
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+              {t('teamSetup.stepTitle')}
+            </h2>
+            <p className="text-gray-600">
+              {t('teamSetup.stepDescription')}
+            </p>
+          </div>
+
           {/* Team Members */}
           <Card className="border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
             <CardHeader>
@@ -249,29 +259,9 @@ function JourneyMapSetupContent() {
             </CardContent>
           </Card>
 
-          {/* Permissions Info */}
-          <Card className="bg-slate-50 border-slate-200 border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
-            <CardContent className="p-4">
-              <h4 className="font-medium text-gray-900 mb-3">{t('teamSetup.permissions')}</h4>
-              <div className="space-y-2 text-sm text-gray-600">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-slate-700 rounded-full"></div>
-                  <span><strong>{t('teamSetup.ownerRole')}:</strong> {t('teamSetup.ownerDescription')}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-slate-500 rounded-full"></div>
-                  <span><strong>{t('teamSetup.editorRole')}:</strong> {t('teamSetup.editorDescription')}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                  <span><strong>{t('teamSetup.viewerRole')}:</strong> {t('teamSetup.viewerDescription')}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Continue Button */}
-          <div className="flex justify-center pt-6 border-t">
+          <div className="flex justify-center pt-6">
             <Button
               variant="primary"
               onClick={handleContinue}

@@ -71,6 +71,8 @@ const translations: Record<Language, Record<string, string>> = {
         // Team Setup
         'teamSetup.title': 'Team Setup',
         'teamSetup.description': 'Bjud in teammedlemmar till din journey map',
+        'teamSetup.stepTitle': 'Invite Your Team',
+        'teamSetup.stepDescription': 'Add team members who will collaborate on this journey map',
         'teamSetup.back': 'Tillbaka',
         'teamSetup.teamTitle': 'Team ({{count}})',
         'teamSetup.teamDescription': 'Bjud in teammedlemmar för att samarbeta på din journey map. Du kan ändra behörigheter när som helst.',
@@ -3433,6 +3435,8 @@ const translations: Record<Language, Record<string, string>> = {
         // Team Setup
         'teamSetup.title': 'Team Setup',
         'teamSetup.description': 'Invite team members to your journey map',
+        'teamSetup.stepTitle': 'Invite Your Team',
+        'teamSetup.stepDescription': 'Add team members who will collaborate on this journey map',
         'teamSetup.back': 'Back',
         'teamSetup.teamTitle': 'Team ({{count}})',
         'teamSetup.teamDescription': 'Invite team members to collaborate on your journey map. You can change permissions at any time.',
