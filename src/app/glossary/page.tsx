@@ -18,35 +18,35 @@ const getCategoryLabels = (t: (key: string) => string) => ({
 })
 
 const categoryColors = {
-  general: 'bg-slate-50 text-slate-600 border-slate-200',
-  journey: 'bg-blue-50 text-blue-700 border-blue-200',
-  touchpoint: 'bg-violet-50 text-violet-700 border-violet-200',
-  emotion: 'bg-amber-50 text-amber-700 border-amber-200',
-  metrics: 'bg-indigo-50 text-indigo-700 border-indigo-200'
+  general: 'bg-gray-50 text-gray-600 border-gray-200',
+  journey: 'bg-gray-50 text-gray-600 border-gray-200',
+  touchpoint: 'bg-gray-50 text-gray-600 border-gray-200',
+  emotion: 'bg-gray-50 text-gray-600 border-gray-200',
+  metrics: 'bg-gray-50 text-gray-600 border-gray-200'
 }
 
 const categoryHoverColors = {
-  general: 'hover:bg-slate-100 hover:border-slate-300 hover:shadow-slate-200/50',
-  journey: 'hover:bg-blue-100 hover:border-blue-300 hover:shadow-blue-200/50',
-  touchpoint: 'hover:bg-violet-100 hover:border-violet-300 hover:shadow-violet-200/50',
-  emotion: 'hover:bg-amber-100 hover:border-amber-300 hover:shadow-amber-200/50',
-  metrics: 'hover:bg-indigo-100 hover:border-indigo-300 hover:shadow-indigo-200/50'
+  general: 'hover:bg-gray-100 hover:border-gray-300 hover:shadow-gray-200/50',
+  journey: 'hover:bg-gray-100 hover:border-gray-300 hover:shadow-gray-200/50',
+  touchpoint: 'hover:bg-gray-100 hover:border-gray-300 hover:shadow-gray-200/50',
+  emotion: 'hover:bg-gray-100 hover:border-gray-300 hover:shadow-gray-200/50',
+  metrics: 'hover:bg-gray-100 hover:border-gray-300 hover:shadow-gray-200/50'
 }
 
 const categoryBorderColors = {
-  general: 'border-l-slate-400',
-  journey: 'border-l-blue-400',
-  touchpoint: 'border-l-violet-400',
-  emotion: 'border-l-amber-400',
-  metrics: 'border-l-indigo-400'
+  general: 'border-l-gray-400',
+  journey: 'border-l-gray-400',
+  touchpoint: 'border-l-gray-400',
+  emotion: 'border-l-gray-400',
+  metrics: 'border-l-gray-400'
 }
 
 const categoryBackgroundColors = {
-  general: 'bg-slate-50',
-  journey: 'bg-blue-50',
-  touchpoint: 'bg-violet-50',
-  emotion: 'bg-amber-50',
-  metrics: 'bg-indigo-50'
+  general: 'bg-gray-50',
+  journey: 'bg-gray-50',
+  touchpoint: 'bg-gray-50',
+  emotion: 'bg-gray-50',
+  metrics: 'bg-gray-50'
 }
 
 export default function GlossaryPage() {

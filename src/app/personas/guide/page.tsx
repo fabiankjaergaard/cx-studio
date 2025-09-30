@@ -532,7 +532,7 @@ export default function PersonaGuidePage() {
               >
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center space-x-3">
-                    <AlertTriangleIcon className="h-5 w-5 text-red-600" />
+                    <AlertTriangleIcon className="h-5 w-5 text-slate-600" />
                     <span>{t('personas.guide.mistakes.title')}</span>
                   </CardTitle>
                   {expandedSections.mistakes ?
@@ -546,56 +546,56 @@ export default function PersonaGuidePage() {
                   <div className="space-y-3">
                     {currentStep === 0 && (
                       <>
-                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step1.mistake1.title')}</h4>
-                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step1.mistake1.impact')}</p>
+                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                          <h4 className="font-medium text-gray-800 mb-1">{t('personas.guide.mistakes.step1.mistake1.title')}</h4>
+                          <p className="text-sm text-gray-600 mb-2">{t('personas.guide.mistakes.step1.mistake1.impact')}</p>
                           <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step1.mistake1.solution')}</p>
                         </div>
-                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step1.mistake2.title')}</h4>
-                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step1.mistake2.impact')}</p>
+                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                          <h4 className="font-medium text-gray-800 mb-1">{t('personas.guide.mistakes.step1.mistake2.title')}</h4>
+                          <p className="text-sm text-gray-600 mb-2">{t('personas.guide.mistakes.step1.mistake2.impact')}</p>
                           <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step1.mistake2.solution')}</p>
                         </div>
                       </>
                     )}
                     {currentStep === 1 && (
                       <>
-                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step2.mistake1.title')}</h4>
-                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step2.mistake1.impact')}</p>
+                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                          <h4 className="font-medium text-gray-800 mb-1">{t('personas.guide.mistakes.step2.mistake1.title')}</h4>
+                          <p className="text-sm text-gray-600 mb-2">{t('personas.guide.mistakes.step2.mistake1.impact')}</p>
                           <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step2.mistake1.solution')}</p>
                         </div>
-                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step2.mistake2.title')}</h4>
-                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step2.mistake2.impact')}</p>
+                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                          <h4 className="font-medium text-gray-800 mb-1">{t('personas.guide.mistakes.step2.mistake2.title')}</h4>
+                          <p className="text-sm text-gray-600 mb-2">{t('personas.guide.mistakes.step2.mistake2.impact')}</p>
                           <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step2.mistake2.solution')}</p>
                         </div>
                       </>
                     )}
                     {currentStep === 2 && (
                       <>
-                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step3.mistake1.title')}</h4>
-                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step3.mistake1.impact')}</p>
+                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                          <h4 className="font-medium text-gray-800 mb-1">{t('personas.guide.mistakes.step3.mistake1.title')}</h4>
+                          <p className="text-sm text-gray-600 mb-2">{t('personas.guide.mistakes.step3.mistake1.impact')}</p>
                           <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step3.mistake1.solution')}</p>
                         </div>
-                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step3.mistake2.title')}</h4>
-                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step3.mistake2.impact')}</p>
+                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                          <h4 className="font-medium text-gray-800 mb-1">{t('personas.guide.mistakes.step3.mistake2.title')}</h4>
+                          <p className="text-sm text-gray-600 mb-2">{t('personas.guide.mistakes.step3.mistake2.impact')}</p>
                           <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step3.mistake2.solution')}</p>
                         </div>
                       </>
                     )}
                     {currentStep === 3 && (
                       <>
-                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step4.mistake1.title')}</h4>
-                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step4.mistake1.impact')}</p>
+                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                          <h4 className="font-medium text-gray-800 mb-1">{t('personas.guide.mistakes.step4.mistake1.title')}</h4>
+                          <p className="text-sm text-gray-600 mb-2">{t('personas.guide.mistakes.step4.mistake1.impact')}</p>
                           <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step4.mistake1.solution')}</p>
                         </div>
-                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step4.mistake2.title')}</h4>
-                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step4.mistake2.impact')}</p>
+                        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                          <h4 className="font-medium text-gray-800 mb-1">{t('personas.guide.mistakes.step4.mistake2.title')}</h4>
+                          <p className="text-sm text-gray-600 mb-2">{t('personas.guide.mistakes.step4.mistake2.impact')}</p>
                           <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step4.mistake2.solution')}</p>
                         </div>
                       </>

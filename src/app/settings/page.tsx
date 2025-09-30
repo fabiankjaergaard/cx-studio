@@ -35,7 +35,7 @@ export default function SettingsPage() {
 
             <div className="space-y-2">
               <p className="text-lg text-gray-600 font-medium">
-                We're building comprehensive settings to personalize
+                Comprehensive settings will be available to personalize
               </p>
               <p className="text-lg text-gray-600 font-medium">
                 your customer experience platform
@@ -43,8 +43,8 @@ export default function SettingsPage() {
             </div>
 
             <p className="text-gray-500 max-w-2xl mx-auto leading-relaxed">
-              Customize your workspace, manage team preferences, configure notifications,
-              and control privacy settings for your organization
+              Soon you'll be able to customize your workspace, manage team preferences,
+              configure notifications, and control privacy settings for your organization
             </p>
           </div>
 

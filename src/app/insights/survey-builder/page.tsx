@@ -308,7 +308,10 @@ function SurveyContent() {
           </CardContent>
         </Card>
 
-        <Card className="group border-2 border-dashed border-gray-300 hover:border-gray-400 rounded-2xl overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
+        <Card
+          className="group border-2 border-dashed border-gray-300 hover:border-gray-400 rounded-2xl overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 bg-gradient-to-br from-white to-gray-50"
+          onClick={() => setActiveTab('templates')}
+        >
           <CardContent className="p-8 text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
               <BookTemplateIcon className="h-8 w-8 text-gray-600" />
@@ -342,9 +345,9 @@ function SurveyContent() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {surveyTemplates.map((template) => (
-              <Card key={template.id} className="group border-0 bg-gradient-to-br from-gray-50 to-white rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-start space-x-4 mb-4">
+              <Card key={template.id} className="group border-0 bg-gradient-to-br from-gray-50 to-white rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full">
+                <CardContent className="p-6 h-full flex flex-col">
+                  <div className="flex items-start space-x-4 mb-4 flex-1">
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 group-hover:scale-110 transition-transform duration-300">
                       <template.icon className="h-6 w-6 text-gray-600" />
                     </div>
@@ -356,9 +359,11 @@ function SurveyContent() {
                       <p className="text-xs text-gray-500">{template.questions} {t('surveyBuilder.page.create.questionsIncluded')}</p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full hover:bg-gray-100 hover:scale-105 transition-all duration-200 rounded-xl">
-                    {t('surveyBuilder.page.create.useTemplate')}
-                  </Button>
+                  <Link href={`/insights/survey-builder?tab=builder&template=${template.id}`}>
+                    <Button variant="outline" size="sm" className="w-full hover:bg-gray-100 hover:scale-105 transition-all duration-200 rounded-xl">
+                      {t('surveyBuilder.page.create.useTemplate')}
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
@@ -377,6 +382,14 @@ function SurveyContent() {
     })
     const [selectedQuestion, setSelectedQuestion] = useState(null)
     const [isEditingQuestion, setIsEditingQuestion] = useState(false)
+
+    // Load template if coming from template selection
+    useEffect(() => {
+      const templateId = searchParams.get('template')
+      if (templateId && survey.questions.length === 0) {
+        loadTemplateQuestions(templateId)
+      }
+    }, [searchParams])
 
     const questionTypes = [
       {
@@ -507,6 +520,109 @@ function SurveyContent() {
         options: updatedOptions
       }
       setSurvey({ ...survey, questions: updatedQuestions })
+    }
+
+    const loadTemplateQuestions = (templateId: string) => {
+      let templateQuestions = []
+      let templateTitle = ''
+      let templateDescription = ''
+
+      if (templateId === 'nps-standard') {
+        templateTitle = 'Net Promoter Score Survey'
+        templateDescription = 'Measure customer loyalty and satisfaction'
+        templateQuestions = [
+          {
+            id: '1',
+            title: 'How likely are you to recommend us to a friend or colleague?',
+            type: 'nps',
+            required: true
+          },
+          {
+            id: '2',
+            title: 'What is the primary reason for your score?',
+            type: 'text',
+            required: false
+          },
+          {
+            id: '3',
+            title: 'How can we improve your experience?',
+            type: 'text',
+            required: false
+          }
+        ]
+      } else if (templateId === 'csat-basic') {
+        templateTitle = 'Customer Satisfaction Survey'
+        templateDescription = 'Measure overall customer satisfaction'
+        templateQuestions = [
+          {
+            id: '1',
+            title: 'How satisfied are you with our product?',
+            type: 'rating',
+            required: true
+          },
+          {
+            id: '2',
+            title: 'How satisfied are you with our customer service?',
+            type: 'rating',
+            required: true
+          },
+          {
+            id: '3',
+            title: 'How would you rate the quality of our product?',
+            type: 'rating',
+            required: true
+          },
+          {
+            id: '4',
+            title: 'What did you like most about your experience?',
+            type: 'text',
+            required: false
+          },
+          {
+            id: '5',
+            title: 'What could we do better?',
+            type: 'text',
+            required: false
+          }
+        ]
+      } else if (templateId === 'ces-checkout') {
+        templateTitle = 'Customer Effort Score - Checkout'
+        templateDescription = 'Measure the ease of your checkout process'
+        templateQuestions = [
+          {
+            id: '1',
+            title: 'How easy was it to complete your purchase?',
+            type: 'rating',
+            required: true
+          },
+          {
+            id: '2',
+            title: 'Did you encounter any difficulties during checkout?',
+            type: 'single-choice',
+            required: true,
+            options: ['No difficulties', 'Payment issues', 'Form errors', 'Slow loading', 'Other']
+          },
+          {
+            id: '3',
+            title: 'How long did it take to complete your order?',
+            type: 'single-choice',
+            required: false,
+            options: ['Less than 2 minutes', '2-5 minutes', '5-10 minutes', 'More than 10 minutes']
+          },
+          {
+            id: '4',
+            title: 'How can we improve the checkout experience?',
+            type: 'text',
+            required: false
+          }
+        ]
+      }
+
+      setSurvey({
+        title: templateTitle,
+        description: templateDescription,
+        questions: templateQuestions
+      })
     }
 
     return (
@@ -990,9 +1106,9 @@ function SurveyContent() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {surveyTemplates.map((template) => (
-                    <Card key={template.id} className="group border border-gray-200 hover:border-slate-300 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                      <CardContent className="p-6">
-                        <div className="flex items-start space-x-4 mb-4">
+                    <Card key={template.id} className="group border border-gray-200 hover:border-slate-300 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full">
+                      <CardContent className="p-6 h-full flex flex-col">
+                        <div className="flex items-start space-x-4 mb-4 flex-1">
                           <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${template.color}`}>
                             <template.icon className="h-6 w-6" />
                           </div>
@@ -1004,9 +1120,11 @@ function SurveyContent() {
                             <p className="text-xs text-gray-500">{template.questions} {t('surveyBuilder.page.create.questionsIncluded')}</p>
                           </div>
                         </div>
-                        <Button variant="primary" className="w-full hover:scale-[1.02] transition-transform duration-200">
-                          {t('surveyBuilder.page.create.useTemplate')}
-                        </Button>
+                        <Link href={`/insights/survey-builder?tab=builder&template=${template.id}`}>
+                          <Button variant="primary" className="w-full hover:scale-[1.02] transition-transform duration-200">
+                            {t('surveyBuilder.page.create.useTemplate')}
+                          </Button>
+                        </Link>
                       </CardContent>
                     </Card>
                   ))}

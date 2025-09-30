@@ -65,15 +65,15 @@ export default function BetaPage() {
                   <div className="flex items-center space-x-6 text-sm text-gray-500">
                     <div className="flex items-center space-x-2">
                       <UsersIcon className="h-4 w-4" />
-                      <span>47 aktiva beta-testare</span>
+                      <span>X aktiva beta-testare</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <TrendingUpIcon className="h-4 w-4" />
-                      <span>89% nöjdhetsgrad</span>
+                      <span>X% nöjdhetsgrad</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <CheckCircleIcon className="h-4 w-4" />
-                      <span>23 features implementerade</span>
+                      <span>X features implementerade</span>
                     </div>
                   </div>
                 </div>
