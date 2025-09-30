@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Header } from '@/components/dashboard/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -28,237 +29,95 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-const personaSteps = [
-  {
-    step: 1,
-    title: "Samla in data",
-    icon: SearchIcon,
-    duration: "2-4 veckor",
-    description: "Grundläggande research för att förstå din målgrupp",
-    activities: [
-      "Kundintervjuer (8-12 personer per segment)",
-      "Enkätundersökningar för kvantitativ data",
-      "Analytics-data från webbplats/app",
-      "Kundserviceloggar och feedback",
-      "Säljteamets observationer"
-    ],
-    deliverables: ["Research-sammanfattning", "Demografi-data", "Beteendemönster", "Citat och insikter"]
-  },
-  {
-    step: 2,
-    title: "Analysera & segmentera",
-    icon: BarChart3Icon,
-    duration: "1-2 veckor", 
-    description: "Identifiera tydliga mönster och grupperingar",
-    activities: [
-      "Identifiera likheter och skillnader",
-      "Gruppera liknande beteenden/behov",
-      "Skapa preliminära segment",
-      "Validera segment mot affärsmål",
-      "Prioritera segment efter värde"
-    ],
-    deliverables: ["Segment-matrix", "Prioriteringslista", "Validering av hypoteser"]
-  },
-  {
-    step: 3,
-    title: "Skapa personas",
-    icon: UserIcon,
-    duration: "1 vecka",
-    description: "Bygga detaljerade persona-profiler",
-    activities: [
-      "Definiera persona-template",
-      "Fylla i demografiska data",
-      "Beskriva mål och motivationer",
-      "Lista pain points och utmaningar",
-      "Ge personas namn och personlighet"
-    ],
-    deliverables: ["Färdiga persona-profiler", "Persona-kort", "Användningsscenarier"]
-  },
-  {
-    step: 4,
-    title: "Validera & förfina",
-    icon: CheckCircleIcon,
-    duration: "1-2 veckor",
-    description: "Testa och förbättra personas med stakeholders",
-    activities: [
-      "Presentera för teamet",
-      "Validera mot riktig kunddata",
-      "Få feedback från säljteam",
-      "Justera baserat på input",
-      "Skapa final version"
-    ],
-    deliverables: ["Validerade personas", "Feedback-sammanfattning", "Implementeringsplan"]
-  }
-]
+// This will be moved inside the component to access t function
 
-const personaElements = [
-  {
-    category: "Demografisk information",
-    icon: FileTextIcon,
-    color: "text-slate-600 bg-slate-100",
-    elements: [
-      {
-        field: "Namn & foto",
-        description: "Gör personen verklig och minnesvärd",
-        tips: ["Använd realistiska namn för din marknad", "Undvik stockfotos - använd illustrationer eller avatars", "Välj namn som teamet kan relatera till"],
-        example: "Anna Andersson, 34 år"
-      },
-      {
-        field: "Ålder & livsfas",
-        description: "Påverkar behov, teknologianvändning och prioriteringar",
-        tips: ["Använd åldersintervall (25-30) snarare än exakt ålder", "Inkludera livsfas (student, förälder, pensionär)", "Koppla till produktens målgrupp"],
-        example: "28-35 år, etablerad i karriären"
-      },
-      {
-        field: "Geografi & miljö",
-        description: "Påverkar tillgänglighet, kultur och användarkontext",
-        tips: ["Specificera stad/region vid behov", "Inkludera urban/rural om relevant", "Beakta tidszoner för globala produkter"],
-        example: "Stockholm, urban miljö"
-      }
-    ]
-  },
-  {
-    category: "Psykografisk profil",
-    icon: BrainIcon,
-    color: "text-slate-600 bg-slate-100",
-    elements: [
-      {
-        field: "Mål & ambitioner",
-        description: "Vad driver personen och vad vill de uppnå?",
-        tips: ["Fokusera på mål relaterade till din produkt", "Inkludera både kortsiktiga och långsiktiga mål", "Koppla till personens värderingar"],
-        example: "Effektivisera arbetsprocesser, utveckla karriären"
-      },
-      {
-        field: "Motivationer",
-        description: "Varför gör de det de gör? Vad är viktigt för dem?",
-        tips: ["Gå djupare än ytan - vad är den verkliga drivkraften?", "Inkludera både rationella och emotionella motivationer", "Koppla till Maslow's behovshierarki"],
-        example: "Erkännande från kollegor, trygghet i rollen"
-      },
-      {
-        field: "Värderingar & attityder",
-        description: "Personens världssyn och vad de tycker är viktigt",
-        tips: ["Inkludera både personliga och professionella värderingar", "Beskriv attityd till teknik, förändring, etc.", "Använd för att förklara beteenden"],
-        example: "Värdesätter work-life balance, teknikoptimist"
-      }
-    ]
-  },
-  {
-    category: "Beteenden & vanor",
-    icon: TrendingUpIcon,
-    color: "text-slate-600 bg-slate-100",
-    elements: [
-      {
-        field: "Dagliga rutiner",
-        description: "Hur ser en typisk dag ut för personen?",
-        tips: ["Fokusera på rutiner relevanta för din produkt", "Inkludera både arbets- och fritidsrutiner", "Notera när de är mest/minst aktiva"],
-        example: "Kollar email första på morgonen, använder mobila appar pendling"
-      },
-      {
-        field: "Teknologianvändning",
-        description: "Vilka verktyg och plattformar använder de?",
-        tips: ["Lista både professionella och personliga verktyg", "Inkludera preferenser för kommunikation", "Notera teknik-mognadsgrad"],
-        example: "Power-user av Slack, föredrar desktop för arbete"
-      },
-      {
-        field: "Köpbeteende",
-        description: "Hur fattar de köpbeslut och vad påverkar dem?",
-        tips: ["Beskriv beslutsprocessen steg för steg", "Identifiera påverkare och beslutsfattare", "Inkludera tidsramar för beslut"],
-        example: "Researchar noggrant, läser recensioner, frågar kollegor"
-      }
-    ]
-  },
-  {
-    category: "Pain points & utmaningar",
-    icon: AlertTriangleIcon,
-    color: "text-slate-600 bg-slate-100",
-    elements: [
-      {
-        field: "Huvudutmaningar",
-        description: "Vilka är deras största problem och frustrationer?",
-        tips: ["Fokusera på problem din produkt kan lösa", "Rangordna efter allvarlighetsgrad", "Inkludera både funktionella och emotionella pain points"],
-        example: "Svårt att hålla koll på alla projekt, för många verktyg"
-      },
-      {
-        field: "Hinder & blockerare",
-        description: "Vad hindrar dem från att nå sina mål?",
-        tips: ["Identifiera både interna och externa hinder", "Inkludera tidsbrist, budget, politik, etc.", "Förstå konsekvenserna av hindren"],
-        example: "Budget-begränsningar, godkännandeprocesser"
-      },
-      {
-        field: "Rädslor & oro",
-        description: "Vad är de oroliga för eller rädda att missa?",
-        tips: ["Inkludera både rationella och irrationella rädslor", "Förstå vad som står på spel", "Koppla till riskaversion"],
-        example: "Rädd att missa deadlines, oro för att inte hänga med"
-      }
-    ]
-  }
-]
-
-const commonMistakes = [
-  {
-    mistake: "Basera personas på antaganden",
-    impact: "Personas som inte representerar verkliga användare",
-    solution: "Samla in riktig data genom intervjuer, enkäter och observationer",
-    prevention: "Kräv minst 8-12 intervjuer per persona-segment"
-  },
-  {
-    mistake: "Skapa för många personas",
-    impact: "Team blir förvirrade och fokuserar inte",
-    solution: "Begränsa till 3-5 primära personas max",
-    prevention: "Prioritera efter affärsvärde och användarvolym"
-  },
-  {
-    mistake: "För generiska eller stereotypa personas",
-    impact: "Ger ingen riktning för design eller produktbeslut",
-    solution: "Inkludera specifika detaljer och verkliga citat",
-    prevention: "Testa om personas känns som riktiga personer teamet kan relatera till"
-  },
-  {
-    mistake: "Personas som 'sätts på hyllan'",
-    impact: "Ingen påverkan på faktiska produktbeslut",
-    solution: "Integrera personas i alla designprocesser och beslutsfattande",
-    prevention: "Skapa persona-posters och använd i alla projekt-kickoffs"
-  },
-  {
-    mistake: "Fokusera bara på demografi",
-    impact: "Missar psykografiska insikter som driver beteende",
-    solution: "Prioritera mål, motivationer och pain points över ålder/kön",
-    prevention: "Använd 80/20-regeln: 20% demografi, 80% psykografi"
-  }
-]
-
-const personaTemplate = {
-  sections: [
-    {
-      title: "Grundinfo",
-      fields: ["Namn", "Ålder", "Plats", "Yrke", "Familjestatus", "Inkomst"]
-    },
-    {
-      title: "Personlighet", 
-      fields: ["Beskrivning (2-3 meningar)", "Värderingar", "Personlighetstyp", "Citat som sammanfattar attityd"]
-    },
-    {
-      title: "Mål & Motivationer",
-      fields: ["Primära mål", "Sekundära mål", "Vad motiverar dem?", "Vad är framgång för dem?"]
-    },
-    {
-      title: "Utmaningar",
-      fields: ["Största frustrationer", "Hinder för att nå mål", "Rädslor & oro", "Vad hindrar köp?"]
-    },
-    {
-      title: "Beteenden",
-      fields: ["Daglig rutin", "Teknikanvändning", "Informationskonsumtion", "Köpprocess"]
-    },
-    {
-      title: "Produktrelation",
-      fields: ["Nuvarande lösningar", "Varför skulle de välja oss?", "Användningsscenarier", "Success metrics"]
-    }
-  ]
-}
+// These arrays will be moved inside the component to access t function
 
 export default function PersonaGuidePage() {
+  const { t } = useLanguage()
   const [currentStep, setCurrentStep] = useState(0)
   const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({})
+
+  const personaSteps = [
+    {
+      step: 1,
+      title: t('personas.guide.step1.title'),
+      icon: SearchIcon,
+      duration: t('personas.guide.step1.duration'),
+      description: t('personas.guide.step1.description'),
+      activities: [
+        t('personas.guide.step1.activity1'),
+        t('personas.guide.step1.activity2'),
+        t('personas.guide.step1.activity3'),
+        t('personas.guide.step1.activity4'),
+        t('personas.guide.step1.activity5')
+      ],
+      deliverables: [
+        t('personas.guide.step1.deliverable1'),
+        t('personas.guide.step1.deliverable2'),
+        t('personas.guide.step1.deliverable3'),
+        t('personas.guide.step1.deliverable4')
+      ]
+    },
+    {
+      step: 2,
+      title: t('personas.guide.step2.title'),
+      icon: BarChart3Icon,
+      duration: t('personas.guide.step2.duration'),
+      description: t('personas.guide.step2.description'),
+      activities: [
+        t('personas.guide.step2.activity1'),
+        t('personas.guide.step2.activity2'),
+        t('personas.guide.step2.activity3'),
+        t('personas.guide.step2.activity4'),
+        t('personas.guide.step2.activity5')
+      ],
+      deliverables: [
+        t('personas.guide.step2.deliverable1'),
+        t('personas.guide.step2.deliverable2'),
+        t('personas.guide.step2.deliverable3')
+      ]
+    },
+    {
+      step: 3,
+      title: t('personas.guide.step3.title'),
+      icon: UserIcon,
+      duration: t('personas.guide.step3.duration'),
+      description: t('personas.guide.step3.description'),
+      activities: [
+        t('personas.guide.step3.activity1'),
+        t('personas.guide.step3.activity2'),
+        t('personas.guide.step3.activity3'),
+        t('personas.guide.step3.activity4'),
+        t('personas.guide.step3.activity5')
+      ],
+      deliverables: [
+        t('personas.guide.step3.deliverable1'),
+        t('personas.guide.step3.deliverable2'),
+        t('personas.guide.step3.deliverable3')
+      ]
+    },
+    {
+      step: 4,
+      title: t('personas.guide.step4.title'),
+      icon: CheckCircleIcon,
+      duration: t('personas.guide.step4.duration'),
+      description: t('personas.guide.step4.description'),
+      activities: [
+        t('personas.guide.step4.activity1'),
+        t('personas.guide.step4.activity2'),
+        t('personas.guide.step4.activity3'),
+        t('personas.guide.step4.activity4'),
+        t('personas.guide.step4.activity5')
+      ],
+      deliverables: [
+        t('personas.guide.step4.deliverable1'),
+        t('personas.guide.step4.deliverable2'),
+        t('personas.guide.step4.deliverable3')
+      ]
+    }
+  ]
+
   const totalSteps = personaSteps.length
 
   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, totalSteps - 1))
@@ -275,19 +134,19 @@ export default function PersonaGuidePage() {
   return (
     <div className="h-full flex flex-col bg-gray-50">
       <Header
-        title="Guide: Skapa effektiva personas"
-        description={`Steg ${currentStep + 1} av ${totalSteps}: ${personaSteps[currentStep].title}`}
+        title={t('personas.guide.title')}
+        description={`${t('personas.guide.step')} ${currentStep + 1} ${t('personas.guide.of')} ${totalSteps}: ${personaSteps[currentStep].title}`}
         actions={
           <div className="flex space-x-2">
             <Link href="/personas">
               <Button variant="outline">
-                Tillbaka till personas
+                {t('personas.guide.backToPersonas')}
               </Button>
             </Link>
             <Link href="/personas/create">
               <Button variant="primary">
                 <PlayIcon className="mr-2 h-4 w-4" />
-                Börja skapa persona
+                {t('personas.guide.startCreating')}
               </Button>
             </Link>
           </div>
@@ -308,12 +167,12 @@ export default function PersonaGuidePage() {
                 </div>
                 <div>
                   <CardTitle className="text-2xl">
-                    Steg {personaSteps[currentStep].step}: {personaSteps[currentStep].title}
+                    {t('personas.guide.step')} {personaSteps[currentStep].step}: {personaSteps[currentStep].title}
                   </CardTitle>
                   <p className="text-gray-600 mt-2">{personaSteps[currentStep].description}</p>
                   <div className="flex items-center mt-2 text-sm text-gray-500">
                     <ClockIcon className="h-4 w-4 mr-1" />
-                    Tidsåtgång: {personaSteps[currentStep].duration}
+                    {t('personas.guide.timeRequired')} {personaSteps[currentStep].duration}
                   </div>
                 </div>
               </div>
@@ -321,7 +180,7 @@ export default function PersonaGuidePage() {
             <CardContent className="px-6 pb-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Aktiviteter</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('personas.guide.activities')}</h3>
                   <ul className="space-y-3">
                     {personaSteps[currentStep].activities.map((activity, index) => (
                       <li key={index} className="flex items-start space-x-3">
@@ -332,7 +191,7 @@ export default function PersonaGuidePage() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Leverabler</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('personas.guide.deliverables')}</h3>
                   <div className="space-y-3">
                     {personaSteps[currentStep].deliverables.map((deliverable, index) => (
                       <div key={index} className="p-3 bg-gray-50 border-l-4 border-l-slate-400 rounded-r">
@@ -355,8 +214,8 @@ export default function PersonaGuidePage() {
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
                         <MessageSquareIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Intervjuteknik</h3>
-                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Ställ öppna frågor och lyssna mer än du talar</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">{t('personas.guide.quickref.step1.card1.title')}</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.quickref.step1.card1.description')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -366,8 +225,8 @@ export default function PersonaGuidePage() {
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
                         <FileTextIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Dokumentera allt</h3>
-                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Spela in intervjuer och anteckna observationer</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">{t('personas.guide.quickref.step1.card2.title')}</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.quickref.step1.card2.description')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -377,8 +236,8 @@ export default function PersonaGuidePage() {
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
                         <UsersIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Olika perspektiv</h3>
-                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">8-12 intervjuer per segment för mångfald</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">{t('personas.guide.quickref.step1.card3.title')}</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.quickref.step1.card3.description')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -392,8 +251,8 @@ export default function PersonaGuidePage() {
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
                         <BarChart3Icon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Sök mönster</h3>
-                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Hitta likheter och skillnader i datan</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">{t('personas.guide.quickref.step2.card1.title')}</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.quickref.step2.card1.description')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -403,8 +262,8 @@ export default function PersonaGuidePage() {
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
                         <TrendingUpIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Segmentera smart</h3>
-                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Fokusera på beteende och motivation</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">{t('personas.guide.quickref.step2.card2.title')}</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.quickref.step2.card2.description')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -414,8 +273,8 @@ export default function PersonaGuidePage() {
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
                         <EyeIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Validera hypoteser</h3>
-                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Testa dina antaganden mot datan</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">{t('personas.guide.quickref.step2.card3.title')}</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.quickref.step2.card3.description')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -429,8 +288,8 @@ export default function PersonaGuidePage() {
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
                         <HeartIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Empati först</h3>
-                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Fokusera på känslor och motivationer</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">{t('personas.guide.quickref.step3.card1.title')}</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.quickref.step3.card1.description')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -440,8 +299,8 @@ export default function PersonaGuidePage() {
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
                         <FileTextIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Berätta historier</h3>
-                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Gör personas levande med narrativ</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">{t('personas.guide.quickref.step3.card2.title')}</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.quickref.step3.card2.description')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -451,8 +310,8 @@ export default function PersonaGuidePage() {
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
                         <TargetIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Håll det relevant</h3>
-                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Inkludera bara information som påverkar beslut</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">{t('personas.guide.quickref.step3.card3.title')}</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.quickref.step3.card3.description')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -466,8 +325,8 @@ export default function PersonaGuidePage() {
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
                         <UsersIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Involvera teamet</h3>
-                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Få alla att känna ägarskap för personorna</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">{t('personas.guide.quickref.step4.card1.title')}</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.quickref.step4.card1.description')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -477,8 +336,8 @@ export default function PersonaGuidePage() {
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
                         <CheckCircleIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Testa med kunder</h3>
-                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Validera med riktiga användare</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">{t('personas.guide.quickref.step4.card2.title')}</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.quickref.step4.card2.description')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -488,8 +347,8 @@ export default function PersonaGuidePage() {
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
                         <LightbulbIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Uppdatera regelbundet</h3>
-                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Håll personas levande och aktuella</p>
+                      <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">{t('personas.guide.quickref.step4.card3.title')}</h3>
+                      <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.quickref.step4.card3.description')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -509,7 +368,7 @@ export default function PersonaGuidePage() {
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center space-x-3">
                       <MessageSquareIcon className="h-5 w-5 text-slate-600" />
-                      <span>Research-metoder</span>
+                      <span>{t('personas.guide.expandable.research.title')}</span>
                     </CardTitle>
                     {expandedSections.research ?
                       <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
@@ -521,16 +380,16 @@ export default function PersonaGuidePage() {
                   <CardContent className="pt-0">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-4 bg-slate-50 rounded-lg">
-                        <h4 className="font-medium text-gray-900 mb-2">Kundintervjuer</h4>
-                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">8-12 djupintervjuer per segment</p>
+                        <h4 className="font-medium text-gray-900 mb-2">{t('personas.guide.expandable.research.interviews.title')}</h4>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.expandable.research.interviews.description')}</p>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-lg">
-                        <h4 className="font-medium text-gray-900 mb-2">Enkäter</h4>
-                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Kvantitativ validering av hypoteser</p>
+                        <h4 className="font-medium text-gray-900 mb-2">{t('personas.guide.expandable.research.surveys.title')}</h4>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.expandable.research.surveys.description')}</p>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-lg">
-                        <h4 className="font-medium text-gray-900 mb-2">Analytics</h4>
-                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Beteendedata från webb/app</p>
+                        <h4 className="font-medium text-gray-900 mb-2">{t('personas.guide.expandable.research.analytics.title')}</h4>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.expandable.research.analytics.description')}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -547,7 +406,7 @@ export default function PersonaGuidePage() {
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center space-x-3">
                       <BarChart3Icon className="h-5 w-5 text-slate-600" />
-                      <span>Analys-tekniker</span>
+                      <span>{t('personas.guide.expandable.analysis.title')}</span>
                     </CardTitle>
                     {expandedSections.analysis ?
                       <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
@@ -585,7 +444,7 @@ export default function PersonaGuidePage() {
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center space-x-3">
                       <UserIcon className="h-5 w-5 text-slate-600" />
-                      <span>Persona-mallar</span>
+                      <span>{t('personas.guide.expandable.creation.title')}</span>
                     </CardTitle>
                     {expandedSections.creation ?
                       <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
@@ -599,25 +458,25 @@ export default function PersonaGuidePage() {
                       <div className="p-4 bg-slate-50 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2 flex items-center">
                           <BrainIcon className="h-4 w-4 mr-2 text-slate-600" />
-                          Psykografi (80%)
+                          {t('personas.guide.expandable.creation.psychographics.title')}
                         </h4>
                         <ul className="text-sm text-gray-600 space-y-1">
-                          <li>• Mål och ambitioner</li>
-                          <li>• Motivationer och drivkrafter</li>
-                          <li>• Värderingar och attityder</li>
-                          <li>• Pain points och utmaningar</li>
+                          <li>• {t('personas.guide.expandable.creation.psychographics.item1')}</li>
+                          <li>• {t('personas.guide.expandable.creation.psychographics.item2')}</li>
+                          <li>• {t('personas.guide.expandable.creation.psychographics.item3')}</li>
+                          <li>• {t('personas.guide.expandable.creation.psychographics.item4')}</li>
                         </ul>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2 flex items-center">
                           <FileTextIcon className="h-4 w-4 mr-2 text-slate-600" />
-                          Demografi (20%)
+                          {t('personas.guide.expandable.creation.demographics.title')}
                         </h4>
                         <ul className="text-sm text-gray-600 space-y-1">
-                          <li>• Namn och ålder</li>
-                          <li>• Yrke och inkomst</li>
-                          <li>• Geografi och miljö</li>
-                          <li>• Teknologianvändning</li>
+                          <li>• {t('personas.guide.expandable.creation.demographics.item1')}</li>
+                          <li>• {t('personas.guide.expandable.creation.demographics.item2')}</li>
+                          <li>• {t('personas.guide.expandable.creation.demographics.item3')}</li>
+                          <li>• {t('personas.guide.expandable.creation.demographics.item4')}</li>
                         </ul>
                       </div>
                     </div>
@@ -635,7 +494,7 @@ export default function PersonaGuidePage() {
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center space-x-3">
                       <CheckCircleIcon className="h-5 w-5 text-slate-600" />
-                      <span>Implementeringstips</span>
+                      <span>{t('personas.guide.expandable.implementation.title')}</span>
                     </CardTitle>
                     {expandedSections.implementation ?
                       <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
@@ -647,16 +506,16 @@ export default function PersonaGuidePage() {
                   <CardContent className="pt-0">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-4 bg-slate-50 rounded-lg">
-                        <h4 className="font-medium text-gray-900 mb-2">Team Workshops</h4>
-                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Introducera personas för alla teammedlemmar</p>
+                        <h4 className="font-medium text-gray-900 mb-2">{t('personas.guide.expandable.implementation.workshops.title')}</h4>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.expandable.implementation.workshops.description')}</p>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-lg">
-                        <h4 className="font-medium text-gray-900 mb-2">Validering</h4>
-                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Testa personas med riktiga användare</p>
+                        <h4 className="font-medium text-gray-900 mb-2">{t('personas.guide.expandable.implementation.validation.title')}</h4>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.expandable.implementation.validation.description')}</p>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-lg">
-                        <h4 className="font-medium text-gray-900 mb-2">Underhåll</h4>
-                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Uppdatera baserat på ny data och feedback</p>
+                        <h4 className="font-medium text-gray-900 mb-2">{t('personas.guide.expandable.implementation.maintenance.title')}</h4>
+                        <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">{t('personas.guide.expandable.implementation.maintenance.description')}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -674,7 +533,7 @@ export default function PersonaGuidePage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center space-x-3">
                     <AlertTriangleIcon className="h-5 w-5 text-red-600" />
-                    <span>Vanliga misstag för detta steg</span>
+                    <span>{t('personas.guide.mistakes.title')}</span>
                   </CardTitle>
                   {expandedSections.mistakes ?
                     <ChevronUpIcon className="h-5 w-5 text-gray-400" /> :
@@ -688,56 +547,56 @@ export default function PersonaGuidePage() {
                     {currentStep === 0 && (
                       <>
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">Ledande frågor</h4>
-                          <p className="text-sm text-red-600 mb-2">Ställer frågor som leder respondenten mot förväntade svar</p>
-                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Använd öppna frågor som "Berätta om..." istället för ja/nej frågor</p>
+                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step1.mistake1.title')}</h4>
+                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step1.mistake1.impact')}</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step1.mistake1.solution')}</p>
                         </div>
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">För få intervjuer</h4>
-                          <p className="text-sm text-red-600 mb-2">Baserar personas på för få datapunkter</p>
-                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Minimum 8-12 intervjuer per persona-segment</p>
+                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step1.mistake2.title')}</h4>
+                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step1.mistake2.impact')}</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step1.mistake2.solution')}</p>
                         </div>
                       </>
                     )}
                     {currentStep === 1 && (
                       <>
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">Demografisk segmentering</h4>
-                          <p className="text-sm text-red-600 mb-2">Segmenterar endast baserat på ålder, kön eller geografi</p>
-                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Fokusera på beteenden, mål och motivationer</p>
+                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step2.mistake1.title')}</h4>
+                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step2.mistake1.impact')}</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step2.mistake1.solution')}</p>
                         </div>
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">Konfirmationsbias</h4>
-                          <p className="text-sm text-red-600 mb-2">Ser bara mönster som bekräftar befintliga antaganden</p>
-                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Aktivt leta efter motsägelser och överraskningar</p>
+                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step2.mistake2.title')}</h4>
+                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step2.mistake2.impact')}</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step2.mistake2.solution')}</p>
                         </div>
                       </>
                     )}
                     {currentStep === 2 && (
                       <>
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">Stereotyper</h4>
-                          <p className="text-sm text-red-600 mb-2">Skapar personas baserade på antaganden snarare än data</p>
-                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Använd riktiga citat och specifika beteenden från research</p>
+                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step3.mistake1.title')}</h4>
+                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step3.mistake1.impact')}</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step3.mistake1.solution')}</p>
                         </div>
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">För många detaljer</h4>
-                          <p className="text-sm text-red-600 mb-2">Inkluderar irrelevant information som förvirrar</p>
-                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Fokusera på information som påverkar produktbeslut</p>
+                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step3.mistake2.title')}</h4>
+                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step3.mistake2.impact')}</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step3.mistake2.solution')}</p>
                         </div>
                       </>
                     )}
                     {currentStep === 3 && (
                       <>
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">Glömmer uppdatering</h4>
-                          <p className="text-sm text-red-600 mb-2">Personas blir inaktuella och irrelevanta över tid</p>
-                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Schemalägg regelbundna uppdateringar baserat på ny data</p>
+                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step4.mistake1.title')}</h4>
+                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step4.mistake1.impact')}</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step4.mistake1.solution')}</p>
                         </div>
                         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <h4 className="font-medium text-red-800 mb-1">Ingen teamkoppling</h4>
-                          <p className="text-sm text-red-600 mb-2">Personas förblir abstrakta och används inte aktivt</p>
-                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>Lösning:</strong> Koppla personas till konkreta beslut och användarscenarier</p>
+                          <h4 className="font-medium text-red-800 mb-1">{t('personas.guide.mistakes.step4.mistake2.title')}</h4>
+                          <p className="text-sm text-red-600 mb-2">{t('personas.guide.mistakes.step4.mistake2.impact')}</p>
+                          <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700"><strong>{t('personas.guide.mistakes.solutionLabel')}</strong> {t('personas.guide.mistakes.step4.mistake2.solution')}</p>
                         </div>
                       </>
                     )}
@@ -761,7 +620,7 @@ export default function PersonaGuidePage() {
                   className="flex items-center"
                 >
                   <ChevronLeftIcon className="h-4 w-4 mr-1" />
-                  Tillbaka
+                  {t('personas.guide.back')}
                 </Button>
               ) : (
                 <div className="w-20"></div>
@@ -790,14 +649,14 @@ export default function PersonaGuidePage() {
                   onClick={nextStep}
                   className="flex items-center"
                 >
-                  Nästa
+                  {t('personas.guide.next')}
                   <ChevronRightIcon className="h-4 w-4 ml-1" />
                 </Button>
               ) : (
                 <Link href="/personas/create">
                   <Button variant="primary" className="flex items-center">
                     <PlayIcon className="h-4 w-4 mr-2" />
-                    Kom igång
+                    {t('personas.guide.getStarted')}
                   </Button>
                 </Link>
               )}

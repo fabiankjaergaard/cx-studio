@@ -42,13 +42,13 @@ export default function Home() {
     {
       id: 'templates-gallery',
       name: 'Template Gallery',
-      description: 'Snabbåtkomst till populära mallar',
+      description: 'Quick access to popular templates',
       icon: 'template'
     },
     {
       id: 'quick-actions',
       name: 'Quick Actions',
-      description: 'Snabbknappar för vanliga uppgifter',
+      description: 'Quick buttons for common tasks',
       icon: 'zap'
     }
   ]
@@ -154,10 +154,10 @@ export default function Home() {
                       <div className="w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm text-gray-900">
-                          Journey skapad: {journey.title}
+                          Journey created: {journey.title}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
-                          {new Date(journey.createdAt).toLocaleDateString('sv-SE')}
+                          {new Date(journey.createdAt).toLocaleDateString('en-US')}
                         </p>
                       </div>
                     </div>
@@ -165,7 +165,7 @@ export default function Home() {
                 ) : (
                   <div className="text-center py-6 text-gray-500 flex-1 flex flex-col justify-center">
                     <ActivityIcon className="mx-auto h-8 w-8 text-gray-300 mb-2" />
-                    <p className="text-sm">Ingen aktivitet än</p>
+                    <p className="text-sm">No activity yet</p>
                   </div>
                 )}
               </div>
@@ -190,29 +190,29 @@ export default function Home() {
             <CardContent className="pt-6 h-full flex flex-col">
               <div className="flex items-center mb-4">
                 <BarChart3Icon className="mr-2 h-5 w-5 text-slate-600" />
-                <h3 className="text-lg font-medium text-gray-900">Journey Statistik</h3>
+                <h3 className="text-lg font-medium text-gray-900">Journey Statistics</h3>
               </div>
               <div className="flex-1 flex flex-col justify-center">
                 {journeys.length > 0 ? (
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-3 bg-slate-50 rounded-lg">
                       <div className="text-2xl font-bold text-slate-700 mb-1">{journeys.length}</div>
-                      <div className="text-xs text-slate-600">Totalt Journeys</div>
+                      <div className="text-xs text-slate-600">Total Journeys</div>
                     </div>
                     <div className="text-center p-3 bg-slate-50 rounded-lg">
                       <div className="text-2xl font-bold text-slate-700 mb-1">{completionRate}%</div>
-                      <div className="text-xs text-slate-600">Komplettering</div>
+                      <div className="text-xs text-slate-600">Completion</div>
                     </div>
                     <div className="col-span-2 text-center p-3 bg-slate-50 rounded-lg">
                       <div className="text-2xl font-bold text-slate-700 mb-1">{avgTouchpoints}</div>
-                      <div className="text-xs text-slate-600">Snitt Touchpoints</div>
+                      <div className="text-xs text-slate-600">Avg Touchpoints</div>
                     </div>
                   </div>
                 ) : (
                   <div className="text-center py-8 text-gray-500">
                     <TrendingUpIcon className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-                    <p className="text-sm font-medium text-gray-700 mb-2">Ingen statistik ännu</p>
-                    <p className="text-xs text-gray-500">Skapa journeys för att se statistik</p>
+                    <p className="text-sm font-medium text-gray-700 mb-2">No statistics yet</p>
+                    <p className="text-xs text-gray-500">Create journeys to see statistics</p>
                   </div>
                 )}
               </div>
@@ -232,16 +232,16 @@ export default function Home() {
             <CardContent className="pt-6 h-full flex flex-col">
               <div className="flex items-center mb-4">
                 <UsersIcon className="mr-2 h-5 w-5 text-slate-600" />
-                <h3 className="text-lg font-medium text-gray-900">Senaste Personas</h3>
+                <h3 className="text-lg font-medium text-gray-900">Recent Personas</h3>
               </div>
               <div className="text-center py-8 text-gray-500 flex-1 flex flex-col justify-center">
                 <UsersIcon className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-                <p className="text-sm font-medium text-gray-700 mb-2">Inga personas än</p>
-                <p className="text-xs text-gray-500 mb-4">Skapa din första persona</p>
+                <p className="text-sm font-medium text-gray-700 mb-2">No personas yet</p>
+                <p className="text-xs text-gray-500 mb-4">Create your first persona</p>
                 <Link href="/personas/create">
                   <Button variant="outline" size="sm">
                     <PlusIcon className="mr-2 h-4 w-4" />
-                    Skapa Persona
+                    Create Persona
                   </Button>
                 </Link>
               </div>
@@ -271,7 +271,7 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">E-commerce Journey</p>
-                      <p className="text-xs text-gray-500">Komplett köpresa från upptäckt till lojalitet</p>
+                      <p className="text-xs text-gray-500">Complete buying journey from discovery to loyalty</p>
                     </div>
                   </div>
                 </Link>
@@ -282,7 +282,7 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">SaaS Onboarding</p>
-                      <p className="text-xs text-gray-500">Användarresa för software onboarding</p>
+                      <p className="text-xs text-gray-500">User journey for software onboarding</p>
                     </div>
                   </div>
                 </Link>
@@ -322,7 +322,7 @@ export default function Home() {
                       <div className="w-8 h-8 mx-auto mb-2 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors">
                         <UsersIcon className="w-4 h-4 text-slate-600" />
                       </div>
-                      <p className="text-xs font-medium text-gray-900">Ny Persona</p>
+                      <p className="text-xs font-medium text-gray-900">New Persona</p>
                     </div>
                   </div>
                 </Link>
@@ -355,23 +355,23 @@ export default function Home() {
                       <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-2xl flex items-center justify-center">
                         <MapIcon className="w-8 h-8 text-slate-400" />
                       </div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">Inga Journey Maps än</h3>
-                      <p className="text-sm text-gray-500 mb-6">Gå till Journey Maps-sektionen för att skapa din första</p>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No Journey Maps yet</h3>
+                      <p className="text-sm text-gray-500 mb-6">Go to the Journey Maps section to create your first one</p>
                       <Link href="/journey-maps">
                         <Button variant="primary">
                           <MapIcon className="mr-2 h-4 w-4" />
-                          Öppna Journey Maps
+                          Open Journey Maps
                         </Button>
                       </Link>
                     </div>
                   ) : (
                     <div className="h-full flex flex-col">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-medium text-gray-900">Mina Journey Maps</h3>
+                        <h3 className="text-lg font-medium text-gray-900">My Journey Maps</h3>
                         <Link href="/journey-maps">
                           <Button variant="outline" size="sm">
                             <MapIcon className="mr-2 h-4 w-4" />
-                            Visa alla
+                            Show all
                           </Button>
                         </Link>
                       </div>
@@ -384,7 +384,7 @@ export default function Home() {
                               </div>
                               <div className="min-w-0 flex-1">
                                 <p className="font-medium text-gray-900 truncate">{journeyMap.name}</p>
-                                <p className="text-xs text-gray-500">{journeyMap.stages?.length || 0} stages • Senast ändrad {new Date(journeyMap.lastModified).toLocaleDateString('sv-SE')}</p>
+                                <p className="text-xs text-gray-500">{journeyMap.stages?.length || 0} stages • Last modified {new Date(journeyMap.lastModified).toLocaleDateString('en-US')}</p>
                               </div>
                               <div className="ml-3 flex-shrink-0">
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -392,9 +392,9 @@ export default function Home() {
                                   journeyMap.status === 'in-review' ? 'bg-slate-100 text-slate-700' :
                                   'bg-slate-100 text-slate-700'
                                 }`}>
-                                  {journeyMap.status === 'completed' ? 'Klar' :
-                                   journeyMap.status === 'in-review' ? 'Granskas' :
-                                   'Utkast'}
+                                  {journeyMap.status === 'completed' ? 'Complete' :
+                                   journeyMap.status === 'in-review' ? 'In Review' :
+                                   'Draft'}
                                 </span>
                               </div>
                             </div>
@@ -417,13 +417,13 @@ export default function Home() {
                       <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-110 transition-all duration-300 ease-out">
                         <PlusIcon className="w-8 h-8 text-gray-400 group-hover:text-slate-600 group-hover:rotate-90 transition-all duration-300 ease-out" />
                       </div>
-                      <h3 className="text-lg font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">Lägg till widget</h3>
-                      <p className="text-sm text-gray-400 group-hover:text-slate-600 transition-colors duration-200">Anpassa din dashboard med widgets</p>
+                      <h3 className="text-lg font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">Add widget</h3>
+                      <p className="text-sm text-gray-400 group-hover:text-slate-600 transition-colors duration-200">Customize your dashboard with widgets</p>
                     </div>
                   ) : (
                     <div className="h-full flex flex-col">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900">Välj widget att lägga till</h3>
+                        <h3 className="text-lg font-semibold text-gray-900">Choose widget to add</h3>
                         <button
                           onClick={() => setShowWidgetSelector(false)}
                           className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
@@ -473,8 +473,8 @@ export default function Home() {
                         {availableWidgets.filter(widget => !enabledWidgets.includes(widget.id)).length === 0 && (
                           <div className="text-center py-8 text-gray-500">
                             <LayoutGridIcon className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-                            <p className="text-sm font-medium text-gray-700 mb-2">Alla widgets tillagda</p>
-                            <p className="text-xs text-gray-500">Ta bort widgets för att lägga till fler</p>
+                            <p className="text-sm font-medium text-gray-700 mb-2">All widgets added</p>
+                            <p className="text-xs text-gray-500">Remove widgets to add more</p>
                           </div>
                         )}
                       </div>

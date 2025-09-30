@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { BellIcon, PlusIcon, CheckIcon, ClockIcon } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface HeaderProps {
   title: string
@@ -19,37 +20,39 @@ interface Notification {
   type: 'info' | 'success' | 'warning'
 }
 
-// Mock notifications data
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    title: 'Journey map uppdaterad',
-    message: 'Din journey map "Onboarding Flow" har uppdaterats av teammedlem',
-    time: '2 timmar sedan',
-    read: true,
-    type: 'info'
-  },
-  {
-    id: '2',
-    title: 'Ny persona skapad',
-    message: 'Anna Andersson-persona har lagts till i ditt projekt',
-    time: '1 dag sedan',
-    read: true,
-    type: 'success'
-  },
-  {
-    id: '3',
-    title: 'Påminnelse',
-    message: 'Kom ihåg att granska din customer journey denna vecka',
-    time: '3 dagar sedan',
-    read: true,
-    type: 'warning'
-  }
-]
 
 export function Header({ title, description, actions }: HeaderProps) {
+  const { t } = useLanguage()
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
-  const notifications = mockNotifications
+
+  // Updated notifications with translation keys
+  const notifications: Notification[] = [
+    {
+      id: '1',
+      title: t('notifications.journeyUpdated'),
+      message: t('notifications.journeyUpdatedMessage', { title: 'Onboarding Flow' }),
+      time: t('notifications.timeAgo2h'),
+      read: true,
+      type: 'info'
+    },
+    {
+      id: '2',
+      title: t('notifications.newPersona'),
+      message: t('notifications.newPersonaMessage', { name: 'Anna Andersson' }),
+      time: t('notifications.timeAgo1d'),
+      read: true,
+      type: 'success'
+    },
+    {
+      id: '3',
+      title: t('notifications.reminder'),
+      message: t('notifications.reminderMessage'),
+      time: t('notifications.timeAgo3d'),
+      read: true,
+      type: 'warning'
+    }
+  ]
+
   const unreadCount = notifications.filter(n => !n.read).length
 
   const getNotificationIcon = (type: string) => {
@@ -98,24 +101,24 @@ export function Header({ title, description, actions }: HeaderProps) {
                 {/* Dropdown */}
                 <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-200 z-20 max-h-96 overflow-hidden animate-in slide-in-from-top-2 fade-in duration-200 ease-out">
                   <div className="p-4 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900">Notifikationer</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('header.notifications')}</h3>
                   </div>
 
                   <div className="max-h-80 overflow-y-auto">
                     {unreadCount === 0 && notifications.length === 0 ? (
                       <div className="p-6 text-center">
                         <BellIcon className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-                        <h4 className="text-sm font-medium text-gray-900 mb-1">Inga nya notiser</h4>
-                        <p className="text-sm text-gray-500">Du är uppdaterad med allt!</p>
+                        <h4 className="text-sm font-medium text-gray-900 mb-1">{t('header.noNewNotifications')}</h4>
+                        <p className="text-sm text-gray-500">{t('header.allCaughtUp')}</p>
                       </div>
                     ) : unreadCount === 0 && notifications.length > 0 ? (
                       <div className="p-4">
                         <div className="text-center mb-4">
-                          <p className="text-sm text-gray-500">Inga nya notiser</p>
+                          <p className="text-sm text-gray-500">{t('header.noNewNotifications')}</p>
                         </div>
 
                         <div className="space-y-3">
-                          <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wide">Lästa notifikationer</h4>
+                          <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wide">{t('header.readNotifications')}</h4>
                           {notifications.map((notification) => (
                             <div
                               key={notification.id}
@@ -175,7 +178,7 @@ export function Header({ title, description, actions }: HeaderProps) {
                   {notifications.length > 0 && (
                     <div className="p-3 border-t border-gray-200 bg-gray-50">
                       <button className="text-sm text-slate-600 hover:text-slate-800 font-medium">
-                        Visa alla notifikationer
+                        {t('header.viewAllNotifications')}
                       </button>
                     </div>
                   )}

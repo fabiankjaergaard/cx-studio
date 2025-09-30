@@ -24,7 +24,7 @@ const getCesSegments = (t: (key: string) => string) => [
   {
     type: 'Låg ansträngning',
     score: '1-2',
-    color: 'text-green-600 bg-green-100',
+    color: 'text-slate-600 bg-slate-100',
     description: 'Kunder som upplevde processen som mycket enkel',
     characteristics: [
       'Löste sitt ärende snabbt',
@@ -42,7 +42,7 @@ const getCesSegments = (t: (key: string) => string) => [
   {
     type: 'Måttlig ansträngning',
     score: '3-5',
-    color: 'text-yellow-600 bg-yellow-100',
+    color: 'text-slate-600 bg-slate-100',
     description: 'Kunder som upplevde viss friktion i processen',
     characteristics: [
       'Behövde lite extra hjälp',
@@ -60,7 +60,7 @@ const getCesSegments = (t: (key: string) => string) => [
   {
     type: 'Hög ansträngning',
     score: '6-7',
-    color: 'text-red-600 bg-red-100',
+    color: 'text-slate-600 bg-slate-100',
     description: 'Kunder som upplevde processen som krånglig och frustrerande',
     characteristics: [
       'Behövde mycket hjälp',
@@ -178,8 +178,8 @@ export default function CESPage() {
         <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden">
           <div className="p-6">
             <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <ZapIcon className="h-6 w-6 text-purple-600" />
+              <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                <ZapIcon className="h-6 w-6 text-slate-600" />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -209,18 +209,18 @@ export default function CESPage() {
             <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-0 bg-white rounded-xl overflow-hidden">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center group-hover:bg-green-100 transition-colors duration-300">
-                    <TrendingDownIcon className="h-6 w-6 text-green-600 group-hover:scale-110 transition-transform duration-300" />
+                  <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center group-hover:bg-slate-100 transition-colors duration-300">
+                    <TrendingDownIcon className="h-6 w-6 text-slate-600 group-hover:scale-110 transition-transform duration-300" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Låg ansträngning</h3>
-                    <p className="text-sm text-green-600 font-medium">1-2 poäng</p>
+                    <p className="text-sm text-slate-600 font-medium">1-2 poäng</p>
                   </div>
                 </div>
                 <p className="text-gray-600 text-sm mb-4">
                   Kunder som upplevde processen som mycket enkel och smidig
                 </p>
-                <div className="text-2xl font-bold text-green-600 mb-1">20-40%</div>
+                <div className="text-2xl font-bold text-slate-600 mb-1">20-40%</div>
                 <p className="text-xs text-gray-500">Typisk andel av kunder</p>
               </CardContent>
             </Card>
@@ -229,18 +229,18 @@ export default function CESPage() {
             <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-0 bg-white rounded-xl overflow-hidden">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center group-hover:bg-yellow-100 transition-colors duration-300">
-                    <BarChart className="h-6 w-6 text-yellow-600 group-hover:scale-110 transition-transform duration-300" />
+                  <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center group-hover:bg-slate-100 transition-colors duration-300">
+                    <BarChart className="h-6 w-6 text-slate-600 group-hover:scale-110 transition-transform duration-300" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Måttlig ansträngning</h3>
-                    <p className="text-sm text-yellow-600 font-medium">3-5 poäng</p>
+                    <p className="text-sm text-slate-600 font-medium">3-5 poäng</p>
                   </div>
                 </div>
                 <p className="text-gray-600 text-sm mb-4">
                   Kunder som upplevde viss friktion i processen
                 </p>
-                <div className="text-2xl font-bold text-yellow-600 mb-1">40-60%</div>
+                <div className="text-2xl font-bold text-slate-600 mb-1">40-60%</div>
                 <p className="text-xs text-gray-500">Typisk andel av kunder</p>
               </CardContent>
             </Card>
@@ -249,18 +249,18 @@ export default function CESPage() {
             <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-0 bg-white rounded-xl overflow-hidden">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center group-hover:bg-red-100 transition-colors duration-300">
-                    <TrendingUpIcon className="h-6 w-6 text-red-600 group-hover:scale-110 transition-transform duration-300" />
+                  <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center group-hover:bg-slate-100 transition-colors duration-300">
+                    <TrendingUpIcon className="h-6 w-6 text-slate-600 group-hover:scale-110 transition-transform duration-300" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Hög ansträngning</h3>
-                    <p className="text-sm text-red-600 font-medium">6-7 poäng</p>
+                    <p className="text-sm text-slate-600 font-medium">6-7 poäng</p>
                   </div>
                 </div>
                 <p className="text-gray-600 text-sm mb-4">
                   Kunder som upplevde processen som krånglig och frustrerande
                 </p>
-                <div className="text-2xl font-bold text-red-600 mb-1">10-20%</div>
+                <div className="text-2xl font-bold text-slate-600 mb-1">10-20%</div>
                 <p className="text-xs text-gray-500">Typisk andel av kunder</p>
               </CardContent>
             </Card>
@@ -316,7 +316,7 @@ export default function CESPage() {
                         <ul className="space-y-1">
                           {segment.actionItems.map((action, index) => (
                             <li key={index} className="flex items-start text-sm text-gray-600">
-                              <CheckCircleIcon className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                              <CheckCircleIcon className="w-4 h-4 text-slate-500 mr-2 mt-0.5 flex-shrink-0" />
                               {action}
                             </li>
                           ))}
@@ -354,8 +354,8 @@ export default function CESPage() {
                 {bestPractices.map((practice, index) => (
                   <div key={index} className="border border-gray-200 rounded-lg p-4">
                     <div className="flex items-center space-x-2 mb-3">
-                      <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
-                        <LightbulbIcon className="h-4 w-4 text-orange-600" />
+                      <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center">
+                        <LightbulbIcon className="h-4 w-4 text-slate-600" />
                       </div>
                       <h4 className="font-semibold text-gray-900">{practice.title}</h4>
                     </div>
@@ -363,7 +363,7 @@ export default function CESPage() {
                     <ul className="space-y-2">
                       {practice.tips.map((tip, tipIndex) => (
                         <li key={tipIndex} className="flex items-start text-sm text-gray-600">
-                          <div className="w-1.5 h-1.5 bg-orange-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
+                          <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mr-2 mt-2 flex-shrink-0"></div>
                           {tip}
                         </li>
                       ))}
@@ -412,12 +412,12 @@ export default function CESPage() {
                       <tr key={index} className="border-b hover:bg-gray-50">
                         <td className="py-3 px-4 font-medium text-gray-900">{benchmark.industry}</td>
                         <td className="py-3 px-4 text-center">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-slate-100 text-slate-800">
                             {benchmark.average}
                           </span>
                         </td>
                         <td className="py-3 px-4 text-center">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-slate-100 text-slate-800">
                             {benchmark.excellent}
                           </span>
                         </td>
@@ -470,9 +470,9 @@ export default function CESPage() {
                             {[1, 2, 3, 4, 5, 6, 7].map((num) => (
                               <div key={num} className="flex flex-col items-center">
                                 <div className={`w-8 h-8 border border-gray-300 rounded flex items-center justify-center bg-gray-50 text-sm text-gray-900 font-medium ${
-                                  num <= 2 ? 'bg-green-50 border-green-300' :
-                                  num <= 5 ? 'bg-yellow-50 border-yellow-300' :
-                                  'bg-red-50 border-red-300'
+                                  num <= 2 ? 'bg-slate-50 border-slate-300' :
+                                  num <= 5 ? 'bg-slate-50 border-slate-300' :
+                                  'bg-slate-50 border-slate-300'
                                 }`}>
                                   {num}
                                 </div>
@@ -522,11 +522,6 @@ export default function CESPage() {
                   <Button variant="primary">
                     <PlusIcon className="mr-2 h-4 w-4" />
                     Skapa CES-enkät
-                  </Button>
-                </Link>
-                <Link href="/insights/best-practices">
-                  <Button variant="outline">
-                    Läs mer om bästa praxis
                   </Button>
                 </Link>
               </div>

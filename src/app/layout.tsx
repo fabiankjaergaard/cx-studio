@@ -13,7 +13,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Kustra - Customer Experience Platform",
-  description: "Professionell CX-plattform för att skapa customer journey maps och förbättra kundupplevelser",
+  description: "Professional CX platform for creating customer journey maps and improving customer experiences",
   icons: {
     icon: '/favicon.ico',
     apple: '/icon-192x192.png',
@@ -23,13 +23,13 @@ export const metadata: Metadata = {
   viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
   openGraph: {
     title: "Kustra - Customer Experience Platform",
-    description: "Professionell CX-plattform för att skapa customer journey maps och förbättra kundupplevelser",
+    description: "Professional CX platform for creating customer journey maps and improving customer experiences",
     siteName: "Kustra",
     type: "website",
   },
   twitter: {
     title: "Kustra - Customer Experience Platform",
-    description: "Professionell CX-plattform för att skapa customer journey maps och förbättra kundupplevelser",
+    description: "Professional CX platform for creating customer journey maps and improving customer experiences",
   },
 };
 
@@ -39,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="sv">
+    <html lang="en">
       <body
         className={`${inter.variable} antialiased bg-gray-50`}
       >

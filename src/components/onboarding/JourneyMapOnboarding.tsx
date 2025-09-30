@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { ArrowRightIcon, XIcon } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface OnboardingStep {
   id: string
@@ -18,54 +19,56 @@ interface JourneyMapOnboardingProps {
   onSkip: () => void
 }
 
-const onboardingSteps: OnboardingStep[] = [
+const getOnboardingSteps = (t: (key: string) => string): OnboardingStep[] => [
   {
     id: 'palette',
-    title: 'Block-palette',
-    description: 'Här hittar du alla verktyg för att bygga din journey map. Dra block från paletten för att lägga till nya rader och innehållstyper.',
+    title: t('onboarding.palette.title'),
+    description: t('onboarding.palette.description'),
     targetSelector: '[data-onboarding="palette"]',
     position: 'right'
   },
   {
     id: 'persona',
-    title: 'Persona',
-    description: 'Välj eller skapa en persona för din journey map. Detta hjälper dig att fokusera på en specifik målgrupp och deras behov.',
+    title: t('onboarding.persona.title'),
+    description: t('onboarding.persona.description'),
     targetSelector: '[data-onboarding="persona"]',
     position: 'bottom'
   },
   {
     id: 'phases',
-    title: 'Faser',
-    description: 'Faser representerar de övergripande etapperna i kundresan. Klicka på fasnamnet för att redigera det.',
+    title: t('onboarding.phases.title'),
+    description: t('onboarding.phases.description'),
     targetSelector: '[data-onboarding="phases"]',
     position: 'bottom'
   },
   {
     id: 'stages',
-    title: 'Steg',
-    description: 'Steg är mer detaljerade åtgärder inom varje fas. Du kan lägga till, ta bort och redigera steg.',
+    title: t('onboarding.stages.title'),
+    description: t('onboarding.stages.description'),
     targetSelector: '[data-onboarding="stages"]',
     position: 'bottom'
   },
   {
     id: 'categories',
-    title: 'Kategorier',
-    description: 'Kategorier hjälper dig att organisera information som kundaktioner, känslor, smärtpunkter och möjligheter.',
+    title: t('onboarding.categories.title'),
+    description: t('onboarding.categories.description'),
     targetSelector: '[data-onboarding="categories"]',
     position: 'bottom'
   },
   {
     id: 'cells',
-    title: 'Redigera innehåll',
-    description: 'Klicka på valfri cell för att lägga till innehåll. Här skapar du din journey map genom att fylla i relevant information.',
+    title: t('onboarding.cells.title'),
+    description: t('onboarding.cells.description'),
     targetSelector: '[data-onboarding="cells"]',
     position: 'bottom'
   },
 ]
 
 export function JourneyMapOnboarding({ isActive, onComplete, onSkip }: JourneyMapOnboardingProps) {
+  const { t } = useLanguage()
   const [currentStep, setCurrentStep] = useState(0)
   const [highlightPosition, setHighlightPosition] = useState({ top: 0, left: 0, width: 0, height: 0 })
+  const onboardingSteps = getOnboardingSteps(t)
 
   useEffect(() => {
     if (!isActive) return
@@ -231,11 +234,11 @@ export function JourneyMapOnboarding({ isActive, onComplete, onSkip }: JourneyMa
           <div className="flex space-x-2">
             {currentStep > 0 && (
               <Button variant="outline" size="sm" onClick={handlePrevious}>
-                Tillbaka
+                {t('onboarding.back')}
               </Button>
             )}
             <Button variant="primary" size="sm" onClick={handleNext}>
-              {isLastStep ? 'Klar' : 'Nästa'}
+              {isLastStep ? t('onboarding.done') : t('onboarding.next')}
               {!isLastStep && <ArrowRightIcon className="w-4 h-4 ml-1" />}
             </Button>
           </div>
@@ -246,7 +249,7 @@ export function JourneyMapOnboarding({ isActive, onComplete, onSkip }: JourneyMa
             onClick={onSkip}
             className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
           >
-            Hoppa över guiden
+            {t('onboarding.skipGuide')}
           </button>
         </div>
       </div>

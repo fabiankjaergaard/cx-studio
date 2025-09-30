@@ -26,7 +26,7 @@ const getNpsSegments = (t: (key: string) => string) => [
   {
     type: t('nps.promoters'),
     score: t('nps.promotersScore'),
-    color: 'text-green-600 bg-green-100',
+    color: 'text-slate-600 bg-slate-100',
     description: t('nps.promotersDescription'),
     characteristics: [
       t('nps.promotersChar1'),
@@ -44,7 +44,7 @@ const getNpsSegments = (t: (key: string) => string) => [
   {
     type: t('nps.passives'),
     score: t('nps.passivesScore'),
-    color: 'text-yellow-600 bg-yellow-100',
+    color: 'text-slate-600 bg-slate-100',
     description: t('nps.passivesDescription'),
     characteristics: [
       t('nps.passivesChar1'),
@@ -62,7 +62,7 @@ const getNpsSegments = (t: (key: string) => string) => [
   {
     type: t('nps.detractors'),
     score: t('nps.detractorsScore'),
-    color: 'text-red-600 bg-red-100',
+    color: 'text-slate-600 bg-slate-100',
     description: t('nps.detractorsDescription'),
     characteristics: [
       t('nps.detractorsChar1'),
@@ -190,7 +190,7 @@ export default function NPSPage() {
                 <p className="text-gray-600 mb-4">
                   {t('nps.whatIsNpsDescription')}
                 </p>
-                <div className="bg-gradient-to-r from-slate-50 to-gray-50 p-4 rounded-xl border">
+                <div className="bg-slate-50 p-4 rounded-xl border">
                   <div className="text-2xl font-bold text-center mb-2 text-gray-900">
                     {t('nps.formula')}
                   </div>
@@ -208,8 +208,8 @@ export default function NPSPage() {
           <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
             <CardContent className="p-6">
               <div className="text-center">
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-green-200 group-hover:scale-110">
-                  <HeartIcon className="h-6 w-6 text-green-600 transition-all duration-300 group-hover:text-green-700" />
+                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                  <HeartIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Promoters (9-10)</h3>
                 <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Lojala ambassadörer som rekommenderar ditt företag</p>
@@ -220,8 +220,8 @@ export default function NPSPage() {
           <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
             <CardContent className="p-6">
               <div className="text-center">
-                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-yellow-200 group-hover:scale-110">
-                  <UsersIcon className="h-6 w-6 text-yellow-600 transition-all duration-300 group-hover:text-yellow-700" />
+                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                  <UsersIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Passives (7-8)</h3>
                 <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Nöjda men inte entusiastiska kunder</p>
@@ -232,8 +232,8 @@ export default function NPSPage() {
           <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group">
             <CardContent className="p-6">
               <div className="text-center">
-                <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-red-200 group-hover:scale-110">
-                  <AlertTriangleIcon className="h-6 w-6 text-red-600 transition-all duration-300 group-hover:text-red-700" />
+                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:bg-slate-200 group-hover:scale-110">
+                  <AlertTriangleIcon className="h-6 w-6 text-slate-600 transition-all duration-300 group-hover:text-slate-700" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2 transition-colors duration-300 group-hover:text-slate-800">Detractors (0-6)</h3>
                 <p className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">Missnöjda kunder som kan sprida negativ publicitet</p>
@@ -301,7 +301,7 @@ export default function NPSPage() {
                               <ul className="space-y-1">
                                 {segment.actionItems.map((action, index) => (
                                   <li key={index} className="flex items-start text-sm text-gray-600">
-                                    <CheckCircleIcon className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                                    <CheckCircleIcon className="w-4 h-4 text-slate-500 mr-2 mt-0.5 flex-shrink-0" />
                                     {action}
                                   </li>
                                 ))}
@@ -340,8 +340,8 @@ export default function NPSPage() {
                   {bestPractices.map((practice, index) => (
                     <div key={index} className="p-4 bg-slate-50 rounded-lg">
                       <div className="flex items-center space-x-2 mb-3">
-                        <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                          <LightbulbIcon className="h-4 w-4 text-yellow-600" />
+                        <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
+                          <LightbulbIcon className="h-4 w-4 text-slate-600" />
                         </div>
                         <h4 className="font-medium text-gray-900">{practice.title}</h4>
                       </div>
@@ -402,7 +402,7 @@ export default function NPSPage() {
                             </span>
                           </td>
                           <td className="py-3 px-4 text-center">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-slate-100 text-slate-800">
                               {benchmark.top}
                             </span>
                           </td>

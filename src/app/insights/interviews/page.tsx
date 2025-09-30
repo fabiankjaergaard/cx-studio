@@ -308,7 +308,7 @@ function InterviewGuideBuilder({ sharedQuestions, setSharedQuestions, onStartInt
                   {sharedQuestions.length > 1 && (
                     <button
                       onClick={() => removeQuestion(index)}
-                      className="text-gray-400 hover:text-red-500 p-1 transition-colors duration-200"
+                      className="text-gray-400 hover:text-slate-500 p-1 transition-colors duration-200"
                     >
                       ×
                     </button>
@@ -397,7 +397,7 @@ function LiveInterview({
               <div className="text-3xl font-mono text-gray-900 transition-colors duration-200 group-hover:text-slate-700">
                 {formatTime(interviewTimer)}
               </div>
-              <div className={`w-3 h-3 rounded-full transition-all duration-200 ${isRecording ? 'bg-red-500 animate-pulse shadow-lg shadow-red-200' : 'bg-gray-300'}`}></div>
+              <div className={`w-3 h-3 rounded-full transition-all duration-200 ${isRecording ? 'bg-slate-500 animate-pulse shadow-lg shadow-slate-200' : 'bg-gray-300'}`}></div>
             </div>
             <div className="flex space-x-2">
               <Button
@@ -450,7 +450,7 @@ function LiveInterview({
             </div>
           )}
           {currentQuestion === 'Ingen fråga skapad än' && (
-            <div className="text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+            <div className="text-sm text-gray-600 bg-slate-50 p-3 rounded-lg border border-slate-200">
               <strong>Obs:</strong> Gå till "Skapa guide" för att lägga till frågor först.
             </div>
           )}
@@ -515,16 +515,16 @@ function LiveInterview({
 
       {/* Complete Interview Button */}
       {currentNote.trim() && interviewTimer > 0 && (
-        <Card className="group border-0 bg-green-50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
+        <Card className="group border-0 bg-slate-50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
           <CardContent className="p-6 text-center">
-            <h3 className="font-semibold text-green-900 mb-3">Avsluta intervju</h3>
-            <p className="text-sm text-green-700 mb-4">
+            <h3 className="font-semibold text-slate-900 mb-3">Avsluta intervju</h3>
+            <p className="text-sm text-slate-700 mb-4">
               Spara denna intervju för analys. Tiden: {formatTime(interviewTimer)}
             </p>
             <Button
               variant="primary"
               onClick={() => setShowSaveModal(true)}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="bg-slate-600 hover:bg-slate-700 text-white"
             >
               <CheckCircleIcon className="h-4 w-4 mr-2" />
               Spara intervju
@@ -646,7 +646,7 @@ function InterviewLibraryView({ completedInterviews }: { completedInterviews: Co
                   <div className="flex items-center space-x-2 mb-2">
                     <h3 className="text-lg font-medium text-gray-900">{interview.participant}</h3>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      interview.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      interview.status === 'completed' ? 'bg-slate-100 text-slate-800' : 'bg-slate-100 text-slate-800'
                     }`}>
                       {interview.status === 'completed' ? 'Slutförd' : 'Analyseras'}
                     </span>
@@ -667,7 +667,7 @@ function InterviewLibraryView({ completedInterviews }: { completedInterviews: Co
                   <Button
                     variant="outline"
                     size="sm"
-                    className="p-2 text-red-600 hover:text-red-700"
+                    className="p-2 text-slate-600 hover:text-slate-700"
                     title="Ta bort intervju"
                   >
                     <TrashIcon className="h-3 w-3" />
@@ -985,10 +985,10 @@ function InterviewsContent() {
                         {/* Questions and Notes */}
                         <div className="space-y-4">
                           <h4 className="font-medium text-gray-800">Frågor som ställdes:</h4>
-                          <div className="bg-blue-50 rounded-lg p-4">
+                          <div className="bg-slate-50 rounded-lg p-4">
                             <ul className="space-y-2">
                               {interview.questions.map((question, qIndex) => (
-                                <li key={qIndex} className="text-sm text-blue-800 flex">
+                                <li key={qIndex} className="text-sm text-slate-800 flex">
                                   <span className="font-medium mr-2">{qIndex + 1}.</span>
                                   <span>{question}</span>
                                 </li>
@@ -1128,7 +1128,7 @@ function InterviewsContent() {
                               </span>
                               <button
                                 onClick={() => setManualInsights(manualInsights.filter((_, i) => i !== index))}
-                                className="text-red-500 hover:text-red-700 text-xs"
+                                className="text-slate-500 hover:text-slate-700 text-xs"
                               >
                                 ×
                               </button>
@@ -1224,8 +1224,8 @@ function InterviewsContent() {
               </div>
 
               {completedInterviews.length === 0 && (
-                <div className="mt-8 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <p className="text-yellow-800 text-sm">
+                <div className="mt-8 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <p className="text-slate-800 text-sm">
                     <strong>Tips:</strong> Du behöver genomföra minst en intervju först för att kunna analysera data.
                   </p>
                 </div>
@@ -1244,9 +1244,9 @@ function InterviewsContent() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 {analysisMode === 'manual' ? (
-                  <Users2Icon className="h-6 w-6 text-blue-600" />
+                  <Users2Icon className="h-6 w-6 text-slate-600" />
                 ) : (
-                  <LightbulbIcon className="h-6 w-6 text-purple-600" />
+                  <LightbulbIcon className="h-6 w-6 text-slate-600" />
                 )}
                 <div>
                   <h3 className="font-semibold text-gray-900">
@@ -1303,9 +1303,9 @@ function InterviewsContent() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Negativa insights</p>
-                  <p className="text-2xl font-bold text-red-600">{insights.filter(i => i.sentiment === 'negative').length}</p>
+                  <p className="text-2xl font-bold text-slate-600">{insights.filter(i => i.sentiment === 'negative').length}</p>
                 </div>
-                <AlertTriangleIcon className="h-8 w-8 text-red-600" />
+                <AlertTriangleIcon className="h-8 w-8 text-slate-600" />
               </div>
             </CardContent>
           </Card>
@@ -1396,8 +1396,8 @@ function InterviewsContent() {
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
-                      insight.sentiment === 'positive' ? 'bg-green-100 text-green-800 group-hover/insight:bg-green-200' :
-                      insight.sentiment === 'negative' ? 'bg-red-100 text-red-800 group-hover/insight:bg-red-200' :
+                      insight.sentiment === 'positive' ? 'bg-slate-100 text-slate-800 group-hover/insight:bg-slate-200' :
+                      insight.sentiment === 'negative' ? 'bg-slate-100 text-slate-800 group-hover/insight:bg-slate-200' :
                       'bg-gray-100 text-gray-800 group-hover/insight:bg-gray-200'
                     }`}>
                       {insight.sentiment === 'positive' ? 'Positiv' : insight.sentiment === 'negative' ? 'Negativ' : 'Neutral'}
@@ -1418,7 +1418,7 @@ function InterviewsContent() {
               <Card className="border-0 bg-white rounded-xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <ClipboardListIcon className="h-5 w-5 text-blue-600" />
+                    <ClipboardListIcon className="h-5 w-5 text-slate-600" />
                     Alla intervjuer ({completedInterviews.length})
                   </CardTitle>
                   <p className="text-gray-600 text-sm">Läs igenom och identifiera patterns</p>
@@ -1434,7 +1434,7 @@ function InterviewsContent() {
                       {completedInterviews.map((interview) => (
                         <div
                           key={interview.id}
-                          className="border border-gray-200 rounded-lg p-3 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200"
+                          className="border border-gray-200 rounded-lg p-3 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <h4 className="font-medium text-gray-900 text-sm">{interview.participant}</h4>
@@ -1459,25 +1459,25 @@ function InterviewsContent() {
             {/* Right Column: Create Insights */}
             <div className="space-y-4">
               {/* Quick Add Insight */}
-              <Card className="border-0 bg-green-50 rounded-xl overflow-hidden">
+              <Card className="border-0 bg-slate-50 rounded-xl overflow-hidden">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-green-900">
-                    <PlusIcon className="h-5 w-5 text-green-600" />
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
+                    <PlusIcon className="h-5 w-5 text-slate-600" />
                     Skapa insight
                   </CardTitle>
-                  <p className="text-green-700 text-sm">Lägg till vad du upptäckt i intervjuerna</p>
+                  <p className="text-slate-700 text-sm">Lägg till vad du upptäckt i intervjuerna</p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <input
                       type="text"
                       placeholder="Vad upptäckte du? (t.ex. 'Användare förvirrade av navigation')"
-                      className="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-sm"
                       id="new-insight-theme"
                     />
                     <div className="grid grid-cols-2 gap-3">
                       <select
-                        className="px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                        className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-sm"
                         id="new-insight-sentiment"
                         defaultValue="neutral"
                       >
@@ -1490,13 +1490,13 @@ function InterviewsContent() {
                         placeholder="Antal intervjuer"
                         min="1"
                         max={completedInterviews.length}
-                        className="px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                        className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-sm"
                         id="new-insight-frequency"
                       />
                     </div>
                     <Button
                       variant="primary"
-                      className="w-full bg-green-600 hover:bg-green-700"
+                      className="w-full bg-slate-600 hover:bg-slate-700"
                       onClick={() => {
                         const themeInput = document.getElementById('new-insight-theme') as HTMLInputElement
                         const sentimentSelect = document.getElementById('new-insight-sentiment') as HTMLSelectElement
@@ -1528,7 +1528,7 @@ function InterviewsContent() {
               <Card className="border-0 bg-white rounded-xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <LightbulbIcon className="h-5 w-5 text-yellow-600" />
+                    <LightbulbIcon className="h-5 w-5 text-slate-600" />
                     Dina insights ({manualInsights.length})
                   </CardTitle>
                 </CardHeader>
@@ -1556,8 +1556,8 @@ function InterviewsContent() {
                           </div>
                           <div className="flex items-center space-x-2">
                             <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              insight.sentiment === 'positive' ? 'bg-green-100 text-green-800' :
-                              insight.sentiment === 'negative' ? 'bg-red-100 text-red-800' :
+                              insight.sentiment === 'positive' ? 'bg-slate-100 text-slate-800' :
+                              insight.sentiment === 'negative' ? 'bg-slate-100 text-slate-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
                               {insight.sentiment === 'positive' ? '🙂' : insight.sentiment === 'negative' ? '🙁' : '😐'}
@@ -1566,7 +1566,7 @@ function InterviewsContent() {
                               onClick={() => {
                                 setManualInsights(manualInsights.filter((_, i) => i !== index))
                               }}
-                              className="text-red-500 hover:text-red-700 p-1"
+                              className="text-slate-500 hover:text-slate-700 p-1"
                             >
                               ×
                             </button>
@@ -1583,36 +1583,36 @@ function InterviewsContent() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-blue-50">
+          <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-slate-50">
             <CardContent className="p-6 text-center">
-              <DownloadIcon className="h-8 w-8 text-blue-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
-              <h3 className="font-semibold text-blue-900 mb-2">Exportera rapport</h3>
-              <p className="text-sm text-blue-700">Ladda ner fullständig analys som PDF</p>
+              <DownloadIcon className="h-8 w-8 text-slate-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
+              <h3 className="font-semibold text-slate-900 mb-2">Exportera rapport</h3>
+              <p className="text-sm text-slate-700">Ladda ner fullständig analys som PDF</p>
             </CardContent>
           </Card>
 
-          <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-green-50">
+          <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-slate-50">
             <CardContent className="p-6 text-center">
-              <ShareIcon className="h-8 w-8 text-green-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
-              <h3 className="font-semibold text-green-900 mb-2">Dela insights</h3>
-              <p className="text-sm text-green-700">Skicka resultat till teamet</p>
+              <ShareIcon className="h-8 w-8 text-slate-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
+              <h3 className="font-semibold text-slate-900 mb-2">Dela insights</h3>
+              <p className="text-sm text-slate-700">Skicka resultat till teamet</p>
             </CardContent>
           </Card>
 
           {analysisMode === 'ai' ? (
-            <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-purple-50">
+            <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-slate-50">
               <CardContent className="p-6 text-center">
-                <LightbulbIcon className="h-8 w-8 text-purple-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
-                <h3 className="font-semibold text-purple-900 mb-2">Uppdatera AI-analys</h3>
-                <p className="text-sm text-purple-700">Kör om automatisk analys</p>
+                <LightbulbIcon className="h-8 w-8 text-slate-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
+                <h3 className="font-semibold text-slate-900 mb-2">Uppdatera AI-analys</h3>
+                <p className="text-sm text-slate-700">Kör om automatisk analys</p>
               </CardContent>
             </Card>
           ) : (
-            <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-purple-50">
+            <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-slate-50">
               <CardContent className="p-6 text-center">
-                <BarChart3Icon className="h-8 w-8 text-purple-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
-                <h3 className="font-semibold text-purple-900 mb-2">Generera rapport</h3>
-                <p className="text-sm text-purple-700">Skapa rapport från dina insights</p>
+                <BarChart3Icon className="h-8 w-8 text-slate-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
+                <h3 className="font-semibold text-slate-900 mb-2">Generera rapport</h3>
+                <p className="text-sm text-slate-700">Skapa rapport från dina insights</p>
               </CardContent>
             </Card>
           )}
@@ -1692,7 +1692,7 @@ function InterviewsContent() {
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 transition-all duration-200 group-hover/interview:bg-green-200">
+                    <div className="px-2 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-800 transition-all duration-200 group-hover/interview:bg-slate-200">
                       Klar
                     </div>
                   </div>
@@ -1787,7 +1787,7 @@ function InterviewsContent() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Deltagarens namn <span className="text-red-500">*</span>
+              Deltagarens namn <span className="text-slate-500">*</span>
             </label>
             <input
               type="text"
@@ -1854,7 +1854,7 @@ function InterviewsContent() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Projektnamn <span className="text-red-500">*</span>
+              Projektnamn <span className="text-slate-500">*</span>
             </label>
             <input
               type="text"

@@ -73,41 +73,43 @@ function InterviewGuideBuilder({ sharedQuestions, setSharedQuestions, onStartInt
   const [notes, setNotes] = useState({})
   const [showSuggestionsForQuestion, setShowSuggestionsForQuestion] = useState({})
 
+  const { t } = useLanguage()
+
   const questionSuggestions = {
-    'Kundresa & Beteende': [
-      "Berätta om senaste gången du [utförde denna aktivitet]",
-      "Ta mig genom en typisk dag när du använder [produkt/tjänst]",
-      "Vad hjälper denna produkt/tjänst dig att uppnå?",
-      "Hur hanterar du för närvarande [problem/uppgift]?",
-      "Vilka steg går du igenom när du [utför process]?"
+    [t('interviewBuilder.questionSuggestions.customerJourney.title')]: [
+      t('interviewBuilder.questionSuggestions.customerJourney.questions.0'),
+      t('interviewBuilder.questionSuggestions.customerJourney.questions.1'),
+      t('interviewBuilder.questionSuggestions.customerJourney.questions.2'),
+      t('interviewBuilder.questionSuggestions.customerJourney.questions.3'),
+      t('interviewBuilder.questionSuggestions.customerJourney.questions.4')
     ],
-    'Smärtpunkter & Utmaningar': [
-      "Vad är din största utmaning när du använder [produkt/tjänst]?",
-      "Vilka är de svåraste delarna av [process/uppgift]? Varför?",
-      "Vad skulle få dig att sluta använda denna produkt/tjänst?",
-      "Vilka hinder måste du övervinna när du hanterar [problem]?",
-      "Vad är ditt primära smärtpunkt relaterat till [uppgift]?"
+    [t('interviewBuilder.questionSuggestions.painPoints.title')]: [
+      t('interviewBuilder.questionSuggestions.painPoints.questions.0'),
+      t('interviewBuilder.questionSuggestions.painPoints.questions.1'),
+      t('interviewBuilder.questionSuggestions.painPoints.questions.2'),
+      t('interviewBuilder.questionSuggestions.painPoints.questions.3'),
+      t('interviewBuilder.questionSuggestions.painPoints.questions.4')
     ],
-    'Nöjdhet & Känslor': [
-      "Hur känner du dig när du använder [produkt/tjänst]?",
-      "På en skala 1-10, hur sannolikt är det att du rekommenderar oss?",
-      "Vad frustrerar dig mest med nuvarande lösning?",
-      "Vad skulle göra din upplevelse bättre?",
-      "Hur nöjd var du med [specifik process/interaction]?"
+    [t('interviewBuilder.questionSuggestions.satisfaction.title')]: [
+      t('interviewBuilder.questionSuggestions.satisfaction.questions.0'),
+      t('interviewBuilder.questionSuggestions.satisfaction.questions.1'),
+      t('interviewBuilder.questionSuggestions.satisfaction.questions.2'),
+      t('interviewBuilder.questionSuggestions.satisfaction.questions.3'),
+      t('interviewBuilder.questionSuggestions.satisfaction.questions.4')
     ],
-    'Förbättringar & Feedback': [
-      "Om du kunde förbättra denna produkt/tjänst, vad skulle du ändra?",
-      "Vad är din favoritdel av denna produkt/tjänst?",
-      "Vilka funktioner är viktigast för dig?",
-      "Vad saknar du i nuvarande lösning?",
-      "Hur troligt är det att du skulle använda denna produkt/tjänst idag?"
+    [t('interviewBuilder.questionSuggestions.improvements.title')]: [
+      t('interviewBuilder.questionSuggestions.improvements.questions.0'),
+      t('interviewBuilder.questionSuggestions.improvements.questions.1'),
+      t('interviewBuilder.questionSuggestions.improvements.questions.2'),
+      t('interviewBuilder.questionSuggestions.improvements.questions.3'),
+      t('interviewBuilder.questionSuggestions.improvements.questions.4')
     ],
-    'Uppföljningsfrågor': [
-      "Kan du berätta mer om det?",
-      "Varför är det viktigt för dig?",
-      "Kan du ge mig ett konkret exempel?",
-      "Vad hände sedan?",
-      "Hur kändes det när det hände?"
+    [t('interviewBuilder.questionSuggestions.followUp.title')]: [
+      t('interviewBuilder.questionSuggestions.followUp.questions.0'),
+      t('interviewBuilder.questionSuggestions.followUp.questions.1'),
+      t('interviewBuilder.questionSuggestions.followUp.questions.2'),
+      t('interviewBuilder.questionSuggestions.followUp.questions.3'),
+      t('interviewBuilder.questionSuggestions.followUp.questions.4')
     ]
   }
 
@@ -165,15 +167,15 @@ function InterviewGuideBuilder({ sharedQuestions, setSharedQuestions, onStartInt
       <Card className="group border-0 bg-white rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Min intervjuguide</CardTitle>
+            <CardTitle>{t('interviewBuilder.guide.title')}</CardTitle>
             <div className="flex space-x-2">
               <Button variant="outline" size="sm" className="hover:bg-gray-100 transition-colors duration-200">
                 <DownloadIcon className="h-4 w-4 mr-2" />
-                Exportera
+                {t('interviewBuilder.guide.export')}
               </Button>
               <Button variant="outline" size="sm" className="hover:bg-gray-100 transition-colors duration-200">
                 <ShareIcon className="h-4 w-4 mr-2" />
-                Dela
+                {t('interviewBuilder.guide.share')}
               </Button>
             </div>
           </div>
@@ -183,24 +185,24 @@ function InterviewGuideBuilder({ sharedQuestions, setSharedQuestions, onStartInt
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Titel
+                  {t('interviewBuilder.guide.fields.title')}
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Ge din intervjuguide ett namn..."
+                  placeholder={t('interviewBuilder.guide.placeholders.title')}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 hover:border-gray-400"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Syfte
+                  {t('interviewBuilder.guide.fields.purpose')}
                 </label>
                 <textarea
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
-                  placeholder="Vad vill du uppnå med denna intervju?"
+                  placeholder={t('interviewBuilder.guide.placeholders.purpose')}
                   rows={3}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 resize-none"
                 />
@@ -210,29 +212,29 @@ function InterviewGuideBuilder({ sharedQuestions, setSharedQuestions, onStartInt
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Målgrupp
+                  {t('interviewBuilder.guide.fields.audience')}
                 </label>
                 <input
                   type="text"
                   value={audience}
                   onChange={(e) => setAudience(e.target.value)}
-                  placeholder="Vilka ska du intervjua?"
+                  placeholder={t('interviewBuilder.guide.placeholders.audience')}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 hover:border-gray-400"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Beräknad tid
+                  {t('interviewBuilder.guide.fields.duration')}
                 </label>
                 <select
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 hover:border-gray-400"
                 >
-                  <option value="30">30 minuter</option>
-                  <option value="45">45 minuter</option>
-                  <option value="60">60 minuter</option>
-                  <option value="90">90 minuter</option>
+                  <option value="30">{t('interviewBuilder.guide.duration.30')}</option>
+                  <option value="45">{t('interviewBuilder.guide.duration.45')}</option>
+                  <option value="60">{t('interviewBuilder.guide.duration.60')}</option>
+                  <option value="90">{t('interviewBuilder.guide.duration.90')}</option>
                 </select>
               </div>
             </div>
@@ -243,7 +245,7 @@ function InterviewGuideBuilder({ sharedQuestions, setSharedQuestions, onStartInt
       {/* Questions Editor */}
       <Card className="group border-0 bg-white rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
         <CardHeader>
-          <CardTitle>Intervjufrågor</CardTitle>
+          <CardTitle>{t('interviewBuilder.guide.questions.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -257,20 +259,20 @@ function InterviewGuideBuilder({ sharedQuestions, setSharedQuestions, onStartInt
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <label className="block text-sm font-medium text-gray-900">
-                          Fråga {index + 1}
+                          {t('interviewBuilder.guide.questions.questionLabel', { number: index + 1 })}
                         </label>
                         <button
                           onClick={() => toggleSuggestionsForQuestion(index)}
                           className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-700 hover:bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-md transition-all duration-200 shadow-sm hover:shadow-md"
                         >
                           <LightbulbIcon className="h-3.5 w-3.5 mr-1.5" />
-                          {showSuggestionsForQuestion[index] ? 'Dölj förslag' : 'Visa förslag'}
+                          {showSuggestionsForQuestion[index] ? t('interviewBuilder.guide.questions.hideSuggestions') : t('interviewBuilder.guide.questions.showSuggestions')}
                         </button>
                       </div>
                       <textarea
                         value={question}
                         onChange={(e) => updateQuestion(index, e.target.value)}
-                        placeholder="Skriv din fråga här..."
+                        placeholder={t('interviewBuilder.guide.placeholders.question')}
                         rows={2}
                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 resize-none"
                       />
@@ -280,7 +282,7 @@ function InterviewGuideBuilder({ sharedQuestions, setSharedQuestions, onStartInt
                         <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-4 shadow-sm">
                           <div className="flex items-center space-x-2">
                             <LightbulbIcon className="h-4 w-4 text-slate-500" />
-                            <p className="text-sm text-slate-600 font-medium">Klicka på en fråga för att använda den:</p>
+                            <p className="text-sm text-slate-600 font-medium">{t('interviewBuilder.guide.questions.clickToUse')}</p>
                           </div>
                           {Object.entries(questionSuggestions).map(([category, suggestions]) => (
                             <div key={category}>
@@ -308,7 +310,7 @@ function InterviewGuideBuilder({ sharedQuestions, setSharedQuestions, onStartInt
                   {sharedQuestions.length > 1 && (
                     <button
                       onClick={() => removeQuestion(index)}
-                      className="text-gray-400 hover:text-red-500 p-1 transition-colors duration-200"
+                      className="text-gray-400 hover:text-slate-500 p-1 transition-colors duration-200"
                     >
                       ×
                     </button>
@@ -335,7 +337,7 @@ function InterviewGuideBuilder({ sharedQuestions, setSharedQuestions, onStartInt
               className="hover:scale-[1.02] transition-transform duration-200"
             >
               <PlayIcon className="mr-2 h-4 w-4" />
-              Använd denna guide i intervju
+              {t('interviewBuilder.guide.useGuide')}
             </Button>
           </div>
         </CardContent>
@@ -367,6 +369,7 @@ function LiveInterview({
   onInterviewComplete: () => void,
   setShowSaveModal: (show: boolean) => void
 }) {
+  const { t } = useLanguage()
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
@@ -385,7 +388,7 @@ function LiveInterview({
     }
   }
 
-  const currentQuestion = sharedQuestions[currentQuestionIndex] || 'Ingen fråga skapad än'
+  const currentQuestion = sharedQuestions[currentQuestionIndex] || t('interviewBuilder.liveInterview.noQuestion')
 
   return (
     <div className="space-y-6">
@@ -397,7 +400,7 @@ function LiveInterview({
               <div className="text-3xl font-mono text-gray-900 transition-colors duration-200 group-hover:text-slate-700">
                 {formatTime(interviewTimer)}
               </div>
-              <div className={`w-3 h-3 rounded-full transition-all duration-200 ${isRecording ? 'bg-red-500 animate-pulse shadow-lg shadow-red-200' : 'bg-gray-300'}`}></div>
+              <div className={`w-3 h-3 rounded-full transition-all duration-200 ${isRecording ? 'bg-slate-500 animate-pulse shadow-lg shadow-slate-200' : 'bg-gray-300'}`}></div>
             </div>
             <div className="flex space-x-2">
               <Button
@@ -406,7 +409,7 @@ function LiveInterview({
                 className="hover:scale-[1.02] transition-transform duration-200"
               >
                 {isRecording ? <PauseIcon className="h-4 w-4 mr-2" /> : <PlayIcon className="h-4 w-4 mr-2" />}
-                {isRecording ? 'Pausa' : 'Starta'}
+                {isRecording ? t('interviewBuilder.liveInterview.pause') : t('interviewBuilder.liveInterview.start')}
               </Button>
               <div className="flex space-x-2">
                 <Button
@@ -416,7 +419,7 @@ function LiveInterview({
                   className="hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
                 >
                   <SkipBackIcon className="h-4 w-4" />
-                  Föregående
+                  {t('interviewBuilder.liveInterview.previous')}
                 </Button>
                 <Button
                   variant="outline"
@@ -425,7 +428,7 @@ function LiveInterview({
                   className="hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
                 >
                   <SkipForwardIcon className="h-4 w-4" />
-                  Nästa fråga
+                  {t('interviewBuilder.liveInterview.nextQuestion')}
                 </Button>
               </div>
             </div>
@@ -437,7 +440,7 @@ function LiveInterview({
       <Card className="group border-0 bg-white rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
         <CardHeader>
           <CardTitle className="transition-colors duration-200 group-hover:text-slate-700">
-            Aktuell fråga ({currentQuestionIndex + 1} av {sharedQuestions.length})
+            {t('interviewBuilder.liveInterview.currentQuestion', { current: currentQuestionIndex + 1, total: sharedQuestions.length })}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -446,12 +449,12 @@ function LiveInterview({
           </div>
           {currentQuestion !== 'Ingen fråga skapad än' && (
             <div className="text-sm text-gray-600 bg-slate-50 p-3 rounded-lg transition-all duration-200 group-hover:bg-slate-100">
-              <strong>Tips:</strong> Låt deltagaren tala färdigt. Följ upp med "Kan du ge ett konkret exempel?"
+              <strong>Tips:</strong> {t('interviewBuilder.liveInterview.tip')}
             </div>
           )}
           {currentQuestion === 'Ingen fråga skapad än' && (
-            <div className="text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-              <strong>Obs:</strong> Gå till "Skapa guide" för att lägga till frågor först.
+            <div className="text-sm text-gray-600 bg-slate-50 p-3 rounded-lg border border-slate-200">
+              <strong>{t('interviewBuilder.liveInterview.note')}:</strong> {t('interviewBuilder.liveInterview.noteDescription')}
             </div>
           )}
         </CardContent>
@@ -460,18 +463,18 @@ function LiveInterview({
       {/* Live Notes */}
       <Card className="group border-0 bg-white rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
         <CardHeader>
-          <CardTitle className="transition-colors duration-200 group-hover:text-slate-700">Anteckningar</CardTitle>
+          <CardTitle className="transition-colors duration-200 group-hover:text-slate-700">{t('interviewBuilder.liveInterview.notes')}</CardTitle>
         </CardHeader>
         <CardContent>
           <textarea
             value={currentNote}
             onChange={(e) => setCurrentNote(e.target.value)}
-            placeholder="Skriv dina anteckningar här..."
+            placeholder={t('interviewBuilder.liveInterview.notesPlaceholder')}
             className="w-full h-48 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-y transition-all duration-200 hover:border-gray-400"
           />
           <div className="mt-3 flex justify-between items-center">
             <div className="text-sm text-gray-500">
-              Auto-sparas var 30:e sekund
+              {t('interviewBuilder.liveInterview.autoSave')}
             </div>
             <Button
               variant="outline"
@@ -483,7 +486,7 @@ function LiveInterview({
                 setCurrentNote(prev => prev + insightMarker)
               }}
             >
-              Lägg till insight
+              {t('interviewBuilder.insights.addInsight')}
             </Button>
           </div>
         </CardContent>
@@ -492,9 +495,9 @@ function LiveInterview({
       {/* Quick Actions During Interview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
-          { label: "Bra citat", icon: MessageCircleIcon, action: "quote" },
-          { label: "Problem identifierat", icon: AlertTriangleIcon, action: "problem" },
-          { label: "Förbättringsförslag", icon: LightbulbIcon, action: "suggestion" }
+          { label: t('interviewBuilder.liveInterview.goodQuote'), icon: MessageCircleIcon, action: "quote" },
+          { label: t('interviewBuilder.liveInterview.problemIdentified'), icon: AlertTriangleIcon, action: "problem" },
+          { label: t('interviewBuilder.liveInterview.improvementSuggestion'), icon: LightbulbIcon, action: "suggestion" }
         ].map((action, index) => (
           <Button
             key={index}
@@ -515,19 +518,19 @@ function LiveInterview({
 
       {/* Complete Interview Button */}
       {currentNote.trim() && interviewTimer > 0 && (
-        <Card className="group border-0 bg-green-50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
+        <Card className="group border-0 bg-slate-50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
           <CardContent className="p-6 text-center">
-            <h3 className="font-semibold text-green-900 mb-3">Avsluta intervju</h3>
-            <p className="text-sm text-green-700 mb-4">
-              Spara denna intervju för analys. Tiden: {formatTime(interviewTimer)}
+            <h3 className="font-semibold text-slate-900 mb-3">{t('interviewBuilder.liveInterview.finishInterview')}</h3>
+            <p className="text-sm text-slate-700 mb-4">
+              {t('interviewBuilder.liveInterview.saveDescription', { time: formatTime(interviewTimer) })}
             </p>
             <Button
               variant="primary"
               onClick={() => setShowSaveModal(true)}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="bg-slate-600 hover:bg-slate-700 text-white"
             >
               <CheckCircleIcon className="h-4 w-4 mr-2" />
-              Spara intervju
+              {t('interviewBuilder.liveInterview.saveInterview')}
             </Button>
           </CardContent>
         </Card>
@@ -544,7 +547,7 @@ function InterviewLibraryView({ completedInterviews }: { completedInterviews: Co
 
   // Group interviews by project (mock projects for now)
   const projects = [
-    { id: 'all', name: 'Alla projekt', count: completedInterviews.length },
+    { id: 'all', name: t('interviewBuilder.filters.allProjects'), count: completedInterviews.length },
     { id: 'onboarding', name: 'Onboarding UX', count: Math.floor(completedInterviews.length * 0.4) },
     { id: 'checkout', name: 'Checkout Flow', count: Math.floor(completedInterviews.length * 0.3) },
     { id: 'mobile', name: 'Mobilapp', count: Math.floor(completedInterviews.length * 0.3) }
@@ -573,14 +576,14 @@ function InterviewLibraryView({ completedInterviews }: { completedInterviews: Co
                   <FolderIcon className="w-8 h-8 text-slate-400 group-hover:text-slate-600 transition-colors duration-300" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-slate-700 transition-colors duration-200">
-                  Kom igång med dina intervjuer
+                  {t('interviewBuilder.empty.getStarted')}
                 </h3>
                 <p className="text-gray-600 mb-6 max-w-2xl mx-auto group-hover:text-gray-700 transition-colors duration-200">
-                  Skapa och organisera dina användarintervjuer i projekt. Här kommer alla dina genomförda intervjuer att visas strukturerat.
+                  {t('interviewBuilder.empty.description')}
                 </p>
                 <Button variant="primary">
                   <PlusIcon className="mr-2 h-4 w-4" />
-                  Skapa första intervjun
+                  {t('interviewBuilder.actions.createFirstInterview')}
                 </Button>
               </div>
             </CardContent>
@@ -599,7 +602,7 @@ function InterviewLibraryView({ completedInterviews }: { completedInterviews: Co
           <div className="flex-1">
             <input
               type="text"
-              placeholder="Sök intervjuer..."
+              placeholder={t('interviewBuilder.search.searchInterviews')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
@@ -628,9 +631,9 @@ function InterviewLibraryView({ completedInterviews }: { completedInterviews: Co
               onChange={(e) => setSelectedStatus(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
             >
-              <option value="all">Alla statusar</option>
+              <option value="all">{t('interviewBuilder.filters.allStatuses')}</option>
               <option value="completed">Slutförd</option>
-              <option value="analyzing">Analyseras</option>
+              <option value="analyzing">{t('interviewBuilder.status.analyzing')}</option>
             </select>
           </div>
         </div>
@@ -646,9 +649,9 @@ function InterviewLibraryView({ completedInterviews }: { completedInterviews: Co
                   <div className="flex items-center space-x-2 mb-2">
                     <h3 className="text-lg font-medium text-gray-900">{interview.participant}</h3>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      interview.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      interview.status === 'completed' ? 'bg-slate-100 text-slate-800' : 'bg-slate-100 text-slate-800'
                     }`}>
-                      {interview.status === 'completed' ? 'Slutförd' : 'Analyseras'}
+                      {interview.status === 'completed' ? t('interviewBuilder.status.completed') : t('interviewBuilder.status.analyzing')}
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 line-clamp-2">
@@ -660,15 +663,15 @@ function InterviewLibraryView({ completedInterviews }: { completedInterviews: Co
                     variant="outline"
                     size="sm"
                     className="p-2"
-                    title="Kopiera intervju"
+                    title={t('interviewBuilder.actions.copyInterview')}
                   >
                     <CopyIcon className="h-3 w-3" />
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="p-2 text-red-600 hover:text-red-700"
-                    title="Ta bort intervju"
+                    className="p-2 text-slate-600 hover:text-slate-700"
+                    title={t('interviewBuilder.actions.deleteInterview')}
                   >
                     <TrashIcon className="h-3 w-3" />
                   </Button>
@@ -677,7 +680,7 @@ function InterviewLibraryView({ completedInterviews }: { completedInterviews: Co
 
               <div className="space-y-3 flex-1">
                 <div className="text-sm">
-                  <div className="font-medium text-gray-700 mb-1">Genomförd</div>
+                  <div className="font-medium text-gray-700 mb-1">{t('interviewBuilder.status.conducted')}</div>
                   <div className="space-y-1 text-gray-500">
                     <div className="flex items-center">
                       <CalendarIcon className="h-3 w-3 mr-1" />
@@ -685,7 +688,7 @@ function InterviewLibraryView({ completedInterviews }: { completedInterviews: Co
                     </div>
                     <div className="flex items-center">
                       <ClockIcon className="h-3 w-3 mr-1" />
-                      {Math.floor(interview.duration / 60)} minuter
+                      {t('interviewBuilder.interview.duration', { minutes: Math.floor(interview.duration / 60) })}
                     </div>
                     <div className="flex items-center">
                       <ClipboardListIcon className="h-3 w-3 mr-1" />
@@ -696,14 +699,14 @@ function InterviewLibraryView({ completedInterviews }: { completedInterviews: Co
               </div>
 
               <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                <span>Projekt: Onboarding UX</span>
-                <span>{interview.insights?.length || 0} insights</span>
+                <span>{t('interviewBuilder.interview.project')}: Onboarding UX</span>
+                <span>{t('interviewBuilder.interview.insightsCount', { count: interview.insights?.length || 0 })}</span>
               </div>
 
               <div className="flex space-x-2 pt-4 border-t border-gray-100">
                 <Button variant="primary" size="sm" className="flex-1">
                   <EyeIcon className="h-3 w-3 mr-1" />
-                  Visa
+                  {t('interviewBuilder.actions.view')}
                 </Button>
                 <Button variant="outline" size="sm">
                   <MessageCircleIcon className="h-3 w-3" />
@@ -721,10 +724,10 @@ function InterviewLibraryView({ completedInterviews }: { completedInterviews: Co
                 <PlusIcon className="w-8 h-8 text-gray-400 group-hover:text-slate-600 transition-colors duration-200" />
               </div>
               <h3 className="text-lg font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">
-                Ny intervju
+                {t('interviewBuilder.actions.newInterview')}
               </h3>
               <p className="text-sm text-gray-400 group-hover:text-slate-600 transition-colors duration-200">
-                Skapa en ny intervju
+                {t('interviewBuilder.actions.createNewInterview')}
               </p>
             </div>
           </CardContent>
@@ -887,21 +890,21 @@ function InterviewsContent() {
 
   const quickActions = [
     {
-      title: "Ny intervju",
-      description: "Skapa intervjuguide och kom igång",
+      title: t('interviewBuilder.actions.newInterview'),
+      description: t('interviewBuilder.actions.newInterviewDescription'),
       icon: PlusIcon,
       action: "create-guide",
       primary: true
     },
     {
-      title: "Fortsätt intervju",
-      description: "Återuppta pågående session",
+      title: t('interviewBuilder.actions.continueInterview'),
+      description: t('interviewBuilder.actions.continueInterviewDescription'),
       icon: PlayIcon,
       action: "live-interview"
     },
     {
-      title: "Analysera data",
-      description: "Hitta patterns i dina intervjuer",
+      title: t('interviewBuilder.actions.analyzeData'),
+      description: t('interviewBuilder.actions.analyzeDescription'),
       icon: BarChart3Icon,
       action: "analyze"
     }
@@ -921,14 +924,14 @@ function InterviewsContent() {
     const insights = (() => {
       if (analysisMode === 'manual') {
         return manualInsights.length > 0 ? manualInsights : [
-          { theme: "Inga manuella insights skapade än", frequency: 0, sentiment: "neutral" as const }
+          { theme: t('interviewBuilder.insights.noManualInsights'), frequency: 0, sentiment: "neutral" as const }
         ]
       } else if (analysisMode === 'ai') {
         return generatedInsights.length > 0 ? generatedInsights : [
-          { theme: "Inga AI-insights genererade än", frequency: 0, sentiment: "neutral" as const }
+          { theme: t('interviewBuilder.insights.noAIInsights'), frequency: 0, sentiment: "neutral" as const }
         ]
       } else {
-        return [{ theme: "Välj analysmetod", frequency: 0, sentiment: "neutral" as const }]
+        return [{ theme: t('interviewBuilder.insights.chooseAnalysisMethod'), frequency: 0, sentiment: "neutral" as const }]
       }
     })()
 
@@ -939,8 +942,8 @@ function InterviewsContent() {
           {/* Simple Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Manuell analys</h2>
-              <p className="text-gray-600">Läs igenom dina intervjuer och dra analyser</p>
+              <h2 className="text-xl font-semibold text-gray-900">{t('interviewBuilder.analyze.manual')}</h2>
+              <p className="text-gray-600">{t('interviewBuilder.analyze.description')}</p>
             </div>
             <Button
               variant="outline"
@@ -948,17 +951,17 @@ function InterviewsContent() {
               onClick={() => setAnalysisMode('choose')}
               className="hover:bg-gray-100 transition-colors duration-200"
             >
-              Byt metod
+              {t('interviewBuilder.analyze.changeMethod')}
             </Button>
           </div>
 
           {completedInterviews.length === 0 ? (
             <div className="text-center py-16 bg-gray-50 rounded-xl">
               <MicIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Inga intervjuer att analysera</h3>
-              <p className="text-gray-600 mb-6">Genomför några intervjuer först för att kunna analysera data</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('interviewBuilder.analyze.noInterviewsTitle')}</h3>
+              <p className="text-gray-600 mb-6">{t('interviewBuilder.analyze.noInterviewsDescription')}</p>
               <Button variant="primary" onClick={() => setActiveTab('create-guide')}>
-                Skapa din första intervju
+                {t('interviewBuilder.actions.createFirstInterview')}
               </Button>
             </div>
           ) : (
@@ -974,7 +977,7 @@ function InterviewsContent() {
                           <div>
                             <h3 className="text-lg font-medium text-gray-900">{interview.participant}</h3>
                             <p className="text-sm text-gray-500">
-                              {interview.date} · {Math.floor(interview.duration / 60)} minuter · {interview.questions.length} frågor
+                              {interview.date} · {t('interviewBuilder.interview.duration', { minutes: Math.floor(interview.duration / 60) })} · {t('interviewBuilder.interview.questionsCount', { count: interview.questions.length })}
                             </p>
                           </div>
                           <div className="text-sm bg-gray-100 px-3 py-1 rounded-full">
@@ -984,11 +987,11 @@ function InterviewsContent() {
 
                         {/* Questions and Notes */}
                         <div className="space-y-4">
-                          <h4 className="font-medium text-gray-800">Frågor som ställdes:</h4>
-                          <div className="bg-blue-50 rounded-lg p-4">
+                          <h4 className="font-medium text-gray-800">{t('interviewBuilder.analyze.questionsAsked')}:</h4>
+                          <div className="bg-slate-50 rounded-lg p-4">
                             <ul className="space-y-2">
                               {interview.questions.map((question, qIndex) => (
-                                <li key={qIndex} className="text-sm text-blue-800 flex">
+                                <li key={qIndex} className="text-sm text-slate-800 flex">
                                   <span className="font-medium mr-2">{qIndex + 1}.</span>
                                   <span>{question}</span>
                                 </li>
@@ -996,7 +999,7 @@ function InterviewsContent() {
                             </ul>
                           </div>
 
-                          <h4 className="font-medium text-gray-800">Anteckningar och svar:</h4>
+                          <h4 className="font-medium text-gray-800">{t('interviewBuilder.analyze.notesAndAnswers')}:</h4>
                           <div className="bg-gray-50 rounded-lg p-4">
                             <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{interview.notes}</p>
                           </div>
@@ -1010,12 +1013,12 @@ function InterviewsContent() {
               {/* Right: Insights Panel */}
               <div className="lg:col-span-1">
                 <div className="bg-slate-50 rounded-xl border border-gray-200 p-6 sticky top-4">
-                  <h4 className="font-medium text-slate-900 mb-4">Sammanfattning av insights</h4>
+                  <h4 className="font-medium text-slate-900 mb-4">{t('interviewBuilder.analyze.insightsSummary')}</h4>
 
                   {/* Add Insight Form */}
                   <div className="space-y-3 mb-6">
                     <textarea
-                      placeholder="Vad upptäckte du? Beskriv gärna mer detaljerat..."
+                      placeholder={t('interviewBuilder.analyze.insightsPlaceholder')}
                       className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-sm resize-none"
                       id="quick-insight-input"
                       rows={4}
@@ -1106,15 +1109,15 @@ function InterviewsContent() {
                         }
                       }}
                     >
-                      Lägg till insight
+                      {t('interviewBuilder.insights.addInsight')}
                     </Button>
                   </div>
 
                   {/* Current Insights */}
                   <div className="border-t border-gray-200 pt-4">
-                    <h5 className="font-medium text-slate-900 mb-3">Dina insights ({manualInsights.length})</h5>
+                    <h5 className="font-medium text-slate-900 mb-3">{t('interviewBuilder.analyze.yourInsights', { count: manualInsights.length })}</h5>
                     {manualInsights.length === 0 ? (
-                      <p className="text-gray-500 text-sm">Inga insights än. Läs intervjuerna och lägg till vad du upptäcker.</p>
+                      <p className="text-gray-500 text-sm">{t('interviewBuilder.analyze.noInsightsYet')}</p>
                     ) : (
                       <div className="space-y-2 max-h-80 overflow-y-auto">
                         {manualInsights.map((insight, index) => (
@@ -1128,7 +1131,7 @@ function InterviewsContent() {
                               </span>
                               <button
                                 onClick={() => setManualInsights(manualInsights.filter((_, i) => i !== index))}
-                                className="text-red-500 hover:text-red-700 text-xs"
+                                className="text-slate-500 hover:text-slate-700 text-xs"
                               >
                                 ×
                               </button>
@@ -1153,10 +1156,10 @@ function InterviewsContent() {
     })
 
     const filters = [
-      { value: 'all', label: 'Alla insights', count: insights.length },
-      { value: 'positive', label: 'Positiva', count: insights.filter(i => i.sentiment === 'positive').length },
-      { value: 'negative', label: 'Negativa', count: insights.filter(i => i.sentiment === 'negative').length },
-      { value: 'neutral', label: 'Neutrala', count: insights.filter(i => i.sentiment === 'neutral').length }
+      { value: 'all', label: t('interviewBuilder.filters.allInsights'), count: insights.length },
+      { value: 'positive', label: t('interviewBuilder.filters.positive'), count: insights.filter(i => i.sentiment === 'positive').length },
+      { value: 'negative', label: t('interviewBuilder.filters.negative'), count: insights.filter(i => i.sentiment === 'negative').length },
+      { value: 'neutral', label: t('interviewBuilder.filters.neutral'), count: insights.filter(i => i.sentiment === 'neutral').length }
     ]
 
     // Choice between analysis methods
@@ -1169,10 +1172,10 @@ function InterviewsContent() {
                 <BarChart3Icon className="h-8 w-8 text-slate-600" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                Hur vill du analysera dina intervjuer?
+                {t('interviewBuilder.analyze.howToAnalyze')}
               </h2>
               <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-                Du kan välja mellan att själv skapa insights manuellt eller låta AI analysera dina anteckningar automatiskt.
+                {t('interviewBuilder.analyze.analysisDescription')}
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
@@ -1186,47 +1189,50 @@ function InterviewsContent() {
                       <Users2Icon className="h-6 w-6 text-gray-600 group-hover:scale-110 transition-transform duration-300" />
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-slate-700 transition-colors duration-200">
-                      Manuell analys
+                      {t('interviewBuilder.analyze.manual')}
                     </h3>
                     <p className="text-gray-600 mb-4 group-hover:text-gray-700 transition-colors duration-200">
-                      Du läser igenom intervjuerna själv och skapar insights baserat på din expertis och känsla.
+                      {t('interviewBuilder.analyze.manualDescription')}
                     </p>
                     <div className="text-sm text-gray-500">
-                      ✓ Full kontroll över insights<br/>
-                      ✓ Baserat på din expertis<br/>
-                      ✓ Kvalitativ bedömning
+                      {t('interviewBuilder.analyze.manualBenefits')}<br/>
+                      ✓ {t('interviewBuilder.analyze.manualBenefit1')}<br/>
+                      ✓ {t('interviewBuilder.analyze.manualBenefit2')}
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* AI Analysis */}
-                <Card
-                  className="group border-2 border-dashed border-gray-300 hover:border-slate-400 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-                  onClick={() => setAnalysisMode('ai')}
-                >
+                {/* AI Analysis - Coming Soon */}
+                <Card className="relative border-2 border-dashed border-gray-200 rounded-xl overflow-hidden opacity-80 cursor-not-allowed">
                   <CardContent className="p-8 text-center">
-                    <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-gray-100 transition-colors duration-300">
-                      <LightbulbIcon className="h-6 w-6 text-gray-600 group-hover:scale-110 transition-transform duration-300" />
+                    <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                      <LightbulbIcon className="h-6 w-6 text-gray-400" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-slate-700 transition-colors duration-200">
-                      AI-assisterad analys
+                    <h3 className="text-xl font-semibold text-gray-500 mb-3">
+                      {t('interviewBuilder.analyze.ai')}
                     </h3>
-                    <p className="text-gray-600 mb-4 group-hover:text-gray-700 transition-colors duration-200">
-                      AI analyserar dina anteckningar automatiskt och identifierar patterns och teman.
+                    <p className="text-gray-400 mb-4">
+                      {t('interviewBuilder.analyze.aiDescription')}
                     </p>
-                    <div className="text-sm text-gray-500">
-                      ✓ Snabb och automatisk<br/>
-                      ✓ Hittar patterns du kanske missar<br/>
-                      ✓ Baserat på nyckelord och sentiment
+                    <div className="text-sm text-gray-400">
+                      ✓ {t('interviewBuilder.analyze.aiBenefit1')}<br/>
+                      ✓ {t('interviewBuilder.analyze.aiBenefit2')}<br/>
+                      ✓ {t('interviewBuilder.analyze.aiBenefit3')}
                     </div>
                   </CardContent>
+                  {/* Coming Soon Badge */}
+                  <div className="absolute top-3 right-3">
+                    <span className="bg-slate-100 text-slate-600 text-xs font-medium px-2 py-1 rounded-full border border-slate-200">
+                      Coming Soon
+                    </span>
+                  </div>
                 </Card>
               </div>
 
               {completedInterviews.length === 0 && (
-                <div className="mt-8 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <p className="text-yellow-800 text-sm">
-                    <strong>Tips:</strong> Du behöver genomföra minst en intervju först för att kunna analysera data.
+                <div className="mt-8 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <p className="text-slate-700 text-sm">
+                    <strong>{t('interviewBuilder.analyze.tip')}:</strong> {t('interviewBuilder.analyze.tipDescription')}
                   </p>
                 </div>
               )}
@@ -1244,18 +1250,18 @@ function InterviewsContent() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 {analysisMode === 'manual' ? (
-                  <Users2Icon className="h-6 w-6 text-blue-600" />
+                  <Users2Icon className="h-6 w-6 text-slate-600" />
                 ) : (
-                  <LightbulbIcon className="h-6 w-6 text-purple-600" />
+                  <LightbulbIcon className="h-6 w-6 text-slate-600" />
                 )}
                 <div>
                   <h3 className="font-semibold text-gray-900">
-                    {analysisMode === 'manual' ? 'Manuell analys' : 'AI-assisterad analys'}
+                    {analysisMode === 'manual' ? t('interviewBuilder.analyze.manual') : t('interviewBuilder.analyze.ai')}
                   </h3>
                   <p className="text-sm text-gray-600">
                     {analysisMode === 'manual'
-                      ? 'Du skapar insights själv baserat på din bedömning'
-                      : 'AI har analyserat dina anteckningar automatiskt'
+                      ? t('interviewBuilder.analyze.manualMode')
+                      : t('interviewBuilder.analyze.aiMode')
                     }
                   </p>
                 </div>
@@ -1266,7 +1272,7 @@ function InterviewsContent() {
                 onClick={() => setAnalysisMode('choose')}
                 className="hover:bg-gray-100 transition-colors duration-200"
               >
-                Byt metod
+                {t('interviewBuilder.analyze.changeMethod')}
               </Button>
             </div>
           </CardContent>
@@ -1278,7 +1284,7 @@ function InterviewsContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Totala insights</p>
+                  <p className="text-sm font-medium text-gray-600">{t('interviewBuilder.stats.totalInsights')}</p>
                   <p className="text-2xl font-bold text-gray-900">{insights.length}</p>
                 </div>
                 <BarChart3Icon className="h-8 w-8 text-slate-600" />
@@ -1302,10 +1308,10 @@ function InterviewsContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Negativa insights</p>
-                  <p className="text-2xl font-bold text-red-600">{insights.filter(i => i.sentiment === 'negative').length}</p>
+                  <p className="text-sm font-medium text-gray-600">{t('interviewBuilder.stats.negativeInsights')}</p>
+                  <p className="text-2xl font-bold text-slate-600">{insights.filter(i => i.sentiment === 'negative').length}</p>
                 </div>
-                <AlertTriangleIcon className="h-8 w-8 text-red-600" />
+                <AlertTriangleIcon className="h-8 w-8 text-slate-600" />
               </div>
             </CardContent>
           </Card>
@@ -1314,7 +1320,7 @@ function InterviewsContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Genomsnittlig frekvens</p>
+                  <p className="text-sm font-medium text-gray-600">{t('interviewBuilder.stats.averageFrequency')}</p>
                   <p className="text-2xl font-bold text-gray-900">{Math.round(insights.reduce((acc, i) => acc + i.frequency, 0) / insights.length)}</p>
                 </div>
                 <TrendingUpIcon className="h-8 w-8 text-slate-600" />
@@ -1345,7 +1351,7 @@ function InterviewsContent() {
               <div className="flex space-x-3">
                 <input
                   type="text"
-                  placeholder="Sök insights..."
+                  placeholder={t('interviewBuilder.search.searchInsights')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
@@ -1390,14 +1396,14 @@ function InterviewsContent() {
                         {insight.theme}
                       </p>
                       <p className="text-sm text-gray-600">
-                        {insight.frequency > 0 ? `${insight.frequency} av ${completedInterviews.length} intervjuer · ${Math.round((insight.frequency / completedInterviews.length) * 100)}%` : 'Genomför intervjuer för att generera insights'}
+                        {insight.frequency > 0 ? t('interviewBuilder.insights.frequency', { frequency: insight.frequency, total: completedInterviews.length, percentage: Math.round((insight.frequency / completedInterviews.length) * 100) }) : t('interviewBuilder.insights.conductInterviews')}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
-                      insight.sentiment === 'positive' ? 'bg-green-100 text-green-800 group-hover/insight:bg-green-200' :
-                      insight.sentiment === 'negative' ? 'bg-red-100 text-red-800 group-hover/insight:bg-red-200' :
+                      insight.sentiment === 'positive' ? 'bg-slate-100 text-slate-800 group-hover/insight:bg-slate-200' :
+                      insight.sentiment === 'negative' ? 'bg-slate-100 text-slate-800 group-hover/insight:bg-slate-200' :
                       'bg-gray-100 text-gray-800 group-hover/insight:bg-gray-200'
                     }`}>
                       {insight.sentiment === 'positive' ? 'Positiv' : insight.sentiment === 'negative' ? 'Negativ' : 'Neutral'}
@@ -1418,8 +1424,8 @@ function InterviewsContent() {
               <Card className="border-0 bg-white rounded-xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <ClipboardListIcon className="h-5 w-5 text-blue-600" />
-                    Alla intervjuer ({completedInterviews.length})
+                    <ClipboardListIcon className="h-5 w-5 text-slate-600" />
+                    {t('interviewBuilder.tabs.allInterviews', { count: completedInterviews.length })}
                   </CardTitle>
                   <p className="text-gray-600 text-sm">Läs igenom och identifiera patterns</p>
                 </CardHeader>
@@ -1427,14 +1433,14 @@ function InterviewsContent() {
                   {completedInterviews.length === 0 ? (
                     <div className="text-center py-8">
                       <MicIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">Inga intervjuer att analysera än</p>
+                      <p className="text-gray-600">{t('interviewBuilder.analyze.noInterviewsToAnalyze')}</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
                       {completedInterviews.map((interview) => (
                         <div
                           key={interview.id}
-                          className="border border-gray-200 rounded-lg p-3 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200"
+                          className="border border-gray-200 rounded-lg p-3 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <h4 className="font-medium text-gray-900 text-sm">{interview.participant}</h4>
@@ -1446,7 +1452,7 @@ function InterviewsContent() {
                             <p className="text-xs text-gray-700 whitespace-pre-wrap leading-relaxed">{interview.notes}</p>
                           </div>
                           <div className="mt-2 text-xs text-gray-500">
-                            {interview.questions.length} frågor · {interview.notes.length} tecken anteckningar
+                            {t('interviewBuilder.interview.questionsCount', { count: interview.questions.length })} · {t('interviewBuilder.interview.notesLength', { length: interview.notes.length })}
                           </div>
                         </div>
                       ))}
@@ -1459,25 +1465,25 @@ function InterviewsContent() {
             {/* Right Column: Create Insights */}
             <div className="space-y-4">
               {/* Quick Add Insight */}
-              <Card className="border-0 bg-green-50 rounded-xl overflow-hidden">
+              <Card className="border-0 bg-slate-50 rounded-xl overflow-hidden">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-green-900">
-                    <PlusIcon className="h-5 w-5 text-green-600" />
-                    Skapa insight
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
+                    <PlusIcon className="h-5 w-5 text-slate-600" />
+                    {t('interviewBuilder.insights.createInsight')}
                   </CardTitle>
-                  <p className="text-green-700 text-sm">Lägg till vad du upptäckt i intervjuerna</p>
+                  <p className="text-slate-700 text-sm">{t('interviewBuilder.insights.createDescription')}</p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <input
                       type="text"
-                      placeholder="Vad upptäckte du? (t.ex. 'Användare förvirrade av navigation')"
-                      className="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                      placeholder={t('interviewBuilder.insights.createPlaceholder')}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-sm"
                       id="new-insight-theme"
                     />
                     <div className="grid grid-cols-2 gap-3">
                       <select
-                        className="px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                        className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-sm"
                         id="new-insight-sentiment"
                         defaultValue="neutral"
                       >
@@ -1487,16 +1493,16 @@ function InterviewsContent() {
                       </select>
                       <input
                         type="number"
-                        placeholder="Antal intervjuer"
+                        placeholder={t('interviewBuilder.insights.numberOfInterviews')}
                         min="1"
                         max={completedInterviews.length}
-                        className="px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                        className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-sm"
                         id="new-insight-frequency"
                       />
                     </div>
                     <Button
                       variant="primary"
-                      className="w-full bg-green-600 hover:bg-green-700"
+                      className="w-full bg-slate-600 hover:bg-slate-700"
                       onClick={() => {
                         const themeInput = document.getElementById('new-insight-theme') as HTMLInputElement
                         const sentimentSelect = document.getElementById('new-insight-sentiment') as HTMLSelectElement
@@ -1518,7 +1524,7 @@ function InterviewsContent() {
                       }}
                     >
                       <PlusIcon className="h-4 w-4 mr-2" />
-                      Lägg till insight
+                      {t('interviewBuilder.insights.addInsight')}
                     </Button>
                   </div>
                 </CardContent>
@@ -1528,8 +1534,8 @@ function InterviewsContent() {
               <Card className="border-0 bg-white rounded-xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <LightbulbIcon className="h-5 w-5 text-yellow-600" />
-                    Dina insights ({manualInsights.length})
+                    <LightbulbIcon className="h-5 w-5 text-slate-600" />
+                    {t('interviewBuilder.insights.yourInsights', { count: manualInsights.length })}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="max-h-80 overflow-y-auto">
@@ -1538,8 +1544,8 @@ function InterviewsContent() {
                       <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
                         <LightbulbIcon className="h-6 w-6 text-gray-400" />
                       </div>
-                      <p className="text-gray-600 text-sm">Inga insights skapade än</p>
-                      <p className="text-gray-500 text-xs mt-1">Läs intervjuerna och lägg till dina upptäckter</p>
+                      <p className="text-gray-600 text-sm">{t('interviewBuilder.insights.noInsightsCreated')}</p>
+                      <p className="text-gray-500 text-xs mt-1">{t('interviewBuilder.insights.readAndAdd')}</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -1551,13 +1557,13 @@ function InterviewsContent() {
                           <div className="flex-1">
                             <p className="font-medium text-gray-900 text-sm">{insight.theme}</p>
                             <p className="text-xs text-gray-600">
-                              {insight.frequency} av {completedInterviews.length} intervjuer · {Math.round((insight.frequency / completedInterviews.length) * 100)}%
+                              {t('interviewBuilder.insights.frequency', { frequency: insight.frequency, total: completedInterviews.length, percentage: Math.round((insight.frequency / completedInterviews.length) * 100) })}
                             </p>
                           </div>
                           <div className="flex items-center space-x-2">
                             <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              insight.sentiment === 'positive' ? 'bg-green-100 text-green-800' :
-                              insight.sentiment === 'negative' ? 'bg-red-100 text-red-800' :
+                              insight.sentiment === 'positive' ? 'bg-slate-100 text-slate-800' :
+                              insight.sentiment === 'negative' ? 'bg-slate-100 text-slate-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
                               {insight.sentiment === 'positive' ? '🙂' : insight.sentiment === 'negative' ? '🙁' : '😐'}
@@ -1566,7 +1572,7 @@ function InterviewsContent() {
                               onClick={() => {
                                 setManualInsights(manualInsights.filter((_, i) => i !== index))
                               }}
-                              className="text-red-500 hover:text-red-700 p-1"
+                              className="text-slate-500 hover:text-slate-700 p-1"
                             >
                               ×
                             </button>
@@ -1583,36 +1589,36 @@ function InterviewsContent() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-blue-50">
+          <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-slate-50">
             <CardContent className="p-6 text-center">
-              <DownloadIcon className="h-8 w-8 text-blue-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
-              <h3 className="font-semibold text-blue-900 mb-2">Exportera rapport</h3>
-              <p className="text-sm text-blue-700">Ladda ner fullständig analys som PDF</p>
+              <DownloadIcon className="h-8 w-8 text-slate-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
+              <h3 className="font-semibold text-slate-900 mb-2">Exportera rapport</h3>
+              <p className="text-sm text-slate-700">Ladda ner fullständig analys som PDF</p>
             </CardContent>
           </Card>
 
-          <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-green-50">
+          <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-slate-50">
             <CardContent className="p-6 text-center">
-              <ShareIcon className="h-8 w-8 text-green-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
-              <h3 className="font-semibold text-green-900 mb-2">Dela insights</h3>
-              <p className="text-sm text-green-700">Skicka resultat till teamet</p>
+              <ShareIcon className="h-8 w-8 text-slate-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
+              <h3 className="font-semibold text-slate-900 mb-2">{t('interviewBuilder.share.shareInsights')}</h3>
+              <p className="text-sm text-slate-700">Skicka resultat till teamet</p>
             </CardContent>
           </Card>
 
           {analysisMode === 'ai' ? (
-            <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-purple-50">
+            <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-slate-50">
               <CardContent className="p-6 text-center">
-                <LightbulbIcon className="h-8 w-8 text-purple-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
-                <h3 className="font-semibold text-purple-900 mb-2">Uppdatera AI-analys</h3>
-                <p className="text-sm text-purple-700">Kör om automatisk analys</p>
+                <LightbulbIcon className="h-8 w-8 text-slate-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
+                <h3 className="font-semibold text-slate-900 mb-2">Uppdatera AI-analys</h3>
+                <p className="text-sm text-slate-700">Kör om automatisk analys</p>
               </CardContent>
             </Card>
           ) : (
-            <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-purple-50">
+            <Card className="group border-0 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-slate-50">
               <CardContent className="p-6 text-center">
-                <BarChart3Icon className="h-8 w-8 text-purple-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
-                <h3 className="font-semibold text-purple-900 mb-2">Generera rapport</h3>
-                <p className="text-sm text-purple-700">Skapa rapport från dina insights</p>
+                <BarChart3Icon className="h-8 w-8 text-slate-600 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110" />
+                <h3 className="font-semibold text-slate-900 mb-2">Generera rapport</h3>
+                <p className="text-sm text-slate-700">{t('interviewBuilder.share.createReport')}</p>
               </CardContent>
             </Card>
           )}
@@ -1629,7 +1635,7 @@ function InterviewsContent() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-2">Totala intervjuer</p>
+                <p className="text-sm font-medium text-gray-500 mb-2">{t('interviewBuilder.stats.totalInterviews')}</p>
                 <p className="text-3xl font-bold text-gray-900">{completedInterviews.length}</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -1643,7 +1649,7 @@ function InterviewsContent() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-2">Aktiva projekt</p>
+                <p className="text-sm font-medium text-gray-500 mb-2">{t('interviewBuilder.stats.activeProjects')}</p>
                 <p className="text-3xl font-bold text-gray-900">2</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -1657,7 +1663,7 @@ function InterviewsContent() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-2">Totala insights</p>
+                <p className="text-sm font-medium text-gray-500 mb-2">{t('interviewBuilder.stats.totalInsights')}</p>
                 <p className="text-3xl font-bold text-gray-900">{generatedInsights.length}</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -1671,7 +1677,7 @@ function InterviewsContent() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-2">Genomsnittlig längd</p>
+                <p className="text-sm font-medium text-gray-500 mb-2">{t('interviewBuilder.stats.averageLength')}</p>
                 <p className="text-3xl font-bold text-gray-900">
                   {completedInterviews.length > 0 ? Math.round(completedInterviews.reduce((acc, interview) => acc + interview.duration, 0) / completedInterviews.length / 60) : 0}min
                 </p>
@@ -1689,11 +1695,11 @@ function InterviewsContent() {
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl font-semibold text-gray-900 transition-colors duration-200 group-hover:text-slate-700">
-              Senaste intervjuer ({completedInterviews.length})
+              {t('interviewBuilder.dashboard.recentInterviews', { count: completedInterviews.length })}
             </CardTitle>
             <Button variant="outline" size="sm" className="hover:bg-gray-100 hover:scale-105 transition-all duration-200 rounded-xl" onClick={() => setActiveTab('my-interviews')}>
               <EyeIcon className="h-4 w-4 mr-2" />
-              Visa alla
+              {t('interviewBuilder.actions.viewAll')}
             </Button>
           </div>
         </CardHeader>
@@ -1703,15 +1709,15 @@ function InterviewsContent() {
               <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <MicIcon className="h-8 w-8 text-gray-500" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Inga intervjuer än</h3>
-              <p className="text-gray-600 mb-6 max-w-sm mx-auto">Skapa din första intervju för att börja samla insights från användarna</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('interviewBuilder.empty.noInterviewsYet')}</h3>
+              <p className="text-gray-600 mb-6 max-w-sm mx-auto">{t('interviewBuilder.empty.createFirstDescription')}</p>
               <Button
                 variant="primary"
                 onClick={() => setActiveTab('create-guide')}
                 className="hover:scale-105 transition-transform duration-200"
               >
                 <PlusIcon className="h-4 w-4 mr-2" />
-                Skapa intervju
+                {t('interviewBuilder.actions.createInterview')}
               </Button>
             </div>
           ) : (
@@ -1745,6 +1751,7 @@ function InterviewsContent() {
           )}
         </CardContent>
       </Card>
+
     </div>
   )
 
@@ -1753,18 +1760,18 @@ function InterviewsContent() {
       <Header
         title={
           activeTab === 'overview' || activeTab === 'dashboard' ? 'Interview Builder' :
-          activeTab === 'create' || activeTab === 'create-guide' ? 'Skapa intervjuguide' :
-          activeTab === 'conduct' || activeTab === 'live-interview' ? 'Genomför intervju' :
-          activeTab === 'analyze' ? 'Analysera resultat' :
-          activeTab === 'my-interviews' ? 'Mina intervjuer' :
+          activeTab === 'create' || activeTab === 'create-guide' ? t('interviewBuilder.tabs.createGuide') :
+          activeTab === 'conduct' || activeTab === 'live-interview' ? t('interviewBuilder.tabs.conductInterview') :
+          activeTab === 'analyze' ? t('interviewBuilder.tabs.analyzeResults') :
+          activeTab === 'my-interviews' ? t('interviewBuilder.tabs.myInterviews') :
           'Mallar'
         }
         description={
-          activeTab === 'overview' || activeTab === 'dashboard' ? 'Bygg, genomför och analysera intervjuer' :
-          activeTab === 'create' || activeTab === 'create-guide' ? 'Skapa anpassade frågor för din intervju' :
-          activeTab === 'conduct' || activeTab === 'live-interview' ? 'Live intervju-verktyg med timer och anteckningar' :
-          activeTab === 'analyze' ? 'Hitta patterns och generera insights' :
-          activeTab === 'my-interviews' ? 'Alla dina genomförda intervjuer' :
+          activeTab === 'overview' || activeTab === 'dashboard' ? t('interviewBuilder.title') :
+          activeTab === 'create' || activeTab === 'create-guide' ? t('interviewBuilder.subtitles.createGuide') :
+          activeTab === 'conduct' || activeTab === 'live-interview' ? t('interviewBuilder.subtitles.liveInterview') :
+          activeTab === 'analyze' ? t('interviewBuilder.subtitles.analyze') :
+          activeTab === 'my-interviews' ? t('interviewBuilder.subtitles.myInterviews') :
           'Färdiga mallar för olika syften'
         }
       />
@@ -1800,9 +1807,9 @@ function InterviewsContent() {
           <div className="text-center py-12">
             <BookOpenIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Mallbibliotek</h3>
-            <p className="text-gray-600 mb-4">Färdiga mallar för olika typer av intervjuer</p>
+            <p className="text-gray-600 mb-4">{t('interviewBuilder.templates.description')}</p>
             <Button variant="primary" onClick={() => setActiveTab('create')}>
-              Skapa från mall
+              {t('interviewBuilder.templates.createFromTemplate')}
             </Button>
           </div>
         )}
@@ -1816,7 +1823,7 @@ function InterviewsContent() {
           setSaveParticipantName('')
           setSaveSelectedProject(null)
         }}
-        title="Spara intervju"
+        title={t('interviewBuilder.modals.saveInterview.title')}
         maxWidth="4xl"
         className="!max-w-4xl"
       >
@@ -1824,19 +1831,19 @@ function InterviewsContent() {
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
             <div className="flex items-center space-x-2 text-gray-700">
               <ClockIcon className="h-4 w-4" />
-              <span className="text-sm font-medium">Intervju genomförd: {formatTime(interviewTimer)}</span>
+              <span className="text-sm font-medium">{t('interviewBuilder.modals.saveInterview.interviewCompleted', { time: formatTime(interviewTimer) })}</span>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Deltagarens namn <span className="text-red-500">*</span>
+              {t('interviewBuilder.modals.saveInterview.participantName')} <span className="text-slate-500">*</span>
             </label>
             <input
               type="text"
               value={saveParticipantName}
               onChange={(e) => setSaveParticipantName(e.target.value)}
-              placeholder="T.ex. Anna Andersson"
+              placeholder={t('interviewBuilder.modals.saveInterview.participantPlaceholder')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
               required
               autoFocus
@@ -1846,7 +1853,7 @@ function InterviewsContent() {
           <ProjectSelector
             selectedProjectId={saveSelectedProject}
             onProjectChange={setSaveSelectedProject}
-            placeholder="Välj projekt (valfritt)"
+            placeholder={t('interviewBuilder.modals.saveInterview.projectPlaceholder')}
             showCreateNew={true}
             onCreateNew={() => {
               setShowSaveModal(false)
@@ -1863,7 +1870,7 @@ function InterviewsContent() {
                 setSaveSelectedProject(null)
               }}
             >
-              Avbryt
+              {t('interviewBuilder.modals.saveInterview.cancel')}
             </Button>
             <Button
               variant="primary"
@@ -1872,7 +1879,7 @@ function InterviewsContent() {
               className="bg-gray-900 hover:bg-gray-800"
             >
               <CheckCircleIcon className="h-4 w-4 mr-2" />
-              Spara intervju
+              {t('interviewBuilder.liveInterview.saveInterview')}
             </Button>
           </div>
 
@@ -1891,13 +1898,13 @@ function InterviewsContent() {
           setNewProjectColor('#6B7280')
           setShowSaveModal(true) // Go back to save modal
         }}
-        title="Skapa nytt projekt"
+        title={t('interviewBuilder.modals.createProject.title')}
         maxWidth="lg"
       >
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Projektnamn <span className="text-red-500">*</span>
+              {t('interviewBuilder.modals.createProject.name')} <span className="text-slate-500">*</span>
             </label>
             <input
               type="text"
@@ -1911,13 +1918,13 @@ function InterviewsContent() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Beskrivning
+              {t('interviewBuilder.modals.createProject.description')}
             </label>
             <input
               type="text"
               value={newProjectDescription}
               onChange={(e) => setNewProjectDescription(e.target.value)}
-              placeholder="Kort beskrivning av projektet"
+              placeholder={t('interviewBuilder.modals.createProject.descriptionPlaceholder')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
             />
           </div>
@@ -1934,7 +1941,7 @@ function InterviewsContent() {
                 setShowSaveModal(true)
               }}
             >
-              Avbryt
+              {t('interviewBuilder.modals.saveInterview.cancel')}
             </Button>
             <Button
               variant="primary"
@@ -1942,7 +1949,7 @@ function InterviewsContent() {
               disabled={!newProjectName.trim()}
               className="bg-gray-900 hover:bg-gray-800"
             >
-              Skapa projekt
+              {t('interviewBuilder.modals.createProject.create')}
             </Button>
           </div>
         </div>
@@ -1953,7 +1960,7 @@ function InterviewsContent() {
 
 export default function InterviewBuilderPage() {
   return (
-    <Suspense fallback={<div className="p-6">Laddar...</div>}>
+    <Suspense fallback={<div className="p-6">Loading...</div>}>
       <InterviewsContent />
     </Suspense>
   )

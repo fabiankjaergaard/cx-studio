@@ -300,25 +300,25 @@ export default function PersonasPage() {
               label={t('personas.modal.name')}
               value={newPersona.name || ''}
               onChange={(e) => updateNewPersonaField('name', e.target.value)}
-              placeholder="Anna Andersson"
+              placeholder={t('personas.modal.namePlaceholder')}
             />
             <Input
               label={t('personas.modal.age')}
               value={newPersona.age || ''}
               onChange={(e) => updateNewPersonaField('age', e.target.value)}
-              placeholder="32"
+              placeholder={t('personas.modal.agePlaceholder')}
             />
             <Input
               label={t('personas.modal.location')}
               value={newPersona.location || ''}
               onChange={(e) => updateNewPersonaField('location', e.target.value)}
-              placeholder="Stockholm"
+              placeholder={t('personas.modal.locationPlaceholder')}
             />
             <Input
               label={t('personas.modal.occupation')}
               value={newPersona.occupation || ''}
               onChange={(e) => updateNewPersonaField('occupation', e.target.value)}
-              placeholder="Produktchef"
+              placeholder={t('personas.modal.occupationPlaceholder')}
             />
           </div>
           
@@ -342,7 +342,7 @@ export default function PersonasPage() {
                     key={index}
                     value={goal}
                     onChange={(e) => updateListItem('goals', index, e.target.value)}
-                    placeholder={`Mål ${index + 1}`}
+                    placeholder={t('personas.modal.goalPlaceholder', { number: index + 1 })}
                   />
                 ))}
                 <Button
@@ -365,7 +365,7 @@ export default function PersonasPage() {
                     key={index}
                     value={pain}
                     onChange={(e) => updateListItem('painPoints', index, e.target.value)}
-                    placeholder={`Utmaning ${index + 1}`}
+                    placeholder={t('personas.modal.challengePlaceholder', { number: index + 1 })}
                   />
                 ))}
                 <Button

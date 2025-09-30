@@ -52,8 +52,8 @@ function SurveyContent() {
   const [surveys, setSurveys] = useState([
     {
       id: '1',
-      title: 'Kundnöjdhet Q4 2024',
-      description: 'Mät kundnöjdhet efter produktlansering',
+      title: 'Customer Satisfaction Q4 2024',
+      description: 'Measure customer satisfaction after product launch',
       status: 'draft',
       responses: 0,
       created: '2024-01-15',
@@ -63,7 +63,7 @@ function SurveyContent() {
     {
       id: '2',
       title: 'NPS Baseline',
-      description: 'Baseline-mätning för Net Promoter Score',
+      description: 'Baseline measurement for Net Promoter Score',
       status: 'active',
       responses: 156,
       created: '2024-01-10',
@@ -72,8 +72,8 @@ function SurveyContent() {
     },
     {
       id: '3',
-      title: 'Användarupplevelse Checkout',
-      description: 'Utvärdera checkoutprocessen',
+      title: 'User Experience Checkout',
+      description: 'Evaluate the checkout process',
       status: 'completed',
       responses: 342,
       created: '2024-01-05',
@@ -84,21 +84,21 @@ function SurveyContent() {
 
   const quickActions = [
     {
-      title: "Ny enkät",
-      description: "Skapa enkät från grunden eller mall",
+      title: t('surveyBuilder.page.quickActions.newSurvey.title'),
+      description: t('surveyBuilder.page.quickActions.newSurvey.description'),
       icon: PlusIcon,
       action: "create",
       primary: true
     },
     {
-      title: "Analysera resultat",
-      description: "Granska svar och skapa insights",
+      title: t('surveyBuilder.page.quickActions.analyzeResults.title'),
+      description: t('surveyBuilder.page.quickActions.analyzeResults.description'),
       icon: BarChart3Icon,
       action: "analyze"
     },
     {
-      title: "Mallar",
-      description: "Använd färdiga enkätmallar",
+      title: t('surveyBuilder.page.quickActions.templates.title'),
+      description: t('surveyBuilder.page.quickActions.templates.description'),
       icon: BookTemplateIcon,
       action: "templates"
     }
@@ -107,24 +107,24 @@ function SurveyContent() {
   const surveyTemplates = [
     {
       id: 'nps-standard',
-      name: 'NPS Standard',
-      description: 'Net Promoter Score med standardfrågor',
+      name: t('surveyBuilder.page.templates.npsStandard.name'),
+      description: t('surveyBuilder.page.templates.npsStandard.description'),
       questions: 3,
       icon: TrendingUpIcon,
       color: 'bg-gray-50 text-gray-600'
     },
     {
       id: 'csat-basic',
-      name: 'CSAT Grundläggande',
-      description: 'Customer Satisfaction enkät',
+      name: t('surveyBuilder.page.templates.csatBasic.name'),
+      description: t('surveyBuilder.page.templates.csatBasic.description'),
       questions: 5,
       icon: StarIcon,
       color: 'bg-gray-50 text-gray-600'
     },
     {
       id: 'ces-checkout',
-      name: 'CES Checkout',
-      description: 'Customer Effort Score för checkout',
+      name: t('surveyBuilder.page.templates.cesCheckout.name'),
+      description: t('surveyBuilder.page.templates.cesCheckout.description'),
       questions: 4,
       icon: SlidersIcon,
       color: 'bg-gray-50 text-gray-600'
@@ -139,7 +139,7 @@ function SurveyContent() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-2">Totala enkäter</p>
+                <p className="text-sm font-medium text-gray-500 mb-2">{t('surveyBuilder.page.stats.totalSurveys')}</p>
                 <p className="text-3xl font-bold text-gray-900">{surveys.length}</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -153,7 +153,7 @@ function SurveyContent() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-2">Aktiva enkäter</p>
+                <p className="text-sm font-medium text-gray-500 mb-2">{t('surveyBuilder.page.stats.activeSurveys')}</p>
                 <p className="text-3xl font-bold text-gray-900">{surveys.filter(s => s.status === 'active').length}</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -167,7 +167,7 @@ function SurveyContent() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-2">Totala svar</p>
+                <p className="text-sm font-medium text-gray-500 mb-2">{t('surveyBuilder.page.stats.totalResponses')}</p>
                 <p className="text-3xl font-bold text-gray-900">{surveys.reduce((sum, s) => sum + s.responses, 0)}</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -181,7 +181,7 @@ function SurveyContent() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-2">Genomsnittlig svarsfrekvens</p>
+                <p className="text-sm font-medium text-gray-500 mb-2">{t('surveyBuilder.page.stats.averageResponseRate')}</p>
                 <p className="text-3xl font-bold text-gray-900">78%</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -197,11 +197,11 @@ function SurveyContent() {
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl font-semibold text-gray-900 transition-colors duration-200 group-hover:text-slate-700">
-              Senaste enkäter ({surveys.length})
+              {t('surveyBuilder.page.stats.recentSurveys')} ({surveys.length})
             </CardTitle>
             <Button variant="outline" size="sm" className="hover:bg-gray-100 hover:scale-105 transition-all duration-200 rounded-xl">
               <EyeIcon className="h-4 w-4 mr-2" />
-              Visa alla
+              {t('surveyBuilder.page.stats.viewAll')}
             </Button>
           </div>
         </CardHeader>
@@ -211,15 +211,15 @@ function SurveyContent() {
               <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <ClipboardIcon className="h-8 w-8 text-gray-500" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Inga enkäter än</h3>
-              <p className="text-gray-600 mb-6 max-w-sm mx-auto">Skapa din första enkät för att börja samla feedback från dina kunder</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('surveyBuilder.page.stats.noSurveysYet')}</h3>
+              <p className="text-gray-600 mb-6 max-w-sm mx-auto">{t('surveyBuilder.page.stats.noSurveysDescription')}</p>
               <Button
                 variant="primary"
                 onClick={() => setActiveTab('create')}
                 className="hover:scale-105 transition-transform duration-200"
               >
                 <PlusIcon className="h-4 w-4 mr-2" />
-                Skapa enkät
+                {t('surveyBuilder.page.stats.createSurvey')}
               </Button>
             </div>
           ) : (
@@ -240,13 +240,13 @@ function SurveyContent() {
                         {survey.title}
                       </p>
                       <p className="text-sm text-gray-500 mt-1">
-                        {survey.created} · {survey.questions} frågor · {survey.responses} svar
+                        {survey.created} · {survey.questions} {t('surveyBuilder.page.stats.questions')} · {survey.responses} {t('surveyBuilder.page.stats.responses')}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
                     <span className="px-3 py-1.5 rounded-full text-xs font-semibold transition-colors duration-200 bg-gray-100 text-gray-800">
-                      {survey.status === 'active' ? 'Aktiv' : survey.status === 'completed' ? 'Avslutad' : 'Utkast'}
+                      {survey.status === 'active' ? t('surveyBuilder.page.mySurveys.active') : survey.status === 'completed' ? t('surveyBuilder.page.mySurveys.completed') : t('surveyBuilder.page.mySurveys.draft')}
                     </span>
                   </div>
                 </div>
@@ -267,10 +267,10 @@ function SurveyContent() {
             <PlusIcon className="h-10 w-10 text-gray-600" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-4 tracking-tight">
-            Skapa ny enkät
+            {t('surveyBuilder.page.create.title')}
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Välj mellan att starta från en mall eller bygga din enkät från grunden.
+            {t('surveyBuilder.page.create.description')}
           </p>
         </CardContent>
       </Card>
@@ -286,23 +286,23 @@ function SurveyContent() {
               <PlusIcon className="h-8 w-8 text-gray-600" />
             </div>
             <h3 className="text-2xl font-semibold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-200">
-              Från grunden
+              {t('surveyBuilder.page.create.fromScratch.title')}
             </h3>
             <p className="text-gray-600 mb-6 group-hover:text-gray-700 transition-colors duration-200 leading-relaxed">
-              Bygg din enkät från scratch med full kontroll över alla frågor och inställningar.
+              {t('surveyBuilder.page.create.fromScratch.description')}
             </p>
             <div className="space-y-2 text-sm text-gray-500">
               <div className="flex items-center justify-center space-x-2">
                 <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
-                <span>Full anpassning</span>
+                <span>{t('surveyBuilder.page.create.features.fullCustomization')}</span>
               </div>
               <div className="flex items-center justify-center space-x-2">
                 <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
-                <span>Alla frågetyper</span>
+                <span>{t('surveyBuilder.page.create.features.allQuestionTypes')}</span>
               </div>
               <div className="flex items-center justify-center space-x-2">
                 <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
-                <span>Avancerade inställningar</span>
+                <span>{t('surveyBuilder.page.create.features.advancedSettings')}</span>
               </div>
             </div>
           </CardContent>
@@ -314,23 +314,19 @@ function SurveyContent() {
               <BookTemplateIcon className="h-8 w-8 text-gray-600" />
             </div>
             <h3 className="text-2xl font-semibold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-200">
-              Från mall
+              {t('surveyBuilder.page.create.fromTemplate.title')}
             </h3>
             <p className="text-gray-600 mb-6 group-hover:text-gray-700 transition-colors duration-200 leading-relaxed">
-              Använd färdiga mallar för vanliga enkättyper och anpassa efter dina behov.
+              {t('surveyBuilder.page.create.fromTemplate.description')}
             </p>
             <div className="space-y-2 text-sm text-gray-500">
               <div className="flex items-center justify-center space-x-2">
                 <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
-                <span>Snabb start</span>
+                <span>{t('surveyBuilder.page.create.features.quickStart')}</span>
               </div>
               <div className="flex items-center justify-center space-x-2">
                 <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
-                <span>Beprövade frågor</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
-                <span>Best practices</span>
+                <span>{t('surveyBuilder.page.create.features.provenQuestions')}</span>
               </div>
             </div>
           </CardContent>
@@ -340,8 +336,8 @@ function SurveyContent() {
       {/* Popular Templates */}
       <Card className="border-0 bg-gradient-to-br from-white to-gray-50 rounded-2xl overflow-hidden shadow-sm">
         <CardHeader className="pb-6">
-          <CardTitle className="text-2xl font-semibold text-gray-900">Populära mallar</CardTitle>
-          <p className="text-gray-600 text-lg">Färdiga enkäter för vanliga användningsfall</p>
+          <CardTitle className="text-2xl font-semibold text-gray-900">{t('surveyBuilder.page.create.popularTemplates')}</CardTitle>
+          <p className="text-gray-600 text-lg">{t('surveyBuilder.page.create.popularTemplatesDescription')}</p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -357,11 +353,11 @@ function SurveyContent() {
                         {template.name}
                       </h3>
                       <p className="text-sm text-gray-600 mb-2 leading-relaxed">{template.description}</p>
-                      <p className="text-xs text-gray-500">{template.questions} frågor inkluderade</p>
+                      <p className="text-xs text-gray-500">{template.questions} {t('surveyBuilder.page.create.questionsIncluded')}</p>
                     </div>
                   </div>
                   <Button variant="outline" size="sm" className="w-full hover:bg-gray-100 hover:scale-105 transition-all duration-200 rounded-xl">
-                    Använd mall
+                    {t('surveyBuilder.page.create.useTemplate')}
                   </Button>
                 </CardContent>
               </Card>
@@ -385,59 +381,59 @@ function SurveyContent() {
     const questionTypes = [
       {
         type: 'nps',
-        name: 'NPS',
+        name: t('surveyBuilder.page.builder.questionType.nps'),
         icon: TrendingUpIcon,
-        description: 'Net Promoter Score (0-10)',
+        description: t('surveyBuilder.page.builder.questionType.nps.description'),
         template: {
-          title: 'Hur troligt är det att du skulle rekommendera oss till en vän eller kollega?',
+          title: 'How likely are you to recommend us to a friend or colleague?',
           type: 'nps',
           required: true
         }
       },
       {
         type: 'rating',
-        name: 'Betyg',
+        name: t('surveyBuilder.page.builder.questionType.rating'),
         icon: StarIcon,
-        description: 'Stjärnbetyg (1-5)',
+        description: t('surveyBuilder.page.builder.questionType.rating.description'),
         template: {
-          title: 'Hur nöjd är du med vår produkt?',
+          title: 'How satisfied are you with our product?',
           type: 'rating',
           required: true
         }
       },
       {
         type: 'text',
-        name: 'Text',
+        name: t('surveyBuilder.page.builder.questionType.text'),
         icon: MessageSquareIcon,
-        description: 'Öppen textfråga',
+        description: t('surveyBuilder.page.builder.questionType.text.description'),
         template: {
-          title: 'Berätta mer om din upplevelse',
+          title: 'Tell us more about your experience',
           type: 'text',
           required: false
         }
       },
       {
         type: 'single-choice',
-        name: 'Ett val',
+        name: t('surveyBuilder.page.builder.questionType.singleChoice'),
         icon: CheckSquareIcon,
-        description: 'Välj ett alternativ',
+        description: t('surveyBuilder.page.builder.questionType.singleChoice.description'),
         template: {
-          title: 'Vilken är din favoritfunktion?',
+          title: 'What is your favorite feature?',
           type: 'single-choice',
           required: true,
-          options: ['Alternativ 1', 'Alternativ 2', 'Alternativ 3']
+          options: ['Option 1', 'Option 2', 'Option 3']
         }
       },
       {
         type: 'multiple-choice',
-        name: 'Flera val',
+        name: t('surveyBuilder.page.builder.questionType.multipleChoice'),
         icon: SlidersIcon,
-        description: 'Välj flera alternativ',
+        description: t('surveyBuilder.page.builder.questionType.multipleChoice.description'),
         template: {
-          title: 'Vilka funktioner använder du mest?',
+          title: 'Which features do you use most?',
           type: 'multiple-choice',
           required: false,
-          options: ['Alternativ 1', 'Alternativ 2', 'Alternativ 3']
+          options: ['Option 1', 'Option 2', 'Option 3']
         }
       }
     ]
@@ -518,8 +514,8 @@ function SurveyContent() {
         {/* Left Sidebar - Question Types */}
         <div className="w-80 bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 flex flex-col shadow-sm">
           <div className="p-6 border-b border-gray-200 bg-white">
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Frågetyper</h3>
-            <p className="text-sm text-gray-600">Klicka för att lägga till i din enkät</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">{t('surveyBuilder.page.builder.questionTypes')}</h3>
+            <p className="text-sm text-gray-600">{t('surveyBuilder.page.builder.clickToAdd')}</p>
           </div>
 
           <div className="flex-1 overflow-auto p-6 space-y-4">
@@ -555,7 +551,7 @@ function SurveyContent() {
                   type="text"
                   value={survey.title}
                   onChange={(e) => setSurvey({...survey, title: e.target.value})}
-                  placeholder="Enkätens titel..."
+                  placeholder={t('surveyBuilder.page.builder.surveyTitlePlaceholder')}
                   className="text-3xl font-bold text-gray-900 bg-transparent border-none outline-none placeholder-gray-400 w-full focus:ring-0 p-0 hover:placeholder-gray-500 transition-colors duration-200"
                 />
               </div>
@@ -563,7 +559,7 @@ function SurveyContent() {
                 <textarea
                   value={survey.description}
                   onChange={(e) => setSurvey({...survey, description: e.target.value})}
-                  placeholder="Beskriv syftet med enkäten..."
+                  placeholder={t('surveyBuilder.page.builder.surveyDescriptionPlaceholder')}
                   rows={2}
                   className="w-full text-lg text-gray-600 bg-transparent border-none outline-none placeholder-gray-400 resize-none focus:ring-0 p-0 hover:placeholder-gray-500 transition-colors duration-200 leading-relaxed"
                 />
@@ -579,10 +575,10 @@ function SurveyContent() {
                   <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6 hover:scale-105 transition-transform duration-300">
                     <ClipboardIcon className="h-10 w-10 text-gray-500" />
                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-4">Lägg till din första fråga</h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed">Välj en frågetyp från panelen till vänster för att komma igång med din enkät</p>
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-4">{t('surveyBuilder.page.builder.addFirstQuestion')}</h3>
+                  <p className="text-gray-600 mb-6 leading-relaxed">{t('surveyBuilder.page.builder.addFirstQuestionDescription')}</p>
                   <div className="text-sm text-gray-500">
-                    <p>💡 Tips: Börja med grundläggande frågor och bygg vidare</p>
+                    <p>{t('surveyBuilder.page.builder.addFirstQuestionTip')}</p>
                   </div>
                 </div>
               </div>
@@ -609,7 +605,7 @@ function SurveyContent() {
                           </span>
                           {question.required && (
                             <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                              Obligatorisk
+                              {t('surveyBuilder.page.builder.required')}
                             </span>
                           )}
                         </div>
@@ -659,15 +655,15 @@ function SurveyContent() {
                           value={question.title}
                           onChange={(e) => updateQuestion(index, { title: e.target.value })}
                           className="text-lg font-medium text-gray-900 bg-transparent border-none outline-none w-full focus:ring-0 p-0"
-                          placeholder="Frågetitel..."
+                          placeholder={t('surveyBuilder.page.builder.questionTitlePlaceholder')}
                         />
 
                         {/* Question-specific content */}
                         {question.type === 'nps' && (
                           <div className="mt-4">
                             <div className="flex justify-between items-center mb-2">
-                              <span className="text-sm text-gray-600">0 - Inte alls troligt</span>
-                              <span className="text-sm text-gray-600">10 - Extremt troligt</span>
+                              <span className="text-sm text-gray-600">0 - {t('surveyBuilder.page.builder.notLikely')}</span>
+                              <span className="text-sm text-gray-600">10 - {t('surveyBuilder.page.builder.extremelyLikely')}</span>
                             </div>
                             <div className="flex space-x-1">
                               {[...Array(11)].map((_, i) => (
@@ -692,7 +688,7 @@ function SurveyContent() {
                         {question.type === 'text' && (
                           <div className="mt-4">
                             <div className="w-full h-20 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center">
-                              <span className="text-sm text-gray-400">Textfält för svar</span>
+                              <span className="text-sm text-gray-400">{t('surveyBuilder.page.builder.textFieldResponse')}</span>
                             </div>
                           </div>
                         )}
@@ -707,7 +703,7 @@ function SurveyContent() {
                                   value={option}
                                   onChange={(e) => updateQuestionOption(index, optIndex, e.target.value)}
                                   className="flex-1 text-sm text-gray-700 bg-transparent border-none outline-none focus:ring-0 p-0"
-                                  placeholder={`Alternativ ${optIndex + 1}`}
+                                  placeholder={t('surveyBuilder.page.builder.optionNumberPlaceholder', {number: optIndex + 1})}
                                 />
                                 <Button
                                   variant="outline"
@@ -726,7 +722,7 @@ function SurveyContent() {
                               className="text-xs"
                             >
                               <PlusIcon className="h-3 w-3 mr-1" />
-                              Lägg till alternativ
+                              {t('surveyBuilder.page.builder.addOption')}
                             </Button>
                           </div>
                         )}
@@ -741,7 +737,7 @@ function SurveyContent() {
                             className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-gray-300 rounded"
                           />
                           <label htmlFor={`required-${index}`} className="text-sm text-gray-700">
-                            Obligatorisk fråga
+                            {t('surveyBuilder.page.builder.requiredQuestion')}
                           </label>
                         </div>
                       </div>
@@ -763,25 +759,25 @@ function SurveyContent() {
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <span className="flex items-center">
                       <ClipboardIcon className="h-4 w-4 mr-1" />
-                      {survey.questions.length} frågor
+                      {survey.questions.length} {t('surveyBuilder.page.builder.questions')}
                     </span>
                     <span className="flex items-center">
                       <ClockIcon className="h-4 w-4 mr-1" />
-                      ~{Math.ceil(survey.questions.length * 0.5)} min
+                      {t('surveyBuilder.page.builder.estimatedTime', {time: Math.ceil(survey.questions.length * 0.5)})}
                     </span>
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                   <Button variant="outline" className="hover:bg-gray-100 hover:scale-105 transition-all duration-200 rounded-xl">
                     <EyeIcon className="h-4 w-4 mr-2" />
-                    Förhandsvisa
+                    {t('surveyBuilder.page.builder.preview')}
                   </Button>
                   <Button variant="outline" className="hover:bg-gray-100 hover:scale-105 transition-all duration-200 rounded-xl">
                     <SaveIcon className="h-4 w-4 mr-2" />
-                    Spara utkast
+                    {t('surveyBuilder.page.builder.saveDraft')}
                   </Button>
                   <Button variant="primary" className="hover:scale-105 transition-transform duration-200 rounded-xl">
-                    Publicera enkät
+                    {t('surveyBuilder.page.builder.publishSurvey')}
                   </Button>
                 </div>
               </div>
@@ -847,21 +843,21 @@ function SurveyContent() {
           <div className="flex-1">
             <input
               type="text"
-              placeholder="Sök enkäter..."
+              placeholder={t('surveyBuilder.page.mySurveys.searchPlaceholder')}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
             />
           </div>
           <div className="lg:w-48">
             <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent">
-              <option value="all">Alla statusar</option>
-              <option value="draft">Utkast</option>
-              <option value="active">Aktiva</option>
-              <option value="completed">Avslutade</option>
+              <option value="all">{t('surveyBuilder.page.mySurveys.allStatuses')}</option>
+              <option value="draft">{t('surveyBuilder.page.mySurveys.draft')}</option>
+              <option value="active">{t('surveyBuilder.page.mySurveys.active')}</option>
+              <option value="completed">{t('surveyBuilder.page.mySurveys.completed')}</option>
             </select>
           </div>
           <div className="lg:w-48">
             <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent">
-              <option value="all">Alla typer</option>
+              <option value="all">{t('surveyBuilder.page.mySurveys.allTypes')}</option>
               <option value="NPS">NPS</option>
               <option value="CSAT">CSAT</option>
               <option value="CES">CES</option>
@@ -880,7 +876,7 @@ function SurveyContent() {
                   <div className="flex items-center space-x-2 mb-2">
                     <h3 className="text-lg font-medium text-gray-900">{survey.title}</h3>
                     <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                      {survey.status === 'active' ? 'Aktiv' : survey.status === 'completed' ? 'Avslutad' : 'Utkast'}
+                      {survey.status === 'active' ? t('surveyBuilder.page.mySurveys.active') : survey.status === 'completed' ? t('surveyBuilder.page.mySurveys.completed') : t('surveyBuilder.page.mySurveys.draft')}
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 line-clamp-2">
@@ -888,10 +884,10 @@ function SurveyContent() {
                   </p>
                 </div>
                 <div className="flex space-x-1 ml-2">
-                  <Button variant="outline" size="sm" className="p-2" title="Kopiera enkät">
+                  <Button variant="outline" size="sm" className="p-2" title={t('surveyBuilder.page.mySurveys.copySurvey')}>
                     <CopyIcon className="h-3 w-3" />
                   </Button>
-                  <Button variant="outline" size="sm" className="p-2" title="Ta bort enkät">
+                  <Button variant="outline" size="sm" className="p-2" title={t('surveyBuilder.page.mySurveys.deleteSurvey')}>
                     <TrashIcon className="h-3 w-3" />
                   </Button>
                 </div>
@@ -899,7 +895,7 @@ function SurveyContent() {
 
               <div className="space-y-3 flex-1">
                 <div className="text-sm">
-                  <div className="font-medium text-gray-700 mb-1">Statistik</div>
+                  <div className="font-medium text-gray-700 mb-1">{t('surveyBuilder.page.mySurveys.statistics')}</div>
                   <div className="space-y-1 text-gray-500">
                     <div className="flex items-center">
                       <CalendarIcon className="h-3 w-3 mr-1" />
@@ -907,18 +903,18 @@ function SurveyContent() {
                     </div>
                     <div className="flex items-center">
                       <UsersIcon className="h-3 w-3 mr-1" />
-                      {survey.responses} svar
+                      {survey.responses} {t('surveyBuilder.page.mySurveys.responses')}
                     </div>
                     <div className="flex items-center">
                       <MessageSquareIcon className="h-3 w-3 mr-1" />
-                      {survey.questions} frågor
+                      {survey.questions} {t('surveyBuilder.page.mySurveys.questions')}
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                <span>Typ: {survey.type}</span>
+                <span>{t('surveyBuilder.page.mySurveys.type')} {survey.type}</span>
                 <span className="px-2 py-1 rounded-full bg-gray-100 text-gray-800">
                   {survey.type}
                 </span>
@@ -927,7 +923,7 @@ function SurveyContent() {
               <div className="flex space-x-2 pt-4 border-t border-gray-100">
                 <Button variant="primary" size="sm" className="flex-1">
                   <EyeIcon className="h-3 w-3 mr-1" />
-                  Visa
+                  {t('surveyBuilder.page.mySurveys.view')}
                 </Button>
                 <Button variant="outline" size="sm">
                   <BarChart3Icon className="h-3 w-3" />
@@ -945,10 +941,10 @@ function SurveyContent() {
                 <PlusIcon className="w-8 h-8 text-gray-400 group-hover:text-slate-600 transition-colors duration-200" />
               </div>
               <h3 className="text-lg font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">
-                Ny enkät
+                {t('surveyBuilder.page.mySurveys.newSurvey')}
               </h3>
               <p className="text-sm text-gray-400 group-hover:text-slate-600 transition-colors duration-200">
-                Skapa en ny enkät
+                {t('surveyBuilder.page.mySurveys.createNew')}
               </p>
             </div>
           </CardContent>
@@ -961,20 +957,20 @@ function SurveyContent() {
     <div className="h-full flex flex-col">
       <Header
         title={
-          activeTab === 'overview' ? 'Survey Builder' :
-          activeTab === 'create' ? 'Skapa enkät' :
-          activeTab === 'builder' ? 'Bygg enkät' :
-          activeTab === 'my-surveys' ? 'Mina enkäter' :
+          activeTab === 'overview' ? t('surveyBuilder.page.header.overview.title') :
+          activeTab === 'create' ? t('surveyBuilder.page.header.create.title') :
+          activeTab === 'builder' ? t('surveyBuilder.page.header.builder.title') :
+          activeTab === 'my-surveys' ? t('surveyBuilder.page.header.mySurveys.title') :
           activeTab === 'analyze' ? '' :
-          'Mallar'
+          t('surveyBuilder.page.header.templates.title')
         }
         description={
-          activeTab === 'overview' ? 'Skapa, genomför och analysera enkäter' :
-          activeTab === 'create' ? 'Bygg anpassade enkäter för feedback' :
-          activeTab === 'builder' ? 'Skapa enkät från grunden med alla verktyg' :
-          activeTab === 'my-surveys' ? 'Alla dina skapade enkäter' :
+          activeTab === 'overview' ? t('surveyBuilder.page.header.overview.description') :
+          activeTab === 'create' ? t('surveyBuilder.page.header.create.description') :
+          activeTab === 'builder' ? t('surveyBuilder.page.header.builder.description') :
+          activeTab === 'my-surveys' ? t('surveyBuilder.page.header.mySurveys.description') :
           activeTab === 'analyze' ? '' :
-          'Färdiga mallar för olika enkättyper'
+          t('surveyBuilder.page.header.templates.description')
         }
       />
 
@@ -988,8 +984,8 @@ function SurveyContent() {
           <div className="space-y-6">
             <Card className="border-0 bg-white rounded-xl overflow-hidden">
               <CardHeader>
-                <CardTitle>Enkätmallar</CardTitle>
-                <p className="text-gray-600">Färdiga mallar för vanliga enkättyper</p>
+                <CardTitle>{t('surveyBuilder.page.templatesSection.title')}</CardTitle>
+                <p className="text-gray-600">{t('surveyBuilder.page.templatesSection.description')}</p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1005,11 +1001,11 @@ function SurveyContent() {
                               {template.name}
                             </h3>
                             <p className="text-sm text-gray-600 mb-2">{template.description}</p>
-                            <p className="text-xs text-gray-500">{template.questions} frågor inkluderade</p>
+                            <p className="text-xs text-gray-500">{template.questions} {t('surveyBuilder.page.create.questionsIncluded')}</p>
                           </div>
                         </div>
                         <Button variant="primary" className="w-full hover:scale-[1.02] transition-transform duration-200">
-                          Använd mall
+                          {t('surveyBuilder.page.create.useTemplate')}
                         </Button>
                       </CardContent>
                     </Card>
@@ -1026,7 +1022,7 @@ function SurveyContent() {
 
 export default function SurveyBuilderPage() {
   return (
-    <Suspense fallback={<div className="p-6">Laddar...</div>}>
+    <Suspense fallback={<div className="p-6">Loading...</div>}>
       <SurveyContent />
     </Suspense>
   )

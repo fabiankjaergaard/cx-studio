@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/Input'
 import { UsersIcon, PlusIcon, ArrowLeftIcon, ArrowRightIcon, UserCheckIcon, UserPlusIcon, XIcon } from 'lucide-react'
 import Link from 'next/link'
 import { ProgressSteps } from '@/components/ui/ProgressSteps'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface TeamMember {
   id: string
@@ -21,6 +22,7 @@ interface TeamMember {
 
 
 function JourneyMapSetupContent() {
+  const { t } = useLanguage()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [mapName, setMapName] = useState('')
@@ -118,9 +120,9 @@ function JourneyMapSetupContent() {
 
   const getRoleLabel = (role: string) => {
     switch (role) {
-      case 'owner': return 'Ägare'
-      case 'editor': return 'Redigerare'
-      case 'viewer': return 'Läsare'
+      case 'owner': return t('teamSetup.ownerRole')
+      case 'editor': return t('teamSetup.editorRole')
+      case 'viewer': return t('teamSetup.viewerRole')
       default: return role
     }
   }
@@ -128,13 +130,13 @@ function JourneyMapSetupContent() {
   return (
     <div className="h-full flex flex-col bg-gray-50">
       <Header
-        title="Team Setup"
-        description="Bjud in teammedlemmar till din journey map"
+        title={t('teamSetup.title')}
+        description={t('teamSetup.description')}
         actions={
           <Link href="/journey-maps/new">
             <Button variant="outline">
               <ArrowLeftIcon className="mr-2 h-4 w-4" />
-              Tillbaka
+              {t('teamSetup.back')}
             </Button>
           </Link>
         }
@@ -155,10 +157,10 @@ function JourneyMapSetupContent() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <UsersIcon className="mr-2 h-5 w-5" />
-                Team ({teamMembers.length})
+                {t('teamSetup.teamTitle', { count: teamMembers.length })}
               </CardTitle>
               <p className="text-sm text-gray-600 mt-2">
-                Bjud in teammedlemmar för att samarbeta på din journey map. Du kan ändra behörigheter när som helst.
+                {t('teamSetup.teamDescription')}
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -175,7 +177,7 @@ function JourneyMapSetupContent() {
                           <p className="font-medium text-gray-900">{member.name}</p>
                           {member.status === 'pending' && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                              Väntar
+                              {t('teamSetup.pending')}
                             </span>
                           )}
                         </div>
@@ -189,8 +191,8 @@ function JourneyMapSetupContent() {
                           onChange={(e) => updateMemberRole(member.id, e.target.value as 'editor' | 'viewer')}
                           className="text-sm border border-gray-300 rounded pl-3 pr-8 py-2 text-gray-900 bg-white focus:ring-2 focus:ring-slate-500 focus:border-slate-500 appearance-none"
                         >
-                          <option value="editor">Redigerare</option>
-                          <option value="viewer">Läsare</option>
+                          <option value="editor">{t('teamSetup.editorRole')}</option>
+                          <option value="viewer">{t('teamSetup.viewerRole')}</option>
                         </select>
                       )}
                       {member.role === 'owner' && (
@@ -218,7 +220,7 @@ function JourneyMapSetupContent() {
                     <Input
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
-                      placeholder="E-post adress"
+                      placeholder={t('teamSetup.emailPlaceholder')}
                       type="email"
                     />
                   </div>
@@ -227,8 +229,8 @@ function JourneyMapSetupContent() {
                     onChange={(e) => setInviteRole(e.target.value as 'editor' | 'viewer')}
                     className="border border-gray-300 rounded-lg pl-3 pr-8 py-2 text-sm text-gray-900 bg-white focus:ring-2 focus:ring-slate-500 focus:border-slate-500 appearance-none"
                   >
-                    <option value="editor">Redigerare</option>
-                    <option value="viewer">Läsare</option>
+                    <option value="editor">{t('teamSetup.editorRole')}</option>
+                    <option value="viewer">{t('teamSetup.viewerRole')}</option>
                   </select>
                   <Button
                     variant="outline"
@@ -237,11 +239,11 @@ function JourneyMapSetupContent() {
                     className="hover:scale-105 transform transition-all duration-200 ease-out"
                   >
                     <UserPlusIcon className="mr-2 h-4 w-4" />
-                    Bjud in
+                    {t('teamSetup.invite')}
                   </Button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
-                  Teammedlemmar kommer få en inbjudan via e-post
+                  {t('teamSetup.inviteDescription')}
                 </p>
               </div>
             </CardContent>
@@ -250,19 +252,19 @@ function JourneyMapSetupContent() {
           {/* Permissions Info */}
           <Card className="bg-slate-50 border-slate-200 border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
             <CardContent className="p-4">
-              <h4 className="font-medium text-gray-900 mb-3">Behörigheter</h4>
+              <h4 className="font-medium text-gray-900 mb-3">{t('teamSetup.permissions')}</h4>
               <div className="space-y-2 text-sm text-gray-600">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-slate-700 rounded-full"></div>
-                  <span><strong>Ägare:</strong> Full kontroll, kan redigera allt och hantera teamet</span>
+                  <span><strong>{t('teamSetup.ownerRole')}:</strong> {t('teamSetup.ownerDescription')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-slate-500 rounded-full"></div>
-                  <span><strong>Redigerare:</strong> Kan redigera journey map-innehåll</span>
+                  <span><strong>{t('teamSetup.editorRole')}:</strong> {t('teamSetup.editorDescription')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                  <span><strong>Läsare:</strong> Kan bara visa journey map</span>
+                  <span><strong>{t('teamSetup.viewerRole')}:</strong> {t('teamSetup.viewerDescription')}</span>
                 </div>
               </div>
             </CardContent>
@@ -276,7 +278,7 @@ function JourneyMapSetupContent() {
               className="px-8 hover:scale-105 transform transition-all duration-200 ease-out hover:shadow-lg"
             >
               <ArrowRightIcon className="mr-2 h-4 w-4" />
-              Fortsätt till editorn
+              {t('teamSetup.continueToEditor')}
             </Button>
           </div>
         </div>

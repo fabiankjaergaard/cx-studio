@@ -48,343 +48,345 @@ interface PersonaTemplate {
   icon: string
 }
 
-const personaTemplates: PersonaTemplate[] = [
+// Helper function to get persona template data with translations
+const getPersonaTemplates = (t: (key: string) => string): PersonaTemplate[] => [
   // E-commerce
   {
     id: 'ecommerce-frequent-shopper',
-    name: 'Emma - Frekvent Online-shoppare',
-    description: 'Trendmedveten kvinna som älskar att shoppa online och följa mode',
-    category: 'E-commerce',
+    name: t('persona.emma.name'),
+    description: t('persona.emma.description'),
+    category: t('personaTemplates.ecommerce'),
     age: '28',
-    occupation: 'Marketing Coordinator',
+    occupation: t('persona.emma.occupation'),
     avatar: '',
     icon: 'ShoppingCartIcon',
     goals: [
-      'Hitta senaste modetrenden',
-      'Få bästa värde för pengarna',
-      'Snabb och smidig leverans',
-      'Lätt att returnera varor'
+      t('persona.emma.goal1'),
+      t('persona.emma.goal2'),
+      t('persona.emma.goal3'),
+      t('persona.emma.goal4')
     ],
     painPoints: [
-      'Osäker på storlekar vid online-shopping',
-      'Långa leveranstider',
-      'Komplicerade returprocesser',
-      'Svårt att jämföra priser'
+      t('persona.emma.painPoint1'),
+      t('persona.emma.painPoint2'),
+      t('persona.emma.painPoint3'),
+      t('persona.emma.painPoint4')
     ],
     demographics: {
-      income: '35 000 - 45 000 kr/mån',
-      education: 'Högskola',
-      family: 'Singel, bor i lägenhet'
+      income: t('persona.emma.income'),
+      education: t('persona.emma.education'),
+      family: t('persona.emma.family')
     },
     behaviors: [
-      'Shoppar 2-3 gånger per vecka online',
-      'Läser recensioner innan köp',
-      'Följer influencers på Instagram',
-      'Använder mobilappen mest'
+      t('persona.emma.behavior1'),
+      t('persona.emma.behavior2'),
+      t('persona.emma.behavior3'),
+      t('persona.emma.behavior4')
     ],
     motivations: [
-      'Vill känna sig trendig och uppdaterad',
-      'Uppskattar bekvämlighet',
-      'Värdesätter kvalitet',
-      'Vill spara tid'
+      t('persona.emma.motivation1'),
+      t('persona.emma.motivation2'),
+      t('persona.emma.motivation3'),
+      t('persona.emma.motivation4')
     ]
   },
   {
     id: 'ecommerce-bargain-hunter',
-    name: 'Bengt - Fynd-jägaren',
-    description: 'Prismedveten konsument som alltid letar efter bästa erbjudanden',
-    category: 'E-commerce',
+    name: t('persona.bengt.name'),
+    description: t('persona.bengt.description'),
+    category: t('personaTemplates.ecommerce'),
     age: '52',
-    occupation: 'Projektledare',
+    occupation: t('persona.bengt.occupation'),
     avatar: '',
     icon: 'ShoppingCartIcon',
     goals: [
-      'Hitta bästa priserna',
-      'Jämföra produkter mellan sajter',
-      'Få rabatter och erbjudanden',
-      'Köpa kvalitetsprodukter till lägre pris'
+      t('persona.bengt.goal1'),
+      t('persona.bengt.goal2'),
+      t('persona.bengt.goal3'),
+      t('persona.bengt.goal4')
     ],
     painPoints: [
-      'Tidskrävande att jämföra priser',
-      'Missar bra erbjudanden',
-      'Osäkerhet kring produktkvalitet',
-      'Komplext att använda rabattkoder'
+      t('persona.bengt.painPoint1'),
+      t('persona.bengt.painPoint2'),
+      t('persona.bengt.painPoint3'),
+      t('persona.bengt.painPoint4')
     ],
     demographics: {
-      income: '45 000 - 55 000 kr/mån',
-      education: 'Högskola',
-      family: 'Gift, 2 barn'
+      income: t('persona.bengt.income'),
+      education: t('persona.bengt.education'),
+      family: t('persona.bengt.family')
     },
     behaviors: [
-      'Använder prisjämförelsesajter',
-      'Prenumererar på nyhetsbrev för rabatter',
-      'Shoppar främst på desktop',
-      'Läser detaljerade produktrecensioner'
+      t('persona.bengt.behavior1'),
+      t('persona.bengt.behavior2'),
+      t('persona.bengt.behavior3'),
+      t('persona.bengt.behavior4')
     ],
     motivations: [
-      'Vill maximera värdet för pengarna',
-      'Känner sig smart när han hittar bra fynd',
-      'Vill inte bli lurad',
-      'Uppskattar transparens i prissättning'
+      t('persona.bengt.motivation1'),
+      t('persona.bengt.motivation2'),
+      t('persona.bengt.motivation3'),
+      t('persona.bengt.motivation4')
     ]
   },
 
   // SaaS/Teknologi
   {
     id: 'saas-startup-founder',
-    name: 'Alex - Startup-grundare',
-    description: 'Entreprenör som bygger teknikföretag och behöver effektiva verktyg',
-    category: 'SaaS',
+    name: t('persona.alex.name'),
+    description: t('persona.alex.description'),
+    category: t('personaTemplates.saas'),
     age: '34',
-    occupation: 'CEO/Grundare',
+    occupation: t('persona.alex.occupation'),
     avatar: '',
     icon: 'RocketIcon',
     goals: [
-      'Hitta kostnadseffektiva lösningar',
-      'Skala verksamheten snabbt',
-      'Automatisera processer',
-      'Förbättra teamproduktiviteten'
+      t('persona.alex.goal1'),
+      t('persona.alex.goal2'),
+      t('persona.alex.goal3'),
+      t('persona.alex.goal4')
     ],
     painPoints: [
-      'Begränsad budget för verktyg',
-      'Svårt att integrera olika system',
-      'Behöver snabb implementation',
-      'Osäkerhet kring säkerhet'
+      t('persona.alex.painPoint1'),
+      t('persona.alex.painPoint2'),
+      t('persona.alex.painPoint3'),
+      t('persona.alex.painPoint4')
     ],
     demographics: {
-      income: '60 000 - 80 000 kr/mån',
-      education: 'Teknisk högskola',
-      family: 'Sambo, inga barn än'
+      income: t('persona.alex.income'),
+      education: t('persona.alex.education'),
+      family: t('persona.alex.family')
     },
     behaviors: [
-      'Testar många gratis versioner',
-      'Läser tech-bloggar och forum',
-      'Nätverkar med andra grundare',
-      'Använder mobila appar för att hålla koll'
+      t('persona.alex.behavior1'),
+      t('persona.alex.behavior2'),
+      t('persona.alex.behavior3'),
+      t('persona.alex.behavior4')
     ],
     motivations: [
-      'Vill bygga något meningsfullt',
-      'Driven av effektivitet',
-      'Värdesätter innovation',
-      'Vill växa snabbt men hållbart'
+      t('persona.alex.motivation1'),
+      t('persona.alex.motivation2'),
+      t('persona.alex.motivation3'),
+      t('persona.alex.motivation4')
     ]
   },
 
   // Utbildning
   {
     id: 'education-teacher',
-    name: 'Sara - Lärare',
-    description: 'Engagerad grundskollärare som vill förbättra elevernas lärande',
-    category: 'Utbildning',
+    name: t('persona.sara.name'),
+    description: t('persona.sara.description'),
+    category: t('personaTemplates.education'),
     age: '41',
-    occupation: 'Grundskollärare',
+    occupation: t('persona.sara.occupation'),
     avatar: '',
     icon: 'GraduationCapIcon',
     goals: [
-      'Engagera eleverna i lärandet',
-      'Spara tid på administration',
-      'Individualisera undervisningen',
-      'Förbättra kommunikation med föräldrar'
+      t('persona.sara.goal1'),
+      t('persona.sara.goal2'),
+      t('persona.sara.goal3'),
+      t('persona.sara.goal4')
     ],
     painPoints: [
-      'Tidsbrist för planering',
-      'Svårt att nå alla elever',
-      'Mycket administration',
-      'Begränsade resurser'
+      t('persona.sara.painPoint1'),
+      t('persona.sara.painPoint2'),
+      t('persona.sara.painPoint3'),
+      t('persona.sara.painPoint4')
     ],
     demographics: {
-      income: '38 000 - 42 000 kr/mån',
-      education: 'Lärarutbildning',
-      family: 'Gift, 1 barn'
+      income: t('persona.sara.income'),
+      education: t('persona.sara.education'),
+      family: t('persona.sara.family')
     },
     behaviors: [
-      'Använder digitala verktyg i undervisningen',
-      'Deltar i fortbildningar',
-      'Samarbetar med kollegor',
-      'Söker inspiration online'
+      t('persona.sara.behavior1'),
+      t('persona.sara.behavior2'),
+      t('persona.sara.behavior3'),
+      t('persona.sara.behavior4')
     ],
     motivations: [
-      'Vill göra skillnad för eleverna',
-      'Passionerad för lärande',
-      'Värdesätter kreativitet',
-      'Vill utvecklas professionellt'
+      t('persona.sara.motivation1'),
+      t('persona.sara.motivation2'),
+      t('persona.sara.motivation3'),
+      t('persona.sara.motivation4')
     ]
   },
 
   // Hälsovård
   {
     id: 'healthcare-patient',
-    name: 'Margareta - Vårdpatient',
-    description: 'Äldre person som regelbundet behöver vårdsystem och tjänster',
-    category: 'Hälsovård',
+    name: t('persona.margareta.name'),
+    description: t('persona.margareta.description'),
+    category: t('personaTemplates.healthcare'),
     age: '67',
-    occupation: 'Pensionär',
+    occupation: t('persona.margareta.occupation'),
     avatar: '',
     icon: 'HeartIcon',
     goals: [
-      'Få tillgång till vård enkelt',
-      'Förstå sin hälsoinformation',
-      'Hålla kontakt med vårdgivare',
-      'Förebygga hälsoproblem'
+      t('persona.margareta.goal1'),
+      t('persona.margareta.goal2'),
+      t('persona.margareta.goal3'),
+      t('persona.margareta.goal4')
     ],
     painPoints: [
-      'Komplicerade digitala system',
-      'Långa väntetider',
-      'Svår att förstå medicinsk information',
-      'Känner sig osäker med teknik'
+      t('persona.margareta.painPoint1'),
+      t('persona.margareta.painPoint2'),
+      t('persona.margareta.painPoint3'),
+      t('persona.margareta.painPoint4')
     ],
     demographics: {
-      income: '22 000 - 28 000 kr/mån',
-      education: 'Gymnasiet',
-      family: 'Änka, 3 vuxna barn'
+      income: t('persona.margareta.income'),
+      education: t('persona.margareta.education'),
+      family: t('persona.margareta.family')
     },
     behaviors: [
-      'Föredrar telefonkontakt',
-      'Får hjälp av barn med teknik',
-      'Läser vårdguider på papper',
-      'Går till vårdcentralen personligen'
+      t('persona.margareta.behavior1'),
+      t('persona.margareta.behavior2'),
+      t('persona.margareta.behavior3'),
+      t('persona.margareta.behavior4')
     ],
     motivations: [
-      'Vill behålla sin självständighet',
-      'Värdesätter personlig service',
-      'Vill förstå sin hälsa',
-      'Känner trygghet med rutiner'
+      t('persona.margareta.motivation1'),
+      t('persona.margareta.motivation2'),
+      t('persona.margareta.motivation3'),
+      t('persona.margareta.motivation4')
     ]
   },
 
   // Finans
   {
     id: 'finance-young-professional',
-    name: 'David - Ung professionell',
-    description: 'Ambitiös finansanalytiker som börjar bygga sin förmögenhet',
-    category: 'Finans',
+    name: t('persona.david.name'),
+    description: t('persona.david.description'),
+    category: t('personaTemplates.finance'),
     age: '26',
-    occupation: 'Finansanalytiker',
+    occupation: t('persona.david.occupation'),
     avatar: '',
     icon: 'CreditCardIcon',
     goals: [
-      'Spara till första bostaden',
-      'Börja investera smart',
-      'Förstå sina finanser bättre',
-      'Planera för framtiden'
+      t('persona.david.goal1'),
+      t('persona.david.goal2'),
+      t('persona.david.goal3'),
+      t('persona.david.goal4')
     ],
     painPoints: [
-      'Osäker på investeringsalternativ',
-      'Svårt att förstå finansiella termer',
-      'Känner sig överväldigad av valmöjligheter',
-      'Vill inte förlora pengar'
+      t('persona.david.painPoint1'),
+      t('persona.david.painPoint2'),
+      t('persona.david.painPoint3'),
+      t('persona.david.painPoint4')
     ],
     demographics: {
-      income: '42 000 - 48 000 kr/mån',
-      education: 'Ekonomi, högskola',
-      family: 'Singel, bor ensam'
+      income: t('persona.david.income'),
+      education: t('persona.david.education'),
+      family: t('persona.david.family')
     },
     behaviors: [
-      'Använder finansappar dagligen',
-      'Läser finansnyheter',
-      'Jämför olika bankers erbjudanden',
-      'Söker råd från äldre kollegor'
+      t('persona.david.behavior1'),
+      t('persona.david.behavior2'),
+      t('persona.david.behavior3'),
+      t('persona.david.behavior4')
     ],
     motivations: [
-      'Vill bygga finansiell trygghet',
-      'Driven av framgång',
-      'Värdesätter kunskap',
-      'Vill göra smarta val'
+      t('persona.david.motivation1'),
+      t('persona.david.motivation2'),
+      t('persona.david.motivation3'),
+      t('persona.david.motivation4')
     ]
   },
 
   // Resa & Turism
   {
     id: 'travel-adventurer',
-    name: 'Lisa - Äventyrlig resenär',
-    description: 'Spontan person som älskar att utforska nya platser och kulturer',
-    category: 'Resa',
+    name: t('persona.lisa.name'),
+    description: t('persona.lisa.description'),
+    category: t('personaTemplates.travel'),
     age: '29',
-    occupation: 'Grafisk designer',
+    occupation: t('persona.lisa.occupation'),
     avatar: '',
     icon: 'PlaneIcon',
     goals: [
-      'Upptäcka nya destinationer',
-      'Hitta unika upplevelser',
-      'Resa budgetvänligt',
-      'Dokumentera sina resor'
+      t('persona.lisa.goal1'),
+      t('persona.lisa.goal2'),
+      t('persona.lisa.goal3'),
+      t('persona.lisa.goal4')
     ],
     painPoints: [
-      'Överkomplicerade bokningssystem',
-      'Dold kostnader vid bokning',
-      'Svårt att hitta autentiska upplevelser',
-      'Osäkerhet kring säkerhet'
+      t('persona.lisa.painPoint1'),
+      t('persona.lisa.painPoint2'),
+      t('persona.lisa.painPoint3'),
+      t('persona.lisa.painPoint4')
     ],
     demographics: {
-      income: '32 000 - 38 000 kr/mån',
-      education: 'Konsthögskola',
-      family: 'Singel, inga barn'
+      income: t('persona.lisa.income'),
+      education: t('persona.lisa.education'),
+      family: t('persona.lisa.family')
     },
     behaviors: [
-      'Använder reseappar för planering',
-      'Läser reserecensioner',
-      'Följer reseinfluencers',
-      'Bokar ofta i sista minuten'
+      t('persona.lisa.behavior1'),
+      t('persona.lisa.behavior2'),
+      t('persona.lisa.behavior3'),
+      t('persona.lisa.behavior4')
     ],
     motivations: [
-      'Vill skapa minnen',
-      'Driven av nyfikenhet',
-      'Värdesätter autenticitet',
-      'Vill växa som person'
+      t('persona.lisa.motivation1'),
+      t('persona.lisa.motivation2'),
+      t('persona.lisa.motivation3'),
+      t('persona.lisa.motivation4')
     ]
   },
 
   // Food & Beverage
   {
     id: 'food-health-conscious',
-    name: 'Anna - Hälsomedveten foodie',
-    description: 'Hälsofokuserad person som älskar mat och vill äta näringsrikt',
-    category: 'Mat & Dryck',
+    name: t('persona.anna.name'),
+    description: t('persona.anna.description'),
+    category: t('personaTemplates.foodBeverage'),
     age: '33',
-    occupation: 'Personlig tränare',
+    occupation: t('persona.anna.occupation'),
     avatar: '',
     icon: 'UtensilsIcon',
     goals: [
-      'Hitta näringsrika måltider',
-      'Stödja lokala producenter',
-      'Spara tid på matplanering',
-      'Inspireras av nya recept'
+      t('persona.anna.goal1'),
+      t('persona.anna.goal2'),
+      t('persona.anna.goal3'),
+      t('persona.anna.goal4')
     ],
     painPoints: [
-      'Svårt att hitta hälsosam mat ute',
-      'Tidskrävande att planera måltider',
-      'Dyrt med ekologiska alternativ',
-      'Begränsade vegetariska alternativ'
+      t('persona.anna.painPoint1'),
+      t('persona.anna.painPoint2'),
+      t('persona.anna.painPoint3'),
+      t('persona.anna.painPoint4')
     ],
     demographics: {
-      income: '35 000 - 42 000 kr/mån',
-      education: 'Idrottshögskola',
-      family: 'Sambo, tränar tillsammans'
+      income: t('persona.anna.income'),
+      education: t('persona.anna.education'),
+      family: t('persona.anna.family')
     },
     behaviors: [
-      'Läser näringsinnehåll noga',
-      'Handlar på lokala marknader',
-      'Använder matleveransappar',
-      'Delar matfoton på sociala medier'
+      t('persona.anna.behavior1'),
+      t('persona.anna.behavior2'),
+      t('persona.anna.behavior3'),
+      t('persona.anna.behavior4')
     ],
     motivations: [
-      'Vill leva hälsosamt',
-      'Bryr sig om miljön',
-      'Värdesätter kvalitet',
-      'Vill inspirera andra'
+      t('persona.anna.motivation1'),
+      t('persona.anna.motivation2'),
+      t('persona.anna.motivation3'),
+      t('persona.anna.motivation4')
     ]
   }
 ]
 
-const categories = [
-  'Alla kategorier',
-  'E-commerce',
-  'SaaS',
-  'Utbildning',
-  'Hälsovård',
-  'Finans',
-  'Resa',
-  'Mat & Dryck'
+// Helper function to get categories with translations
+const getCategories = (t: (key: string) => string): string[] => [
+  t('personaTemplates.allCategories'),
+  t('personaTemplates.ecommerce'),
+  t('personaTemplates.saas'),
+  t('personaTemplates.education'),
+  t('personaTemplates.healthcare'),
+  t('personaTemplates.finance'),
+  t('personaTemplates.travel'),
+  t('personaTemplates.foodBeverage')
 ]
 
 // Map icon names to icon components
@@ -405,11 +407,15 @@ const getPersonaIcon = (iconName: string) => {
 export default function PersonaTemplatesPage() {
   const { t } = useLanguage()
   const router = useRouter()
-  const [selectedCategory, setSelectedCategory] = useState('Alla kategorier')
+  const [selectedCategory, setSelectedCategory] = useState(t('personaTemplates.allCategories'))
   const [selectedTemplate, setSelectedTemplate] = useState<PersonaTemplate | null>(null)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
 
-  const filteredTemplates = selectedCategory === 'Alla kategorier'
+  // Get dynamic data
+  const personaTemplates = getPersonaTemplates(t)
+  const categories = getCategories(t)
+
+  const filteredTemplates = selectedCategory === t('personaTemplates.allCategories')
     ? personaTemplates
     : personaTemplates.filter(template => template.category === selectedCategory)
 
@@ -428,7 +434,7 @@ export default function PersonaTemplatesPage() {
     <div className="h-full flex flex-col bg-gray-50">
       <Header
         title={t('nav.personaTemplates')}
-        description="Välj från färdiga persona-mallar för snabb start"
+        description={t('personaTemplates.description')}
       />
 
       <div className="flex-1 p-6 overflow-auto">
@@ -451,7 +457,7 @@ export default function PersonaTemplatesPage() {
             </div>
           </div>
           <div className="text-sm text-gray-500">
-            {filteredTemplates.length} {filteredTemplates.length === 1 ? 'mall' : 'mallar'}
+            {filteredTemplates.length} {filteredTemplates.length === 1 ? t('personaTemplates.resultsCount.single') : t('personaTemplates.resultsCount.plural')}
           </div>
         </div>
 
@@ -484,8 +490,8 @@ export default function PersonaTemplatesPage() {
 
                 {/* Stats */}
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-                  <span>{template.age} år • {template.occupation}</span>
-                  <span>{template.goals.length} mål</span>
+                  <span>{template.age} {t('personaTemplates.years')} • {template.occupation}</span>
+                  <span>{template.goals.length} {t('personaTemplates.goals')}</span>
                 </div>
 
                 {/* Actions */}
@@ -497,7 +503,7 @@ export default function PersonaTemplatesPage() {
                     className="flex-1 hover:scale-105 transform transition-all duration-200 ease-out"
                   >
                     <EyeIcon className="h-3 w-3 mr-1 transition-transform duration-200 group-hover:scale-110" />
-                    Preview
+                    {t('personaTemplates.preview')}
                   </Button>
                   <Button
                     variant="primary"
@@ -506,7 +512,7 @@ export default function PersonaTemplatesPage() {
                     className="flex-1 hover:scale-105 transform transition-all duration-200 ease-out hover:shadow-lg"
                   >
                     <PlusIcon className="h-3 w-3 mr-1 transition-transform duration-200 group-hover:rotate-90" />
-                    Use Template
+                    {t('personaTemplates.useTemplate')}
                   </Button>
                 </div>
               </CardContent>
@@ -521,10 +527,10 @@ export default function PersonaTemplatesPage() {
                   <PlusIcon className="w-8 h-8 text-gray-400 group-hover:text-slate-600 group-hover:rotate-90 transition-all duration-300" />
                 </div>
                 <h3 className="text-lg font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">
-                  Create Custom Persona
+                  {t('personaTemplates.createCustom')}
                 </h3>
                 <p className="text-sm text-gray-400 group-hover:text-slate-600 transition-colors duration-200">
-                  Start with a blank template and customize it
+                  {t('personaTemplates.createCustomDescription')}
                 </p>
               </div>
             </CardContent>
@@ -536,10 +542,10 @@ export default function PersonaTemplatesPage() {
           <div className="text-center py-12">
             <UserIcon className="mx-auto h-16 w-16 text-gray-300 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Inga mallar hittades
+              {t('personaTemplates.noTemplatesFound')}
             </h3>
             <p className="text-gray-600">
-              Prova att välja en annan kategori eller återställ filtret
+              {t('personaTemplates.noTemplatesDescription')}
             </p>
           </div>
         )}

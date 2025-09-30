@@ -134,8 +134,15 @@ export default function InsightsPage() {
   
   return (
     <div className="h-full flex flex-col">
-      <Header 
-        title={t('insights.title')} 
+      <Header
+        title={
+          <div className="flex items-center space-x-3">
+            <span>{t('insights.title')}</span>
+            <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-semibold rounded-full">
+              WIP
+            </span>
+          </div>
+        }
         description={t('insights.subtitle')}
         actions={
           <Button variant="primary">
@@ -299,11 +306,6 @@ export default function InsightsPage() {
                 <Link href="/insights/getting-started">
                   <Button variant="primary">
                     {t('insights.gettingStarted.guideButton')}
-                  </Button>
-                </Link>
-                <Link href="/insights/best-practices">
-                  <Button variant="outline">
-                    {t('insights.gettingStarted.bestPracticesButton')}
                   </Button>
                 </Link>
               </div>

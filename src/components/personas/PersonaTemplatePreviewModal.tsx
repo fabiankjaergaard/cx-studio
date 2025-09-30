@@ -3,6 +3,7 @@
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
+import { useLanguage } from '@/contexts/LanguageContext'
 import {
   DownloadIcon,
   UserIcon,
@@ -51,13 +52,15 @@ export function PersonaTemplatePreviewModal({
   template,
   onUseTemplate
 }: PersonaTemplatePreviewModalProps) {
+  const { t } = useLanguage()
+
   if (!template) return null
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Förhandsgranska: ${template.name}`}
+      title={`${t('personas.template.preview.title')}: ${template.name}`}
       maxWidth="4xl"
     >
       <div className="space-y-8">
@@ -73,7 +76,7 @@ export function PersonaTemplatePreviewModal({
                 <Badge className="bg-slate-100 text-slate-700">{template.category}</Badge>
               </div>
               <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                <span>{template.age} år</span>
+                <span>{template.age} {t('personas.template.preview.years')}</span>
                 <span>•</span>
                 <div className="flex items-center">
                   <BriefcaseIcon className="w-4 h-4 mr-1" />
@@ -89,27 +92,27 @@ export function PersonaTemplatePreviewModal({
         <div className="bg-white border rounded-lg p-5">
           <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
             <UserIcon className="w-4 h-4 mr-2 text-slate-600" />
-            Demografisk information
+            {t('personas.template.preview.demographicInfo')}
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
               <div className="flex items-center mb-1">
                 <DollarSignIcon className="w-4 h-4 mr-1 text-slate-500" />
-                <span className="font-medium text-gray-700">Inkomst</span>
+                <span className="font-medium text-gray-700">{t('personas.template.preview.income')}</span>
               </div>
               <p className="text-gray-600">{template.demographics.income}</p>
             </div>
             <div>
               <div className="flex items-center mb-1">
                 <GraduationCapIcon className="w-4 h-4 mr-1 text-slate-500" />
-                <span className="font-medium text-gray-700">Utbildning</span>
+                <span className="font-medium text-gray-700">{t('personas.template.preview.education')}</span>
               </div>
               <p className="text-gray-600">{template.demographics.education}</p>
             </div>
             <div>
               <div className="flex items-center mb-1">
                 <UsersIcon className="w-4 h-4 mr-1 text-slate-500" />
-                <span className="font-medium text-gray-700">Familj</span>
+                <span className="font-medium text-gray-700">{t('personas.template.preview.family')}</span>
               </div>
               <p className="text-gray-600">{template.demographics.family}</p>
             </div>
@@ -125,7 +128,7 @@ export function PersonaTemplatePreviewModal({
                 <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center mr-3">
                   <HeartIcon className="w-4 h-4 text-slate-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900">Mål & Behov</h4>
+                <h4 className="font-semibold text-gray-900">{t('personas.template.preview.goalsNeeds')}</h4>
               </div>
               <Badge className="bg-slate-100 text-slate-700">{template.goals.length}</Badge>
             </div>
@@ -146,7 +149,7 @@ export function PersonaTemplatePreviewModal({
                 <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center mr-3">
                   <AlertTriangleIcon className="w-4 h-4 text-slate-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900">Utmaningar</h4>
+                <h4 className="font-semibold text-gray-900">{t('personas.template.preview.challenges')}</h4>
               </div>
               <Badge className="bg-slate-100 text-slate-700">{template.painPoints.length}</Badge>
             </div>
@@ -167,7 +170,7 @@ export function PersonaTemplatePreviewModal({
                 <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center mr-3">
                   <TrendingUpIcon className="w-4 h-4 text-slate-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900">Beteenden</h4>
+                <h4 className="font-semibold text-gray-900">{t('personas.template.preview.behaviors')}</h4>
               </div>
               <Badge className="bg-slate-100 text-slate-700">{template.behaviors.length}</Badge>
             </div>
@@ -188,7 +191,7 @@ export function PersonaTemplatePreviewModal({
                 <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center mr-3">
                   <TargetIcon className="w-4 h-4 text-slate-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900">Motivationer</h4>
+                <h4 className="font-semibold text-gray-900">{t('personas.template.preview.motivations')}</h4>
               </div>
               <Badge className="bg-slate-100 text-slate-700">{template.motivations.length}</Badge>
             </div>
@@ -205,23 +208,23 @@ export function PersonaTemplatePreviewModal({
 
         {/* Overview Stats */}
         <div className="bg-slate-50 rounded-lg p-6">
-          <h4 className="text-center font-semibold text-gray-900 mb-4">Översikt</h4>
+          <h4 className="text-center font-semibold text-gray-900 mb-4">{t('personas.template.preview.overview')}</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div>
               <div className="text-2xl font-bold text-slate-700">{template.goals.length}</div>
-              <div className="text-xs text-gray-500">Mål & Behov</div>
+              <div className="text-xs text-gray-500">{t('personas.template.preview.goalsNeeds')}</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-slate-700">{template.painPoints.length}</div>
-              <div className="text-xs text-gray-500">Utmaningar</div>
+              <div className="text-xs text-gray-500">{t('personas.template.preview.challenges')}</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-slate-700">{template.behaviors.length}</div>
-              <div className="text-xs text-gray-500">Beteenden</div>
+              <div className="text-xs text-gray-500">{t('personas.template.preview.behaviors')}</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-slate-700">{template.motivations.length}</div>
-              <div className="text-xs text-gray-500">Motivationer</div>
+              <div className="text-xs text-gray-500">{t('personas.template.preview.motivations')}</div>
             </div>
           </div>
         </div>
@@ -229,7 +232,7 @@ export function PersonaTemplatePreviewModal({
         {/* Actions */}
         <div className="flex justify-end space-x-3 pt-4 border-t">
           <Button variant="outline" onClick={onClose}>
-            Stäng
+            {t('ui.close')}
           </Button>
           <Button
             variant="primary"
@@ -239,7 +242,7 @@ export function PersonaTemplatePreviewModal({
             }}
           >
             <DownloadIcon className="mr-2 h-4 w-4" />
-            Använd denna mall
+            {t('personas.template.preview.useTemplate')}
           </Button>
         </div>
       </div>

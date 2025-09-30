@@ -181,14 +181,14 @@ function CreatePersonaContent() {
   return (
     <div className="h-full flex flex-col bg-gray-50">
       <Header
-        title={isFromTemplate ? "Skapa persona från mall" : "Skapa ny persona"}
-        description={isFromTemplate ? "Anpassa mallens data för att skapa din persona" : "Definiera en detaljerad persona för dina customer journeys"}
+        title={isFromTemplate ? t('personas.create.titleFromTemplate') : t('personas.create.title')}
+        description={isFromTemplate ? t('personas.create.descriptionFromTemplate') : t('personas.create.description')}
         actions={
           <div className="flex space-x-3">
             <Link href="/personas">
               <Button variant="outline">
                 <ArrowLeftIcon className="mr-2 h-4 w-4" />
-                Tillbaka
+                {t('personas.create.back')}
               </Button>
             </Link>
             <Button
@@ -197,7 +197,7 @@ function CreatePersonaContent() {
               disabled={!persona.name || !persona.age || !persona.occupation || isCreating}
             >
               <SaveIcon className="mr-2 h-4 w-4" />
-              {isCreating ? 'Skapar...' : 'Skapa persona'}
+              {isCreating ? t('personas.create.creating') : t('personas.create.createButton')}
             </Button>
           </div>
         }
@@ -211,7 +211,7 @@ function CreatePersonaContent() {
                 <div className="w-8 h-8 bg-slate-600 rounded-lg flex items-center justify-center mr-3">
                   <UserIcon className="h-4 w-4 text-white" />
                 </div>
-                Grundläggande information
+                {t('personas.create.basicInfo')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -228,7 +228,7 @@ function CreatePersonaContent() {
                     ) : (
                       <div className="flex flex-col items-center text-gray-400 group-hover:text-slate-500 transition-colors duration-300">
                         <UserIcon className="w-12 h-12" />
-                        <span className="text-xs mt-1 opacity-70">Lägg till bild</span>
+                        <span className="text-xs mt-1 opacity-70">{t('personas.create.addImage')}</span>
                       </div>
                     )}
                   </div>
@@ -257,7 +257,7 @@ function CreatePersonaContent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="group">
                   <Input
-                    label="Namn *"
+                    label={t('personas.create.name') + ' *'}
                     value={persona.name || ''}
                     onChange={(e) => updatePersonaField('name', e.target.value)}
                     placeholder="Anna Andersson"
@@ -266,7 +266,7 @@ function CreatePersonaContent() {
                 </div>
                 <div className="group">
                   <Input
-                    label="Ålder *"
+                    label={t('personas.create.age') + ' *'}
                     value={persona.age || ''}
                     onChange={(e) => updatePersonaField('age', e.target.value)}
                     placeholder="32"
@@ -275,7 +275,7 @@ function CreatePersonaContent() {
                 </div>
                 <div className="group">
                   <Input
-                    label="Plats"
+                    label={t('personas.create.location')}
                     value={persona.location || ''}
                     onChange={(e) => updatePersonaField('location', e.target.value)}
                     placeholder="Stockholm"
@@ -284,7 +284,7 @@ function CreatePersonaContent() {
                 </div>
                 <div className="group">
                   <Input
-                    label="Yrke *"
+                    label={t('personas.create.occupation') + ' *'}
                     value={persona.occupation || ''}
                     onChange={(e) => updatePersonaField('occupation', e.target.value)}
                     placeholder="Produktchef"
@@ -294,11 +294,11 @@ function CreatePersonaContent() {
               </div>
 
               <div className="group">
-                <label className="block text-sm font-medium text-gray-700 mb-2 group-hover:text-slate-800 transition-colors duration-300">Beskrivning</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2 group-hover:text-slate-800 transition-colors duration-300">{t('personas.create.description')}</label>
                 <textarea
                   value={persona.description || ''}
                   onChange={(e) => updatePersonaField('description', e.target.value)}
-                  placeholder="Beskriv denna persona och deras bakgrund..."
+                  placeholder={t('personas.create.descriptionPlaceholder')}
                   className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white text-gray-900 placeholder-gray-500 transition-all duration-300 hover:border-slate-400 focus:scale-[1.02]"
                   rows={4}
                 />
@@ -314,7 +314,7 @@ function CreatePersonaContent() {
                   <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
                     <span className="text-white text-xs">✓</span>
                   </div>
-                  Mål & Behov
+                  {t('personas.create.goalsNeeds')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -324,7 +324,7 @@ function CreatePersonaContent() {
                       <Input
                         value={goal}
                         onChange={(e) => updateListItem('goals', index, e.target.value)}
-                        placeholder={`Mål ${index + 1}`}
+                        placeholder={t('personas.create.goalPlaceholder') + ' ' + (index + 1)}
                         className="flex-1 transition-all duration-300 focus:scale-[1.02] group-hover:border-slate-400"
                       />
                       {(persona.goals || []).length > 1 && (
@@ -346,7 +346,7 @@ function CreatePersonaContent() {
                     className="w-full border-dashed hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-all duration-300 hover:scale-105"
                   >
                     <PlusIcon className="h-3 w-3 mr-1" />
-                    Lägg till mål
+                    {t('personas.create.addGoal')}
                   </Button>
                 </div>
               </CardContent>
@@ -359,7 +359,7 @@ function CreatePersonaContent() {
                   <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
                     <span className="text-white text-xs">!</span>
                   </div>
-                  Utmaningar & Smärtpunkter
+                  {t('personas.create.challenges')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -369,7 +369,7 @@ function CreatePersonaContent() {
                       <Input
                         value={pain}
                         onChange={(e) => updateListItem('painPoints', index, e.target.value)}
-                        placeholder={`Utmaning ${index + 1}`}
+                        placeholder={t('personas.create.challengePlaceholder') + ' ' + (index + 1)}
                         className="flex-1 transition-all duration-300 focus:scale-[1.02] group-hover:border-slate-400"
                       />
                       {(persona.painPoints || []).length > 1 && (
@@ -391,7 +391,7 @@ function CreatePersonaContent() {
                     className="w-full border-dashed hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-all duration-300 hover:scale-105"
                   >
                     <PlusIcon className="h-3 w-3 mr-1" />
-                    Lägg till utmaning
+                    {t('personas.create.addChallenge')}
                   </Button>
                 </div>
               </CardContent>
@@ -405,14 +405,14 @@ function CreatePersonaContent() {
                 <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
                   <span className="text-white text-xs">i</span>
                 </div>
-                Demografisk information
+                {t('personas.create.demographics')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="group">
                   <Input
-                    label="Inkomst"
+                    label={t('personas.create.income')}
                     value={persona.demographics?.income || ''}
                     onChange={(e) => updateDemographicField('income', e.target.value)}
                     placeholder="45 000 - 60 000 kr/mån"
@@ -421,7 +421,7 @@ function CreatePersonaContent() {
                 </div>
                 <div className="group">
                   <Input
-                    label="Utbildning"
+                    label={t('personas.create.education')}
                     value={persona.demographics?.education || ''}
                     onChange={(e) => updateDemographicField('education', e.target.value)}
                     placeholder="Högskola/Universitet"
@@ -430,7 +430,7 @@ function CreatePersonaContent() {
                 </div>
                 <div className="group">
                   <Input
-                    label="Familjesituation"
+                    label={t('personas.create.familySituation')}
                     value={persona.demographics?.family || ''}
                     onChange={(e) => updateDemographicField('family', e.target.value)}
                     placeholder="Gift, 2 barn"
@@ -449,7 +449,7 @@ function CreatePersonaContent() {
                   <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
                     <span className="text-white text-xs">→</span>
                   </div>
-                  Beteenden
+                  {t('personas.create.behaviors')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -459,7 +459,7 @@ function CreatePersonaContent() {
                       <Input
                         value={behavior}
                         onChange={(e) => updateListItem('behaviors', index, e.target.value)}
-                        placeholder={`Beteende ${index + 1}`}
+                        placeholder={t('personas.create.behaviorPlaceholder') + ' ' + (index + 1)}
                         className="flex-1 transition-all duration-300 focus:scale-[1.02] group-hover:border-slate-400"
                       />
                       {(persona.behaviors || []).length > 1 && (
@@ -481,7 +481,7 @@ function CreatePersonaContent() {
                     className="w-full border-dashed hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-all duration-300 hover:scale-105"
                   >
                     <PlusIcon className="h-3 w-3 mr-1" />
-                    Lägg till beteende
+                    {t('personas.create.addBehavior')}
                   </Button>
                 </div>
               </CardContent>
@@ -494,7 +494,7 @@ function CreatePersonaContent() {
                   <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
                     <SparklesIcon className="h-3 w-3 text-white" />
                   </div>
-                  Motivationer
+                  {t('personas.create.motivations')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -504,7 +504,7 @@ function CreatePersonaContent() {
                       <Input
                         value={motivation}
                         onChange={(e) => updateListItem('motivations', index, e.target.value)}
-                        placeholder={`Motivation ${index + 1}`}
+                        placeholder={t('personas.create.motivationPlaceholder') + ' ' + (index + 1)}
                         className="flex-1 transition-all duration-300 focus:scale-[1.02] group-hover:border-slate-400"
                       />
                       {(persona.motivations || []).length > 1 && (
@@ -526,7 +526,7 @@ function CreatePersonaContent() {
                     className="w-full border-dashed hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-all duration-300 hover:scale-105"
                   >
                     <PlusIcon className="h-3 w-3 mr-1" />
-                    Lägg till motivation
+                    {t('personas.create.addMotivation')}
                   </Button>
                 </div>
               </CardContent>
@@ -541,16 +541,16 @@ function CreatePersonaContent() {
                   <div className="text-center md:text-left">
                     <h3 className="text-xl font-semibold text-slate-800 flex items-center justify-center md:justify-start">
                       <SparklesIcon className="h-5 w-5 mr-2 text-slate-600" />
-                      Klar att skapa persona?
+                      {t('personas.create.readyTitle')}
                     </h3>
                     <p className="text-slate-600 mt-2">
-                      Kontrollera att all information är korrekt innan du skapar personan.
+                      {t('personas.create.readyDescription')}
                     </p>
                   </div>
                   <div className="flex space-x-3">
                     <Link href="/personas">
                       <Button variant="outline" className="hover:scale-105 transition-transform duration-300">
-                        Avbryt
+                        {t('personas.create.cancel')}
                       </Button>
                     </Link>
                     <Button
@@ -560,7 +560,7 @@ function CreatePersonaContent() {
                       className="bg-slate-600 hover:bg-slate-700 hover:scale-105 transition-all duration-300 shadow-lg"
                     >
                       <SaveIcon className="mr-2 h-4 w-4" />
-                      {isCreating ? 'Skapar persona...' : 'Skapa persona'}
+                      {isCreating ? t('personas.create.creatingPersona') : t('personas.create.createButton')}
                     </Button>
                   </div>
                 </div>
@@ -575,7 +575,7 @@ function CreatePersonaContent() {
 
 export default function CreatePersonaPage() {
   return (
-    <Suspense fallback={<div className="p-6">Laddar...</div>}>
+    <Suspense fallback={<div className="p-6">Loading...</div>}>
       <CreatePersonaContent />
     </Suspense>
   )

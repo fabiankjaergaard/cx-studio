@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge'
 import { DownloadIcon, XIcon } from 'lucide-react'
 import { useRef, useEffect } from 'react'
 import twemoji from 'twemoji'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface TemplatePreviewModalProps {
   isOpen: boolean
@@ -54,7 +55,20 @@ export function TemplatePreviewModal({
   template,
   onUseTemplate
 }: TemplatePreviewModalProps) {
+  const { t } = useLanguage()
   if (!template) return null
+
+  // Function to get translated category name
+  const getCategoryName = (categoryName: string) => {
+    switch (categoryName) {
+      case 'Åtgärder': return t('templates.categories.actions')
+      case 'Känslor': return t('templates.categories.emotions')
+      case 'Smärtpunkter': return t('templates.categories.painPoints')
+      case 'Möjligheter': return t('templates.categories.opportunities')
+      case 'Touchpoints': return t('templates.categories.touchpoints')
+      default: return categoryName
+    }
+  }
 
   // Mock preview data based on template ID
   const getPreviewData = (templateId: string) => {
@@ -62,15 +76,20 @@ export function TemplatePreviewModal({
       case '1': // E-commerce
         return {
           stages: [
-            { name: 'Medvetenhet', description: 'Kunden upptäcker behov' },
-            { name: 'Köp/Beslut', description: 'Kunden jämför och beslutar' },
-            { name: 'Användning', description: 'Kunden använder produkten' },
-            { name: 'Lojalitet', description: 'Kunden blir återkommande' }
+            { name: t('templates.ecommerce.stages.awareness'), description: t('templates.ecommerce.stages.awarenessDesc') },
+            { name: t('templates.ecommerce.stages.purchase'), description: t('templates.ecommerce.stages.purchaseDesc') },
+            { name: t('templates.ecommerce.stages.usage'), description: t('templates.ecommerce.stages.usageDesc') },
+            { name: t('templates.ecommerce.stages.loyalty'), description: t('templates.ecommerce.stages.loyaltyDesc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Söker online', 'Jämför priser', 'Genomför köp', 'Delar upplevelse']
+              examples: [
+                t('templates.ecommerce.actions.1'),
+                t('templates.ecommerce.actions.2'),
+                t('templates.ecommerce.actions.3'),
+                t('templates.ecommerce.actions.4')
+              ]
             },
             {
               name: 'Känslor',
@@ -78,30 +97,50 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Smärtpunkter',
-              examples: ['Svårt att hitta info', 'Komplicerad checkout', 'Långsam leverans', 'Oklara returer']
+              examples: [
+                t('templates.ecommerce.painPoints.1'),
+                t('templates.ecommerce.painPoints.2'),
+                t('templates.ecommerce.painPoints.3'),
+                t('templates.ecommerce.painPoints.4')
+              ]
             },
             {
               name: 'Möjligheter',
-              examples: ['Personaliserade rekommendationer', 'Smidigare betalning', 'Snabbare leverans', 'Lojalitetsprogram']
+              examples: [
+                t('templates.ecommerce.opportunities.1'),
+                t('templates.ecommerce.opportunities.2'),
+                t('templates.ecommerce.opportunities.3'),
+                t('templates.ecommerce.opportunities.4')
+              ]
             }
           ]
         }
       case '2': // SaaS
         return {
           stages: [
-            { name: 'Medvetenhet', description: 'Upptäcker lösningen' },
-            { name: 'Utvärdering', description: 'Testar och utvärderar' },
-            { name: 'Onboarding', description: 'Kommer igång' },
-            { name: 'Användning', description: 'Daglig användning' }
+            { name: t('templates.saas.stages.awareness'), description: t('templates.saas.stages.awarenessDesc') },
+            { name: t('templates.saas.stages.evaluation'), description: t('templates.saas.stages.evaluationDesc') },
+            { name: t('templates.saas.stages.onboarding'), description: t('templates.saas.stages.onboardingDesc') },
+            { name: t('templates.saas.stages.usage'), description: t('templates.saas.stages.usageDesc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Läser om lösningar', 'Startar trial', 'Skapar konto', 'Använder dagligen']
+              examples: [
+                t('templates.saas.actions.1'),
+                t('templates.saas.actions.2'),
+                t('templates.saas.actions.3'),
+                t('templates.saas.actions.4')
+              ]
             },
             {
               name: 'Touchpoints',
-              examples: ['Webbsida', 'Demo', 'Onboarding emails', 'Support chat']
+              examples: [
+                t('templates.saas.touchpoints.1'),
+                t('templates.saas.touchpoints.2'),
+                t('templates.saas.touchpoints.3'),
+                t('templates.saas.touchpoints.4')
+              ]
             },
             {
               name: 'Känslor',
@@ -109,23 +148,34 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Smärtpunkter',
-              examples: ['Komplex registrering', 'Svår att förstå värde', 'För många funktioner', 'Bristande support']
+              examples: [
+                t('templates.saas.painPoints.1'),
+                t('templates.saas.painPoints.2'),
+                t('templates.saas.painPoints.3'),
+                t('templates.saas.painPoints.4')
+              ]
             }
           ]
         }
       case '3': // Customer Service
         return {
           stages: [
-            { name: 'Kontakt', description: 'Kunden söker hjälp' },
-            { name: 'Identifiering', description: 'Problem identifieras' },
-            { name: 'Lösning', description: 'Problem löses' },
-            { name: 'Uppföljning', description: 'Kvalitetssäkring' },
-            { name: 'Reflektion', description: 'Utvärdering av upplevelse' }
+            { name: t('templates.customerService.stages.contact'), description: t('templates.customerService.stages.contactDesc') },
+            { name: t('templates.customerService.stages.identification'), description: t('templates.customerService.stages.identificationDesc') },
+            { name: t('templates.customerService.stages.solution'), description: t('templates.customerService.stages.solutionDesc') },
+            { name: t('templates.customerService.stages.followup'), description: t('templates.customerService.stages.followupDesc') },
+            { name: t('templates.customerService.stages.reflection'), description: t('templates.customerService.stages.reflectionDesc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Kontaktar support', 'Förklarar problem', 'Följer instruktioner', 'Bekräftar lösning', 'Ger feedback']
+              examples: [
+                t('templates.customerService.actions.1'),
+                t('templates.customerService.actions.2'),
+                t('templates.customerService.actions.3'),
+                t('templates.customerService.actions.4'),
+                t('templates.customerService.actions.5')
+              ]
             },
             {
               name: 'Känslor',
@@ -133,28 +183,47 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Smärtpunkter',
-              examples: ['Långa väntetider', 'Komplicerade menyer', 'Behöver upprepa info', 'Otydliga instruktioner', 'Ingen uppföljning']
+              examples: [
+                t('templates.customerService.painPoints.1'),
+                t('templates.customerService.painPoints.2'),
+                t('templates.customerService.painPoints.3'),
+                t('templates.customerService.painPoints.4'),
+                t('templates.customerService.painPoints.5')
+              ]
             },
             {
               name: 'Möjligheter',
-              examples: ['Snabb svarstid', 'Proaktiv kommunikation', 'Personlig service', 'Tydliga lösningar', 'Automatisk uppföljning']
+              examples: [
+                t('templates.customerService.opportunities.1'),
+                t('templates.customerService.opportunities.2'),
+                t('templates.customerService.opportunities.3'),
+                t('templates.customerService.opportunities.4'),
+                t('templates.customerService.opportunities.5')
+              ]
             }
           ]
         }
       case '4': // Restaurant
         return {
           stages: [
-            { name: 'Inspiration', description: 'Får lust att äta ute' },
-            { name: 'Sökning', description: 'Letar efter restaurang' },
-            { name: 'Bokning', description: 'Reserverar bord' },
-            { name: 'Ankomst', description: 'Kommer till restaurangen' },
-            { name: 'Måltid', description: 'Äter och upplever' },
-            { name: 'Avslut', description: 'Betalar och lämnar' }
+            { name: t('templates.restaurant.stages.inspiration'), description: t('templates.restaurant.stages.inspirationDesc') },
+            { name: t('templates.restaurant.stages.search'), description: t('templates.restaurant.stages.searchDesc') },
+            { name: t('templates.restaurant.stages.booking'), description: t('templates.restaurant.stages.bookingDesc') },
+            { name: t('templates.restaurant.stages.arrival'), description: t('templates.restaurant.stages.arrivalDesc') },
+            { name: t('templates.restaurant.stages.meal'), description: t('templates.restaurant.stages.mealDesc') },
+            { name: t('templates.restaurant.stages.departure'), description: t('templates.restaurant.stages.departureDesc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Söker inspiration', 'Läser recensioner', 'Bokar online', 'Kommer i tid', 'Beställer mat', 'Betalar notan']
+              examples: [
+                t('templates.restaurant.actions.1'),
+                t('templates.restaurant.actions.2'),
+                t('templates.restaurant.actions.3'),
+                t('templates.restaurant.actions.4'),
+                t('templates.restaurant.actions.5'),
+                t('templates.restaurant.actions.6')
+              ]
             },
             {
               name: 'Känslor',
@@ -162,31 +231,58 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Touchpoints',
-              examples: ['Sociala medier', 'Google/TripAdvisor', 'Bokningssystem', 'Värd/Personal', 'Mat & miljö', 'Betalningssystem']
+              examples: [
+                t('templates.restaurant.touchpoints.1'),
+                t('templates.restaurant.touchpoints.2'),
+                t('templates.restaurant.touchpoints.3'),
+                t('templates.restaurant.touchpoints.4'),
+                t('templates.restaurant.touchpoints.5'),
+                t('templates.restaurant.touchpoints.6')
+              ]
             },
             {
               name: 'Smärtpunkter',
-              examples: ['Svårt hitta info', 'Komplicerad bokning', 'Långa väntetider', 'Fel beställning', 'Hög ljudnivå', 'Långsam service']
+              examples: [
+                t('templates.restaurant.painPoints.1'),
+                t('templates.restaurant.painPoints.2'),
+                t('templates.restaurant.painPoints.3'),
+                t('templates.restaurant.painPoints.4'),
+                t('templates.restaurant.painPoints.5'),
+                t('templates.restaurant.painPoints.6')
+              ]
             },
             {
               name: 'Möjligheter',
-              examples: ['Inspirerande innehåll', 'Smidig bokning', 'Personlig välkomst', 'Överraska positivt', 'Minnesvärda detaljer', 'Enkla betalningar']
+              examples: [
+                t('templates.restaurant.opportunities.1'),
+                t('templates.restaurant.opportunities.2'),
+                t('templates.restaurant.opportunities.3'),
+                t('templates.restaurant.opportunities.4'),
+                t('templates.restaurant.opportunities.5'),
+                t('templates.restaurant.opportunities.6')
+              ]
             }
           ]
         }
       case '5': // Banking
         return {
           stages: [
-            { name: 'Behov', description: 'Identifierar finansiellt behov' },
-            { name: 'Utforskning', description: 'Undersöker alternativ' },
-            { name: 'Ansökan', description: 'Ansöker om tjänst' },
-            { name: 'Godkännande', description: 'Väntar på beslut' },
-            { name: 'Användning', description: 'Använder tjänsten' }
+            { name: t('templates.banking.stages.need'), description: t('templates.banking.stages.needDesc') },
+            { name: t('templates.banking.stages.exploration'), description: t('templates.banking.stages.explorationDesc') },
+            { name: t('templates.banking.stages.application'), description: t('templates.banking.stages.applicationDesc') },
+            { name: t('templates.banking.stages.approval'), description: t('templates.banking.stages.approvalDesc') },
+            { name: t('templates.banking.stages.usage'), description: t('templates.banking.stages.usageDesc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Identifierar behov', 'Jämför banker', 'Skickar ansökan', 'Väntar på svar', 'Aktiverar tjänst']
+              examples: [
+                t('templates.banking.actions.1'),
+                t('templates.banking.actions.2'),
+                t('templates.banking.actions.3'),
+                t('templates.banking.actions.4'),
+                t('templates.banking.actions.5')
+              ]
             },
             {
               name: 'Känslor',
@@ -194,32 +290,57 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Touchpoints',
-              examples: ['Webbsida', 'Bankkontor', 'App/Digital tjänst', 'Telefonsupport', 'Email/Brev']
+              examples: [
+                t('templates.banking.touchpoints.1'),
+                t('templates.banking.touchpoints.2'),
+                t('templates.banking.touchpoints.3'),
+                t('templates.banking.touchpoints.4'),
+                t('templates.banking.touchpoints.5')
+              ]
             },
             {
               name: 'Smärtpunkter',
-              examples: ['Komplexa villkor', 'Lång handläggningstid', 'Många dokument', 'Otydlig kommunikation', 'Tekniska problem']
+              examples: [
+                t('templates.banking.painPoints.1'),
+                t('templates.banking.painPoints.2'),
+                t('templates.banking.painPoints.3'),
+                t('templates.banking.painPoints.4'),
+                t('templates.banking.painPoints.5')
+              ]
             },
             {
               name: 'Möjligheter',
-              examples: ['Tydlig information', 'Snabb handläggning', 'Digital signering', 'Proaktiv uppdatering', 'Personlig rådgivning']
+              examples: [
+                t('templates.banking.opportunities.1'),
+                t('templates.banking.opportunities.2'),
+                t('templates.banking.opportunities.3'),
+                t('templates.banking.opportunities.4'),
+                t('templates.banking.opportunities.5')
+              ]
             }
           ]
         }
       case '6': // Healthcare
         return {
           stages: [
-            { name: 'Symptom', description: 'Märker hälsoproblem' },
-            { name: 'Bedömning', description: 'Bedömer allvarlighetsgrad' },
-            { name: 'Bokning', description: 'Bokar tid' },
-            { name: 'Besök', description: 'Träffar vårdpersonal' },
-            { name: 'Behandling', description: 'Får behandling' },
-            { name: 'Uppföljning', description: 'Följer upp resultat' }
+            { name: t('templates.healthcare.stages.symptoms'), description: t('templates.healthcare.stages.symptomsDesc') },
+            { name: t('templates.healthcare.stages.assessment'), description: t('templates.healthcare.stages.assessmentDesc') },
+            { name: t('templates.healthcare.stages.booking'), description: t('templates.healthcare.stages.bookingDesc') },
+            { name: t('templates.healthcare.stages.visit'), description: t('templates.healthcare.stages.visitDesc') },
+            { name: t('templates.healthcare.stages.treatment'), description: t('templates.healthcare.stages.treatmentDesc') },
+            { name: t('templates.healthcare.stages.followup'), description: t('templates.healthcare.stages.followupDesc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Märker symptom', 'Söker information', 'Kontaktar vård', 'Kommer till besök', 'Följer behandling', 'Bokar uppföljning']
+              examples: [
+                t('templates.healthcare.actions.1'),
+                t('templates.healthcare.actions.2'),
+                t('templates.healthcare.actions.3'),
+                t('templates.healthcare.actions.4'),
+                t('templates.healthcare.actions.5'),
+                t('templates.healthcare.actions.6')
+              ]
             },
             {
               name: 'Känslor',
@@ -227,33 +348,62 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Touchpoints',
-              examples: ['1177.se', 'Telefon/App', 'Vårdcentral', 'Läkare/Sköterska', 'Behandlingsrum', 'Uppföljningssystem']
+              examples: [
+                t('templates.healthcare.touchpoints.1'),
+                t('templates.healthcare.touchpoints.2'),
+                t('templates.healthcare.touchpoints.3'),
+                t('templates.healthcare.touchpoints.4'),
+                t('templates.healthcare.touchpoints.5'),
+                t('templates.healthcare.touchpoints.6')
+              ]
             },
             {
               name: 'Smärtpunkter',
-              examples: ['Svårt bedöma allvar', 'Långa väntetider', 'Komplicerad bokning', 'Otydlig information', 'Brist på uppföljning', 'Tekniska hinder']
+              examples: [
+                t('templates.healthcare.painPoints.1'),
+                t('templates.healthcare.painPoints.2'),
+                t('templates.healthcare.painPoints.3'),
+                t('templates.healthcare.painPoints.4'),
+                t('templates.healthcare.painPoints.5'),
+                t('templates.healthcare.painPoints.6')
+              ]
             },
             {
               name: 'Möjligheter',
-              examples: ['Tydlig självriskbedömning', 'Snabb tillgänglighet', 'Digital support', 'Empatisk kommunikation', 'Integrerad uppföljning', 'Proaktiv hälsovård']
+              examples: [
+                t('templates.healthcare.opportunities.1'),
+                t('templates.healthcare.opportunities.2'),
+                t('templates.healthcare.opportunities.3'),
+                t('templates.healthcare.opportunities.4'),
+                t('templates.healthcare.opportunities.5'),
+                t('templates.healthcare.opportunities.6')
+              ]
             }
           ]
         }
       case '7': // B2B Sales
         return {
           stages: [
-            { name: 'Prospektering', description: 'Identifiering av potentiella kunder' },
-            { name: 'Kvalificering', description: 'Bedömning av kundens behov' },
-            { name: 'Förslag', description: 'Presentation av lösning' },
-            { name: 'Förhandling', description: 'Pris och villkorsförhandling' },
-            { name: 'Beslut', description: 'Slutligt köpbeslut' },
-            { name: 'Implementering', description: 'Uppsättning av lösning' },
-            { name: 'Relation', description: 'Långsiktig kundrelation' }
+            { name: t('templates.b2bSales.stages.prospecting'), description: t('templates.b2bSales.stages.prospectingDesc') },
+            { name: t('templates.b2bSales.stages.qualification'), description: t('templates.b2bSales.stages.qualificationDesc') },
+            { name: t('templates.b2bSales.stages.proposal'), description: t('templates.b2bSales.stages.proposalDesc') },
+            { name: t('templates.b2bSales.stages.negotiation'), description: t('templates.b2bSales.stages.negotiationDesc') },
+            { name: t('templates.b2bSales.stages.decision'), description: t('templates.b2bSales.stages.decisionDesc') },
+            { name: t('templates.b2bSales.stages.implementation'), description: t('templates.b2bSales.stages.implementationDesc') },
+            { name: t('templates.b2bSales.stages.relationship'), description: t('templates.b2bSales.stages.relationshipDesc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Research prospects', 'Genomför möten', 'Skapar förslag', 'Förhandlar villkor', 'Väntar på beslut', 'Hjälper med uppsättning', 'Vårdar relation']
+              examples: [
+                t('templates.b2bSales.actions.1'),
+                t('templates.b2bSales.actions.2'),
+                t('templates.b2bSales.actions.3'),
+                t('templates.b2bSales.actions.4'),
+                t('templates.b2bSales.actions.5'),
+                t('templates.b2bSales.actions.6'),
+                t('templates.b2bSales.actions.7')
+              ]
             },
             {
               name: 'Känslor',
@@ -261,27 +411,49 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Touchpoints',
-              examples: ['LinkedIn, CRM', 'Videomöten', 'Presentationer', 'Kontrakt', 'Email, Telefon', 'Support team', 'Account management']
+              examples: [
+                t('templates.b2bSales.touchpoints.1'),
+                t('templates.b2bSales.touchpoints.2'),
+                t('templates.b2bSales.touchpoints.3'),
+                t('templates.b2bSales.touchpoints.4'),
+                t('templates.b2bSales.touchpoints.5'),
+                t('templates.b2bSales.touchpoints.6'),
+                t('templates.b2bSales.touchpoints.7')
+              ]
             },
             {
               name: 'Smärtpunkter',
-              examples: ['Svårt hitta rätt kontakt', 'Tidspress', 'Teknisk komplexitet', 'Budgetbegränsningar', 'Lång beslutsprocess', 'Integrationsproblem', 'Konkurrens']
+              examples: [
+                t('templates.b2bSales.painPoints.1'),
+                t('templates.b2bSales.painPoints.2'),
+                t('templates.b2bSales.painPoints.3'),
+                t('templates.b2bSales.painPoints.4'),
+                t('templates.b2bSales.painPoints.5'),
+                t('templates.b2bSales.painPoints.6'),
+                t('templates.b2bSales.painPoints.7')
+              ]
             }
           ]
         }
       case '8': // E-learning
         return {
           stages: [
-            { name: 'Upptäckt', description: 'Hittar utbildningen' },
-            { name: 'Registrering', description: 'Skapar konto och registrerar' },
-            { name: 'Lärande', description: 'Genomför kurser' },
-            { name: 'Bedömning', description: 'Tar prov och uppgifter' },
-            { name: 'Slutförande', description: 'Får certifikat' }
+            { name: t('templates.elearning.stages.discovery'), description: t('templates.elearning.stages.discoveryDesc') },
+            { name: t('templates.elearning.stages.registration'), description: t('templates.elearning.stages.registrationDesc') },
+            { name: t('templates.elearning.stages.learning'), description: t('templates.elearning.stages.learningDesc') },
+            { name: t('templates.elearning.stages.assessment'), description: t('templates.elearning.stages.assessmentDesc') },
+            { name: t('templates.elearning.stages.completion'), description: t('templates.elearning.stages.completionDesc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Söker utbildning', 'Skapar konto', 'Följer lektioner', 'Gör uppgifter', 'Laddar ner certifikat']
+              examples: [
+                t('templates.elearning.actions.1'),
+                t('templates.elearning.actions.2'),
+                t('templates.elearning.actions.3'),
+                t('templates.elearning.actions.4'),
+                t('templates.elearning.actions.5')
+              ]
             },
             {
               name: 'Känslor',
@@ -289,26 +461,43 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Touchpoints',
-              examples: ['Sökmotor', 'Registreringsform', 'LMS-plattform', 'Quiz-system', 'Certifikatportal']
+              examples: [
+                t('templates.elearning.touchpoints.1'),
+                t('templates.elearning.touchpoints.2'),
+                t('templates.elearning.touchpoints.3'),
+                t('templates.elearning.touchpoints.4'),
+                t('templates.elearning.touchpoints.5')
+              ]
             },
             {
               name: 'Smärtpunkter',
-              examples: ['För många alternativ', 'Komplicerad process', 'Svårt material', 'Tidsbrist', 'Tekniska problem']
+              examples: [
+                t('templates.elearning.painPoints.1'),
+                t('templates.elearning.painPoints.2'),
+                t('templates.elearning.painPoints.3'),
+                t('templates.elearning.painPoints.4'),
+                t('templates.elearning.painPoints.5')
+              ]
             }
           ]
         }
       case '9': // Mobile App Onboarding
         return {
           stages: [
-            { name: 'Nedladdning', description: 'Laddar ner appen' },
-            { name: 'Registrering', description: 'Skapar konto' },
-            { name: 'Introduktion', description: 'Genomgår onboarding' },
-            { name: 'Första användning', description: 'Använder appen första gången' }
+            { name: t('templates.mobileOnboarding.stages.download'), description: t('templates.mobileOnboarding.stages.downloadDesc') },
+            { name: t('templates.mobileOnboarding.stages.registration'), description: t('templates.mobileOnboarding.stages.registrationDesc') },
+            { name: t('templates.mobileOnboarding.stages.introduction'), description: t('templates.mobileOnboarding.stages.introductionDesc') },
+            { name: t('templates.mobileOnboarding.stages.firstUse'), description: t('templates.mobileOnboarding.stages.firstUseDesc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Laddar ner från store', 'Skapar profil', 'Går igenom tutorial', 'Utforskar funktioner']
+              examples: [
+                t('templates.mobileOnboarding.actions.1'),
+                t('templates.mobileOnboarding.actions.2'),
+                t('templates.mobileOnboarding.actions.3'),
+                t('templates.mobileOnboarding.actions.4')
+              ]
             },
             {
               name: 'Känslor',
@@ -316,28 +505,45 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Touchpoints',
-              examples: ['App Store, Reklam', 'Registreringsform', 'Tutorial, Tips', 'Huvudgränssnitt']
+              examples: [
+                t('templates.mobileOnboarding.touchpoints.1'),
+                t('templates.mobileOnboarding.touchpoints.2'),
+                t('templates.mobileOnboarding.touchpoints.3'),
+                t('templates.mobileOnboarding.touchpoints.4')
+              ]
             },
             {
               name: 'Smärtpunkter',
-              examples: ['Stor filstorlek', 'För många fält', 'Långt tutorial', 'Förvirrande navigation']
+              examples: [
+                t('templates.mobileOnboarding.painPoints.1'),
+                t('templates.mobileOnboarding.painPoints.2'),
+                t('templates.mobileOnboarding.painPoints.3'),
+                t('templates.mobileOnboarding.painPoints.4')
+              ]
             }
           ]
         }
       case '10': // Event Management
         return {
           stages: [
-            { name: 'Planering', description: 'Planerar att delta i event' },
-            { name: 'Anmälan', description: 'Anmäler sig till eventet' },
-            { name: 'Förberedelse', description: 'Förbereder inför eventet' },
-            { name: 'Ankomst', description: 'Kommer till eventplatsen' },
-            { name: 'Deltagande', description: 'Deltar aktivt i eventet' },
-            { name: 'Efterföljning', description: 'Följer upp efter eventet' }
+            { name: t('templates.eventManagement.stages.planning'), description: t('templates.eventManagement.stages.planningDesc') },
+            { name: t('templates.eventManagement.stages.registration'), description: t('templates.eventManagement.stages.registrationDesc') },
+            { name: t('templates.eventManagement.stages.preparation'), description: t('templates.eventManagement.stages.preparationDesc') },
+            { name: t('templates.eventManagement.stages.arrival'), description: t('templates.eventManagement.stages.arrivalDesc') },
+            { name: t('templates.eventManagement.stages.participation'), description: t('templates.eventManagement.stages.participationDesc') },
+            { name: t('templates.eventManagement.stages.followup'), description: t('templates.eventManagement.stages.followupDesc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Letar efter events', 'Anmäler sig online', 'Förbereder agenda', 'Checkar in', 'Deltar i sessioner', 'Nätverkar och följer upp']
+              examples: [
+                t('templates.eventManagement.actions.1'),
+                t('templates.eventManagement.actions.2'),
+                t('templates.eventManagement.actions.3'),
+                t('templates.eventManagement.actions.4'),
+                t('templates.eventManagement.actions.5'),
+                t('templates.eventManagement.actions.6')
+              ]
             },
             {
               name: 'Känslor',
@@ -345,27 +551,47 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Touchpoints',
-              examples: ['Webbsida, Sociala medier', 'Anmälningsformulär', 'Email, Eventapp', 'Reception, Badgear', 'Lokaler, Presentatörer', 'LinkedIn, Email']
+              examples: [
+                t('templates.eventManagement.touchpoints.1'),
+                t('templates.eventManagement.touchpoints.2'),
+                t('templates.eventManagement.touchpoints.3'),
+                t('templates.eventManagement.touchpoints.4'),
+                t('templates.eventManagement.touchpoints.5'),
+                t('templates.eventManagement.touchpoints.6')
+              ]
             },
             {
               name: 'Smärtpunkter',
-              examples: ['Svårt hitta relevant info', 'Komplicerad anmälan', 'Oklart schema', 'Långa köer', 'Dålig ljudkvalitet', 'Svårt hitta kontakter']
+              examples: [
+                t('templates.eventManagement.painPoints.1'),
+                t('templates.eventManagement.painPoints.2'),
+                t('templates.eventManagement.painPoints.3'),
+                t('templates.eventManagement.painPoints.4'),
+                t('templates.eventManagement.painPoints.5'),
+                t('templates.eventManagement.painPoints.6')
+              ]
             }
           ]
         }
       case '11': // Recruitment Process
         return {
           stages: [
-            { name: 'Upptäckt', description: 'Hittar jobbannonsen' },
-            { name: 'Ansökan', description: 'Skickar in ansökan' },
-            { name: 'Gallring', description: 'Första urval och screening' },
-            { name: 'Intervju', description: 'Intervjuprocessen' },
-            { name: 'Beslut', description: 'Väntar på och får besked' }
+            { name: t('templates.recruitment.stages.discovery'), description: t('templates.recruitment.stages.discoveryDesc') },
+            { name: t('templates.recruitment.stages.application'), description: t('templates.recruitment.stages.applicationDesc') },
+            { name: t('templates.recruitment.stages.screening'), description: t('templates.recruitment.stages.screeningDesc') },
+            { name: t('templates.recruitment.stages.interview'), description: t('templates.recruitment.stages.interviewDesc') },
+            { name: t('templates.recruitment.stages.decision'), description: t('templates.recruitment.stages.decisionDesc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Söker jobb online', 'Skickar CV och personligt brev', 'Väntar på svar', 'Deltar i intervjuer', 'Får besked om anställning']
+              examples: [
+                t('templates.recruitment.actions.1'),
+                t('templates.recruitment.actions.2'),
+                t('templates.recruitment.actions.3'),
+                t('templates.recruitment.actions.4'),
+                t('templates.recruitment.actions.5')
+              ]
             },
             {
               name: 'Känslor',
@@ -373,27 +599,45 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Touchpoints',
-              examples: ['LinkedIn, Platsbanken', 'Ansökningsportal', 'Telefon, Email', 'Teams, Kontor', 'Telefon, Email']
+              examples: [
+                t('templates.recruitment.touchpoints.1'),
+                t('templates.recruitment.touchpoints.2'),
+                t('templates.recruitment.touchpoints.3'),
+                t('templates.recruitment.touchpoints.4'),
+                t('templates.recruitment.touchpoints.5')
+              ]
             },
             {
               name: 'Smärtpunkter',
-              examples: ['Otydliga jobbeskrivningar', 'Långa ansökningsformulär', 'Långt väntetid', 'Tekniska problem', 'Ingen återkoppling']
+              examples: [
+                t('templates.recruitment.painPoints.1'),
+                t('templates.recruitment.painPoints.2'),
+                t('templates.recruitment.painPoints.3'),
+                t('templates.recruitment.painPoints.4'),
+                t('templates.recruitment.painPoints.5')
+              ]
             }
           ]
         }
       case '12': // Insurance Claim
         return {
           stages: [
-            { name: 'Incident', description: 'Skadan inträffar' },
-            { name: 'Anmälan', description: 'Anmäler skadan' },
-            { name: 'Dokumentation', description: 'Samlar in underlag' },
-            { name: 'Bedömning', description: 'Försäkringsbolaget bedömer' },
-            { name: 'Avslut', description: 'Ärendet avslutas' }
+            { name: t('templates.insurance.stages.incident'), description: t('templates.insurance.stages.incidentDesc') },
+            { name: t('templates.insurance.stages.reporting'), description: t('templates.insurance.stages.reportingDesc') },
+            { name: t('templates.insurance.stages.documentation'), description: t('templates.insurance.stages.documentationDesc') },
+            { name: t('templates.insurance.stages.assessment'), description: t('templates.insurance.stages.assessmentDesc') },
+            { name: t('templates.insurance.stages.closure'), description: t('templates.insurance.stages.closureDesc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Skadan uppstår', 'Ringer försäkringsbolag', 'Samlar bevis och bilder', 'Väntar på besked', 'Får ersättning eller avslag']
+              examples: [
+                t('templates.insurance.actions.1'),
+                t('templates.insurance.actions.2'),
+                t('templates.insurance.actions.3'),
+                t('templates.insurance.actions.4'),
+                t('templates.insurance.actions.5')
+              ]
             },
             {
               name: 'Känslor',
@@ -401,25 +645,41 @@ export function TemplatePreviewModal({
             },
             {
               name: 'Touchpoints',
-              examples: ['Olycksplatsen', 'Telefonsupport', 'App, Email', 'Besiktningsman', 'Brev, Bankutbetalning']
+              examples: [
+                t('templates.insurance.touchpoints.1'),
+                t('templates.insurance.touchpoints.2'),
+                t('templates.insurance.touchpoints.3'),
+                t('templates.insurance.touchpoints.4'),
+                t('templates.insurance.touchpoints.5')
+              ]
             },
             {
               name: 'Smärtpunkter',
-              examples: ['Chock och stress', 'Långa väntetider', 'Otydliga krav', 'Lång handläggningstid', 'Oklar kommunikation']
+              examples: [
+                t('templates.insurance.painPoints.1'),
+                t('templates.insurance.painPoints.2'),
+                t('templates.insurance.painPoints.3'),
+                t('templates.insurance.painPoints.4'),
+                t('templates.insurance.painPoints.5')
+              ]
             }
           ]
         }
       default:
         return {
           stages: [
-            { name: 'Fas 1', description: 'Första fasen' },
-            { name: 'Fas 2', description: 'Andra fasen' },
-            { name: 'Fas 3', description: 'Tredje fasen' }
+            { name: t('templates.default.stages.phase1'), description: t('templates.default.stages.phase1Desc') },
+            { name: t('templates.default.stages.phase2'), description: t('templates.default.stages.phase2Desc') },
+            { name: t('templates.default.stages.phase3'), description: t('templates.default.stages.phase3Desc') }
           ],
           categories: [
             {
               name: 'Åtgärder',
-              examples: ['Exempel 1', 'Exempel 2', 'Exempel 3']
+              examples: [
+                t('templates.default.actions.1'),
+                t('templates.default.actions.2'),
+                t('templates.default.actions.3')
+              ]
             }
           ]
         }
@@ -432,7 +692,7 @@ export function TemplatePreviewModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Förhandsgranska: ${template.name}`}
+      title={`${t('templates.preview.title')}: ${template.name}`}
       maxWidth="5xl"
     >
       <div className="space-y-6">
@@ -444,7 +704,7 @@ export function TemplatePreviewModal({
             <div className="flex items-center space-x-4 mt-3">
               <Badge variant="secondary">{template.industry}</Badge>
               <span className="text-sm text-gray-500">
-                {template.touchpoints} touchpoints • {template.stages} faser
+                {template.touchpoints} touchpoints • {template.stages} {t('templates.preview.stages')}
               </span>
             </div>
           </div>
@@ -457,7 +717,7 @@ export function TemplatePreviewModal({
             <thead>
               <tr className="bg-gray-50 border-b">
                 <th className="text-left p-3 text-sm font-medium text-gray-700 w-32">
-                  Kategorier
+                  {t('templates.preview.categories')}
                 </th>
                 {previewData.stages.map((stage, index) => (
                   <th key={index} className="text-left p-3 text-sm font-medium text-gray-700">
@@ -473,7 +733,7 @@ export function TemplatePreviewModal({
               {previewData.categories.map((category, categoryIndex) => (
                 <tr key={categoryIndex} className="border-b">
                   <td className="p-3 bg-gray-50 font-medium text-sm text-gray-700">
-                    {category.name}
+                    {getCategoryName(category.name)}
                   </td>
                   {category.examples.map((example, exampleIndex) => (
                     <td key={exampleIndex} className="p-3 text-sm text-gray-600">
@@ -499,7 +759,7 @@ export function TemplatePreviewModal({
         {/* Actions */}
         <div className="flex justify-end space-x-3 pt-4 border-t">
           <Button variant="outline" onClick={onClose}>
-            Stäng
+            {t('templates.preview.close')}
           </Button>
           <Button
             variant="primary"
@@ -509,7 +769,7 @@ export function TemplatePreviewModal({
             }}
           >
             <DownloadIcon className="mr-2 h-4 w-4" />
-            Använd denna mall
+            {t('templates.preview.useTemplate')}
           </Button>
         </div>
       </div>

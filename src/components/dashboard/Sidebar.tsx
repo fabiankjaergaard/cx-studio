@@ -79,39 +79,39 @@ function SidebarContent() {
   },
   {
     name: t('nav.insights'),
+    href: '/insights',
     icon: ClipboardIcon,
     tourId: 'insights',
     isExpandable: true,
     children: [
-      { name: 'Research Projects', href: '/research', icon: FolderIcon },
+      { name: t('nav.research'), href: '/research', icon: FolderIcon },
       {
-        name: 'Surveys',
+        name: t('nav.surveys'),
         href: '/insights/survey-builder',
         icon: WrenchIcon,
         isExpandable: true,
         children: [
-          { name: 'Overview', href: '/insights/survey-builder', icon: HomeIcon },
-          { name: 'Create', href: '/insights/survey-builder?tab=create', icon: PlusIcon },
-          { name: 'Analyze', href: '/insights/survey-builder?tab=analyze', icon: BarChart3Icon }
+          { name: t('nav.overview'), href: '/insights/survey-builder', icon: HomeIcon },
+          { name: t('nav.create'), href: '/insights/survey-builder?tab=create', icon: PlusIcon },
+          { name: t('nav.analyze'), href: '/insights/survey-builder?tab=analyze', icon: BarChart3Icon }
         ]
       },
       {
-        name: 'Interviews',
+        name: t('nav.interviews'),
         href: '/insights/interview-builder',
         icon: MicIcon,
         isExpandable: true,
         children: [
-          { name: 'Overview', href: '/insights/interview-builder', icon: HomeIcon },
-          { name: 'Create', href: '/insights/interview-builder?tab=create', icon: PlusIcon },
-          { name: 'Conduct', href: '/insights/interview-builder?tab=conduct', icon: PlayIcon },
-          { name: 'Analyze', href: '/insights/interview-builder?tab=analyze', icon: BarChart3Icon }
+          { name: t('nav.overview'), href: '/insights/interview-builder', icon: HomeIcon },
+          { name: t('nav.create'), href: '/insights/interview-builder?tab=create', icon: PlusIcon },
+          { name: t('nav.conduct'), href: '/insights/interview-builder?tab=conduct', icon: PlayIcon },
+          { name: t('nav.analyze'), href: '/insights/interview-builder?tab=analyze', icon: BarChart3Icon }
         ]
       },
       {
         name: t('nav.guides'),
         children: [
           { name: t('nav.gettingStarted'), href: '/insights/getting-started', icon: BookIcon },
-          { name: t('nav.bestPractices'), href: '/insights/best-practices', icon: BookOpenIcon },
           {
             name: t('nav.quantitativeMethods'),
             icon: BarChart3Icon,
@@ -135,8 +135,8 @@ function SidebarContent() {
     ]
   },
   { name: t('nav.glossary'), href: '/glossary', icon: BookOpenIcon, tourId: 'glossary' },
-  { name: 'Beta Tester', href: '/beta', icon: SparklesIcon, tourId: 'beta-tester' },
-  { name: 'Admin', href: '/admin', icon: ShieldCheckIcon, tourId: 'admin' },
+  { name: t('nav.betaTester'), href: '/beta', icon: SparklesIcon, tourId: 'beta-tester' },
+  { name: t('nav.admin'), href: '/admin', icon: ShieldCheckIcon, tourId: 'admin' },
   { name: t('nav.settings'), href: '/settings', icon: SettingsIcon, tourId: 'settings' },
 ]
   const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({})
@@ -191,29 +191,39 @@ function SidebarContent() {
 
       navigation.forEach((item) => {
         if (item.isExpandable && item.children) {
-          // Check if we're in this main section
-          const isInSection = item.children.some((category) => {
-            if (category.href) {
-              // Direct link category (like personas)
-              return pathname === category.href || pathname.startsWith(category.href + '?')
-            }
+          // Check if we're in this main section - either directly or through children
+          let isInSection = false
 
-            if (category.children) {
-              // Category with subcategories
-              return category.children.some((subItem) => {
-                if (subItem.href) {
-                  const isMatch = pathname === subItem.href || pathname.startsWith(subItem.href + '?')
-                  if (isMatch && subItem.isExpandable && subItem.children) {
-                    // Also expand the sub-item if it has children
-                    newExpandedSubItems[subItem.name] = true
+          // First check if we're directly on the main section page
+          if (item.href && (pathname === item.href || pathname.startsWith(item.href + '/'))) {
+            isInSection = true
+          }
+
+          // Then check if we're in any child section
+          if (!isInSection) {
+            isInSection = item.children.some((category) => {
+              if (category.href) {
+                // Direct link category (like personas)
+                return pathname === category.href || pathname.startsWith(category.href + '?')
+              }
+
+              if (category.children) {
+                // Category with subcategories
+                return category.children.some((subItem) => {
+                  if (subItem.href) {
+                    const isMatch = pathname === subItem.href || pathname.startsWith(subItem.href + '?')
+                    if (isMatch && subItem.isExpandable && subItem.children) {
+                      // Also expand the sub-item if it has children
+                      newExpandedSubItems[subItem.name] = true
+                    }
+                    return isMatch
                   }
-                  return isMatch
-                }
-                return false
-              })
-            }
-            return false
-          })
+                  return false
+                })
+              }
+              return false
+            })
+          }
 
           if (isInSection) {
             newExpandedSections[item.name] = true
@@ -225,10 +235,34 @@ function SidebarContent() {
                   if (subItem.href) {
                     return pathname === subItem.href || pathname.startsWith(subItem.href + '?')
                   }
+                  // Check if this subItem has children (deeper nesting)
+                  if (subItem.children) {
+                    return subItem.children.some((deepItem) => {
+                      if (deepItem.href) {
+                        return pathname === deepItem.href || pathname.startsWith(deepItem.href + '?')
+                      }
+                      return false
+                    })
+                  }
                   return false
                 })
                 if (isInCategory) {
                   newExpandedCategories[category.name] = true
+
+                  // Also expand subcategories if we're in one of their children
+                  category.children.forEach((subItem) => {
+                    if (subItem.children) {
+                      const isInSubCategory = subItem.children.some((deepItem) => {
+                        if (deepItem.href) {
+                          return pathname === deepItem.href || pathname.startsWith(deepItem.href + '?')
+                        }
+                        return false
+                      })
+                      if (isInSubCategory) {
+                        newExpandedCategories[subItem.name] = true
+                      }
+                    }
+                  })
                 }
               }
             })
@@ -279,7 +313,7 @@ function SidebarContent() {
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute top-1/2 -translate-y-1/2 -right-2 w-6 h-6 bg-white border-2 border-gray-300 rounded-full hover:border-gray-500 transition-all duration-200 shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100"
-        title={isCollapsed ? "Expand menu" : "Minimize menu"}
+        title={isCollapsed ? t('ui.expandMenu') : t('ui.minimizeMenu')}
         style={{ zIndex: 10 }}
       >
         {isCollapsed ? (
@@ -303,52 +337,93 @@ function SidebarContent() {
                   {/* Main expandable item */}
                   {item.href ? (
                     // If item has href, render as Link with expand button
-                    <div className="flex items-center w-full">
-                      <Link
-                        href={item.href}
-                        onMouseEnter={() => setHoveredSection(item.name)}
-                        onMouseLeave={() => setHoveredSection(null)}
-                        data-tour={item.tourId}
-                        className={cn(
-                          'flex items-center rounded-l-lg text-sm font-medium transition-colors flex-1',
-                          isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
-                          pathname === item.href || pathname.startsWith(item.href + '?')
-                            ? 'bg-slate-100 text-slate-700'
-                            : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                        )}
-                        title={isCollapsed ? item.name : undefined}
-                      >
-                        <item.icon
-                          className={cn(
-                            'h-5 w-5 transition-all duration-300 ease-out',
-                            isCollapsed ? 'mx-auto' : 'mr-3',
-                            pathname === item.href || pathname.startsWith(item.href + '?')
-                              ? 'text-slate-600 scale-110 rotate-12'
-                              : 'text-gray-500'
-                          )}
-                        />
-                        {!isCollapsed && <span className="text-left">{item.name}</span>}
-                      </Link>
-                      {!isCollapsed && (
+                    <div
+                      className="flex items-center w-full"
+                      onMouseEnter={() => setHoveredSection(item.name)}
+                      onMouseLeave={() => setHoveredSection(null)}
+                    >
+                      {item.name === t('nav.insights') ? (
                         <button
-                          onClick={(e) => {
-                            e.preventDefault()
-                            e.stopPropagation()
+                          onClick={() => {
+                            setShowInsightsPopup(true)
                             toggleSection(item.name)
                           }}
+                          data-tour={item.tourId}
                           className={cn(
-                            "px-3 py-2 text-gray-400 hover:text-gray-600 transition-colors rounded-r-lg",
+                            'flex items-center rounded-lg text-sm font-medium transition-colors w-full',
+                            isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
                             pathname === item.href || pathname.startsWith(item.href + '?')
-                              ? 'bg-slate-100 hover:bg-slate-200'
-                              : 'hover:bg-gray-50'
+                              ? 'bg-slate-100 text-slate-700'
+                              : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                           )}
+                          title={isCollapsed ? item.name : undefined}
                         >
-                          {isExpanded ? (
-                            <ChevronUpIcon className="h-4 w-4" />
-                          ) : (
-                            <ChevronDownIcon className="h-4 w-4" />
+                          <item.icon
+                            className={cn(
+                              'h-5 w-5 transition-all duration-300 ease-out',
+                              isCollapsed ? 'mx-auto' : 'mr-3',
+                              pathname === item.href || pathname.startsWith(item.href + '?')
+                                ? 'text-slate-600 scale-110 rotate-12'
+                                : 'text-gray-500'
+                            )}
+                          />
+                          {!isCollapsed && (
+                            <div className="flex items-center justify-between flex-1">
+                              <div className="flex items-center space-x-2">
+                                <span>{item.name}</span>
+                                <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
+                                  {t('ui.wip')}
+                                </span>
+                              </div>
+                              <div className="w-4 h-4 flex items-center justify-center">
+                                {isExpanded ? (
+                                  <ChevronUpIcon className={cn(
+                                    "h-4 w-4 text-gray-400 transition-opacity",
+                                    hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                                  )} />
+                                ) : (
+                                  <ChevronDownIcon className={cn(
+                                    "h-4 w-4 text-gray-400 transition-opacity",
+                                    hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                                  )} />
+                                )}
+                              </div>
+                            </div>
                           )}
                         </button>
+                      ) : (
+                        <Link
+                          href={item.href}
+                          data-tour={item.tourId}
+                          className={cn(
+                            'flex items-center rounded-l-lg text-sm font-medium transition-colors flex-1',
+                            isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
+                            pathname === item.href || pathname.startsWith(item.href + '?')
+                              ? 'bg-slate-100 text-slate-700'
+                              : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                          )}
+                          title={isCollapsed ? item.name : undefined}
+                        >
+                          <item.icon
+                            className={cn(
+                              'h-5 w-5 transition-all duration-300 ease-out',
+                              isCollapsed ? 'mx-auto' : 'mr-3',
+                              pathname === item.href || pathname.startsWith(item.href + '?')
+                                ? 'text-slate-600 scale-110 rotate-12'
+                                : 'text-gray-500'
+                            )}
+                          />
+                          {!isCollapsed && (
+                            <div className="flex items-center justify-between flex-1">
+                              <span>{item.name}</span>
+                              {item.name === t('nav.insights') && (
+                                <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
+                                  {t('ui.wip')}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </Link>
                       )}
                     </div>
                   ) : (
@@ -385,7 +460,7 @@ function SidebarContent() {
                           <div className="flex items-center justify-end space-x-2">
                             {item.name === t('nav.insights') && (
                               <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
-                                WIP
+                                {t('ui.wip')}
                               </span>
                             )}
                             <div className="w-4 h-4 flex items-center justify-center">
@@ -439,7 +514,7 @@ function SidebarContent() {
                         }
 
                         // Special handling for Research Projects - render as direct link
-                        if (category.name === 'Research Projects' && category.href) {
+                        if (category.name === t('nav.research') && category.href) {
                           const isSubActive = pathname === category.href || pathname.startsWith(category.href + '?')
                           return (
                             <Link
@@ -497,14 +572,14 @@ function SidebarContent() {
                                   const isSubActive = (() => {
                                     const currentTab = searchParams.get('tab')
 
-                                    if (subItem.href.includes('?tab=')) {
+                                    if (subItem.href && subItem.href.includes('?tab=')) {
                                       // For tab-based URLs, match the tab parameter
                                       const itemTab = subItem.href.split('?tab=')[1]
                                       const baseUrl = subItem.href.split('?')[0]
                                       return pathname === baseUrl && currentTab === itemTab
                                     } else {
                                       // For base URLs, match only if no tab parameter is present or tab is null
-                                      return pathname === subItem.href && (!currentTab || currentTab === '')
+                                      return subItem.href && pathname === subItem.href && (!currentTab || currentTab === '')
                                     }
                                   })()
 
@@ -717,7 +792,7 @@ function SidebarContent() {
                         <span>{item.name}</span>
                         {item.name === t('nav.analytics') && (
                           <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
-                            Coming Soon
+                            {t('ui.comingSoon')}
                           </span>
                         )}
                       </div>
@@ -844,15 +919,14 @@ function SidebarContent() {
                 WIP
               </span>
             </div>
-            <p className="text-lg text-gray-600">Work in Progress</p>
+            <p className="text-lg text-gray-600">{t('ui.workInProgress')}</p>
           </div>
 
           <div className="space-y-6 max-w-2xl mx-auto">
             <div className="text-center space-y-4">
-              <h4 className="text-lg font-semibold text-gray-900">This section is under active development!</h4>
+              <h4 className="text-lg font-semibold text-gray-900">{t('ui.developmentTitle')}</h4>
               <p className="text-gray-700 leading-relaxed">
-                The Insights section is currently being built. While some features may be missing or not work as expected,
-                you're encouraged to explore and test around. Your feedback helps improve the experience.
+                {t('ui.developmentDescription')}
               </p>
             </div>
 
@@ -860,12 +934,12 @@ function SidebarContent() {
               <div className="flex items-start space-x-3">
                 <LightbulbIcon className="h-6 w-6 text-gray-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h5 className="font-semibold text-gray-900 mb-2">What you can expect:</h5>
+                  <h5 className="font-semibold text-gray-900 mb-2">{t('ui.expectationsTitle')}</h5>
                   <ul className="text-gray-700 text-sm space-y-1">
-                    <li>• Some features may be incomplete or in testing</li>
-                    <li>• Data and functionality might change during development</li>
-                    <li>• Your exploration and feedback helps build better features</li>
-                    <li>• Most functionality is still being built and refined</li>
+                    <li>{t('ui.expectation1')}</li>
+                    <li>{t('ui.expectation2')}</li>
+                    <li>{t('ui.expectation3')}</li>
+                    <li>{t('ui.expectation4')}</li>
                   </ul>
                 </div>
               </div>
@@ -878,17 +952,20 @@ function SidebarContent() {
               onClick={() => setShowInsightsPopup(false)}
               size="lg"
             >
-              Not now
+              {t('ui.notNow')}
             </Button>
             <Button
               variant="primary"
               onClick={() => {
                 setShowInsightsPopup(false)
-                toggleSection(t('nav.insights'))
+                setExpandedSections(prev => ({
+                  ...prev,
+                  [t('nav.insights')]: true
+                }))
               }}
               size="lg"
             >
-              Explore anyway
+              {t('ui.exploreAnyway')}
             </Button>
           </div>
         </div>

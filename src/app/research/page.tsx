@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Header } from '@/components/dashboard/Header'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
@@ -65,6 +66,7 @@ interface ResearchItem {
 }
 
 export default function ResearchPage() {
+  const { t } = useLanguage()
   const [folders, setFolders] = useState<ResearchFolder[]>([])
 
   const [researchItems, setResearchItems] = useState<ResearchItem[]>([])
@@ -85,7 +87,7 @@ export default function ResearchPage() {
   const researchTypes = [
     {
       type: 'interview' as const,
-      name: 'Intervju',
+      name: t('research.types.interview'),
       icon: MicIcon,
       color: 'text-gray-600',
       bg: 'bg-gray-50',
@@ -93,7 +95,7 @@ export default function ResearchPage() {
     },
     {
       type: 'survey' as const,
-      name: 'Enkät',
+      name: t('research.types.survey'),
       icon: ClipboardListIcon,
       color: 'text-gray-600',
       bg: 'bg-gray-50',
@@ -101,7 +103,7 @@ export default function ResearchPage() {
     },
     {
       type: 'focusgroup' as const,
-      name: 'Fokusgrupp',
+      name: t('research.types.focusgroup'),
       icon: UsersIcon,
       color: 'text-gray-600',
       bg: 'bg-gray-50',
@@ -109,7 +111,7 @@ export default function ResearchPage() {
     },
     {
       type: 'usability' as const,
-      name: 'Användbarhet',
+      name: t('research.types.usability'),
       icon: Target,
       color: 'text-gray-600',
       bg: 'bg-gray-50',
@@ -177,7 +179,7 @@ export default function ResearchPage() {
   }
 
   const handleDeleteProject = (projectId: string) => {
-    if (confirm('Är du säker på att du vill ta bort detta projekt? Alla tillhörande intervjuer kommer att bli projektlösa.')) {
+    if (confirm(t('research.deleteConfirmation'))) {
       const { deleteResearchProject } = require('@/services/researchProjectStorage')
       deleteResearchProject(projectId)
       setFolders(prev => prev.filter(folder => folder.id !== projectId))
@@ -213,8 +215,8 @@ export default function ResearchPage() {
     return (
       <div className="h-full flex flex-col">
         <Header
-          title={folder?.name || 'Projekt'}
-          description={folder?.description || 'Visa forskning i detta projekt'}
+          title={folder?.name || t('research.pageTitle')}
+          description={folder?.description || t('research.searchResearch')}
         />
 
         <div className="flex-1 p-8 overflow-auto bg-gray-50">
@@ -226,7 +228,7 @@ export default function ResearchPage() {
                 onClick={() => setSelectedFolder(null)}
                 className="hover:bg-gray-100"
               >
-                ← Tillbaka till projekt
+                ← {t('research.backToProjects')}
               </Button>
 
               <div className="flex items-center space-x-2">
@@ -234,7 +236,7 @@ export default function ResearchPage() {
                   <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <input
                     type="text"
-                    placeholder="Sök forskning..."
+                    placeholder={t('research.searchResearch')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent w-64"
@@ -267,14 +269,14 @@ export default function ResearchPage() {
               <div className="flex items-center justify-center min-h-[calc(100vh-300px)]">
                 <div className="text-center">
                   <FileIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Ingen forskning i detta projekt</h3>
-                  <p className="text-gray-600 mb-6">Börja genom att skapa ny forskning eller flytta befintlig hit</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t('research.noResearchInProject')}</h3>
+                  <p className="text-gray-600 mb-6">{t('research.startByCreating')}</p>
                   <div className="flex justify-center space-x-3">
                     {researchTypes.slice(0, 2).map((type) => (
                       <Link key={type.type} href={type.href}>
                         <Button variant="primary">
                           <type.icon className="mr-2 h-4 w-4" />
-                          Ny {type.name}
+                          {t(`research.types.new${type.type.charAt(0).toUpperCase() + type.type.slice(1)}`)}
                         </Button>
                       </Link>
                     ))}
@@ -314,13 +316,13 @@ export default function ResearchPage() {
                           {item.duration && (
                             <div className="flex items-center">
                               <ClockIcon className="h-3 w-3 mr-1" />
-                              {Math.floor(item.duration / 60)} minuter
+                              {Math.floor(item.duration / 60)} {t('research.minutes')}
                             </div>
                           )}
                           {item.responses && (
                             <div className="flex items-center">
                               <UserIcon className="h-3 w-3 mr-1" />
-                              {item.responses} svar
+                              {item.responses} {t('research.responses')}
                             </div>
                           )}
                         </div>
@@ -328,7 +330,7 @@ export default function ResearchPage() {
                         <div className="flex space-x-2 pt-4 border-t border-gray-100">
                           <Button variant="primary" size="sm" className="flex-1">
                             <EyeIcon className="h-3 w-3 mr-1" />
-                            Visa
+                            {t('research.view')}
                           </Button>
                           <Button variant="outline" size="sm">
                             <MessageCircleIcon className="h-3 w-3" />
@@ -349,8 +351,8 @@ export default function ResearchPage() {
   return (
     <div className="h-full flex flex-col">
       <Header
-        title="Research Projects"
-        description="Organisera och hantera alla dina forskningsprojekt på ett ställe"
+        title={t('research.pageTitle')}
+        description={t('research.pageDescription')}
       />
 
       <div className="flex-1 p-8 overflow-auto bg-gray-50">
@@ -362,7 +364,7 @@ export default function ResearchPage() {
                 <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <input
                   type="text"
-                  placeholder="Sök projekt..."
+                  placeholder={t('research.searchProjects')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent w-64"
@@ -374,7 +376,7 @@ export default function ResearchPage() {
                 onClick={() => setIsNewFolderModalOpen(true)}
               >
                 <FolderPlusIcon className="mr-2 h-4 w-4" />
-                Nytt projekt
+                {t('research.newProject')}
               </Button>
             </div>
           )}
@@ -385,17 +387,17 @@ export default function ResearchPage() {
               <div className="text-center">
                 <FolderIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  Skapa ditt första projekt
+                  {t('research.createFirstProject')}
                 </h3>
                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  Organisera din användarforskning i projekt för bättre struktur och översikt
+                  {t('research.organizeResearch')}
                 </p>
                 <Button
                   variant="primary"
                   onClick={() => setIsNewFolderModalOpen(true)}
                 >
                   <FolderPlusIcon className="mr-2 h-4 w-4" />
-                  Skapa projekt
+                  {t('research.createProject')}
                 </Button>
               </div>
             </div>
@@ -418,7 +420,7 @@ export default function ResearchPage() {
                             {folder.name}
                           </h3>
                           <p className="text-sm text-gray-600 mt-1">
-                            {folder.itemCount} objekt
+                            {folder.itemCount} {t('research.items')}
                           </p>
                         </div>
                       </div>
@@ -447,7 +449,7 @@ export default function ResearchPage() {
                                 className="w-full flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                               >
                                 <TrashIcon className="h-4 w-4 mr-2" />
-                                Ta bort projekt
+                                {t('research.deleteProject')}
                               </button>
                             </div>
                           </div>
@@ -477,8 +479,8 @@ export default function ResearchPage() {
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-gray-500">
-                      <span>Senast ändrad {folder.lastActivity}</span>
-                      <span>Skapad {folder.createdAt}</span>
+                      <span>{t('research.lastModified')} {folder.lastActivity}</span>
+                      <span>{t('research.created')} {folder.createdAt}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -495,10 +497,10 @@ export default function ResearchPage() {
                       <FolderPlusIcon className="w-8 h-8 text-gray-400 group-hover:text-slate-600 transition-colors duration-200" />
                     </div>
                     <h3 className="text-lg font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">
-                      Nytt projekt
+                      {t('research.newProjectCard')}
                     </h3>
                     <p className="text-sm text-gray-400 group-hover:text-slate-600 transition-colors duration-200">
-                      Skapa ett nytt forskningsprojekt
+                      {t('research.createNewResearchProject')}
                     </p>
                   </div>
                 </CardContent>
@@ -513,11 +515,11 @@ export default function ResearchPage() {
       <Modal
         isOpen={isNewFolderModalOpen}
         onClose={() => setIsNewFolderModalOpen(false)}
-        title="Skapa nytt projekt"
+        title={t('research.createNewProject')}
       >
         <div className="space-y-6">
           <Input
-            label="Projektnamn"
+            label={t('research.projectName')}
             value={newFolderName}
             onChange={(e) => setNewFolderName(e.target.value)}
             placeholder="T.ex. Onboarding Research"
@@ -526,12 +528,12 @@ export default function ResearchPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Beskrivning
+              {t('research.description')}
             </label>
             <textarea
               value={newFolderDescription}
               onChange={(e) => setNewFolderDescription(e.target.value)}
-              placeholder="Beskriv vad detta projekt kommer innehålla..."
+              placeholder={t('research.descriptionPlaceholder')}
               className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white text-gray-900 placeholder-gray-500"
               rows={3}
             />
@@ -547,14 +549,14 @@ export default function ResearchPage() {
                 setNewFolderDescription('')
               }}
             >
-              Avbryt
+              {t('research.cancel')}
             </Button>
             <Button
               variant="primary"
               onClick={handleCreateFolder}
               disabled={!newFolderName.trim()}
             >
-              Skapa projekt
+              {t('research.createProject')}
             </Button>
           </div>
         </div>

@@ -48,6 +48,7 @@ import { RowEditor } from '@/components/journey-map/RowEditor'
 import { JourneyMapOnboarding } from '@/components/onboarding/JourneyMapOnboarding'
 import { DragDropProvider } from '@/components/journey/DragDropProvider'
 import { RowTypePalette } from '@/components/journey-map/RowTypePalette'
+import { useLanguage } from '@/contexts/LanguageContext'
 import { RowInsertionZone } from '@/components/journey-map/RowInsertionZone'
 import { InlineEdit } from '@/components/ui/InlineEdit'
 import { Toast } from '@/components/ui/Toast'
@@ -59,27 +60,8 @@ interface Persona {
   description: string
 }
 
-// Sample personas (in a real app, this would come from the personas API)
-const samplePersonas: Persona[] = [
-  {
-    id: '1',
-    name: 'Anna Andersson',
-    avatar: 'A',
-    description: 'Produktchef, 32 år, Stockholm'
-  },
-  {
-    id: '2',
-    name: 'Erik Nilsson',
-    avatar: 'E',
-    description: 'Freelance Designer, 28 år, Göteborg'
-  },
-  {
-    id: '3',
-    name: 'Maria Johansson',
-    avatar: 'M',
-    description: 'Verksamhetschef, 45 år, Malmö'
-  }
-]
+// Personas will be loaded from the personas API/state
+const samplePersonas: Persona[] = []
 
 // Function to create journey map from template
 const createJourneyMapFromTemplate = (templateId: string, templateName: string, mapId?: string): JourneyMapData => {
@@ -1088,6 +1070,7 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
 }
 
 export default function JourneyMapBuilderPage() {
+  const { t } = useLanguage()
   const params = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -2629,8 +2612,8 @@ export default function JourneyMapBuilderPage() {
                         <div className="flex items-center space-x-3">
                           <UserIcon className="h-8 w-8 text-gray-400" />
                           <div>
-                            <h3 className="font-medium text-gray-900">Ingen persona vald</h3>
-                            <p className="text-sm text-gray-500">Välj en persona för att personalisera journey map</p>
+                            <h3 className="font-medium text-gray-900">{t('journeyMap.persona.noPersonaSelected')}</h3>
+                            <p className="text-sm text-gray-500">{t('journeyMap.persona.choosePersonaDescription')}</p>
                           </div>
                         </div>
                       )}
@@ -2641,7 +2624,7 @@ export default function JourneyMapBuilderPage() {
                       onClick={() => setIsPersonaModalOpen(true)}
                     >
                       <EditIcon className="h-4 w-4 mr-1" />
-                      {journeyMap.persona ? 'Byt persona' : 'Välj persona'}
+                      {journeyMap.persona ? t('journeyMap.persona.changePersona') : t('journeyMap.persona.choosePersona')}
                     </Button>
                   </div>
                 </CardContent>
@@ -3219,39 +3202,50 @@ export default function JourneyMapBuilderPage() {
       <Modal
         isOpen={isPersonaModalOpen}
         onClose={() => setIsPersonaModalOpen(false)}
-        title={showTooltips ? "Välj persona" : undefined}
+        title={showTooltips ? t('journeyMap.persona.selectPersonaModalTitle') : undefined}
       >
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            Välj en persona som representerar huvudanvändaren för denna journey map.
-          </p>
+          {samplePersonas.length > 0 && (
+            <p className="text-sm text-gray-600">
+              {t('journeyMap.persona.selectPersonaModalDescription')}
+            </p>
+          )}
           <div className="space-y-2">
-            {samplePersonas.map((persona) => (
-              <button
-                key={persona.id}
-                onClick={() => handleSelectPersona(persona)}
-                className="w-full p-3 text-left border border-gray-200 rounded-lg hover:border-slate-400 hover:bg-slate-50 transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-medium">
-                    {persona.avatar}
+            {samplePersonas.length > 0 ? (
+              samplePersonas.map((persona) => (
+                <button
+                  key={persona.id}
+                  onClick={() => handleSelectPersona(persona)}
+                  className="w-full p-3 text-left border border-gray-200 rounded-lg hover:border-slate-400 hover:bg-slate-50 transition-colors"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-medium">
+                      {persona.avatar}
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900">{persona.name}</h4>
+                      <p className="text-sm text-gray-600">{persona.description}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">{persona.name}</h4>
-                    <p className="text-sm text-gray-600">{persona.description}</p>
-                  </div>
-                </div>
-              </button>
-            ))}
+                </button>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <UserIcon className="mx-auto h-12 w-12 text-gray-300 mb-4" />
+                <p className="text-sm text-gray-500 mb-4">
+                  {t('journeyMap.persona.noPersonasAvailable')}
+                </p>
+              </div>
+            )}
           </div>
           <div className="flex justify-end space-x-2 pt-4 border-t">
             <Button variant="outline" onClick={() => setIsPersonaModalOpen(false)}>
-              Avbryt
+              {t('journeyMap.persona.cancel')}
             </Button>
             <Link href="/personas">
               <Button variant="primary">
                 <PlusIcon className="mr-2 h-4 w-4" />
-                Skapa ny persona
+                {t('journeyMap.persona.createNewPersona')}
               </Button>
             </Link>
           </div>
