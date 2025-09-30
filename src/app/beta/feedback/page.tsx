@@ -183,28 +183,6 @@ export default function BetaFeedbackPage() {
             </CardContent>
           </Card>
 
-          {/* Recent Updates */}
-          <Card className="mt-6 border-0 bg-green-50 rounded-xl">
-            <CardContent className="p-6">
-              <h3 className="font-semibold text-green-900 mb-3">
-                ✨ Senaste uppdateringar baserat på er feedback
-              </h3>
-              <div className="space-y-3 text-sm">
-                <div className="bg-white/60 p-3 rounded-lg">
-                  <div className="font-medium text-green-800">📱 Förbättrad mobilupplevelse</div>
-                  <div className="text-green-700 text-xs mt-1">Tack till Anna, Erik och 5 andra som rapporterade detta</div>
-                </div>
-                <div className="bg-white/60 p-3 rounded-lg">
-                  <div className="font-medium text-green-800">⚡ Snabbare laddningstider</div>
-                  <div className="text-green-700 text-xs mt-1">Baserat på prestanda-feedback från 12 beta-testare</div>
-                </div>
-                <div className="bg-white/60 p-3 rounded-lg">
-                  <div className="font-medium text-green-800">🎨 Nya hover-effekter</div>
-                  <div className="text-green-700 text-xs mt-1">Som Maria föreslog för bättre interaktivitet</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Info Card */}
           <Card className="mt-6 border-0 bg-blue-50 rounded-xl">
