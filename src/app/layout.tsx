@@ -12,8 +12,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "CX Studio - Customer Experience Tools",
-  description: "Professional customer experience tools for creating journey maps and improving customer experiences",
+  title: "Kustra - Customer Experience Platform",
+  description: "Professionell CX-plattform för att skapa customer journey maps och förbättra kundupplevelser",
   icons: {
     icon: '/favicon.ico',
     apple: '/icon-192x192.png',
@@ -21,6 +21,16 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   themeColor: '#1e293b',
   viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
+  openGraph: {
+    title: "Kustra - Customer Experience Platform",
+    description: "Professionell CX-plattform för att skapa customer journey maps och förbättra kundupplevelser",
+    siteName: "Kustra",
+    type: "website",
+  },
+  twitter: {
+    title: "Kustra - Customer Experience Platform",
+    description: "Professionell CX-plattform för att skapa customer journey maps och förbättra kundupplevelser",
+  },
 };
 
 export default function RootLayout({

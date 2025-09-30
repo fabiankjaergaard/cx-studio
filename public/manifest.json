@@ -1,7 +1,7 @@
 {
-  "name": "Nava CX Studio",
-  "short_name": "Nava",
-  "description": "Professional customer experience tools for creating journey maps and improving customer experiences",
+  "name": "Kustra - Customer Experience Platform",
+  "short_name": "Kustra",
+  "description": "Professionell CX-plattform för att skapa customer journey maps och förbättra kundupplevelser",
   "theme_color": "#1e293b",
   "background_color": "#f8fafc",
   "display": "standalone",
