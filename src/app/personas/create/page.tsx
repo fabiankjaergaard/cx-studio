@@ -309,9 +309,9 @@ function CreatePersonaContent() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Goals */}
             <Card className="border-0 bg-white shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-              <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
-                <CardTitle className="text-lg flex items-center text-green-800">
-                  <div className="w-6 h-6 bg-green-600 rounded-lg flex items-center justify-center mr-2">
+              <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50">
+                <CardTitle className="text-lg flex items-center text-slate-800">
+                  <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
                     <span className="text-white text-xs">✓</span>
                   </div>
                   Mål & Behov
@@ -325,7 +325,7 @@ function CreatePersonaContent() {
                         value={goal}
                         onChange={(e) => updateListItem('goals', index, e.target.value)}
                         placeholder={`Mål ${index + 1}`}
-                        className="flex-1 transition-all duration-300 focus:scale-[1.02] group-hover:border-green-400"
+                        className="flex-1 transition-all duration-300 focus:scale-[1.02] group-hover:border-slate-400"
                       />
                       {(persona.goals || []).length > 1 && (
                         <Button
@@ -343,7 +343,7 @@ function CreatePersonaContent() {
                     variant="outline"
                     size="sm"
                     onClick={() => addListItem('goals')}
-                    className="w-full border-dashed hover:border-green-400 hover:bg-green-50 hover:text-green-700 transition-all duration-300 hover:scale-105"
+                    className="w-full border-dashed hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-all duration-300 hover:scale-105"
                   >
                     <PlusIcon className="h-3 w-3 mr-1" />
                     Lägg till mål
@@ -354,9 +354,9 @@ function CreatePersonaContent() {
 
             {/* Pain Points */}
             <Card className="border-0 bg-white shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-              <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50">
-                <CardTitle className="text-lg flex items-center text-orange-800">
-                  <div className="w-6 h-6 bg-orange-600 rounded-lg flex items-center justify-center mr-2">
+              <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50">
+                <CardTitle className="text-lg flex items-center text-slate-800">
+                  <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
                     <span className="text-white text-xs">!</span>
                   </div>
                   Utmaningar & Smärtpunkter
@@ -370,7 +370,7 @@ function CreatePersonaContent() {
                         value={pain}
                         onChange={(e) => updateListItem('painPoints', index, e.target.value)}
                         placeholder={`Utmaning ${index + 1}`}
-                        className="flex-1 transition-all duration-300 focus:scale-[1.02] group-hover:border-orange-400"
+                        className="flex-1 transition-all duration-300 focus:scale-[1.02] group-hover:border-slate-400"
                       />
                       {(persona.painPoints || []).length > 1 && (
                         <Button
@@ -388,7 +388,7 @@ function CreatePersonaContent() {
                     variant="outline"
                     size="sm"
                     onClick={() => addListItem('painPoints')}
-                    className="w-full border-dashed hover:border-orange-400 hover:bg-orange-50 hover:text-orange-700 transition-all duration-300 hover:scale-105"
+                    className="w-full border-dashed hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-all duration-300 hover:scale-105"
                   >
                     <PlusIcon className="h-3 w-3 mr-1" />
                     Lägg till utmaning
@@ -400,9 +400,9 @@ function CreatePersonaContent() {
 
           {/* Demographics */}
           <Card className="border-0 bg-white shadow-sm hover:shadow-md transition-all duration-300">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
-              <CardTitle className="text-lg flex items-center text-blue-800">
-                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center mr-2">
+            <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50">
+              <CardTitle className="text-lg flex items-center text-slate-800">
+                <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
                   <span className="text-white text-xs">i</span>
                 </div>
                 Demografisk information
@@ -416,7 +416,7 @@ function CreatePersonaContent() {
                     value={persona.demographics?.income || ''}
                     onChange={(e) => updateDemographicField('income', e.target.value)}
                     placeholder="45 000 - 60 000 kr/mån"
-                    className="transition-all duration-300 focus:scale-[1.02] group-hover:border-blue-400"
+                    className="transition-all duration-300 focus:scale-[1.02] group-hover:border-slate-400"
                   />
                 </div>
                 <div className="group">
@@ -425,7 +425,7 @@ function CreatePersonaContent() {
                     value={persona.demographics?.education || ''}
                     onChange={(e) => updateDemographicField('education', e.target.value)}
                     placeholder="Högskola/Universitet"
-                    className="transition-all duration-300 focus:scale-[1.02] group-hover:border-blue-400"
+                    className="transition-all duration-300 focus:scale-[1.02] group-hover:border-slate-400"
                   />
                 </div>
                 <div className="group">
@@ -434,7 +434,7 @@ function CreatePersonaContent() {
                     value={persona.demographics?.family || ''}
                     onChange={(e) => updateDemographicField('family', e.target.value)}
                     placeholder="Gift, 2 barn"
-                    className="transition-all duration-300 focus:scale-[1.02] group-hover:border-blue-400"
+                    className="transition-all duration-300 focus:scale-[1.02] group-hover:border-slate-400"
                   />
                 </div>
               </div>
@@ -444,9 +444,9 @@ function CreatePersonaContent() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Behaviors */}
             <Card className="border-0 bg-white shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-              <CardHeader className="bg-gradient-to-r from-purple-50 to-violet-50">
-                <CardTitle className="text-lg flex items-center text-purple-800">
-                  <div className="w-6 h-6 bg-purple-600 rounded-lg flex items-center justify-center mr-2">
+              <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50">
+                <CardTitle className="text-lg flex items-center text-slate-800">
+                  <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
                     <span className="text-white text-xs">→</span>
                   </div>
                   Beteenden
@@ -460,7 +460,7 @@ function CreatePersonaContent() {
                         value={behavior}
                         onChange={(e) => updateListItem('behaviors', index, e.target.value)}
                         placeholder={`Beteende ${index + 1}`}
-                        className="flex-1 transition-all duration-300 focus:scale-[1.02] group-hover:border-purple-400"
+                        className="flex-1 transition-all duration-300 focus:scale-[1.02] group-hover:border-slate-400"
                       />
                       {(persona.behaviors || []).length > 1 && (
                         <Button
@@ -478,7 +478,7 @@ function CreatePersonaContent() {
                     variant="outline"
                     size="sm"
                     onClick={() => addListItem('behaviors')}
-                    className="w-full border-dashed hover:border-purple-400 hover:bg-purple-50 hover:text-purple-700 transition-all duration-300 hover:scale-105"
+                    className="w-full border-dashed hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-all duration-300 hover:scale-105"
                   >
                     <PlusIcon className="h-3 w-3 mr-1" />
                     Lägg till beteende
@@ -489,9 +489,9 @@ function CreatePersonaContent() {
 
             {/* Motivations */}
             <Card className="border-0 bg-white shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-              <CardHeader className="bg-gradient-to-r from-teal-50 to-cyan-50">
-                <CardTitle className="text-lg flex items-center text-teal-800">
-                  <div className="w-6 h-6 bg-teal-600 rounded-lg flex items-center justify-center mr-2">
+              <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50">
+                <CardTitle className="text-lg flex items-center text-slate-800">
+                  <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
                     <SparklesIcon className="h-3 w-3 text-white" />
                   </div>
                   Motivationer
@@ -505,7 +505,7 @@ function CreatePersonaContent() {
                         value={motivation}
                         onChange={(e) => updateListItem('motivations', index, e.target.value)}
                         placeholder={`Motivation ${index + 1}`}
-                        className="flex-1 transition-all duration-300 focus:scale-[1.02] group-hover:border-teal-400"
+                        className="flex-1 transition-all duration-300 focus:scale-[1.02] group-hover:border-slate-400"
                       />
                       {(persona.motivations || []).length > 1 && (
                         <Button
@@ -523,7 +523,7 @@ function CreatePersonaContent() {
                     variant="outline"
                     size="sm"
                     onClick={() => addListItem('motivations')}
-                    className="w-full border-dashed hover:border-teal-400 hover:bg-teal-50 hover:text-teal-700 transition-all duration-300 hover:scale-105"
+                    className="w-full border-dashed hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700 transition-all duration-300 hover:scale-105"
                   >
                     <PlusIcon className="h-3 w-3 mr-1" />
                     Lägg till motivation
