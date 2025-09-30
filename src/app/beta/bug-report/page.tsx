@@ -22,43 +22,48 @@ export default function BugReportPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Get beta tester name from localStorage
-    const betaTesterName = typeof window !== 'undefined'
-      ? localStorage.getItem('cx-studio-beta-tester-name')
-      : null
+    try {
+      // Get beta tester name from localStorage
+      const betaTesterName = typeof window !== 'undefined'
+        ? localStorage.getItem('cx-studio-beta-tester-name')
+        : null
 
-    // Save bug report to Supabase
-    await feedbackStorage.addFeedback({
-      type: 'bug-report',
-      data: {
-        title,
-        description,
-        steps,
-        expected,
-        actual,
-        priority: severity,
-        category: browser
-      },
-      userInfo: {
-        isBetaTester: true,
-        userId: user?.email || 'anonymous',
-        userName: betaTesterName || undefined
-      }
-    })
+      // Save bug report to Supabase
+      await feedbackStorage.addFeedback({
+        type: 'bug-report',
+        data: {
+          title,
+          description,
+          steps,
+          expected,
+          actual,
+          priority: severity,
+          category: browser
+        },
+        userInfo: {
+          isBetaTester: true,
+          userId: user?.email || 'anonymous',
+          userName: betaTesterName || undefined
+        }
+      })
 
-    setSubmitted(true)
+      setSubmitted(true)
 
-    // Reset form after a delay
-    setTimeout(() => {
-      setSubmitted(false)
-      setTitle('')
-      setDescription('')
-      setSteps('')
-      setExpected('')
-      setActual('')
-      setSeverity('')
-      setBrowser('')
-    }, 3000)
+      // Reset form after a delay
+      setTimeout(() => {
+        setSubmitted(false)
+        setTitle('')
+        setDescription('')
+        setSteps('')
+        setExpected('')
+        setActual('')
+        setSeverity('')
+        setBrowser('')
+      }, 3000)
+    } catch (error) {
+      console.error('Failed to submit bug report:', error)
+      alert('Failed to submit bug report. Please check the console for details.')
+    }
   }
 
   if (submitted) {

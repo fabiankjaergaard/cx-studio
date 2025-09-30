@@ -49,13 +49,16 @@ class FeedbackStorageService {
 
       if (error) {
         console.error('Error saving feedback to Supabase:', error)
-        return null
+        console.error('Error details:', JSON.stringify(error, null, 2))
+        throw error
       }
 
       return data?.id || null
-    } catch (error) {
+    } catch (error: any) {
       console.error('Unexpected error saving feedback:', error)
-      return null
+      console.error('Error message:', error?.message)
+      console.error('Error details:', JSON.stringify(error, null, 2))
+      throw error
     }
   }
 
