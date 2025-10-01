@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Modal } from '@/components/ui/Modal'
 import { EyeIcon, EyeOffIcon, Zap, SparklesIcon } from 'lucide-react'
+import { saveBetaTesterLogin } from '@/services/betaTracking'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -104,9 +105,12 @@ export default function LoginPage() {
     }
   }
 
-  const handleBetaCodeSubmit = () => {
+  const handleBetaCodeSubmit = async () => {
     const code = betaCode.join('')
     if (code === '1111') {
+      // Save beta tester to database
+      await saveBetaTesterLogin(betaTesterName, code)
+
       setShowBetaCodeModal(false)
       setBetaCode(['', '', '', ''])
       setBetaCodeError('')
