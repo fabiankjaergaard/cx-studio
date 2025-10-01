@@ -13,9 +13,12 @@ import {
   CalendarIcon,
   UserIcon,
   TagIcon,
-  TrendingUpIcon
+  TrendingUpIcon,
+  UsersIcon,
+  ClockIcon
 } from 'lucide-react'
 import { feedbackStorage, FeedbackItem } from '@/services/feedbackStorage'
+import { getBetaTesters, getBetaTesterStats, BetaTester } from '@/services/betaTracking'
 
 export default function FeedbackAdminPage() {
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([])
@@ -27,9 +30,17 @@ export default function FeedbackAdminPage() {
     bugReports: 0,
     averageRating: 0
   })
+  const [betaTesters, setBetaTesters] = useState<BetaTester[]>([])
+  const [betaStats, setBetaStats] = useState({
+    totalTesters: 0,
+    activeToday: 0,
+    totalSessions: 0,
+    averageSessions: 0
+  })
 
   useEffect(() => {
     loadFeedback()
+    loadBetaTesters()
   }, [selectedType])
 
   const loadFeedback = () => {
@@ -39,6 +50,23 @@ export default function FeedbackAdminPage() {
 
     setFeedbackItems(allFeedback)
     setStats(feedbackStorage.getStats())
+  }
+
+  const loadBetaTesters = async () => {
+    try {
+      const [testersResult, statsResult] = await Promise.all([
+        getBetaTesters(),
+        getBetaTesterStats()
+      ])
+
+      if (testersResult.success && testersResult.data) {
+        setBetaTesters(testersResult.data)
+      }
+
+      setBetaStats(statsResult)
+    } catch (error) {
+      console.error('Error loading beta testers:', error)
+    }
   }
 
   const handleDelete = (id: string) => {
@@ -330,6 +358,139 @@ export default function FeedbackAdminPage() {
                 </CardContent>
               </Card>
             )}
+          </div>
+
+          {/* Beta Testers Section */}
+          <div className="mt-12">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Beta Testers</h2>
+                <p className="text-gray-600">Användare som har gått med i beta-programmet</p>
+              </div>
+              <div className="text-sm text-gray-500">
+                {betaTesters.length} registrerade testare
+              </div>
+            </div>
+
+            {/* Beta Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              <Card className="border-0 bg-white rounded-xl shadow-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
+                      <UsersIcon className="h-6 w-6 text-slate-600" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">{betaStats.totalTesters}</div>
+                      <div className="text-sm text-gray-600">Total testare</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 bg-white rounded-xl shadow-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                      <UserIcon className="h-6 w-6 text-emerald-600" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">{betaStats.activeToday}</div>
+                      <div className="text-sm text-gray-600">Aktiva idag</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 bg-white rounded-xl shadow-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <TrendingUpIcon className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">{betaStats.totalSessions}</div>
+                      <div className="text-sm text-gray-600">Totala sessioner</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 bg-white rounded-xl shadow-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                      <CalendarIcon className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">{betaStats.averageSessions}</div>
+                      <div className="text-sm text-gray-600">Snitt sessioner</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Beta Testers List */}
+            <Card className="border-0 bg-white rounded-xl shadow-sm">
+              <CardHeader>
+                <CardTitle>Registrerade Beta Testare</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {betaTesters.length === 0 ? (
+                  <div className="text-center py-12">
+                    <UsersIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">Inga beta-testare har registrerat sig än</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {betaTesters.map((tester, index) => {
+                      const isActiveToday = tester.last_active &&
+                        new Date(tester.last_active).toDateString() === new Date().toDateString()
+
+                      return (
+                        <div key={tester.id || index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
+                              <UserIcon className="h-5 w-5 text-slate-600" />
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-900">{tester.name}</div>
+                              <div className="text-sm text-gray-600 flex items-center space-x-4">
+                                <div className="flex items-center space-x-1">
+                                  <CalendarIcon className="h-3 w-3" />
+                                  <span>Registrerad: {new Date(tester.login_time || '').toLocaleDateString('sv-SE')}</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <ClockIcon className="h-3 w-3" />
+                                  <span>Senast aktiv: {new Date(tester.last_active || '').toLocaleDateString('sv-SE')}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-4">
+                            <div className="text-center">
+                              <div className="text-lg font-semibold text-gray-900">{tester.session_count || 1}</div>
+                              <div className="text-xs text-gray-600">sessioner</div>
+                            </div>
+                            {isActiveToday ? (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5 animate-pulse" />
+                                Aktiv idag
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                                Inaktiv
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

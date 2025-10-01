@@ -59,9 +59,6 @@ function SidebarContent() {
   const { startTour } = useGuidedTour()
   const { t } = useLanguage()
 
-  // Check if user is admin
-  const isAdmin = user?.email === 'fabiankjaergaard@gmail.com' || user?.email === 'admin@kustra.com'
-
   const navigation = [
   { name: t('nav.dashboard'), href: '/', icon: HomeIcon, tourId: 'dashboard' },
   { name: t('nav.journeyMaps'), href: '/journey-maps', icon: RouteIcon, tourId: 'journey-maps' },
@@ -139,16 +136,7 @@ function SidebarContent() {
   },
   { name: t('nav.glossary'), href: '/glossary', icon: BookOpenIcon, tourId: 'glossary' },
   { name: t('nav.betaTester'), href: '/beta', icon: SparklesIcon, tourId: 'beta-tester' },
-  ...(isAdmin ? [{
-    name: t('nav.admin'),
-    icon: ShieldCheckIcon,
-    tourId: 'admin',
-    isExpandable: true,
-    children: [
-      { name: 'Beta Testers', href: '/admin/beta-testers', icon: UsersIcon },
-      { name: 'Feedback', href: '/beta/admin/feedback', icon: MessageCircleIcon }
-    ]
-  }] : []),
+  { name: t('nav.admin'), href: '/admin', icon: ShieldCheckIcon, tourId: 'admin' },
   { name: t('nav.settings'), href: '/settings', icon: SettingsIcon, tourId: 'settings' },
 ]
   const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({})

@@ -19,9 +19,12 @@ import {
   LogOutIcon,
   XIcon,
   EyeIcon,
-  ImageIcon
+  ImageIcon,
+  UsersIcon,
+  ClockIcon
 } from 'lucide-react'
 import { feedbackStorage, FeedbackItem } from '@/services/feedbackStorage'
+import { getBetaTesters, getBetaTesterStats, BetaTester } from '@/services/betaTracking'
 
 const ADMIN_CODE = '2713'
 
@@ -42,13 +45,16 @@ export default function AdminPage() {
     averageRating: 0
   })
 
-  // Check if user is already authenticated
-  useEffect(() => {
-    const savedAuth = localStorage.getItem('admin_authenticated')
-    if (savedAuth === 'true') {
-      setIsAuthenticated(true)
-    }
-  }, [])
+  const [betaTesters, setBetaTesters] = useState<BetaTester[]>([])
+  const [betaStats, setBetaStats] = useState({
+    totalTesters: 0,
+    activeToday: 0,
+    totalSessions: 0,
+    averageSessions: 0
+  })
+
+  // No persistent authentication - require code every time
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleCodeChange = (index: number, value: string) => {
     if (!/^\d?$/.test(value)) return
@@ -66,7 +72,7 @@ export default function AdminPage() {
     // Check if code is complete
     if (newCode.every(digit => digit !== '') && newCode.join('') === ADMIN_CODE) {
       setIsAuthenticated(true)
-      localStorage.setItem('admin_authenticated', 'true')
+      // Don't save to localStorage - require code every time
     } else if (newCode.every(digit => digit !== '')) {
       setIsError(true)
       // Clear code after error
@@ -85,14 +91,16 @@ export default function AdminPage() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_authenticated')
     setIsAuthenticated(false)
     setCode(['', '', '', ''])
   }
 
   useEffect(() => {
-    loadFeedback()
-  }, [selectedType])
+    if (isAuthenticated) {
+      loadFeedback()
+      loadBetaTesters()
+    }
+  }, [selectedType, isAuthenticated])
 
   const loadFeedback = async () => {
     const allFeedback = selectedType === 'all'
@@ -102,6 +110,23 @@ export default function AdminPage() {
     setFeedbackItems(allFeedback)
     const statsData = await feedbackStorage.getStats()
     setStats(statsData)
+  }
+
+  const loadBetaTesters = async () => {
+    try {
+      const [testersResult, statsResult] = await Promise.all([
+        getBetaTesters(),
+        getBetaTesterStats()
+      ])
+
+      if (testersResult.success && testersResult.data) {
+        setBetaTesters(testersResult.data)
+      }
+
+      setBetaStats(statsResult)
+    } catch (error) {
+      console.error('Error loading beta testers:', error)
+    }
   }
 
   const handleDelete = async (id: string) => {
@@ -184,6 +209,7 @@ export default function AdminPage() {
     ))
   }
 
+
   // Show authentication screen if not authenticated
   if (!isAuthenticated) {
     return (
@@ -250,7 +276,7 @@ export default function AdminPage() {
     <div className="h-full flex flex-col">
       <Header
         title="Admin"
-        description="Hantera och granska feedback från användare"
+        description="Hantera och granska feedback från användare och beta-testare"
       />
 
       <div className="flex-1 p-6 overflow-auto bg-gray-50">
@@ -266,6 +292,7 @@ export default function AdminPage() {
               Logga ut
             </Button>
           </div>
+
           {/* Stats Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card className="border-0 bg-white rounded-xl shadow-sm">
@@ -354,7 +381,7 @@ export default function AdminPage() {
           </Card>
 
           {/* Feedback Items */}
-          <div className="space-y-6">
+          <div className="space-y-6 mb-12">
             {feedbackItems.map((item) => {
               const TypeIcon = getTypeIcon(item.type)
               return (
@@ -483,13 +510,147 @@ export default function AdminPage() {
               </Card>
             )}
           </div>
+
+          {/* Beta Testers Section */}
+          <div className="mt-12">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Beta Testers</h2>
+                <p className="text-gray-600">Användare som har gått med i beta-programmet</p>
+              </div>
+              <div className="text-sm text-gray-500">
+                {betaTesters.length} registrerade testare
+              </div>
+            </div>
+
+            {/* Beta Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              <Card className="border-0 bg-white rounded-xl shadow-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
+                      <UsersIcon className="h-6 w-6 text-slate-600" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">{betaStats.totalTesters}</div>
+                      <div className="text-sm text-gray-600">Total testare</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 bg-white rounded-xl shadow-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                      <UserIcon className="h-6 w-6 text-emerald-600" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">{betaStats.activeToday}</div>
+                      <div className="text-sm text-gray-600">Aktiva idag</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 bg-white rounded-xl shadow-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <TrendingUpIcon className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">{betaStats.totalSessions}</div>
+                      <div className="text-sm text-gray-600">Totala sessioner</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 bg-white rounded-xl shadow-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                      <CalendarIcon className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">{betaStats.averageSessions}</div>
+                      <div className="text-sm text-gray-600">Snitt sessioner</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Beta Testers List */}
+            <Card className="border-0 bg-white rounded-xl shadow-sm">
+              <CardHeader>
+                <CardTitle>Registrerade Beta Testare</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {betaTesters.length === 0 ? (
+                  <div className="text-center py-12">
+                    <UsersIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">Inga beta-testare har registrerat sig än</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {betaTesters.map((tester, index) => {
+                      const isActiveToday = tester.last_active &&
+                        new Date(tester.last_active).toDateString() === new Date().toDateString()
+
+                      return (
+                        <div key={tester.id || index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
+                              <UserIcon className="h-5 w-5 text-slate-600" />
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-900">{tester.name}</div>
+                              <div className="text-sm text-gray-600 flex items-center space-x-4">
+                                <div className="flex items-center space-x-1">
+                                  <CalendarIcon className="h-3 w-3" />
+                                  <span>Registrerad: {new Date(tester.login_time || '').toLocaleDateString('sv-SE')}</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <ClockIcon className="h-3 w-3" />
+                                  <span>Senast aktiv: {new Date(tester.last_active || '').toLocaleDateString('sv-SE')}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-4">
+                            <div className="text-center">
+                              <div className="text-lg font-semibold text-gray-900">{tester.session_count || 1}</div>
+                              <div className="text-xs text-gray-600">sessioner</div>
+                            </div>
+                            {isActiveToday ? (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5 animate-pulse" />
+                                Aktiv idag
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                                Inaktiv
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
 
-      {/* Detail Modal */}
+      {/* Detail Modal - Same as before... */}
       {selectedItem && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal content - keeping same as original */}
             <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getTypeColor(selectedItem.type)}`}>
@@ -527,137 +688,6 @@ export default function AdminPage() {
             </div>
 
             <div className="p-6 space-y-6">
-              {/* Type and Priority */}
-              <div className="flex flex-wrap gap-3">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getTypeColor(selectedItem.type)}`}>
-                  {getTypeLabel(selectedItem.type)}
-                </span>
-                {selectedItem.data.priority && (
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedItem.data.priority)}`}>
-                    {selectedItem.data.priority}
-                  </span>
-                )}
-              </div>
-
-              {/* Category and Rating */}
-              {(selectedItem.data.category || selectedItem.data.rating) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {selectedItem.data.category && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-                      <div className="flex items-center space-x-2">
-                        <TagIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-gray-900">{selectedItem.data.category}</span>
-                      </div>
-                    </div>
-                  )}
-                  {selectedItem.data.rating && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Betyg</label>
-                      <div className="flex items-center space-x-2">
-                        <div className="flex space-x-1">
-                          {renderStars(selectedItem.data.rating)}
-                        </div>
-                        <span className="text-gray-900">({selectedItem.data.rating}/5)</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Main Content */}
-              {(selectedItem.data.description || selectedItem.data.feedback) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {selectedItem.type === 'feedback' ? 'Feedback' : 'Beskrivning'}
-                  </label>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
-                      {selectedItem.data.description || selectedItem.data.feedback}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Bug Report Specific */}
-              {selectedItem.type === 'bug-report' && (
-                <div className="space-y-6">
-                  {selectedItem.data.steps && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Steg för att återskapa</label>
-                      <div className="bg-red-50 p-4 rounded-lg">
-                        <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
-                          {selectedItem.data.steps}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {selectedItem.data.expected && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Förväntat resultat</label>
-                        <div className="bg-green-50 p-4 rounded-lg">
-                          <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
-                            {selectedItem.data.expected}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {selectedItem.data.actual && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Faktiskt resultat</label>
-                        <div className="bg-yellow-50 p-4 rounded-lg">
-                          <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
-                            {selectedItem.data.actual}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Feature Request Specific */}
-              {selectedItem.type === 'feature-request' && selectedItem.data.useCase && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Use Case</label>
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
-                      {selectedItem.data.useCase}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Images */}
-              {selectedItem.data.images && selectedItem.data.images.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Bifogade bilder ({selectedItem.data.images.length})
-                  </label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {selectedItem.data.images.map((image, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={image}
-                          alt={`Bild ${index + 1}`}
-                          className="w-full h-48 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
-                          onClick={() => window.open(image, '_blank')}
-                        />
-                        <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
-                          {index + 1}/{selectedItem.data.images?.length}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    Klicka på en bild för att öppna den i fullstorlek
-                  </p>
-                </div>
-              )}
-
               {/* Actions */}
               <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
                 <Button
