@@ -109,61 +109,6 @@ export default function BetaPage() {
               </Link>
             ))}
           </div>
-
-          {/* Recent Activity */}
-          <Card className="border-0 bg-white rounded-xl">
-            <CardHeader>
-              <CardTitle>Senaste aktivitet i beta-programmet</CardTitle>
-              <p className="text-gray-600">Se vad som händer i vår beta-community</p>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                  <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
-                    <CheckCircleIcon className="h-5 w-5 text-slate-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900">Ny feature implementerad</div>
-                    <div className="text-sm text-gray-600">Förbättrade hover-effekter baserat på Marias förslag</div>
-                    <div className="text-xs text-gray-500 mt-1">För 2 dagar sedan</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                  <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
-                    <MessageCircleIcon className="h-5 w-5 text-slate-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900">Ny feedback mottagen</div>
-                    <div className="text-sm text-gray-600">5 nya förslag på förbättringar från beta-testare</div>
-                    <div className="text-xs text-gray-500 mt-1">Idag</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                  <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
-                    <LightbulbIcon className="h-5 w-5 text-slate-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900">Populärt feature-förslag</div>
-                    <div className="text-sm text-gray-600">"Mobil app för data collection" har fått 15 röster</div>
-                    <div className="text-xs text-gray-500 mt-1">För 1 dag sedan</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                  <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
-                    <BugIcon className="h-5 w-5 text-slate-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900">Bug fixad</div>
-                    <div className="text-sm text-gray-600">Löste problemet med långsam laddning som rapporterades av Anna</div>
-                    <div className="text-xs text-gray-500 mt-1">För 3 dagar sedan</div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
