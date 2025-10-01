@@ -29,6 +29,7 @@ import { getBetaTesters, getBetaTesterStats, BetaTester } from '@/services/betaT
 const ADMIN_CODE = '2713'
 
 export default function AdminPage() {
+
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [code, setCode] = useState(['', '', '', ''])
   const [isError, setIsError] = useState(false)
