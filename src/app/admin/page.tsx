@@ -688,6 +688,107 @@ export default function AdminPage() {
             </div>
 
             <div className="p-6 space-y-6">
+              {/* Content Details */}
+              {selectedItem.data.category && (
+                <div className="flex items-center space-x-2">
+                  <TagIcon className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">Kategori: {selectedItem.data.category}</span>
+                </div>
+              )}
+
+              {selectedItem.data.priority && (
+                <div className="flex items-center space-x-2">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedItem.data.priority)}`}>
+                    {selectedItem.data.priority}
+                  </span>
+                </div>
+              )}
+
+              {selectedItem.data.rating && (
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600">Betyg:</span>
+                  <div className="flex space-x-1">
+                    {renderStars(selectedItem.data.rating)}
+                  </div>
+                  <span className="text-sm text-gray-600">({selectedItem.data.rating}/5)</span>
+                </div>
+              )}
+
+              {(selectedItem.data.description || selectedItem.data.feedback) && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">Beskrivning:</h4>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedItem.data.description || selectedItem.data.feedback}
+                  </p>
+                </div>
+              )}
+
+              {selectedItem.data.useCase && (
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">Use Case:</h4>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedItem.data.useCase}
+                  </p>
+                </div>
+              )}
+
+              {selectedItem.data.steps && (
+                <div className="bg-yellow-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">Steg för att återskapa:</h4>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedItem.data.steps}
+                  </p>
+                </div>
+              )}
+
+              {selectedItem.data.expectedResult && (
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">Förväntat resultat:</h4>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedItem.data.expectedResult}
+                  </p>
+                </div>
+              )}
+
+              {selectedItem.data.actualResult && (
+                <div className="bg-red-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">Faktiskt resultat:</h4>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedItem.data.actualResult}
+                  </p>
+                </div>
+              )}
+
+              {/* Images */}
+              {selectedItem.data.images && selectedItem.data.images.length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="font-medium text-gray-900 flex items-center space-x-2">
+                    <ImageIcon className="h-4 w-4" />
+                    <span>Bifogade bilder ({selectedItem.data.images.length})</span>
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedItem.data.images.map((image, index) => (
+                      <div key={index} className="relative bg-gray-100 rounded-lg overflow-hidden">
+                        <img
+                          src={image}
+                          alt={`Bifogad bild ${index + 1}`}
+                          className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => window.open(image, '_blank')}
+                        />
+                        <div className="absolute top-2 right-2">
+                          <button
+                            onClick={() => window.open(image, '_blank')}
+                            className="bg-black bg-opacity-50 text-white p-1 rounded text-xs hover:bg-opacity-70"
+                          >
+                            Öppna
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
                 <Button
