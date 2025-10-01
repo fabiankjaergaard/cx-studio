@@ -35,7 +35,7 @@ export default function AnalyticsPage() {
 
             <div className="space-y-2">
               <p className="text-lg text-gray-600 font-medium">
-                We're building powerful analytics to help you understand
+                Powerful analytics tools to understand and optimize
               </p>
               <p className="text-lg text-gray-600 font-medium">
                 your customer experience data
