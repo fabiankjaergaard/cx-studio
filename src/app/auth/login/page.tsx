@@ -107,9 +107,13 @@ export default function LoginPage() {
 
   const handleBetaCodeSubmit = async () => {
     const code = betaCode.join('')
+    console.log('🚀 Beta code submit attempt:', { code, name: betaTesterName })
+
     if (code === '1111') {
+      console.log('✅ Valid beta code, saving to database...')
       // Save beta tester to database
-      await saveBetaTesterLogin(betaTesterName, code)
+      const result = await saveBetaTesterLogin(betaTesterName, code)
+      console.log('💾 Save result:', result)
 
       setShowBetaCodeModal(false)
       setBetaCode(['', '', '', ''])
@@ -117,6 +121,7 @@ export default function LoginPage() {
       signInAsBetaTester(betaTesterName)
       router.replace('/')
     } else {
+      console.log('❌ Invalid beta code:', code)
       setBetaCodeError('Invalid code. Please try again.')
     }
   }

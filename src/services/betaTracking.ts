@@ -1,10 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
 
 // Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+console.log('🔧 Supabase config check:', {
+  url: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'MISSING',
+  key: supabaseKey ? `${supabaseKey.substring(0, 20)}...` : 'MISSING'
+})
+
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 export interface BetaTester {
   id?: string
@@ -21,17 +26,29 @@ export interface BetaTester {
 // Save beta tester login
 export async function saveBetaTesterLogin(name: string, accessCode: string = '1111') {
   try {
+    console.log('🔍 Beta tester login attempt:', { name, accessCode })
+
     // Get user agent and IP (IP will be null on client side, could be captured server-side)
     const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : null
+    console.log('📱 User agent:', userAgent)
 
     // Check if user already exists
-    const { data: existingUser } = await supabase
+    console.log('🔍 Checking for existing user...')
+    const { data: existingUser, error: selectError } = await supabase
       .from('beta_testers')
       .select('id, session_count')
       .eq('name', name)
       .single()
 
+    if (selectError && selectError.code !== 'PGRST116') {
+      console.error('❌ Error checking existing user:', selectError)
+      return { success: false, error: selectError }
+    }
+
+    console.log('👤 Existing user found:', existingUser)
+
     if (existingUser) {
+      console.log('🔄 Updating existing user...')
       // Update existing user
       const { error } = await supabase
         .from('beta_testers')
@@ -43,28 +60,32 @@ export async function saveBetaTesterLogin(name: string, accessCode: string = '11
         .eq('id', existingUser.id)
 
       if (error) {
-        console.error('Error updating beta tester:', error)
+        console.error('❌ Error updating beta tester:', error)
         return { success: false, error }
       }
+      console.log('✅ Existing user updated successfully')
     } else {
+      console.log('➕ Creating new user...')
       // Insert new user
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('beta_testers')
         .insert({
           name,
           access_code: accessCode,
           user_agent: userAgent
         })
+        .select()
 
       if (error) {
-        console.error('Error saving beta tester:', error)
+        console.error('❌ Error saving beta tester:', error)
         return { success: false, error }
       }
+      console.log('✅ New user created successfully:', data)
     }
 
     return { success: true }
   } catch (error) {
-    console.error('Error in saveBetaTesterLogin:', error)
+    console.error('❌ Error in saveBetaTesterLogin:', error)
     return { success: false, error }
   }
 }
@@ -72,20 +93,24 @@ export async function saveBetaTesterLogin(name: string, accessCode: string = '11
 // Get all beta testers (for admin)
 export async function getBetaTesters() {
   try {
+    console.log('📊 Fetching beta testers from database...')
     const { data, error } = await supabase
       .from('beta_testers')
       .select('*')
-      .order('login_time', { ascending: false })
+      .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('Error fetching beta testers:', error)
+      console.error('❌ Error fetching beta testers:', error)
       // Return empty data on error (e.g., table doesn't exist)
       return { success: true, data: [] }
     }
 
+    console.log('📊 Beta testers fetched:', data)
+    console.log('📊 Number of beta testers:', data?.length || 0)
+
     return { success: true, data: data || [] }
   } catch (error) {
-    console.error('Error in getBetaTesters:', error)
+    console.error('❌ Error in getBetaTesters:', error)
     // Return empty data on any error
     return { success: true, data: [] }
   }
