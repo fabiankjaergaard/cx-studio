@@ -767,25 +767,17 @@ function SidebarContent() {
             const isBetaTester = item.name === t('nav.betaTester')
 
             return (
-              <li key={item.name} className={isBetaTester ? 'relative' : ''}>
-                {isBetaTester && !isCollapsed && (
-                  // Animated border effect for Beta Tester
-                  <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none">
-                    <div className="absolute inset-0 rounded-lg animate-pulse-border" />
-                  </div>
-                )}
+              <li key={item.name}>
                 {item.href ? (
                   <Link
                     href={item.href}
                     data-tour={item.tourId}
                     className={cn(
-                      'group flex items-center rounded-lg text-sm font-medium transition-all relative',
+                      'group flex items-center rounded-lg text-sm font-medium transition-colors',
                       isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
                       isActive
                         ? 'bg-slate-100 text-slate-700'
-                        : isBetaTester
-                          ? 'text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 hover:text-gray-900 bg-gradient-to-r from-purple-50/50 to-blue-50/50'
-                          : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                     )}
                     title={isCollapsed ? item.name : undefined}
                   >
@@ -796,25 +788,17 @@ function SidebarContent() {
                         isActive
                           ? 'text-slate-600 scale-110 rotate-12'
                           : isBetaTester
-                            ? 'text-purple-500 animate-sparkle'
+                            ? 'bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent animate-sparkle'
                             : 'text-gray-500'
                       )}
                     />
                     {!isCollapsed && (
                       <div className="flex items-center justify-between flex-1">
-                        <span className={isBetaTester ? 'font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent' : ''}>
-                          {item.name}
-                        </span>
+                        <span>{item.name}</span>
                         {item.name === t('nav.analytics') && (
                           <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
                             {t('ui.comingSoon')}
                           </span>
-                        )}
-                        {isBetaTester && (
-                          <div className="absolute -top-1 -right-1 flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
-                          </div>
                         )}
                       </div>
                     )}
