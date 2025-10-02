@@ -24,7 +24,7 @@ import {
   ClockIcon
 } from 'lucide-react'
 import { feedbackStorage, FeedbackItem } from '@/services/feedbackStorage'
-import { getBetaTesters, getBetaTesterStats, BetaTester } from '@/services/betaTracking'
+import { getBetaTesters, getBetaTesterStats, getAccessCodes, BetaTester } from '@/services/betaTracking'
 
 const ADMIN_CODE = '2713'
 
@@ -53,6 +53,7 @@ export default function AdminPage() {
     totalSessions: 0,
     averageSessions: 0
   })
+  const [accessCodes, setAccessCodes] = useState<any[]>([])
 
   // No persistent authentication - require code every time
   const [isLoading, setIsLoading] = useState(false)
@@ -115,13 +116,18 @@ export default function AdminPage() {
 
   const loadBetaTesters = async () => {
     try {
-      const [testersResult, statsResult] = await Promise.all([
+      const [testersResult, statsResult, codesResult] = await Promise.all([
         getBetaTesters(),
-        getBetaTesterStats()
+        getBetaTesterStats(),
+        getAccessCodes()
       ])
 
       if (testersResult.success && testersResult.data) {
         setBetaTesters(testersResult.data)
+      }
+
+      if (codesResult.success && codesResult.data) {
+        setAccessCodes(codesResult.data)
       }
 
       setBetaStats(statsResult)
@@ -510,6 +516,64 @@ export default function AdminPage() {
                 </CardContent>
               </Card>
             )}
+          </div>
+
+          {/* Access Codes Section */}
+          <div className="mt-12">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Access-koder</h2>
+                <p className="text-gray-600">Personliga koder för beta-testare</p>
+              </div>
+              <div className="text-sm text-gray-500">
+                {accessCodes.filter(c => !c.is_used).length} av {accessCodes.length} koder tillgängliga
+              </div>
+            </div>
+
+            {/* Access Codes Grid */}
+            <Card className="mb-8 border-0 bg-white rounded-xl shadow-sm">
+              <CardHeader>
+                <CardTitle>Beta Access-koder</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {accessCodes.length === 0 ? (
+                  <div className="text-center py-8">
+                    <KeyIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">Inga access-koder hittades i databasen</p>
+                    <p className="text-sm text-gray-400 mt-2">Kör SQL-migrationen för att lägga till koder</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {accessCodes.map((code) => (
+                      <div
+                        key={code.id}
+                        className={`p-4 rounded-lg border-2 text-center transition-all ${
+                          code.is_used
+                            ? 'bg-gray-50 border-gray-200 opacity-60'
+                            : 'bg-green-50 border-green-200 hover:border-green-300'
+                        }`}
+                      >
+                        <div className={`text-lg font-mono font-bold ${
+                          code.is_used ? 'text-gray-500' : 'text-green-700'
+                        }`}>
+                          {code.code}
+                        </div>
+                        {code.is_used ? (
+                          <div className="mt-2 text-xs text-gray-500">
+                            <div className="font-medium truncate">{code.used_by}</div>
+                            <div>{new Date(code.used_at).toLocaleDateString('sv-SE')}</div>
+                          </div>
+                        ) : (
+                          <div className="mt-2 text-xs text-green-600 font-medium">
+                            Tillgänglig
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Beta Testers Section */}

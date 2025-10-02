@@ -18,14 +18,73 @@ export interface BetaTester {
   created_at?: string
 }
 
+// Validate access code
+export async function validateAccessCode(code: string) {
+  try {
+    console.log('🔍 Validating access code:', code)
+
+    // Master code - always valid (same as admin code)
+    if (code === '2713') {
+      console.log('✅ Master access code used')
+      return { valid: true, isMasterCode: true }
+    }
+
+    // Check if code exists and is not used
+    const { data: validCode, error } = await supabase
+      .from('access_codes')
+      .select('id, code, is_used')
+      .eq('code', code)
+      .eq('is_used', false)
+      .single()
+
+    if (error || !validCode) {
+      console.log('❌ Invalid or already used code')
+      return { valid: false }
+    }
+
+    console.log('✅ Valid access code found')
+    return { valid: true, codeId: validCode.id }
+  } catch (error) {
+    console.error('❌ Error validating access code:', error)
+    return { valid: false }
+  }
+}
+
 // Save beta tester login
-export async function saveBetaTesterLogin(name: string, accessCode: string = '1111') {
+export async function saveBetaTesterLogin(name: string, accessCode: string) {
   try {
     console.log('🔍 Beta tester login attempt:', { name, accessCode })
+
+    // First validate the access code
+    const validation = await validateAccessCode(accessCode)
+    if (!validation.valid) {
+      console.log('❌ Invalid access code')
+      return { success: false, error: { message: 'Invalid or already used access code' } }
+    }
 
     // Get user agent and IP (IP will be null on client side, could be captured server-side)
     const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : null
     console.log('📱 User agent:', userAgent)
+
+    // Only mark non-master codes as used
+    if (!validation.isMasterCode) {
+      const { error: updateCodeError } = await supabase
+        .from('access_codes')
+        .update({
+          is_used: true,
+          used_by: name,
+          used_at: new Date().toISOString()
+        })
+        .eq('code', accessCode)
+        .eq('is_used', false)
+
+      if (updateCodeError) {
+        console.error('❌ Error updating access code:', updateCodeError)
+        return { success: false, error: updateCodeError }
+      }
+    } else {
+      console.log('🔑 Master code used - not marking as consumed')
+    }
 
     // Check if user already exists
     console.log('🔍 Checking for existing user...')
@@ -108,6 +167,28 @@ export async function getBetaTesters() {
     console.error('❌ Error in getBetaTesters:', error)
     // Return empty data on any error
     return { success: true, data: [] }
+  }
+}
+
+// Get access codes status (for admin)
+export async function getAccessCodes() {
+  try {
+    console.log('📊 Fetching access codes from database...')
+    const { data, error } = await supabase
+      .from('access_codes')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('❌ Error fetching access codes:', error)
+      return { success: false, data: [] }
+    }
+
+    console.log('📊 Access codes fetched:', data?.length || 0)
+    return { success: true, data: data || [] }
+  } catch (error) {
+    console.error('❌ Error in getAccessCodes:', error)
+    return { success: false, data: [] }
   }
 }
 

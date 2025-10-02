@@ -109,12 +109,12 @@ export default function LoginPage() {
     const code = betaCode.join('')
     console.log('🚀 Beta code submit attempt:', { code, name: betaTesterName })
 
-    if (code === '1111') {
-      console.log('✅ Valid beta code, saving to database...')
-      // Save beta tester to database
-      const result = await saveBetaTesterLogin(betaTesterName, code)
-      console.log('💾 Save result:', result)
+    // Save beta tester to database with code validation
+    const result = await saveBetaTesterLogin(betaTesterName, code)
+    console.log('💾 Save result:', result)
 
+    if (result.success) {
+      console.log('✅ Valid beta code, login successful')
       setShowBetaCodeModal(false)
       setBetaCode(['', '', '', ''])
       setBetaCodeError('')
@@ -122,7 +122,7 @@ export default function LoginPage() {
       router.replace('/')
     } else {
       console.log('❌ Invalid beta code:', code)
-      setBetaCodeError('Invalid code. Please try again.')
+      setBetaCodeError(result.error?.message || 'Invalid or already used code. Please try again.')
     }
   }
 
