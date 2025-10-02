@@ -145,6 +145,7 @@ function SidebarContent() {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [hoveredSection, setHoveredSection] = useState<string | null>(null)
   const [showInsightsPopup, setShowInsightsPopup] = useState(false)
+  const [hasBetaTesterBeenClicked, setHasBetaTesterBeenClicked] = useState(false)
 
   const toggleSection = (sectionName: string) => {
     setExpandedSections(prev => {
@@ -180,6 +181,14 @@ function SidebarContent() {
       [subItemName]: !prev[subItemName]
     }))
   }
+
+  // Check if beta tester has been clicked before
+  useEffect(() => {
+    const betaTesterClicked = localStorage.getItem('betaTesterClicked')
+    if (betaTesterClicked === 'true') {
+      setHasBetaTesterBeenClicked(true)
+    }
+  }, [])
 
   // Auto-expand sections based on current pathname
   useEffect(() => {
@@ -772,6 +781,12 @@ function SidebarContent() {
                   <Link
                     href={item.href}
                     data-tour={item.tourId}
+                    onClick={() => {
+                      if (isBetaTester) {
+                        localStorage.setItem('betaTesterClicked', 'true')
+                        setHasBetaTesterBeenClicked(true)
+                      }
+                    }}
                     className={cn(
                       'group flex items-center rounded-lg text-sm font-medium transition-colors',
                       isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
@@ -787,18 +802,22 @@ function SidebarContent() {
                         isCollapsed ? 'mx-auto' : 'mr-3',
                         isActive
                           ? 'text-slate-600 scale-110 rotate-12'
-                          : isBetaTester
-                            ? 'bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent animate-sparkle'
-                            : 'text-gray-500'
+                          : 'text-gray-500'
                       )}
                     />
                     {!isCollapsed && (
-                      <div className="flex items-center justify-between flex-1">
+                      <div className="flex items-center justify-between flex-1 relative">
                         <span>{item.name}</span>
                         {item.name === t('nav.analytics') && (
                           <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
                             {t('ui.comingSoon')}
                           </span>
+                        )}
+                        {isBetaTester && !hasBetaTesterBeenClicked && (
+                          <div className="absolute -top-1 -right-1 flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-600 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-600"></span>
+                          </div>
                         )}
                       </div>
                     )}

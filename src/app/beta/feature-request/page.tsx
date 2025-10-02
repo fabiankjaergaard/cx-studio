@@ -56,8 +56,8 @@ export default function FeatureRequestPage() {
     return (
       <div className="h-full flex flex-col">
         <Header
-          title="Tack för ditt förslag!"
-          description="Vi uppskattar dina idéer för att förbättra Kustra"
+          title="Thank you for your suggestion!"
+          description="I appreciate your ideas for improving Kustra"
         />
         <div className="flex-1 flex items-center justify-center">
           <Card className="max-w-md">
@@ -66,10 +66,10 @@ export default function FeatureRequestPage() {
                 <LightbulbIcon className="h-8 w-8 text-slate-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Förslag skickat!
+                Suggestion sent!
               </h3>
               <p className="text-gray-600">
-                Vi kommer att utvärdera ditt förslag och överväga det för framtida utveckling.
+                I will evaluate your suggestion and consider it for future development.
               </p>
             </CardContent>
           </Card>
@@ -81,8 +81,8 @@ export default function FeatureRequestPage() {
   return (
     <div className="h-full flex flex-col">
       <Header
-        title="Föreslå ny feature"
-        description="Har du en idé som skulle göra Kustra ännu bättre? Berätta för oss!"
+        title="Suggest New Feature"
+        description="Have an idea that would make Kustra even better? Tell me about it!"
       />
 
       <div className="flex-1 p-6 overflow-auto bg-gray-50">
@@ -91,11 +91,11 @@ export default function FeatureRequestPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <LightbulbIcon className="h-5 w-5 text-slate-600" />
-                Din idé kan bli verklighet
+                Your idea can become reality
               </CardTitle>
               <p className="text-gray-600">
-                Vi bygger Kustra tillsammans med våra användare. Dina förslag hjälper oss att
-                skapa de funktioner som verkligen behövs.
+                I build Kustra together with my users. Your suggestions help me
+                create the features that are truly needed.
               </p>
             </CardHeader>
             <CardContent>
@@ -103,13 +103,13 @@ export default function FeatureRequestPage() {
                 {/* Feature Title */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Vad vill du att vi ska bygga? *
+                    What would you like me to build? *
                   </label>
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="T.ex. 'AI-driven insiktsanalys' eller 'Realtidssamarbete i journey maps'"
+                    placeholder="e.g. 'AI-driven insights analysis' or 'Real-time collaboration in journey maps'"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                     required
                   />
@@ -118,13 +118,13 @@ export default function FeatureRequestPage() {
                 {/* Priority */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-3">
-                    Hur viktigt är detta för dig?
+                    How important is this to you?
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {[
                       { value: 'nice-to-have', label: 'Nice to have', color: 'slate' },
-                      { value: 'important', label: 'Viktigt', color: 'slate' },
-                      { value: 'critical', label: 'Kritiskt', color: 'slate' }
+                      { value: 'important', label: 'Important', color: 'slate' },
+                      { value: 'critical', label: 'Critical', color: 'slate' }
                     ].map((p) => (
                       <button
                         key={p.value}
@@ -145,12 +145,12 @@ export default function FeatureRequestPage() {
                 {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Beskriv funktionen i detalj *
+                    Describe the feature in detail *
                   </label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Hur skulle funktionen fungera? Vilka problem löser den? Vad skulle användaren kunna göra?"
+                    placeholder="How would the feature work? What problems does it solve? What would the user be able to do?"
                     rows={4}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
                     required
@@ -160,12 +160,12 @@ export default function FeatureRequestPage() {
                 {/* Use Case */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Ge ett konkret exempel på när du skulle använda detta
+                    Give a concrete example of when you would use this
                   </label>
                   <textarea
                     value={useCase}
                     onChange={(e) => setUseCase(e.target.value)}
-                    placeholder="Berätta om en situation där denna funktion skulle vara till hjälp..."
+                    placeholder="Tell me about a situation where this feature would be helpful..."
                     rows={3}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
                   />
@@ -180,7 +180,7 @@ export default function FeatureRequestPage() {
                     className="w-full flex items-center justify-center gap-2 bg-slate-600 hover:bg-slate-700"
                   >
                     <SendIcon className="h-4 w-4" />
-                    Skicka förslag
+                    Send suggestion
                   </Button>
                 </div>
               </form>

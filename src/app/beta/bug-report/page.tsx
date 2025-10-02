@@ -92,8 +92,8 @@ export default function BugReportPage() {
     return (
       <div className="h-full flex flex-col">
         <Header
-          title="Tack för din buggrapport!"
-          description="Vi kommer att undersöka och åtgärda problemet så snart som möjligt"
+          title="Thank you for your bug report!"
+          description="I will investigate and fix the issue as soon as possible"
         />
         <div className="flex-1 flex items-center justify-center">
           <Card className="max-w-md">
@@ -102,10 +102,10 @@ export default function BugReportPage() {
                 <CheckCircleIcon className="h-8 w-8 text-slate-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Buggrapport skickad!
+                Bug report sent!
               </h3>
               <p className="text-gray-600">
-                Vi har mottagit din rapport och kommer att prioritera den baserat på allvarlighetsgrad.
+                I have received your report and will prioritize it based on severity.
               </p>
             </CardContent>
           </Card>
@@ -117,8 +117,8 @@ export default function BugReportPage() {
   return (
     <div className="h-full flex flex-col">
       <Header
-        title="Rapportera en bug"
-        description="Hjälp oss fixa problem genom att beskriva vad som gick fel"
+        title="Report a Bug"
+        description="Help me fix issues by describing what went wrong"
       />
 
       <div className="flex-1 p-6 overflow-auto bg-gray-50">
@@ -127,10 +127,10 @@ export default function BugReportPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BugIcon className="h-5 w-5 text-slate-600" />
-                Beskriv problemet
+                Describe the problem
               </CardTitle>
               <p className="text-gray-600">
-                Ju mer detaljerad information du ger, desto snabbare kan vi lösa problemet.
+                The more detailed information you provide, the faster I can solve the problem.
               </p>
             </CardHeader>
             <CardContent>
@@ -138,13 +138,13 @@ export default function BugReportPage() {
                 {/* Bug Title */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Kort beskrivning av problemet *
+                    Brief description of the problem *
                   </label>
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="T.ex. 'Journey map sparas inte' eller 'Sidan laddar inte på mobil'"
+                    placeholder="e.g. 'Journey map doesn't save' or 'Page doesn't load on mobile'"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                     required
                   />
@@ -153,13 +153,13 @@ export default function BugReportPage() {
                 {/* Severity */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-3">
-                    Hur allvarligt är problemet?
+                    How severe is the problem?
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {[
-                      { value: 'nice-to-have', label: 'Låg - Mindre problem', color: 'slate' },
-                      { value: 'important', label: 'Medium - Påverkar funktionalitet', color: 'slate' },
-                      { value: 'critical', label: 'Hög - Blockerar arbete', color: 'slate' }
+                      { value: 'nice-to-have', label: 'Low - Minor issue', color: 'slate' },
+                      { value: 'important', label: 'Medium - Affects functionality', color: 'slate' },
+                      { value: 'critical', label: 'High - Blocks work', color: 'slate' }
                     ].map((s) => (
                       <button
                         key={s.value}
@@ -181,12 +181,12 @@ export default function BugReportPage() {
                 {/* Steps to Reproduce */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Steg för att återskapa problemet *
+                    Steps to reproduce the problem *
                   </label>
                   <textarea
                     value={steps}
                     onChange={(e) => setSteps(e.target.value)}
-                    placeholder="1. Gå till journey maps&#10;2. Klicka på 'Skapa ny'&#10;3. Fyll i namn och klicka spara&#10;4. Problemet uppstår..."
+                    placeholder="1. Go to journey maps&#10;2. Click 'Create new'&#10;3. Fill in name and click save&#10;4. Problem occurs..."
                     rows={4}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
                     required
@@ -197,12 +197,12 @@ export default function BugReportPage() {
                   {/* Expected Behavior */}
                   <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2">
-                      Vad förväntade du dig skulle hända?
+                      What did you expect to happen?
                     </label>
                     <textarea
                       value={expected}
                       onChange={(e) => setExpected(e.target.value)}
-                      placeholder="Journey map skulle sparas och jag skulle komma till editorn..."
+                      placeholder="Journey map should save and I should go to the editor..."
                       rows={3}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
                     />
@@ -211,12 +211,12 @@ export default function BugReportPage() {
                   {/* Actual Behavior */}
                   <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2">
-                      Vad hände istället?
+                      What happened instead?
                     </label>
                     <textarea
                       value={actual}
                       onChange={(e) => setActual(e.target.value)}
-                      placeholder="Sidan blev vit och inget hände..."
+                      placeholder="Page went white and nothing happened..."
                       rows={3}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
                     />
@@ -226,31 +226,31 @@ export default function BugReportPage() {
                 {/* Browser/Environment */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Vilken webbläsare använder du?
+                    Which browser are you using?
                   </label>
                   <select
                     value={browser}
                     onChange={(e) => setBrowser(e.target.value)}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                   >
-                    <option value="">Välj webbläsare</option>
+                    <option value="">Select browser</option>
                     <option value="chrome">Chrome</option>
                     <option value="firefox">Firefox</option>
                     <option value="safari">Safari</option>
                     <option value="edge">Edge</option>
-                    <option value="other">Annan</option>
+                    <option value="other">Other</option>
                   </select>
                 </div>
 
                 {/* Additional Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Ytterligare information
+                    Additional information
                   </label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Finns det något annat som kan vara relevant? Felmeddelanden, konsol-loggar, etc."
+                    placeholder="Is there anything else that might be relevant? Error messages, console logs, etc."
                     rows={3}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
                   />
@@ -259,10 +259,10 @@ export default function BugReportPage() {
                 {/* Image Upload */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Skärmdumpar (valfritt)
+                    Screenshots (optional)
                   </label>
                   <p className="text-sm text-gray-600 mb-3">
-                    Bilder hjälper oss förstå problemet bättre. Du kan ladda upp flera bilder.
+                    Images help me understand the problem better. You can upload multiple images.
                   </p>
 
                   <div className="space-y-3">
@@ -280,7 +280,7 @@ export default function BugReportPage() {
                         className="cursor-pointer flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                       >
                         <ImageIcon className="h-4 w-4 text-gray-500" />
-                        Välj bilder
+                        Choose images
                       </label>
                     </div>
 
@@ -316,7 +316,7 @@ export default function BugReportPage() {
                     className="w-full flex items-center justify-center gap-2 bg-slate-600 hover:bg-slate-700"
                   >
                     <SendIcon className="h-4 w-4" />
-                    Skicka buggrapport
+                    Send bug report
                   </Button>
                 </div>
               </form>

@@ -75,8 +75,8 @@ export default function BetaFeedbackPage() {
     return (
       <div className="h-full flex flex-col">
         <Header
-          title="Tack för din feedback!"
-          description="Vi uppskattar att du hjälper oss förbättra Kustra"
+          title="Thank you for your feedback!"
+          description="I appreciate you helping me improve Kustra"
         />
         <div className="flex-1 flex items-center justify-center">
           <Card className="max-w-md">
@@ -85,10 +85,10 @@ export default function BetaFeedbackPage() {
                 <MessageCircleIcon className="h-8 w-8 text-slate-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Feedback skickat!
+                Feedback sent!
               </h3>
               <p className="text-gray-600">
-                Vi kommer att granska din feedback och använda den för att förbättra produkten.
+                I will review your feedback and use it to improve the product.
               </p>
             </CardContent>
           </Card>
@@ -100,8 +100,8 @@ export default function BetaFeedbackPage() {
   return (
     <div className="h-full flex flex-col">
       <Header
-        title="Ge feedback"
-        description="Hjälp oss förbättra Kustra genom att dela dina tankar och upplevelser"
+        title="Give Feedback"
+        description="Help me improve Kustra by sharing your thoughts and experiences"
       />
 
       <div className="flex-1 p-6 overflow-auto bg-gray-50">
@@ -110,11 +110,11 @@ export default function BetaFeedbackPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageCircleIcon className="h-5 w-5 text-gray-600" />
-                Din feedback är viktig för mig
+                Your feedback is important to me
               </CardTitle>
               <p className="text-gray-600">
-                Som beta-testare spelar din åsikt en avgörande roll i utvecklingen av Kustra.
-                Berätta vad du tycker, vad som fungerar bra och vad som kan förbättras.
+                As a beta tester, your opinion plays a crucial role in Kustra's development.
+                Tell me what you think, what works well, and what can be improved.
               </p>
             </CardHeader>
             <CardContent>
@@ -122,16 +122,16 @@ export default function BetaFeedbackPage() {
                 {/* Category Selection */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-3">
-                    Vad handlar din feedback om?
+                    What is your feedback about?
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {[
-                      'Användargränssnitt',
-                      'Funktionalitet',
-                      'Prestanda',
-                      'Användbarhet',
+                      'User Interface',
+                      'Functionality',
+                      'Performance',
+                      'Usability',
                       'Design',
-                      'Annat'
+                      'Other'
                     ].map((cat) => (
                       <button
                         key={cat}
@@ -152,7 +152,7 @@ export default function BetaFeedbackPage() {
                 {/* Overall Rating */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-3">
-                    Hur nöjd är du med Kustra överlag?
+                    How satisfied are you with Kustra overall?
                   </label>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -177,12 +177,12 @@ export default function BetaFeedbackPage() {
                 {/* Feedback Text */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Berätta mer om din upplevelse
+                    Tell me more about your experience
                   </label>
                   <textarea
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
-                    placeholder="Vad fungerar bra? Vad kan förbättras? Vilka funktioner saknar du? Dela gärna specifika exempel..."
+                    placeholder="What works well? What can be improved? Which features are missing? Feel free to share specific examples..."
                     rows={6}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-none"
                     required
@@ -192,10 +192,10 @@ export default function BetaFeedbackPage() {
                 {/* Image Upload */}
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Skärmdumpar (valfritt)
+                    Screenshots (optional)
                   </label>
                   <p className="text-sm text-gray-600 mb-3">
-                    Bilder hjälper mig förstå din feedback bättre. Du kan ladda upp flera bilder.
+                    Images help me understand your feedback better. You can upload multiple images.
                   </p>
 
                   <div className="space-y-3">
@@ -213,7 +213,7 @@ export default function BetaFeedbackPage() {
                         className="cursor-pointer flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                       >
                         <ImageIcon className="h-4 w-4 text-gray-500" />
-                        Välj bilder
+                        Choose images
                       </label>
                     </div>
 
@@ -249,7 +249,7 @@ export default function BetaFeedbackPage() {
                     className="w-full flex items-center justify-center gap-2"
                   >
                     <SendIcon className="h-4 w-4" />
-                    Skicka feedback
+                    Send feedback
                   </Button>
                 </div>
               </form>

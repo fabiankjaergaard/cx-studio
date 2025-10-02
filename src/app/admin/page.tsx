@@ -54,6 +54,7 @@ export default function AdminPage() {
     averageSessions: 0
   })
   const [accessCodes, setAccessCodes] = useState<any[]>([])
+  const [showAllAccessCodes, setShowAllAccessCodes] = useState(false)
 
   // No persistent authentication - require code every time
   const [isLoading, setIsLoading] = useState(false)
@@ -532,8 +533,16 @@ export default function AdminPage() {
 
             {/* Access Codes Grid */}
             <Card className="mb-8 border-0 bg-white rounded-xl shadow-sm">
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Beta Access-koder</CardTitle>
+                {accessCodes.length > 6 && (
+                  <button
+                    onClick={() => setShowAllAccessCodes(!showAllAccessCodes)}
+                    className="text-sm text-slate-600 hover:text-slate-800 transition-colors"
+                  >
+                    {showAllAccessCodes ? 'Visa mindre' : `Visa alla ${accessCodes.length}`}
+                  </button>
+                )}
               </CardHeader>
               <CardContent>
                 {accessCodes.length === 0 ? (
@@ -543,34 +552,46 @@ export default function AdminPage() {
                     <p className="text-sm text-gray-400 mt-2">Kör SQL-migrationen för att lägga till koder</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {accessCodes.map((code) => (
-                      <div
-                        key={code.id}
-                        className={`p-4 rounded-lg border-2 text-center transition-all ${
-                          code.is_used
-                            ? 'bg-gray-50 border-gray-200 opacity-60'
-                            : 'bg-green-50 border-green-200 hover:border-green-300'
-                        }`}
-                      >
-                        <div className={`text-lg font-mono font-bold ${
-                          code.is_used ? 'text-gray-500' : 'text-green-700'
-                        }`}>
-                          {code.code}
+                  <>
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                      {(showAllAccessCodes ? accessCodes : accessCodes.slice(0, 6)).map((code) => (
+                        <div
+                          key={code.id}
+                          className={`p-3 rounded-lg border-2 text-center transition-all ${
+                            code.is_used
+                              ? 'bg-gray-50 border-gray-200 opacity-60'
+                              : 'bg-green-50 border-green-200 hover:border-green-300'
+                          }`}
+                        >
+                          <div className={`text-sm font-mono font-bold ${
+                            code.is_used ? 'text-gray-500' : 'text-green-700'
+                          }`}>
+                            {code.code}
+                          </div>
+                          {code.is_used ? (
+                            <div className="mt-1 text-xs text-gray-500">
+                              <div className="font-medium truncate">{code.used_by}</div>
+                              <div>{new Date(code.used_at).toLocaleDateString('sv-SE')}</div>
+                            </div>
+                          ) : (
+                            <div className="mt-1 text-xs text-green-600 font-medium">
+                              Available
+                            </div>
+                          )}
                         </div>
-                        {code.is_used ? (
-                          <div className="mt-2 text-xs text-gray-500">
-                            <div className="font-medium truncate">{code.used_by}</div>
-                            <div>{new Date(code.used_at).toLocaleDateString('sv-SE')}</div>
-                          </div>
-                        ) : (
-                          <div className="mt-2 text-xs text-green-600 font-medium">
-                            Tillgänglig
-                          </div>
-                        )}
+                      ))}
+                    </div>
+                    {!showAllAccessCodes && accessCodes.length > 6 && (
+                      <div className="mt-4 text-center">
+                        <button
+                          onClick={() => setShowAllAccessCodes(true)}
+                          className="text-sm text-slate-600 hover:text-slate-800 underline"
+                        >
+                          Visa {accessCodes.length - 6} koder till...
+                        </button>
                       </div>
-                    ))}
-                  </div>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
