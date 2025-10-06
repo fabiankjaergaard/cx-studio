@@ -2802,7 +2802,7 @@ export default function JourneyMapBuilderPage() {
             {/* Toolbar */}
             <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-t-lg">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-700 font-medium">Redigeringsläge:</span>
+                <span className="text-sm text-gray-700 font-medium">{t('journeyMap.editingMode')}:</span>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"

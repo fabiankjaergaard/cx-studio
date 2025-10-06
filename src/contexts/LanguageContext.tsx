@@ -2541,6 +2541,7 @@ const translations: Record<Language, Record<string, string>> = {
         'onboarding.skipGuide': 'Hoppa över guiden',
 
         // Journey Map Persona Selection
+        'journeyMap.editingMode': 'Redigeringsläge',
         'journeyMap.persona.noPersonaSelected': 'Ingen persona vald',
         'journeyMap.persona.choosePersonaDescription': 'Välj en persona för att personalisera journey map',
         'journeyMap.persona.choosePersona': 'Välj persona',
@@ -5985,6 +5986,7 @@ const translations: Record<Language, Record<string, string>> = {
         'onboarding.skipGuide': 'Skip guide',
 
         // Journey Map Persona Selection
+        'journeyMap.editingMode': 'Editing Mode',
         'journeyMap.persona.noPersonaSelected': 'No persona selected',
         'journeyMap.persona.choosePersonaDescription': 'Choose a persona to personalize your journey map',
         'journeyMap.persona.choosePersona': 'Choose persona',
