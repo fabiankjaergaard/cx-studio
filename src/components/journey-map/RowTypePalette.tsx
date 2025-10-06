@@ -60,7 +60,7 @@ export function RowTypePalette({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto scrollbar-hide p-4 space-y-4">
         {/* Basic Types */}
         <div>
           <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">

@@ -160,3 +160,20 @@ body {
   background: rgba(0, 0, 0, 0.1) !important;
 }
 
+/* Dot Pattern Background */
+.grid-background {
+  background-color: #f9fafb;
+  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.3) 1.5px, transparent 1.5px);
+  background-size: 60px 60px;
+  position: relative;
+}
+
+/* Hide scrollbars */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}

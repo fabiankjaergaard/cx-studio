@@ -50,6 +50,7 @@ import {
 } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
+import { Tooltip } from '@/components/ui/Tooltip'
 
 function SidebarContent() {
   const pathname = usePathname()
@@ -63,7 +64,7 @@ function SidebarContent() {
   { name: t('nav.dashboard'), href: '/', icon: HomeIcon, tourId: 'dashboard' },
   { name: t('nav.journeyMaps'), href: '/journey-maps', icon: RouteIcon, tourId: 'journey-maps' },
   { name: t('nav.templates'), href: '/templates', icon: BookTemplateIcon, tourId: 'templates' },
-  { name: t('nav.analytics'), href: '/analytics', icon: BarChart3Icon, tourId: 'analytics' },
+  { name: t('nav.analytics'), href: '/analytics', icon: BarChart3Icon, tourId: 'analytics', comingSoon: true },
   {
     name: t('nav.personas'),
     icon: UsersIcon,
@@ -317,20 +318,22 @@ function SidebarContent() {
           )}
         </div>
       </div>
-      
-      {/* Collapse/Expand Button - appears on hover as a circle */}
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute top-1/2 -translate-y-1/2 -right-2 w-6 h-6 bg-white border-2 border-gray-300 rounded-full hover:border-gray-500 transition-all duration-200 shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100"
-        title={isCollapsed ? t('ui.expandMenu') : t('ui.minimizeMenu')}
-        style={{ zIndex: 10 }}
-      >
-        {isCollapsed ? (
-          <ChevronRightIcon className="h-3 w-3 text-gray-600" />
-        ) : (
-          <ChevronLeftIcon className="h-3 w-3 text-gray-600" />
-        )}
-      </button>
+
+      {/* Collapse/Expand Button - centered vertically on entire sidebar, appears on hover */}
+      <div className="absolute inset-y-0 -right-3 flex items-center pointer-events-none" style={{ zIndex: 10 }}>
+        <Tooltip content={isCollapsed ? t('ui.expandMenu') : t('ui.minimizeMenu')} position="right">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="w-6 h-6 bg-white border-2 border-gray-300 rounded-full hover:border-gray-500 hover:scale-110 transition-all duration-200 shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-auto"
+          >
+            {isCollapsed ? (
+              <ChevronRightIcon className="h-3 w-3 text-gray-600" />
+            ) : (
+              <ChevronLeftIcon className="h-3 w-3 text-gray-600" />
+            )}
+          </button>
+        </Tooltip>
+      </div>
       
       <nav className="flex-1 px-4 py-6">
         <ul className="space-y-2">
@@ -365,7 +368,10 @@ function SidebarContent() {
                               ? 'bg-slate-100 text-slate-700'
                               : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                           )}
-                          title={isCollapsed ? item.name : undefined}
+                          aria-label={isCollapsed ? item.name : undefined}
+                          aria-current={pathname === item.href || pathname.startsWith(item.href + '?') ? 'page' : undefined}
+                          aria-expanded={isExpanded}
+                          aria-controls={`${item.name}-submenu`}
                         >
                           <item.icon
                             className={cn(
@@ -380,7 +386,7 @@ function SidebarContent() {
                             <div className="flex items-center justify-between flex-1">
                               <div className="flex items-center space-x-2">
                                 <span>{item.name}</span>
-                                <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
+                                <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full" aria-label="Work in Progress">
                                   {t('ui.wip')}
                                 </span>
                               </div>
@@ -411,7 +417,8 @@ function SidebarContent() {
                               ? 'bg-slate-100 text-slate-700'
                               : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                           )}
-                          title={isCollapsed ? item.name : undefined}
+                          aria-label={isCollapsed ? item.name : undefined}
+                          aria-current={pathname === item.href || pathname.startsWith(item.href + '?') ? 'page' : undefined}
                         >
                           <item.icon
                             className={cn(
@@ -426,7 +433,7 @@ function SidebarContent() {
                             <div className="flex items-center justify-between flex-1">
                               <span>{item.name}</span>
                               {item.name === t('nav.insights') && (
-                                <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
+                                <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full" aria-label="Work in Progress">
                                   {t('ui.wip')}
                                 </span>
                               )}
@@ -453,7 +460,9 @@ function SidebarContent() {
                         isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
                         'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                       )}
-                      title={isCollapsed ? item.name : undefined}
+                      aria-label={isCollapsed ? item.name : undefined}
+                      aria-expanded={isExpanded}
+                      aria-controls={`${item.name}-submenu`}
                     >
                       <item.icon
                         className={cn(
@@ -807,12 +816,14 @@ function SidebarContent() {
                     />
                     {!isCollapsed && (
                       <div className="flex items-center justify-between flex-1 relative">
-                        <span>{item.name}</span>
-                        {item.name === t('nav.analytics') && (
-                          <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
-                            {t('ui.comingSoon')}
-                          </span>
-                        )}
+                        <div className="flex items-center space-x-2">
+                          <span>{item.name}</span>
+                          {item.comingSoon && (
+                            <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
+                              {t('ui.comingSoon')}
+                            </span>
+                          )}
+                        </div>
                         {isBetaTester && !hasBetaTesterBeenClicked && (
                           <div className="absolute -top-1 -right-1 flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-600 opacity-75"></span>
@@ -873,36 +884,38 @@ function SidebarContent() {
             </div>
             
             {/* Help Button */}
-            <button
-              onClick={startTour}
-              className={cn(
-                "w-full flex items-center rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900",
-                isCollapsed ? "px-2 py-2 justify-center" : "px-3 py-2"
-              )}
-              title={isCollapsed ? t('nav.help') : undefined}
-            >
-              <HelpCircleIcon className={cn(
-                "h-5 w-5 text-gray-400",
-                isCollapsed ? "mx-auto" : "mr-3"
-              )} />
-              {!isCollapsed && t('nav.help')}
-            </button>
+            <Tooltip content={t('nav.help')} position="right">
+              <button
+                onClick={startTour}
+                className={cn(
+                  "w-full flex items-center rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900",
+                  isCollapsed ? "px-2 py-2 justify-center" : "px-3 py-2"
+                )}
+              >
+                <HelpCircleIcon className={cn(
+                  "h-5 w-5 text-gray-400",
+                  isCollapsed ? "mx-auto" : "mr-3"
+                )} />
+                {!isCollapsed && t('nav.help')}
+              </button>
+            </Tooltip>
             
             {/* Logout Button */}
-            <button
-              onClick={signOut}
-              className={cn(
-                "w-full flex items-center rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900",
-                isCollapsed ? "px-2 py-2 justify-center" : "px-3 py-2"
-              )}
-              title={isCollapsed ? t('nav.logout') : undefined}
-            >
-              <LogOutIcon className={cn(
-                "h-5 w-5 text-gray-400",
-                isCollapsed ? "mx-auto" : "mr-3"
-              )} />
-              {!isCollapsed && t('nav.logout')}
-            </button>
+            <Tooltip content={t('nav.logout')} position="right">
+              <button
+                onClick={signOut}
+                className={cn(
+                  "w-full flex items-center rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900",
+                  isCollapsed ? "px-2 py-2 justify-center" : "px-3 py-2"
+                )}
+              >
+                <LogOutIcon className={cn(
+                  "h-5 w-5 text-gray-400",
+                  isCollapsed ? "mx-auto" : "mr-3"
+                )} />
+                {!isCollapsed && t('nav.logout')}
+              </button>
+            </Tooltip>
           </div>
         ) : (
           /* Login Button */

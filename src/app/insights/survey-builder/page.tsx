@@ -1070,7 +1070,7 @@ function SurveyContent() {
   )
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title={
           activeTab === 'overview' ? t('surveyBuilder.page.header.overview.title') :
@@ -1090,7 +1090,7 @@ function SurveyContent() {
         }
       />
 
-      <div className={`flex-1 overflow-auto ${activeTab === 'analyze' ? 'bg-gray-50' : 'p-6 bg-gray-50'}`}>
+      <div className={`flex-1 overflow-auto ${activeTab === 'analyze' ? '' : 'p-6'}`} style={{background: 'transparent'}}>
         {activeTab === 'overview' && <Dashboard />}
         {activeTab === 'create' && <CreateSurvey />}
         {activeTab === 'builder' && <SurveyBuilder />}

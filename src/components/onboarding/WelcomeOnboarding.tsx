@@ -76,7 +76,7 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
           <div className="space-y-3">
             <button
               onClick={handleStartTour}
-              className="w-full flex items-center justify-center px-6 py-3 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors font-medium"
+              className="w-full flex items-center justify-center px-6 py-3 bg-slate-500 text-white rounded-lg hover:bg-slate-600 transition-colors font-medium"
             >
               {t('onboarding.startTour')}
               <ChevronRight className="w-5 h-5 ml-2" />

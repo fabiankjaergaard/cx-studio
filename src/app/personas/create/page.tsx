@@ -179,7 +179,7 @@ function CreatePersonaContent() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title={isFromTemplate ? t('personas.create.titleFromTemplate') : t('personas.create.title')}
         description={isFromTemplate ? t('personas.create.descriptionFromTemplate') : t('personas.create.description')}
@@ -203,13 +203,22 @@ function CreatePersonaContent() {
         }
       />
 
-      <div className="flex-1 p-6 overflow-auto">
+      <div className="flex-1 p-6 overflow-auto" style={{background: 'transparent'}}>
         <div className="max-w-4xl mx-auto space-y-6">
-          <Card className="border-0 bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
+          <Card
+            className="border-0 bg-white rounded-2xl hover:-translate-y-2 transition-all duration-500 ease-out group"
+            style={{
+              borderColor: '#E5E7EB',
+              boxShadow: '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)',
+              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 20px 40px rgba(148, 163, 184, 0.2), 0 8px 16px rgba(148, 163, 184, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)'}
+          >
             <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50">
               <CardTitle className="flex items-center text-slate-800">
-                <div className="w-8 h-8 bg-slate-600 rounded-lg flex items-center justify-center mr-3">
-                  <UserIcon className="h-4 w-4 text-white" />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center mr-3" style={{background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)'}}>
+                  <UserIcon className="h-4 w-4 text-slate-600" />
                 </div>
                 {t('personas.create.basicInfo')}
               </CardTitle>
@@ -226,14 +235,14 @@ function CreatePersonaContent() {
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="flex flex-col items-center text-gray-400 group-hover:text-slate-500 transition-colors duration-300">
-                        <UserIcon className="w-12 h-12" />
-                        <span className="text-xs mt-1 opacity-70">{t('personas.create.addImage')}</span>
+                      <div className="flex flex-col items-center transition-colors duration-300">
+                        <UserIcon className="w-8 h-8 text-slate-600 mb-2" />
+                        <span className="text-xs text-gray-500">{t('personas.create.addImage')}</span>
                       </div>
                     )}
                   </div>
                   <div className="absolute bottom-0 right-0 flex space-x-1 opacity-80 group-hover:opacity-100 transition-opacity duration-300">
-                    <label className="w-8 h-8 bg-slate-600 hover:bg-slate-700 hover:scale-110 rounded-full flex items-center justify-center cursor-pointer shadow-md transition-all duration-300">
+                    <label className="w-8 h-8 hover:scale-110 rounded-full flex items-center justify-center cursor-pointer shadow-md transition-all duration-300" style={{background: 'linear-gradient(135deg, #64748B 0%, #475569 100%)'}}>
                       <CameraIcon className="w-4 h-4 text-white" />
                       <input
                         type="file"
@@ -247,7 +256,7 @@ function CreatePersonaContent() {
                         onClick={removeImage}
                         className="w-8 h-8 bg-red-500 hover:bg-red-600 hover:scale-110 rounded-full flex items-center justify-center shadow-md transition-all duration-300"
                       >
-                        <span className="text-white text-xs font-bold">×</span>
+                        <span className="text-slate-600 text-xs font-semibold font-bold">×</span>
                       </button>
                     )}
                   </div>
@@ -308,11 +317,20 @@ function CreatePersonaContent() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Goals */}
-            <Card className="border-0 bg-white shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+            <Card
+            className="border-0 bg-white rounded-2xl hover:-translate-y-2 transition-all duration-500 ease-out group"
+            style={{
+              borderColor: '#E5E7EB',
+              boxShadow: '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)',
+              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 20px 40px rgba(148, 163, 184, 0.2), 0 8px 16px rgba(148, 163, 184, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)'}
+          >
               <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50">
                 <CardTitle className="text-lg flex items-center text-slate-800">
-                  <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
-                    <span className="text-white text-xs">✓</span>
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center mr-2" style={{background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)'}}>
+                    <span className="text-slate-600 text-xs font-semibold">✓</span>
                   </div>
                   {t('personas.create.goalsNeeds')}
                 </CardTitle>
@@ -353,11 +371,20 @@ function CreatePersonaContent() {
             </Card>
 
             {/* Pain Points */}
-            <Card className="border-0 bg-white shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+            <Card
+            className="border-0 bg-white rounded-2xl hover:-translate-y-2 transition-all duration-500 ease-out group"
+            style={{
+              borderColor: '#E5E7EB',
+              boxShadow: '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)',
+              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 20px 40px rgba(148, 163, 184, 0.2), 0 8px 16px rgba(148, 163, 184, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)'}
+          >
               <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50">
                 <CardTitle className="text-lg flex items-center text-slate-800">
-                  <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
-                    <span className="text-white text-xs">!</span>
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center mr-2" style={{background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)'}}>
+                    <span className="text-slate-600 text-xs font-semibold">!</span>
                   </div>
                   {t('personas.create.challenges')}
                 </CardTitle>
@@ -399,11 +426,11 @@ function CreatePersonaContent() {
           </div>
 
           {/* Demographics */}
-          <Card className="border-0 bg-white shadow-sm hover:shadow-md transition-all duration-300">
+          <Card className="border-0 bg-white rounded-2xl hover:-translate-y-2 transition-all duration-500 ease-out group" style={{borderColor: '#E5E7EB', boxShadow: '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)', transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'}} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 20px 40px rgba(148, 163, 184, 0.2), 0 8px 16px rgba(148, 163, 184, 0.15)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)'}>
             <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50">
               <CardTitle className="text-lg flex items-center text-slate-800">
-                <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
-                  <span className="text-white text-xs">i</span>
+                <div className="w-6 h-6 rounded-lg flex items-center justify-center mr-2" style={{background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)'}}>
+                  <span className="text-slate-600 text-xs font-semibold">i</span>
                 </div>
                 {t('personas.create.demographics')}
               </CardTitle>
@@ -443,11 +470,20 @@ function CreatePersonaContent() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Behaviors */}
-            <Card className="border-0 bg-white shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+            <Card
+            className="border-0 bg-white rounded-2xl hover:-translate-y-2 transition-all duration-500 ease-out group"
+            style={{
+              borderColor: '#E5E7EB',
+              boxShadow: '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)',
+              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 20px 40px rgba(148, 163, 184, 0.2), 0 8px 16px rgba(148, 163, 184, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)'}
+          >
               <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50">
                 <CardTitle className="text-lg flex items-center text-slate-800">
-                  <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
-                    <span className="text-white text-xs">→</span>
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center mr-2" style={{background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)'}}>
+                    <span className="text-slate-600 text-xs font-semibold">→</span>
                   </div>
                   {t('personas.create.behaviors')}
                 </CardTitle>
@@ -488,11 +524,20 @@ function CreatePersonaContent() {
             </Card>
 
             {/* Motivations */}
-            <Card className="border-0 bg-white shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+            <Card
+            className="border-0 bg-white rounded-2xl hover:-translate-y-2 transition-all duration-500 ease-out group"
+            style={{
+              borderColor: '#E5E7EB',
+              boxShadow: '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)',
+              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 20px 40px rgba(148, 163, 184, 0.2), 0 8px 16px rgba(148, 163, 184, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)'}
+          >
               <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50">
                 <CardTitle className="text-lg flex items-center text-slate-800">
-                  <div className="w-6 h-6 bg-slate-600 rounded-lg flex items-center justify-center mr-2">
-                    <SparklesIcon className="h-3 w-3 text-white" />
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center mr-2" style={{background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)'}}>
+                    <SparklesIcon className="h-3 w-3 text-slate-600" />
                   </div>
                   {t('personas.create.motivations')}
                 </CardTitle>
@@ -557,7 +602,7 @@ function CreatePersonaContent() {
                       variant="primary"
                       onClick={handleCreatePersona}
                       disabled={!persona.name || !persona.age || !persona.occupation || isCreating}
-                      className="bg-slate-600 hover:bg-slate-700 hover:scale-105 transition-all duration-300 shadow-lg"
+                      className="border-2 border-slate-300 hover:bg-slate-700 hover:scale-105 transition-all duration-300 shadow-lg"
                     >
                       <SaveIcon className="mr-2 h-4 w-4" />
                       {isCreating ? t('personas.create.creatingPersona') : t('personas.create.createButton')}

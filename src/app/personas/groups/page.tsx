@@ -125,7 +125,7 @@ export default function PersonaGroupsPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title={t('nav.personaGroups')}
         description="Organisera personas i grupper för bättre hantering"

@@ -159,7 +159,7 @@ export default function CESPage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title="Customer Effort Score (CES)"
         description="Mät kundansträngning och eliminera friktion i kundresan"
@@ -173,7 +173,7 @@ export default function CESPage() {
         }
       />
 
-      <div className="flex-1 p-6 overflow-auto bg-gray-50">
+      <div className="flex-1 p-6 overflow-auto" style={{background: 'transparent'}}>
         {/* Introduction */}
         <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden">
           <div className="p-6">

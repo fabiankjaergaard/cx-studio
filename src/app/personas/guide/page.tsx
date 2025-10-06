@@ -132,7 +132,7 @@ export default function PersonaGuidePage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title={t('personas.guide.title')}
         description={`${t('personas.guide.step')} ${currentStep + 1} ${t('personas.guide.of')} ${totalSteps}: ${personaSteps[currentStep].title}`}
@@ -152,7 +152,7 @@ export default function PersonaGuidePage() {
           </div>
         }
       />
-      <div className="flex-1 overflow-auto bg-gray-50 min-h-0">
+      <div className="flex-1 overflow-auto min-h-0" style={{background: 'transparent'}}>
 
         {/* Step Content */}
         <div className="p-8 pb-32">

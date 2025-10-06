@@ -118,7 +118,7 @@ export default function JourneyMapTemplatesPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title="Journey Map Templates"
         description="Choose a journey map template that fits your project needs"
@@ -132,7 +132,7 @@ export default function JourneyMapTemplatesPage() {
         }
       />
 
-      <div className="flex-1 p-6 overflow-auto bg-gray-50">
+      <div className="flex-1 p-6 overflow-auto" style={{background: 'transparent'}}>
         {/* Filter/Search Section */}
         <div className="mb-8 flex items-center justify-between">
           <div className="flex space-x-4">

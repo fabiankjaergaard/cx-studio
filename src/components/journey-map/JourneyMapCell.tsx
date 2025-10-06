@@ -196,10 +196,8 @@ export function JourneyMapCell({
 }: JourneyMapCellProps) {
   const [isStatusPickerOpen, setIsStatusPickerOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [isIconPickerOpen, setIsIconPickerOpen] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
   const [currentIcon, setCurrentIcon] = useState<string | undefined>(selectedIcon)
-  const [modalContent, setModalContent] = useState<string>(content)
   const [toolbarPosition, setToolbarPosition] = useState({ left: '50%', transform: 'translateX(-50%)', top: '0px' })
   const [recentlyUsedIcons, setRecentlyUsedIcons] = useState<string[]>([])
   const [iconSearchQuery, setIconSearchQuery] = useState<string>('')
@@ -224,7 +222,6 @@ export function JourneyMapCell({
   const inputRef = useRef<HTMLInputElement>(null)
   const cellRef = useRef<HTMLDivElement>(null)
   const iconContainerRef = useRef<HTMLDivElement>(null)
-  const modalIconContainerRef = useRef<HTMLDivElement>(null)
 
   // Drag & drop functionality
   const {
@@ -373,7 +370,8 @@ export function JourneyMapCell({
     // Calculate ideal center position above the cell with enough space to see the whole cell
     const cellCenterX = cellRect.left + cellRect.width / 2
     const toolbarLeft = cellCenterX - toolbarWidth / 2
-    const toolbarTop = cellRect.top - 330 // Much higher up to see the entire cell clearly
+    // Same spacing for both number and text cells - positioned above the cell
+    const toolbarTop = cellRect.top - 330
 
     // Check if toolbar would be clipped on the right
     if (toolbarLeft + toolbarWidth > viewportWidth - 20) {
@@ -500,13 +498,6 @@ export function JourneyMapCell({
     }
   }, [selectedIcon])
 
-  // Sync modalContent with content when modal opens
-  useEffect(() => {
-    if (isIconPickerOpen) {
-      setModalContent(content)
-    }
-  }, [isIconPickerOpen, content])
-
   // Auto-scroll to first matching icon when search query changes
   useEffect(() => {
     if (iconSearchQuery.trim()) {
@@ -519,39 +510,9 @@ export function JourneyMapCell({
         if (toolbarIcon && iconContainerRef.current) {
           toolbarIcon.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
         }
-
-        // Scroll in modal
-        const modalIcon = document.querySelector(`[data-modal-icon="${firstIconName}"]`)
-        if (modalIcon && modalIconContainerRef.current) {
-          modalIcon.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-        }
       }
     }
   }, [iconSearchQuery])
-
-  // Close icon picker when clicking outside
-  useEffect(() => {
-    if (!isIconPickerOpen) return
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element
-      if (cellRef.current?.contains(target)) return
-      const iconPickers = document.querySelectorAll('[data-icon-picker]')
-      for (const picker of iconPickers) {
-        if (picker.contains(target)) return
-      }
-      setIsIconPickerOpen(false)
-    }
-
-    const timer = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside)
-    }, 100)
-
-    return () => {
-      clearTimeout(timer)
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isIconPickerOpen])
 
   const handleRatingClick = (rating: number) => {
     onChange(rating.toString())
@@ -659,7 +620,7 @@ export function JourneyMapCell({
       }
 
       return (
-        <div className="relative">
+        <div ref={cellRef} className="relative">
 
           <div className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative ${backgroundColor || 'bg-white'} ${isEditing ? 'ring-2 ring-blue-500' : ''}`}>
             {(currentIcon || selectedIcon) && (
@@ -1010,149 +971,6 @@ export function JourneyMapCell({
           </div>
         </div>,
         document.body
-      )}
-
-      {/* ICON PICKER POPUP */}
-      {isIconPickerOpen && (
-        <div
-          data-icon-picker
-          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] bg-white rounded-xl shadow-xl border border-gray-200/60 backdrop-blur-sm"
-          style={{ width: '600px' }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Modern header */}
-          <div className="px-6 py-4 border-b border-gray-100">
-            <div className="text-lg font-semibold text-gray-900">Edit cell</div>
-          </div>
-
-          <div className="p-6 space-y-5">
-            {/* Text input first */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Text</label>
-              {type === 'number' ? (
-                <input
-                  type="number"
-                  value={modalContent}
-                  onChange={(e) => setModalContent(e.target.value)}
-                  placeholder={placeholder}
-                  className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white shadow-sm"
-                />
-              ) : (
-                <textarea
-                  value={modalContent}
-                  onChange={(e) => setModalContent(e.target.value)}
-                  placeholder={placeholder}
-                  rows={3}
-                  className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none bg-white shadow-sm"
-                />
-              )}
-            </div>
-
-            {/* Icons in modern grid */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <label className="block text-sm font-medium text-gray-700">Icons</label>
-                <input
-                  type="text"
-                  value={iconSearchQuery}
-                  onChange={(e) => setIconSearchQuery(e.target.value)}
-                  placeholder="Search icons..."
-                  className="text-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-all w-40 bg-white shadow-sm"
-                />
-              </div>
-              <div ref={modalIconContainerRef} className="grid grid-cols-14 gap-2 p-4 bg-gray-50/50 rounded-lg border border-gray-200 max-h-48 overflow-y-auto">
-                {!iconSearchQuery && (
-                  <button
-                    onClick={() => handleIconSelect('')}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-all shadow-sm"
-                    title="No icon"
-                  >
-                    <XCircleIcon className="h-4 w-4 text-gray-400" />
-                  </button>
-                )}
-                {getFilteredIcons().map((iconData) => {
-                  const IconComponent = iconData.icon
-                  return (
-                    <button
-                      key={iconData.name}
-                      onClick={() => handleIconSelect(iconData.name)}
-                      className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-all shadow-sm ${
-                        (currentIcon || selectedIcon) === iconData.name
-                          ? 'bg-blue-500 border-blue-500 text-white'
-                          : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
-                      }`}
-                      title={iconData.name}
-                      data-modal-icon={iconData.name}
-                    >
-                      <IconComponent className="h-4 w-4" />
-                    </button>
-                  )
-                })}
-                {getFilteredIcons().length === 0 && iconSearchQuery && (
-                  <div className="col-span-14 text-center text-gray-500 py-4 italic">
-                    No icons found for "{iconSearchQuery}"
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Colors in modern layout */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">Background color</label>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => handleColorSelect('')}
-                  className="w-10 h-10 rounded-lg border-2 border-dashed border-gray-300 bg-white hover:border-gray-400 transition-all shadow-sm flex items-center justify-center"
-                  title="No color"
-                >
-                  <XCircleIcon className="h-4 w-4 text-gray-400" />
-                </button>
-                {ROW_COLORS.slice(0, 11).map((color) => (
-                  <button
-                    key={color.id}
-                    onClick={() => handleColorSelect(color.class)}
-                    className={`w-10 h-10 ${color.class} rounded-lg border-2 transition-all shadow-sm hover:scale-105 ${
-                      backgroundColor === color.class
-                        ? 'border-gray-800 ring-2 ring-gray-300'
-                        : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                    title={color.name}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Modern bottom actions */}
-          <div className="px-6 py-4 bg-gray-50/30 border-t border-gray-100 flex justify-between rounded-b-xl">
-            <button
-              onClick={() => {
-                setModalContent('')
-                onChange('')
-                handleIconSelect('')
-                handleColorSelect('')
-                if (onClear) {
-                  onClear()
-                }
-                setIsIconPickerOpen(false)
-                setIsEditing(false)
-              }}
-              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm"
-            >
-              Clear
-            </button>
-            <button
-              onClick={() => {
-                onChange(modalContent)
-                setIsIconPickerOpen(false)
-                setIsEditing(false)
-              }}
-              className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all shadow-sm"
-            >
-              Save
-            </button>
-          </div>
-        </div>
       )}
     </>
   )

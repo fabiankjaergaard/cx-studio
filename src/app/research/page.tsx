@@ -213,13 +213,13 @@ export default function ResearchPage() {
     const folderItems = researchItems.filter(item => item.folderId === selectedFolder)
 
     return (
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col grid-background">
         <Header
           title={folder?.name || t('research.pageTitle')}
           description={folder?.description || t('research.searchResearch')}
         />
 
-        <div className="flex-1 p-8 overflow-auto bg-gray-50">
+        <div className="flex-1 p-8 overflow-auto" style={{background: 'transparent'}}>
           <div className="space-y-6">
             {/* Back and Actions */}
             <div className="flex items-center justify-between">
@@ -349,13 +349,13 @@ export default function ResearchPage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title={t('research.pageTitle')}
         description={t('research.pageDescription')}
       />
 
-      <div className="flex-1 p-8 overflow-auto bg-gray-50">
+      <div className="flex-1 p-8 overflow-auto" style={{background: 'transparent'}}>
         <div className="space-y-8">
           {/* Search and Actions - only show when there are projects */}
           {folders.length > 0 && (

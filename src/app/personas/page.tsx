@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/Input'
 import { PlusIcon, UserIcon, MapPinIcon, BriefcaseIcon, HeartIcon, AlertTriangleIcon, EditIcon, TrashIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { Tooltip } from '@/components/ui/Tooltip'
 
 interface Persona {
   id: string
@@ -143,9 +144,9 @@ export default function PersonasPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
-      <Header 
-        title={t('personas.title')} 
+    <div className="h-full flex flex-col grid-background">
+      <Header
+        title={t('personas.title')}
         description={t('personas.subtitle')}
         actions={
           <div className="flex space-x-2">
@@ -163,8 +164,8 @@ export default function PersonasPage() {
           </div>
         }
       />
-      
-      <div className="flex-1 p-6 overflow-auto bg-gray-50">
+
+      <div className="flex-1 p-6 overflow-auto" style={{background: 'transparent'}}>
         {/* Personas Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {personas.map((persona) => (
@@ -188,22 +189,26 @@ export default function PersonasPage() {
                     </div>
                   </div>
                   <div className="flex space-x-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setEditingPersona(persona)}
-                      className="p-2 hover:scale-105 transform transition-all duration-200 ease-out"
-                    >
-                      <EditIcon className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeletePersona(persona.id)}
-                      className="p-2 text-red-600 hover:text-red-700 hover:scale-105 transform transition-all duration-200 ease-out"
-                    >
-                      <TrashIcon className="h-3 w-3" />
-                    </Button>
+                    <Tooltip content="Edit persona" position="left">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingPersona(persona)}
+                        className="p-2 hover:scale-105 transform transition-all duration-200 ease-out"
+                      >
+                        <EditIcon className="h-3 w-3" />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip content="Delete persona" position="left">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeletePersona(persona.id)}
+                        className="p-2 text-red-600 hover:text-red-700 hover:scale-105 transform transition-all duration-200 ease-out"
+                      >
+                        <TrashIcon className="h-3 w-3" />
+                      </Button>
+                    </Tooltip>
                   </div>
                 </div>
               </CardHeader>

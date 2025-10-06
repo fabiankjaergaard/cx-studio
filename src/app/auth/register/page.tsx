@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { FormError } from '@/components/ui/FormError'
 import { EyeIcon, EyeOffIcon, CheckIcon } from 'lucide-react'
 
 export default function RegisterPage() {
@@ -18,9 +19,18 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-  
+  const [emailError, setEmailError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [confirmPasswordError, setConfirmPasswordError] = useState('')
+  const [touched, setTouched] = useState({ email: false, password: false, confirmPassword: false })
+
   const { signUp } = useAuth()
   const router = useRouter()
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
 
   const validatePassword = (password: string) => {
     const minLength = password.length >= 8
@@ -30,6 +40,34 @@ export default function RegisterPage() {
   }
 
   const passwordValidation = validatePassword(password)
+
+  // Validate on blur
+  const handleEmailBlur = () => {
+    setTouched(prev => ({ ...prev, email: true }))
+    if (email && !validateEmail(email)) {
+      setEmailError('Please enter a valid email address')
+    } else {
+      setEmailError('')
+    }
+  }
+
+  const handlePasswordBlur = () => {
+    setTouched(prev => ({ ...prev, password: true }))
+    if (password && !passwordValidation.isValid) {
+      setPasswordError('Password must meet all requirements')
+    } else {
+      setPasswordError('')
+    }
+  }
+
+  const handleConfirmPasswordBlur = () => {
+    setTouched(prev => ({ ...prev, confirmPassword: true }))
+    if (confirmPassword && password !== confirmPassword) {
+      setConfirmPasswordError('Passwords do not match')
+    } else {
+      setConfirmPasswordError('')
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -130,9 +168,21 @@ export default function RegisterPage() {
                   autoComplete="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    if (touched.email) {
+                      if (e.target.value && !validateEmail(e.target.value)) {
+                        setEmailError('Please enter a valid email address')
+                      } else {
+                        setEmailError('')
+                      }
+                    }
+                  }}
+                  onBlur={handleEmailBlur}
                   placeholder="Enter your email"
+                  error={!!emailError}
                 />
+                <FormError message={emailError} />
               </div>
 
               <div>
@@ -147,18 +197,31 @@ export default function RegisterPage() {
                     autoComplete="new-password"
                     required
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value)
+                      if (touched.password) {
+                        const validation = validatePassword(e.target.value)
+                        if (e.target.value && !validation.isValid) {
+                          setPasswordError('Password must meet all requirements')
+                        } else {
+                          setPasswordError('')
+                        }
+                      }
+                    }}
+                    onBlur={handlePasswordBlur}
                     placeholder="Create a password"
+                    error={!!passwordError}
                   />
                   <button
                     type="button"
                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
-                      <EyeOffIcon className="h-4 w-4 text-gray-400" />
+                      <EyeOffIcon className="h-4 w-4 text-gray-600" />
                     ) : (
-                      <EyeIcon className="h-4 w-4 text-gray-400" />
+                      <EyeIcon className="h-4 w-4 text-gray-600" />
                     )}
                   </button>
                 </div>
@@ -194,24 +257,34 @@ export default function RegisterPage() {
                     autoComplete="new-password"
                     required
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value)
+                      if (touched.confirmPassword) {
+                        if (e.target.value && password !== e.target.value) {
+                          setConfirmPasswordError('Passwords do not match')
+                        } else {
+                          setConfirmPasswordError('')
+                        }
+                      }
+                    }}
+                    onBlur={handleConfirmPasswordBlur}
                     placeholder="Confirm your password"
+                    error={!!confirmPasswordError}
                   />
                   <button
                     type="button"
                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                   >
                     {showConfirmPassword ? (
-                      <EyeOffIcon className="h-4 w-4 text-gray-400" />
+                      <EyeOffIcon className="h-4 w-4 text-gray-600" />
                     ) : (
-                      <EyeIcon className="h-4 w-4 text-gray-400" />
+                      <EyeIcon className="h-4 w-4 text-gray-600" />
                     )}
                   </button>
                 </div>
-                {confirmPassword && password !== confirmPassword && (
-                  <p className="mt-1 text-xs text-red-600">Passwords do not match</p>
-                )}
+                <FormError message={confirmPasswordError} />
               </div>
 
               <Button
@@ -220,7 +293,7 @@ export default function RegisterPage() {
                 className="w-full"
                 disabled={loading || !passwordValidation.isValid || password !== confirmPassword}
               >
-                {loading ? 'Creating account...' : 'Create account'}
+                {loading ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
           </CardContent>

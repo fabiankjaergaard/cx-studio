@@ -8,7 +8,7 @@ export default function ImportPersonaPage() {
   const { t } = useLanguage()
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen grid-background">
       <Header />
 
       <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-8">

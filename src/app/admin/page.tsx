@@ -221,13 +221,13 @@ export default function AdminPage() {
   // Show authentication screen if not authenticated
   if (!isAuthenticated) {
     return (
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col grid-background">
         <Header
           title="Admin"
           description="Ange fyrsiffrig kod för att komma åt admin-panelen"
         />
 
-        <div className="flex-1 flex items-center justify-center bg-gray-50">
+        <div className="flex-1 flex items-center justify-center" style={{background: 'transparent'}}>
           <Card className="w-full max-w-md border-0 shadow-lg">
             <CardContent className="p-8">
               <div className="text-center mb-8">
@@ -281,13 +281,13 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title="Admin"
         description="Hantera och granska feedback från användare och beta-testare"
       />
 
-      <div className="flex-1 p-6 overflow-auto bg-gray-50">
+      <div className="flex-1 p-6 overflow-auto" style={{background: 'transparent'}}>
         <div className="max-w-6xl mx-auto">
           {/* Logout Button */}
           <div className="flex justify-end mb-4">

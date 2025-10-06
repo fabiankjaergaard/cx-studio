@@ -162,7 +162,7 @@ export default function NewJourneyMapPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title="Create Journey Map"
         description="Choose how you want to create your new customer journey map"
@@ -176,7 +176,7 @@ export default function NewJourneyMapPage() {
         }
       />
 
-      <div className="flex-1 p-8 overflow-auto">
+      <div className="flex-1 p-8 overflow-auto" style={{background: 'transparent'}}>
         <div className="max-w-4xl mx-auto">
           {/* Progress Steps */}
           <div className="mb-8">
@@ -201,9 +201,12 @@ export default function NewJourneyMapPage() {
                 {creationMethods.map((method) => (
                   <Card
                     key={method.id}
-                    className={`cursor-pointer border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out group ${
+                    className={`cursor-pointer hover:-translate-y-2 transition-all duration-500 ease-out group bg-white rounded-2xl ${
                       method.id === 'ai' ? 'relative opacity-75' : ''
                     }`}
+                    style={{borderColor: '#E5E7EB', boxShadow: '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)', transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'}}
+                    onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 20px 40px rgba(148, 163, 184, 0.2), 0 8px 16px rgba(148, 163, 184, 0.15)'}
+                    onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)'}
                     onClick={() => method.id !== 'ai' && handleMethodSelect(method.id)}
                   >
                     <CardContent className="p-6 text-center">
@@ -213,8 +216,8 @@ export default function NewJourneyMapPage() {
                         </div>
                       )}
 
-                      <div className={`w-16 h-16 mx-auto mb-4 ${method.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 ease-out`}>
-                        <method.icon className="w-8 h-8 group-hover:text-slate-700 transition-colors duration-200" />
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-500 ease-out" style={{background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)', transform: 'translateZ(0)'}}>
+                        <method.icon className="w-8 h-8 text-slate-400 group-hover:text-slate-600 transition-colors duration-300" />
                       </div>
 
                       <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-slate-900 transition-colors duration-200">
@@ -255,7 +258,12 @@ export default function NewJourneyMapPage() {
                 </p>
               </div>
 
-              <Card className="border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
+              <Card
+              className="border-0 bg-white rounded-2xl hover:-translate-y-2 transition-all duration-500 ease-out group"
+              style={{borderColor: '#E5E7EB', boxShadow: '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)', transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'}}
+              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 20px 40px rgba(148, 163, 184, 0.2), 0 8px 16px rgba(148, 163, 184, 0.15)'}
+              onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)'}
+            >
                 <CardContent className="p-8">
                   <div className="space-y-6">
                     <Input
@@ -274,15 +282,16 @@ export default function NewJourneyMapPage() {
                         value={newMapDescription}
                         onChange={(e) => setNewMapDescription(e.target.value)}
                         placeholder="Describe what this journey map will be used for..."
-                        className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white text-gray-900 placeholder-gray-500"
+                        className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white text-gray-900 placeholder-gray-500 transition-all duration-200"
                         rows={4}
                       />
                     </div>
 
-                    <div className="flex justify-between pt-4 border-t">
+                    <div className="flex justify-between pt-4 border-t border-gray-100">
                       <Button
                         variant="outline"
                         onClick={() => setSelectedMethod(null)}
+                        className="hover:scale-105 transform transition-all duration-200 ease-out"
                       >
                         Back
                       </Button>
@@ -290,6 +299,7 @@ export default function NewJourneyMapPage() {
                         variant="primary"
                         onClick={handleCreateBlankMap}
                         disabled={!newMapName.trim()}
+                        className="hover:scale-105 transform transition-all duration-200 ease-out"
                       >
                         <PlusIcon className="mr-2 h-4 w-4" />
                         Continue to team setup
@@ -303,17 +313,22 @@ export default function NewJourneyMapPage() {
 
           {!selectedMethod && (
             /* Additional Information */
-            <Card className="mt-8 bg-slate-50 border-slate-200 border-0 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
+            <Card
+              className="mt-8 border-0 bg-white rounded-2xl hover:-translate-y-2 transition-all duration-500 ease-out group"
+              style={{borderColor: '#E5E7EB', boxShadow: '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)', transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)', background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)'}}
+              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 20px 40px rgba(148, 163, 184, 0.2), 0 8px 16px rgba(148, 163, 184, 0.15)'}
+              onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)'}
+            >
               <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-3">Need help choosing?</h3>
+                <h3 className="font-semibold text-gray-900 mb-4 group-hover:text-slate-900 transition-colors duration-200">Need help choosing?</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                  <div>
+                  <div className="p-3 rounded-lg bg-white/50 backdrop-blur-sm border border-gray-100 group-hover:bg-white/70 transition-all duration-300">
                     <strong className="text-gray-900">Blank:</strong> Best when you have a clear vision and want full control over the structure.
                   </div>
-                  <div>
+                  <div className="p-3 rounded-lg bg-white/50 backdrop-blur-sm border border-gray-100 group-hover:bg-white/70 transition-all duration-300">
                     <strong className="text-gray-900">Template:</strong> Perfect for getting started quickly with proven structures.
                   </div>
-                  <div>
+                  <div className="p-3 rounded-lg bg-white/50 backdrop-blur-sm border border-gray-100 group-hover:bg-white/70 transition-all duration-300">
                     <strong className="text-gray-900">AI:</strong> Ideal when you want suggestions and inspiration based on your needs.
                   </div>
                 </div>

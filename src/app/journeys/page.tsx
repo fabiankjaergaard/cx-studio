@@ -18,7 +18,7 @@ export default function JourneysPage() {
 
   if (!currentJourney) {
     return (
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col grid-background">
         <Header 
           title="Journey Maps" 
           description="Skapa och hantera customer journey maps"
@@ -37,8 +37,8 @@ export default function JourneysPage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <Header 
+    <div className="h-full flex flex-col grid-background">
+      <Header
         title={currentJourney.title}
         description={`Persona: ${currentJourney.persona} • ${currentJourney.touchpoints.length} touchpoints`}
         actions={
@@ -61,7 +61,7 @@ export default function JourneysPage() {
       
       <ProgressIndicator journey={currentJourney} />
       
-      <div className="flex-1 overflow-auto bg-gray-50">
+      <div className="flex-1 overflow-auto" style={{background: 'transparent'}}>
         <JourneyBuilder
           journey={currentJourney}
         />

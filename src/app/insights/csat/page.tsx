@@ -161,7 +161,7 @@ export default function CSATPage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title="Customer Satisfaction (CSAT)"
         description="Mät kundnöjdhet och förbättra kundupplevelsen"
@@ -175,7 +175,7 @@ export default function CSATPage() {
         }
       />
 
-      <div className="flex-1 p-6 overflow-auto bg-gray-50">
+      <div className="flex-1 p-6 overflow-auto" style={{background: 'transparent'}}>
         {/* Introduction */}
         <Card className="mb-8 border-0 bg-white rounded-xl overflow-hidden hover:shadow-md transition-shadow duration-300">
           <div className="p-6">

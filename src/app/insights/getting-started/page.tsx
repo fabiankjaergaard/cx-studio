@@ -135,7 +135,7 @@ export default function GettingStartedPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title={t('gettingStarted.pageTitle')}
         description={`${t('gettingStarted.step')} ${currentStep + 1} ${t('gettingStarted.of')} ${totalSteps}: ${researchSteps[currentStep].title}`}
@@ -155,7 +155,7 @@ export default function GettingStartedPage() {
           </div>
         }
       />
-      <div className="flex-1 overflow-auto bg-gray-50 min-h-0">
+      <div className="flex-1 overflow-auto min-h-0" style={{background: 'transparent'}}>
 
         {/* Step Content */}
         <div className="p-8 pb-32">

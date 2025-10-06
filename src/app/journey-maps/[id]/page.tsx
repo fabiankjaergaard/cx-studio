@@ -38,10 +38,13 @@ import {
   Move,
   Trash2,
   FileDownIcon,
-  ImageIcon
+  ImageIcon,
+  LayersIcon,
+  ChevronDownIcon,
+  ChevronRightIcon
 } from 'lucide-react'
 import Link from 'next/link'
-import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES, ROW_TYPES } from '@/types/journey-map'
+import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, JourneyMapSublane, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES, ROW_TYPES } from '@/types/journey-map'
 import { saveJourneyMap, getJourneyMapById } from '@/services/journeyMapStorage'
 import { JourneyMapCell as JourneyMapCellComponent } from '@/components/journey-map/JourneyMapCell'
 import { RowEditor } from '@/components/journey-map/RowEditor'
@@ -1401,6 +1404,166 @@ export default function JourneyMapBuilderPage() {
     }, 2000)
   }
 
+  // Sublane functionality
+  const handleAddSublane = (rowId: string) => {
+    if (!journeyMap) return
+
+    const row = journeyMap.rows.find(r => r.id === rowId)
+    if (!row) return
+
+    const newSublane: JourneyMapSublane = {
+      id: `sublane-${Date.now()}`,
+      parentRowId: rowId,
+      name: 'New sublane',
+      type: 'text',
+      color: 'bg-gray-50',
+      cells: journeyMap.stages.map((_, i) => ({
+        id: `sublane-${Date.now()}-cell-${i}`,
+        content: ''
+      }))
+    }
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(r =>
+        r.id === rowId
+          ? {
+              ...r,
+              sublanes: [...(r.sublanes || []), newSublane],
+              isExpanded: true // Auto-expand when adding sublane
+            }
+          : r
+      ),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+      })
+    }, 2000)
+  }
+
+  const handleToggleExpand = (rowId: string) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId
+          ? { ...row, isExpanded: !row.isExpanded }
+          : row
+      ),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+  }
+
+  const handleDeleteSublane = (rowId: string, sublaneId: string) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId
+          ? {
+              ...row,
+              sublanes: (row.sublanes || []).filter(s => s.id !== sublaneId)
+            }
+          : row
+      ),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+      })
+    }, 2000)
+  }
+
+  const handleSublaneNameChange = (rowId: string, sublaneId: string, name: string) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId
+          ? {
+              ...row,
+              sublanes: (row.sublanes || []).map(sublane =>
+                sublane.id === sublaneId ? { ...sublane, name } : sublane
+              )
+            }
+          : row
+      ),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+      })
+    }, 2000)
+  }
+
+  const handleSublaneCellChange = (rowId: string, sublaneId: string, cellIndex: number, content: string) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row => {
+        if (row.id === rowId) {
+          const updatedSublanes = (row.sublanes || []).map(sublane => {
+            if (sublane.id === sublaneId) {
+              const updatedCells = [...(sublane.cells || [])]
+              updatedCells[cellIndex] = {
+                ...updatedCells[cellIndex],
+                content
+              }
+              return { ...sublane, cells: updatedCells }
+            }
+            return sublane
+          })
+          return { ...row, sublanes: updatedSublanes }
+        }
+        return row
+      }),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+      })
+    }, 2000)
+  }
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
@@ -2390,7 +2553,7 @@ export default function JourneyMapBuilderPage() {
   }
 
   const content = (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col overflow-hidden grid-background">
           <Header
         title={journeyMap.name}
         description={journeyMap.description || 'Redigera din customer journey map'}
@@ -2582,7 +2745,7 @@ export default function JourneyMapBuilderPage() {
         }
       />
 
-          <div className="flex-1 flex overflow-hidden">
+          <div className="flex-1 flex min-h-0">
             {/* Row Types Palette - only shown in drag & drop mode */}
             {isDragDropMode && (
               <RowTypePalette
@@ -2590,11 +2753,16 @@ export default function JourneyMapBuilderPage() {
               />
             )}
 
-            <div className="flex-1 overflow-auto bg-gray-50">
-            <div className={isCompactView ? "p-3" : "p-6"}>
+            <div className="flex-1 overflow-auto" style={{background: 'transparent'}}>
+            <div className={isCompactView ? "p-3 pb-3" : "p-6 pb-6"}>
             {/* Persona Section */}
             <div className="mb-6" data-onboarding="persona">
-              <Card className="border-l-4 border-l-slate-500">
+              <Card
+                className="border-0 bg-white rounded-2xl hover:-translate-y-1 transition-all duration-300 ease-out group border-l-4 border-l-slate-500"
+                style={{borderColor: '#E5E7EB', boxShadow: '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'}}
+                onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 10px 30px rgba(148, 163, 184, 0.2), 0 4px 12px rgba(148, 163, 184, 0.12)'}
+                onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)'}
+              >
                 <CardContent className={isCompactView ? "p-3" : "p-4"}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
@@ -2657,26 +2825,27 @@ export default function JourneyMapBuilderPage() {
             </div>
 
             {/* Journey Map Grid */}
-            <Card className="overflow-hidden journey-map-content rounded-t-none border-t-0" data-export="journey-map">
+            <Card className="journey-map-content rounded-t-none border-t-0" data-export="journey-map">
               <CardContent className="p-0 border-b-2 border-gray-200">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto scrollbar-hide" style={{maxHeight: '70vh', overflowY: 'auto', overflow: 'visible'}}>
                   <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
                     onDragEnd={handleDragEnd}
                   >
-                    <table className="w-full border-collapse">
+                    <table className="w-full bg-white rounded-xl shadow-sm" style={{borderCollapse: 'separate', borderSpacing: 0, boxShadow: '0 4px 20px rgba(148, 163, 184, 0.12), 0 1px 4px rgba(148, 163, 184, 0.08)'}}>
                 {/* Phase Header Row */}
                 <thead>
                   {/* Phases Row */}
                   <tr
-                    className="bg-gray-100 border-b border-gray-300"
+                    className="border-b border-gray-200"
+                    style={{background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)'}}
                     data-onboarding="phases"
                     onMouseMove={handlePhaseResize}
                     onMouseUp={handlePhaseResizeEnd}
                     onMouseLeave={handlePhaseResizeEnd}
                   >
-                    <th className={`w-48 p-2 text-left text-xs font-semibold text-gray-600 ${showGridLines ? 'border-r border-gray-200' : ''}`}>
+                    <th className={`w-48 p-2 text-left text-xs font-semibold text-gray-600 border-r border-gray-300`}>
                       Phases
                     </th>
                     {journeyMap.phases.map((phase, phaseIndex) => {
@@ -2689,7 +2858,7 @@ export default function JourneyMapBuilderPage() {
                       return (
                         <th
                           key={phase.id}
-                          className={`relative p-2 text-center text-sm font-semibold text-gray-700 ${showGridLines ? 'border-r border-gray-200' : ''} ${phase.color} ${stagesInPhase === 0 ? 'min-w-32' : ''} group`}
+                          className={`relative p-2 text-center text-sm font-semibold text-gray-700 border-r border-gray-300 ${phase.color} ${stagesInPhase === 0 ? 'min-w-32' : ''} group`}
                           colSpan={colSpan}
                         >
                           <InlineEdit
@@ -2791,14 +2960,14 @@ export default function JourneyMapBuilderPage() {
                   </tr>
                   
                   {/* Stages Header Row */}
-                  <tr className="bg-slate-50 border-b-2 border-gray-200" data-onboarding="stages">
-                    <th className={`w-48 ${isCompactView ? 'p-2' : 'p-4'} text-left text-sm font-medium text-gray-900 ${showGridLines ? 'border-r border-gray-200' : ''} hover:bg-white transition-colors`}>
+                  <tr className="border-b-2 border-gray-200" data-onboarding="stages" style={{background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)'}}>
+                    <th className={`w-48 ${isCompactView ? 'p-2' : 'p-4'} text-left text-sm font-medium text-gray-900 border-r border-gray-300 hover:bg-white transition-colors`}>
                       Journey Kategorier
                     </th>
                     {journeyMap.stages.map((stage, index) => (
                       <th
                         key={stage.id}
-                        className={`min-w-64 ${isCompactView ? 'p-2' : 'p-4'} text-left ${showGridLines ? 'border-r border-gray-200' : ''} relative group hover:bg-white transition-colors cursor-move ${
+                        className={`min-w-64 ${isCompactView ? 'p-2' : 'p-4'} text-left border-r border-gray-300 relative group hover:bg-white transition-colors cursor-move ${
                           draggedStageId === stage.id ? 'bg-slate-50 shadow-lg' : ''
                         }`}
                         draggable={true}
@@ -2929,14 +3098,34 @@ export default function JourneyMapBuilderPage() {
                   )}
 
 
-                  {journeyMap.rows.map((row, rowIndex) => (
+                  {journeyMap.rows.map((row, rowIndex) => {
+                    // First row should always be sticky (this is the Actions row)
+                    const isFirstRow = rowIndex === 0
+                    return (
                     <React.Fragment key={`row-section-${row.id}`}>
-                      <tr key={row.id} className="border-b-2 border-gray-200">
+                      <tr key={row.id} className={`border-b-2 border-gray-200 ${isFirstRow ? 'sticky top-0 z-10 bg-white' : ''}`}>
                       <td
-                        className={`${isCompactView ? 'p-2' : 'p-4'} ${showGridLines ? 'border-r border-gray-200' : ''} bg-slate-50 group relative hover:bg-white transition-colors`}
+                        className={`${isCompactView ? 'p-2' : 'p-4'} border-r border-gray-300 ${isFirstRow ? 'bg-white' : 'bg-slate-50'} group relative hover:bg-white transition-colors`}
                         data-onboarding={rowIndex === 0 ? "categories" : undefined}
+                        style={isFirstRow ? {backgroundColor: 'white'} : {}}
                       >
-                        <div className="space-y-1">
+                        <div className="flex items-start space-x-2">
+                          {/* Expand/Collapse button - only show if row has sublanes */}
+                          {(row.sublanes && row.sublanes.length > 0) && (
+                            <button
+                              onClick={() => handleToggleExpand(row.id)}
+                              className="p-1 hover:bg-gray-200 rounded transition-colors mt-1 flex-shrink-0"
+                              title={row.isExpanded ? "Collapse sublanes" : "Expand sublanes"}
+                            >
+                              {row.isExpanded ? (
+                                <ChevronDownIcon className="h-4 w-4 text-gray-600" />
+                              ) : (
+                                <ChevronRightIcon className="h-4 w-4 text-gray-600" />
+                              )}
+                            </button>
+                          )}
+
+                          <div className="space-y-1 flex-1">
                           <InlineEdit
                             value={row.category}
                             onChange={(newCategory) => handleRowCategoryChange(row.id, newCategory)}
@@ -2952,6 +3141,7 @@ export default function JourneyMapBuilderPage() {
                             multiline={true}
                             variant="description"
                           />
+                          </div>
                         </div>
 
                         {/* Row actions dropdown - appears on hover */}
@@ -2969,7 +3159,7 @@ export default function JourneyMapBuilderPage() {
 
                           {/* Dropdown menu */}
                           {activeDropdown === `row-${row.id}` && (
-                            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-32 z-20">
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-32 z-50">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()
@@ -2992,6 +3182,17 @@ export default function JourneyMapBuilderPage() {
                                 <Move className="w-3 h-3" />
                                 Move
                               </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleAddSublane(row.id)
+                                  setActiveDropdown(null)
+                                }}
+                                className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-900 hover:text-gray-900"
+                              >
+                                <LayersIcon className="w-3 h-3" />
+                                Add sublane
+                              </button>
                               <div className="border-t mx-2 my-1"></div>
                               <button
                                 onClick={(e) => {
@@ -3010,10 +3211,11 @@ export default function JourneyMapBuilderPage() {
                       </td>
                       {(row.type === 'emoji' || row.type === 'pain-points' || row.type === 'opportunities' || row.type === 'metrics' || row.type === 'channels') ? (
                         // For visualization components, create one cell spanning all stages
-                        <td 
-                          key={`${row.id}-emotion-curve`} 
-                          className={`${isCompactView ? 'p-1' : 'p-2'} align-top`}
+                        <td
+                          key={`${row.id}-emotion-curve`}
+                          className={`${isCompactView ? 'p-1' : 'p-2'} align-top ${isFirstRow ? 'bg-white' : ''}`}
                           colSpan={journeyMap.stages.length}
+                          style={isFirstRow ? {backgroundColor: 'white'} : {}}
                         >
                           <JourneyMapCellComponent
                             content={row.cells.map(c => c.content).join(',')}
@@ -3070,9 +3272,10 @@ export default function JourneyMapBuilderPage() {
                             return (
                           <td
                             key={cell.id}
-                            className={`${isCompactView ? 'p-1' : 'p-2'} ${showGridLines ? 'border-r border-gray-200' : ''} align-middle group relative`}
+                            className={`${isCompactView ? 'p-1' : 'p-2'} align-middle group relative ${isFirstRow ? 'bg-white' : ''}`}
                             data-onboarding={rowIndex === 0 && cellIndex === 0 ? "cells" : undefined}
                             colSpan={cell.colSpan || 1}
+                            style={isFirstRow ? {backgroundColor: 'white'} : {}}
                             onDragOver={(e) => handleStageHover(e, cellIndex)}
                             onDrop={(e) => {
                               const rect = e.currentTarget.getBoundingClientRect()
@@ -3162,6 +3365,82 @@ export default function JourneyMapBuilderPage() {
                         <td className={`${isCompactView ? 'p-2' : 'p-4'} bg-slate-50`}></td>
                       </tr>
 
+                      {/* Sublanes (when expanded) */}
+                      {row.isExpanded && row.sublanes && row.sublanes.map((sublane) => (
+                        <tr key={sublane.id} className="border-b border-gray-200 bg-gray-50 hover:bg-gray-100 group">
+                          <td className={`${isCompactView ? 'p-2' : 'p-3'} border-r border-gray-300`}>
+                            <div className="flex items-center space-x-2 ml-8">
+                              <div className="w-1 h-4 bg-blue-300 rounded-sm"></div>
+                              <div className="flex-1">
+                                <input
+                                  type="text"
+                                  value={sublane.name}
+                                  onChange={(e) => handleSublaneNameChange(row.id, sublane.id, e.target.value)}
+                                  className="text-sm text-gray-700 bg-transparent border-none outline-none hover:bg-white focus:bg-white rounded px-1 py-0.5 w-full"
+                                  placeholder="Sublane name"
+                                />
+                              </div>
+                              <button
+                                onClick={() => handleDeleteSublane(row.id, sublane.id)}
+                                className="p-1 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all"
+                                title="Delete sublane"
+                              >
+                                <TrashIcon className="h-3 w-3" />
+                              </button>
+                            </div>
+                          </td>
+
+                          {/* Sublane cells */}
+                          {(sublane.cells || []).map((cell, cellIndex) => {
+                            // Check if this cell should be skipped due to previous colSpan
+                            let isSkipped = false
+                            for (let i = 0; i < cellIndex; i++) {
+                              const prevCell = sublane.cells?.[i]
+                              if (prevCell) {
+                                const prevColSpan = prevCell.colSpan || 1
+                                if (i + prevColSpan > cellIndex) {
+                                  isSkipped = true
+                                  break
+                                }
+                              }
+                            }
+
+                            if (isSkipped) return null
+
+                            return (
+                              <td
+                                key={cell.id || `${sublane.id}-cell-${cellIndex}`}
+                                className={`${isCompactView ? 'p-1' : 'p-2'}`}
+                                colSpan={cell.colSpan || 1}
+                              >
+                                <JourneyMapCellComponent
+                                  id={cell.id || `${sublane.id}-cell-${cellIndex}`}
+                                  content={cell.content}
+                                  type={sublane.type}
+                                  onChange={(content) => handleSublaneCellChange(row.id, sublane.id, cellIndex, content)}
+                                  selectedIcon={cell.icon}
+                                  backgroundColor={cell.backgroundColor || sublane.color}
+                                  placeholder="Add content..."
+                                  stageCount={journeyMap.stages.length}
+                                />
+                              </td>
+                            )
+                          })}
+                        </tr>
+                      ))}
+
+                      {/* Show sublane count when collapsed */}
+                      {!row.isExpanded && row.sublanes && row.sublanes.length > 0 && (
+                        <tr>
+                          <td colSpan={journeyMap.stages.length + 1} className="px-4 py-1 text-xs text-gray-400 bg-gray-50 border-b border-gray-100">
+                            <div className="flex items-center space-x-1 ml-8">
+                              <LayersIcon className="h-3 w-3" />
+                              <span>{row.sublanes.length} sublane{row.sublanes.length !== 1 ? 's' : ''} (click to expand)</span>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+
                       {/* Insertion zone after each row - drag & drop mode only */}
                       {isDragDropMode && (
                         <RowInsertionZone
@@ -3173,27 +3452,28 @@ export default function JourneyMapBuilderPage() {
                       )}
 
                     </React.Fragment>
-                  ))}
+                  )
+                  })}
                   
                 </tbody>
               </table>
                   </DndContext>
             </div>
+
+            {/* Plus Button inside Card - plus button mode only */}
+            {!isDragDropMode && (
+              <div
+                onClick={() => {
+                  setEditingRow(null)
+                  setIsRowEditorOpen(true)
+                }}
+                className="m-4 border-2 border-dashed border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-all duration-200 rounded-lg p-4 flex justify-center cursor-pointer"
+              >
+                <PlusIcon className="h-5 w-5 text-gray-400" />
+              </div>
+            )}
           </CardContent>
           </Card>
-
-          {/* Separate Plus Button Section - plus button mode only */}
-          {!isDragDropMode && (
-            <div
-              onClick={() => {
-                setEditingRow(null)
-                setIsRowEditorOpen(true)
-              }}
-              className="mt-6 border-2 border-dashed border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-all duration-200 rounded-lg p-4 flex justify-center cursor-pointer"
-            >
-              <PlusIcon className="h-5 w-5 text-gray-400" />
-            </div>
-          )}
         </div>
       </div>
         </div>

@@ -65,26 +65,36 @@ export function RowInsertionZone({
   }
 
   return (
-    <tr className="h-6 group relative">
+    <tr className="h-8 group relative">
       <td
         ref={drop as any}
         colSpan={stageCount + 2}
         className={`
-          p-1 transition-all duration-100 relative cursor-pointer
+          p-2 transition-all duration-200 relative cursor-pointer border-2 border-dashed rounded-lg mx-2
           ${isActive
-            ? 'bg-slate-100 border-slate-300'
-            : 'bg-slate-50/20 hover:bg-slate-50/40'
+            ? 'bg-slate-100 border-slate-400 shadow-sm'
+            : 'bg-slate-50/30 border-slate-200/60 hover:bg-slate-50/50 hover:border-slate-300/80'
           }
         `}
-        title={`Drop zone ${insertIndex}`}
+        title={`Drop your block here (position ${insertIndex})`}
       >
         {/* Drop indicator */}
-        {isActive && (
-          <div className="w-full h-1 bg-slate-600 rounded-full mx-auto" />
-        )}
-        {!isActive && (
-          <div className="w-full h-px bg-slate-200/60 mx-auto" />
-        )}
+        <div className="flex items-center justify-center space-x-2">
+          {isActive && (
+            <>
+              <div className="w-2 h-2 bg-slate-600 rounded-full animate-pulse" />
+              <span className="text-xs font-medium text-slate-700">Drop here to add row</span>
+              <div className="w-2 h-2 bg-slate-600 rounded-full animate-pulse" />
+            </>
+          )}
+          {!isActive && (
+            <>
+              <div className="w-1 h-1 bg-slate-300 rounded-full" />
+              <span className="text-xs text-slate-500">Drop zone</span>
+              <div className="w-1 h-1 bg-slate-300 rounded-full" />
+            </>
+          )}
+        </div>
       </td>
     </tr>
   )

@@ -431,7 +431,7 @@ export default function PersonaTemplatesPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title={t('nav.personaTemplates')}
         description={t('personaTemplates.description')}

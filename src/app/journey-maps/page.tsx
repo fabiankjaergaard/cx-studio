@@ -6,7 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { SkeletonJourneyCard } from '@/components/ui/Skeleton'
+import { Tooltip } from '@/components/ui/Tooltip'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useToast } from '@/contexts/ToastContext'
 import { getSavedJourneyMaps, deleteJourneyMap } from '@/services/journeyMapStorage'
 import {
   PlusIcon,
@@ -57,17 +61,29 @@ const getStatusLabels = (t: (key: string) => string) => ({
 export default function JourneyMapsPage() {
   const { t, language } = useLanguage()
   const router = useRouter()
+  const toast = useToast()
   const [journeyMaps, setJourneyMaps] = useState<JourneyMap[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const statusLabels = getStatusLabels(t)
   const [isNewMapModalOpen, setIsNewMapModalOpen] = useState(false)
   const [newMapName, setNewMapName] = useState('')
   const [newMapDescription, setNewMapDescription] = useState('')
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{ isOpen: boolean; mapId: string | null; mapName: string }>({
+    isOpen: false,
+    mapId: null,
+    mapName: ''
+  })
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Load saved journey maps on component mount
   useEffect(() => {
-    const loadSavedMaps = () => {
+    const loadSavedMaps = async () => {
+      setIsLoading(true)
       try {
+        // Simulate loading delay for better UX
+        await new Promise(resolve => setTimeout(resolve, 500))
+
         const savedMaps = getSavedJourneyMaps()
         console.log('Loading saved journey maps:', savedMaps.length, 'maps found')
         console.log('Saved maps data:', savedMaps)
@@ -105,6 +121,8 @@ export default function JourneyMapsPage() {
         setJourneyMaps(formattedMaps)
       } catch (error) {
         console.error('Error loading saved journey maps:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -157,15 +175,31 @@ export default function JourneyMapsPage() {
     }
   }
 
-  const handleDeleteJourneyMap = (id: string) => {
+  const handleDeleteJourneyMap = async () => {
+    if (!deleteConfirmDialog.mapId) return
+
+    setIsDeleting(true)
     try {
-      deleteJourneyMap(id)
-      setJourneyMaps(journeyMaps.filter(map => map.id !== id))
-      console.log('Journey map deleted successfully')
+      await new Promise(resolve => setTimeout(resolve, 500)) // Simulate API call
+      deleteJourneyMap(deleteConfirmDialog.mapId)
+      setJourneyMaps(journeyMaps.filter(map => map.id !== deleteConfirmDialog.mapId))
+      toast.success(`Journey map "${deleteConfirmDialog.mapName}" deleted successfully`)
+      setDeleteConfirmDialog({ isOpen: false, mapId: null, mapName: '' })
+      setActiveDropdown(null)
     } catch (error) {
       console.error('Error deleting journey map:', error)
-      // You could show an error message to the user here
+      toast.error('Failed to delete journey map')
+    } finally {
+      setIsDeleting(false)
     }
+  }
+
+  const openDeleteConfirm = (map: JourneyMap) => {
+    setDeleteConfirmDialog({
+      isOpen: true,
+      mapId: map.id,
+      mapName: map.name
+    })
   }
 
   const handleDuplicateJourneyMap = (map: JourneyMap) => {
@@ -177,21 +211,30 @@ export default function JourneyMapsPage() {
       status: 'draft'
     }
     setJourneyMaps([duplicatedMap, ...journeyMaps])
+    toast.success(`Journey map duplicated successfully`)
+    setActiveDropdown(null)
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title={t('journeyMaps.title')}
         description={t('journeyMaps.subtitle')}
       />
-      
-      <div className="flex-1 p-8 overflow-auto bg-gray-50">
-        {journeyMaps.length > 0 ? (
+
+      <div className="flex-1 p-8 overflow-auto bg-transparent">
+        {isLoading ? (
+          /* Loading State */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <SkeletonJourneyCard key={i} />
+            ))}
+          </div>
+        ) : journeyMaps.length > 0 ? (
           /* Journey Maps Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {journeyMaps.map((journeyMap) => (
-            <Card key={journeyMap.id} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-96 group cursor-pointer">
+            <Card key={journeyMap.id} className="hover:-translate-y-2 transition-all duration-500 ease-out h-96 group cursor-pointer bg-white rounded-2xl border-gray-200 shadow-card hover:shadow-card-hover">
               <CardContent className="pt-6 h-full flex flex-col">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -204,28 +247,49 @@ export default function JourneyMapsPage() {
                     <p className="text-sm text-gray-600 line-clamp-2">{journeyMap.description}</p>
                   </div>
                   <div className="relative ml-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setActiveDropdown(activeDropdown === journeyMap.id ? null : journeyMap.id)
-                      }}
-                      className="p-2"
-                      title="More actions"
-                    >
-                      <MoreVerticalIcon className="h-3 w-3" />
-                    </Button>
+                    <Tooltip content="More actions" position="left">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setActiveDropdown(activeDropdown === journeyMap.id ? null : journeyMap.id)
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') {
+                            setActiveDropdown(null)
+                          }
+                        }}
+                        className="p-2"
+                        aria-label="More actions"
+                        aria-haspopup="true"
+                        aria-expanded={activeDropdown === journeyMap.id}
+                      >
+                        <MoreVerticalIcon className="h-3 w-3" />
+                      </Button>
+                    </Tooltip>
 
                     {activeDropdown === journeyMap.id && (
-                      <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
+                      <div
+                        className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10"
+                        role="menu"
+                        aria-label="Journey map actions"
+                      >
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
                             handleDuplicateJourneyMap(journeyMap)
                             setActiveDropdown(null)
                           }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault()
+                              handleDuplicateJourneyMap(journeyMap)
+                              setActiveDropdown(null)
+                            }
+                          }}
                           className="w-full px-3 py-2 text-left hover:bg-gray-50 text-sm flex items-center"
+                          role="menuitem"
                         >
                           <CopyIcon className="h-4 w-4 mr-2" />
                           {t('journeyMaps.actions.duplicate')}
@@ -233,10 +297,16 @@ export default function JourneyMapsPage() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
-                            handleDeleteJourneyMap(journeyMap.id)
-                            setActiveDropdown(null)
+                            openDeleteConfirm(journeyMap)
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault()
+                              openDeleteConfirm(journeyMap)
+                            }
                           }}
                           className="w-full px-3 py-2 text-left hover:bg-gray-50 text-sm flex items-center text-red-600 hover:text-red-700"
+                          role="menuitem"
                         >
                           <TrashIcon className="h-4 w-4 mr-2" />
                           {t('journeyMaps.actions.delete')}
@@ -328,13 +398,13 @@ export default function JourneyMapsPage() {
 
                 <div className="flex space-x-2 pt-4 border-t border-gray-100">
                   <Link href={`/journey-maps/${journeyMap.id}`} className="flex-1">
-                    <Button variant="primary" size="sm" className="w-full">
+                    <Button variant="primary" size="sm" className="w-full transform hover:scale-105 transition-all duration-200 ease-out">
                       <EditIcon className="h-3 w-3 mr-1" />
                       {t('journeyMaps.actions.edit')}
                     </Button>
                   </Link>
                   <Link href={`/journey-maps/${journeyMap.id}/view`}>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="transform hover:scale-105 transition-all duration-200 ease-out">
                       <ExternalLinkIcon className="h-3 w-3" />
                     </Button>
                   </Link>
@@ -345,16 +415,16 @@ export default function JourneyMapsPage() {
 
             {/* Add New Journey Map Card */}
             <Link href="/journey-maps/new">
-              <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-96 cursor-pointer group hover:bg-slate-50/30">
+              <Card className="border-2 border-dashed border-gray-200 hover:-translate-y-2 transition-all duration-500 ease-out h-96 cursor-pointer group bg-white rounded-2xl shadow-subtle hover:shadow-card">
                 <CardContent className="pt-6 h-full flex flex-col">
                   <div className="text-center py-12 flex-1 flex flex-col justify-center">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-110 transition-all duration-300 ease-out">
-                      <RouteIcon className="w-8 h-8 text-gray-400 group-hover:text-slate-600 transition-colors duration-200" />
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-500 ease-out bg-gradient-to-br from-primary-50 to-primary-200">
+                      <PlusIcon className="w-8 h-8 text-gray-600 group-hover:text-slate-600 group-hover:rotate-90 transition-all duration-300 ease-out" />
                     </div>
                     <h3 className="text-lg font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">
                       {t('journeyMaps.createNewCard.title')}
                     </h3>
-                    <p className="text-sm text-gray-400 group-hover:text-slate-600 transition-colors duration-200">
+                    <p className="text-sm text-gray-600 group-hover:text-slate-600 transition-colors duration-200">
                       {t('journeyMaps.createNewCard.description')}
                     </p>
                   </div>
@@ -366,10 +436,10 @@ export default function JourneyMapsPage() {
           /* Getting Started Guide */
           <div className="flex items-center justify-center h-full">
             <Link href="/journey-maps/new" className="max-w-2xl w-full mx-auto">
-              <Card className="group border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer">
+              <Card className="group hover:-translate-y-2 transition-all duration-500 ease-out cursor-pointer bg-white rounded-2xl border-2 border-gray-200 shadow-card hover:shadow-card-hover">
                 <CardContent className="pt-6 h-full flex flex-col">
                   <div className="text-center py-12 flex-1 flex flex-col justify-center">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-2xl flex items-center justify-center group-hover:bg-slate-200 group-hover:scale-110 transition-all duration-300 ease-out">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-500 ease-out bg-gradient-to-br from-primary-50 to-primary-200">
                       <RouteIcon className="w-8 h-8 text-slate-400 group-hover:text-slate-600 transition-colors duration-300" />
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-slate-700 transition-colors duration-200">
@@ -378,7 +448,7 @@ export default function JourneyMapsPage() {
                     <p className="text-gray-600 mb-6 max-w-2xl mx-auto group-hover:text-gray-700 transition-colors duration-200">
                       {t('journeyMaps.gettingStarted.description')}
                     </p>
-                    <Button variant="primary">
+                    <Button variant="primary" className="transform hover:scale-105 transition-all duration-200 ease-out">
                       <PlusIcon className="mr-2 h-4 w-4" />
                       {t('journeyMaps.gettingStarted.createFirst')}
                     </Button>
@@ -435,6 +505,19 @@ export default function JourneyMapsPage() {
           </div>
         </div>
       </Modal>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteConfirmDialog.isOpen}
+        onClose={() => setDeleteConfirmDialog({ isOpen: false, mapId: null, mapName: '' })}
+        onConfirm={handleDeleteJourneyMap}
+        title="Delete Journey Map"
+        description={`Are you sure you want to delete "${deleteConfirmDialog.mapName}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   )
 }

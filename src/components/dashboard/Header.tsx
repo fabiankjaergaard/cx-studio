@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { BellIcon, PlusIcon, CheckIcon, ClockIcon } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { Tooltip } from '@/components/ui/Tooltip'
 
 interface HeaderProps {
   title: string
@@ -76,19 +77,21 @@ export function Header({ title, description, actions }: HeaderProps) {
         <div className="flex items-center space-x-4">
           {/* Notifications Dropdown */}
           <div className="relative">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2 relative hover:scale-110 transition-all duration-200 ease-out"
-              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-            >
-              <BellIcon className={`h-5 w-5 transition-transform duration-300 ${isNotificationOpen ? 'rotate-12 text-slate-600' : 'hover:rotate-6'}`} />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                  {unreadCount}
-                </span>
-              )}
-            </Button>
+            <Tooltip content={t('header.notifications')} position="bottom">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-2 relative hover:scale-110 transition-all duration-200 ease-out"
+                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+              >
+                <BellIcon className={`h-5 w-5 transition-transform duration-300 ${isNotificationOpen ? 'rotate-12 text-slate-600' : 'hover:rotate-6'}`} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                    {unreadCount}
+                  </span>
+                )}
+              </Button>
+            </Tooltip>
 
             {isNotificationOpen && (
               <>

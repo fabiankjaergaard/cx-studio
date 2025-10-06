@@ -6,10 +6,11 @@ import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Modal } from '@/components/ui/Modal'
 import { EyeIcon, EyeOffIcon, Zap, SparklesIcon } from 'lucide-react'
 import { saveBetaTesterLogin } from '@/services/betaTracking'
+import { SimpleDots } from '@/components/ui/simple-dots'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -43,7 +44,7 @@ export default function LoginPage() {
             alt="Kustra"
             className="h-16 w-auto mx-auto mb-4"
           />
-          <div className="text-sm text-gray-500">Loading...</div>
+          <LoadingSpinner size="md" className="text-slate-600" />
         </div>
       </div>
     )
@@ -143,8 +144,41 @@ export default function LoginPage() {
 
 
   return (
-    <div className="flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-4">
+    <div className="flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative bg-white overflow-hidden">
+      {/* Animated dot pattern on white background */}
+      <div className="absolute inset-0" style={{ zIndex: 1 }}>
+        <SimpleDots />
+      </div>
+
+      {/* White background with orange flowing wave */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 2 }}>
+        {/* Large orange flowing wave - bottom, full width */}
+        <div className="absolute -bottom-4 -left-8 w-[calc(100vw+4rem)] h-[60vh]">
+          <svg className="w-full h-full" viewBox="0 0 120 100" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M-10 40 Q25 10 50 25 T130 20 L130 110 L-10 110 Z" fill="#64748b" fillOpacity="0.95">
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="0 0; 4 -1; 0 0; -3 1.5; 0 0"
+                dur="6s"
+                repeatCount="indefinite"
+              />
+            </path>
+            <path d="M-10 50 Q30 20 70 35 T130 30 L130 110 L-10 110 Z" fill="#475569" fillOpacity="0.9">
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="0 0; -3.5 0.8; 0 0; 4.5 -1.2; 0 0"
+                dur="8s"
+                repeatCount="indefinite"
+              />
+            </path>
+          </svg>
+        </div>
+
+
+      </div>
+      <div className="max-w-md w-full space-y-4 relative z-10">
         {/* Logo */}
         <div className="text-center">
           <img
@@ -163,9 +197,8 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <Card className="border-0 shadow-lg">
-          <CardContent className="p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white rounded-3xl p-8 shadow-2xl">
+          <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
                   <strong>Error:</strong> {error}
@@ -214,11 +247,12 @@ export default function LoginPage() {
                     type="button"
                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
-                      <EyeOffIcon className="h-4 w-4 text-gray-400" />
+                      <EyeOffIcon className="h-4 w-4 text-gray-600" />
                     ) : (
-                      <EyeIcon className="h-4 w-4 text-gray-400" />
+                      <EyeIcon className="h-4 w-4 text-gray-600" />
                     )}
                   </button>
                 </div>
@@ -239,21 +273,19 @@ export default function LoginPage() {
                 className="w-full"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Signing in...' : 'Sign in'}
+                {isSubmitting ? 'Signing In...' : 'Sign In'}
               </Button>
             </form>
-
-          </CardContent>
-        </Card>
+        </div>
 
         {/* Beta Tester Access */}
         <div className="text-center">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200" />
+              <div className="w-full border-t border-white/30" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-50 text-gray-500">or</span>
+              <span className="px-3 py-1 bg-slate-500 text-white font-medium rounded-full border border-white/30">or</span>
             </div>
           </div>
 
@@ -266,7 +298,7 @@ export default function LoginPage() {
               <Zap className="w-4 h-4" />
               I'm a beta tester
             </Button>
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-white font-medium drop-shadow-sm">
               Skip registration and explore the platform
             </p>
           </div>
@@ -311,29 +343,32 @@ export default function LoginPage() {
               </div>
 
               <div className="bg-gradient-to-br from-slate-50 to-gray-50 p-6 rounded-xl border border-slate-200">
-                <label className="block text-sm font-semibold text-gray-800 mb-3 text-center">
-                  4-Digit Access Code
-                </label>
-                <div className="flex justify-center space-x-3">
-                  {betaCode.map((digit, index) => (
-                    <input
-                      key={index}
-                      id={`beta-code-${index}`}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleBetaCodeChange(index, e.target.value)}
-                      onKeyDown={(e) => handleBetaCodeKeyPress(e, index)}
-                      className="w-16 h-16 text-center text-2xl font-bold border-2 border-slate-300 rounded-xl focus:border-slate-500 focus:ring-2 focus:ring-slate-200 focus:outline-none transition-all bg-white shadow-sm"
-                    />
-                  ))}
-                </div>
+                <fieldset>
+                  <legend className="block text-sm font-semibold text-gray-800 mb-3 text-center">
+                    4-Digit Access Code
+                  </legend>
+                  <div className="flex justify-center space-x-3" role="group" aria-label="4-digit access code">
+                    {betaCode.map((digit, index) => (
+                      <input
+                        key={index}
+                        id={`beta-code-${index}`}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={1}
+                        value={digit}
+                        onChange={(e) => handleBetaCodeChange(index, e.target.value)}
+                        onKeyDown={(e) => handleBetaCodeKeyPress(e, index)}
+                        aria-label={`Access code digit ${index + 1}`}
+                        className="w-16 h-16 text-center text-2xl font-bold border-2 border-slate-300 rounded-xl focus:border-slate-500 focus:ring-2 focus:ring-slate-200 focus:outline-none transition-all bg-white shadow-sm"
+                      />
+                    ))}
+                  </div>
+                </fieldset>
               </div>
 
               {betaCodeError && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-red-700 text-sm font-medium text-center">{betaCodeError}</p>
+                <div className="bg-red-50 border border-red-300 rounded-lg p-3">
+                  <p className="text-red-800 text-sm font-semibold text-center">{betaCodeError}</p>
                 </div>
               )}
             </div>

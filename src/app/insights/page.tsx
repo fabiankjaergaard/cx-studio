@@ -133,7 +133,7 @@ export default function InsightsPage() {
   const { t } = useLanguage()
   
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title={
           <div className="flex items-center space-x-3">
@@ -151,8 +151,8 @@ export default function InsightsPage() {
           </Button>
         }
       />
-      
-      <div className="flex-1 p-8 overflow-auto bg-gray-50">
+
+      <div className="flex-1 p-8 overflow-auto" style={{background: 'transparent'}}>
         {/* Introduction */}
         <Card className="mb-8 border-l-4 border-l-slate-500">
           <CardContent className="p-6">

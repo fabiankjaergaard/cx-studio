@@ -49,13 +49,13 @@ export default function InterviewGuidePage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title="Guide: Learn to Interview"
         description={`Step ${currentStep + 1} of ${steps.length}: ${steps[currentStep].title}`}
       />
 
-      <div className="flex-1 p-6 overflow-auto bg-gray-50 pb-32">
+      <div className="flex-1 p-6 overflow-auto pb-32" style={{background: 'transparent'}}>
 
         {/* Step Content */}
         <div className="space-y-8">

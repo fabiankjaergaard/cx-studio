@@ -14,6 +14,8 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, children, title, className, maxWidth = 'md' }: ModalProps) {
+  const modalRef = React.useRef<HTMLDivElement>(null)
+
   // Prevent background scroll when modal is open
   React.useEffect(() => {
     if (isOpen) {
@@ -22,6 +24,54 @@ export function Modal({ isOpen, onClose, children, title, className, maxWidth = 
         document.body.style.overflow = 'unset'
       }
     }
+  }, [isOpen])
+
+  // Handle Escape key to close modal
+  React.useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose()
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen, onClose])
+
+  // Focus trap
+  React.useEffect(() => {
+    if (!isOpen) return
+
+    const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+
+    if (!focusableElements || focusableElements.length === 0) return
+
+    const firstElement = focusableElements[0]
+    const lastElement = focusableElements[focusableElements.length - 1]
+
+    // Auto-focus first element
+    firstElement?.focus()
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault()
+          lastElement?.focus()
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault()
+          firstElement?.focus()
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleTab)
+    return () => document.removeEventListener('keydown', handleTab)
   }, [isOpen])
 
   if (!isOpen) return null
@@ -45,11 +95,14 @@ export function Modal({ isOpen, onClose, children, title, className, maxWidth = 
       <div className="flex min-h-full items-start justify-center p-4 py-8">
         <div className="fixed inset-0" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }} onClick={onClose} />
 
-        <div className={cn(
-          "relative bg-white rounded-xl shadow-lg border border-gray-100 w-full mx-auto transform transition-all my-auto",
-          getMaxWidthClass(maxWidth),
-          className
-        )}>
+        <div
+          ref={modalRef}
+          className={cn(
+            "relative bg-white rounded-xl shadow-lg border border-gray-100 w-full mx-auto transform transition-all my-auto",
+            getMaxWidthClass(maxWidth),
+            className
+          )}
+        >
           {title && (
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900">{title}</h2>

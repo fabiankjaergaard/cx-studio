@@ -44,7 +44,7 @@ export default function AICreateJourneyMapPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col grid-background">
       <Header
         title="Create Journey Map with AI"
         description="Tell us about your business and customers, and AI will generate a personalized journey map"

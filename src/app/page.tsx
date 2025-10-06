@@ -135,10 +135,10 @@ export default function Home() {
     switch (widgetId) {
       case 'recent-activity':
         return (
-          <Card key={widgetId} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out relative group h-80">
+          <Card key={widgetId} className="border-2 border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out relative group h-80">
             <button
               onClick={() => removeWidget(widgetId)}
-              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white hover:bg-gray-50 hover:scale-110 rounded border border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white hover:bg-gray-50 hover:scale-110 rounded border-2 border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
             >
               <XIcon className="w-4 h-4" />
             </button>
@@ -180,10 +180,10 @@ export default function Home() {
         const avgTouchpoints = journeys.length > 0 ? Math.round(totalTouchpoints / journeys.length) : 0
 
         return (
-          <Card key={widgetId} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out relative group h-80">
+          <Card key={widgetId} className="border-2 border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out relative group h-80">
             <button
               onClick={() => removeWidget(widgetId)}
-              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white hover:bg-gray-50 hover:scale-110 rounded border border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white hover:bg-gray-50 hover:scale-110 rounded border-2 border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
             >
               <XIcon className="w-4 h-4" />
             </button>
@@ -222,10 +222,10 @@ export default function Home() {
 
       case 'recent-personas':
         return (
-          <Card key={widgetId} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out relative group h-80">
+          <Card key={widgetId} className="border-2 border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out relative group h-80">
             <button
               onClick={() => removeWidget(widgetId)}
-              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white hover:bg-gray-50 hover:scale-110 rounded border border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white hover:bg-gray-50 hover:scale-110 rounded border-2 border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
             >
               <XIcon className="w-4 h-4" />
             </button>
@@ -251,10 +251,10 @@ export default function Home() {
 
       case 'templates-gallery':
         return (
-          <Card key={widgetId} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out relative group h-80">
+          <Card key={widgetId} className="border-2 border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out relative group h-80">
             <button
               onClick={() => removeWidget(widgetId)}
-              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white hover:bg-gray-50 hover:scale-110 rounded border border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white hover:bg-gray-50 hover:scale-110 rounded border-2 border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
             >
               <XIcon className="w-4 h-4" />
             </button>
@@ -293,10 +293,10 @@ export default function Home() {
 
       case 'quick-actions':
         return (
-          <Card key={widgetId} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out relative group h-80">
+          <Card key={widgetId} className="border-2 border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out relative group h-80">
             <button
               onClick={() => removeWidget(widgetId)}
-              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white hover:bg-gray-50 hover:scale-110 rounded border border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white hover:bg-gray-50 hover:scale-110 rounded border-2 border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600"
             >
               <XIcon className="w-4 h-4" />
             </button>
@@ -344,11 +344,11 @@ export default function Home() {
           description={t('dashboard.subtitle')}
         />
 
-        <div className="flex-1 p-6 overflow-auto bg-gray-50">
+        <div className="flex-1 p-6 overflow-auto grid-background">
           <div className="space-y-6">
             <div className={`grid gap-6 ${enabledWidgets.length === 0 ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-3'}`}>
               {/* Journey Maps - Always show as first widget */}
-              <Card className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-80 group cursor-pointer">
+              <Card className="border-2 border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-80 group cursor-pointer">
                 <CardContent className="pt-6 h-full flex flex-col">
                   {journeyMaps.length === 0 ? (
                     <div className="text-center py-12 flex-1 flex flex-col justify-center">
@@ -410,7 +410,7 @@ export default function Home() {
               {enabledWidgets.map((widgetId) => renderWidget(widgetId))}
 
               {/* Add Widget - Always show as the last item */}
-              <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-80 add-widget-card group hover:bg-slate-50/30">
+              <Card className="border-2 border-dashed border-gray-200 shadow-none hover:border-gray-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-80 add-widget-card group hover:bg-slate-50">
                 <CardContent className="pt-6 h-full flex flex-col">
                   {!showWidgetSelector ? (
                     <div className="text-center py-12 flex-1 flex flex-col justify-center cursor-pointer" onClick={() => setShowWidgetSelector(true)}>

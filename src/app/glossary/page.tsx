@@ -99,13 +99,13 @@ export default function GlossaryPage() {
   }, [categories])
 
   return (
-    <div className="h-full flex flex-col">
-      <Header 
-        title={t('glossary.title')} 
+    <div className="h-full flex flex-col grid-background">
+      <Header
+        title={t('glossary.title')}
         description={t('glossary.subtitle')}
       />
-      
-      <div className="flex-1 p-8 overflow-auto bg-white">
+
+      <div className="flex-1 p-8 overflow-auto" style={{background: 'transparent'}}>
         {/* Search and Filter Section */}
         <Card className="mb-8 border-0 shadow-lg bg-gradient-to-br from-slate-50 to-gray-50">
           <CardContent className="p-8">
