@@ -2819,7 +2819,7 @@ export default function JourneyMapBuilderPage() {
                   </div>
                 </label>
                 <span className="text-sm text-gray-600">
-                  {isDragDropMode ? 'Drag & Drop' : 'Plus-knappar'}
+                  {isDragDropMode ? t('journeyMap.dragAndDrop') : t('journeyMap.plusButtons')}
                 </span>
               </div>
             </div>

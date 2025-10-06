@@ -2542,6 +2542,8 @@ const translations: Record<Language, Record<string, string>> = {
 
         // Journey Map Persona Selection
         'journeyMap.editingMode': 'Redigeringsläge',
+        'journeyMap.dragAndDrop': 'Drag & Drop',
+        'journeyMap.plusButtons': 'Plus-knappar',
         'journeyMap.persona.noPersonaSelected': 'Ingen persona vald',
         'journeyMap.persona.choosePersonaDescription': 'Välj en persona för att personalisera journey map',
         'journeyMap.persona.choosePersona': 'Välj persona',
@@ -5987,6 +5989,8 @@ const translations: Record<Language, Record<string, string>> = {
 
         // Journey Map Persona Selection
         'journeyMap.editingMode': 'Editing Mode',
+        'journeyMap.dragAndDrop': 'Drag & Drop',
+        'journeyMap.plusButtons': 'Plus Buttons',
         'journeyMap.persona.noPersonaSelected': 'No persona selected',
         'journeyMap.persona.choosePersonaDescription': 'Choose a persona to personalize your journey map',
         'journeyMap.persona.choosePersona': 'Choose persona',
