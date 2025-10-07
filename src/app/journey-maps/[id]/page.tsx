@@ -3231,8 +3231,8 @@ export default function JourneyMapBuilderPage() {
                             handleStageDrop(e, dropIndex)
                           }}
                         >
-                        {/* Insert zone overlay - absolute positioned on right edge, only in Plus Button mode */}
-                        {!isDragDropMode && index < journeyMap.stages.length - 1 && (
+                        {/* Insert zone overlay - absolute positioned on right edge, always visible */}
+                        {index < journeyMap.stages.length - 1 && (
                           <div
                             className="absolute -right-6 top-0 w-12 h-full bg-transparent cursor-pointer group/insert flex items-center justify-center z-30 transition-all duration-200"
                             onMouseEnter={() => setHoveredInsertIndex(index + 1)}
@@ -3360,7 +3360,6 @@ export default function JourneyMapBuilderPage() {
                       showAlways={false}
                     />
                   )}
-
 
                   {journeyMap.rows.map((row, rowIndex) => {
                     // First row should always be sticky (this is the Actions row)
@@ -3561,8 +3560,8 @@ export default function JourneyMapBuilderPage() {
                               handleStageDrop(e, dropIndex)
                             }}
                           >
-                            {/* Insert zone overlay - absolute positioned on right edge, only in Plus Button mode */}
-                            {!isDragDropMode && cellIndex < journeyMap.stages.length - 1 && (
+                            {/* Insert zone overlay - absolute positioned on right edge, always visible */}
+                            {cellIndex < journeyMap.stages.length - 1 && (
                               <div
                                 className="absolute -right-6 top-0 w-12 h-full bg-transparent cursor-pointer group/insert flex items-center justify-center z-30 transition-all duration-200"
                                 onMouseEnter={() => setHoveredInsertIndex(cellIndex + 1)}
@@ -3751,7 +3750,7 @@ export default function JourneyMapBuilderPage() {
                   </DndContext>
             </div>
 
-            {/* Plus Button inside Card - plus button mode only */}
+            {/* Plus Button inside Card - only in plus button mode */}
             {!isDragDropMode && (
               <div
                 onClick={() => {

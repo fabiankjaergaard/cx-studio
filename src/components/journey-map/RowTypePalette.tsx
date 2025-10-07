@@ -85,20 +85,20 @@ export function RowTypePalette({
           <div className="flex space-x-1">
             <button
               onClick={() => handleColorIntensityChange('subtle')}
-              className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+              className={`px-2 py-1 rounded text-xs transition-all ${
                 colorIntensity === 'subtle'
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-gray-200 text-gray-900 font-medium'
+                  : 'bg-transparent text-gray-500 hover:bg-gray-100'
               }`}
             >
               Subtle
             </button>
             <button
               onClick={() => handleColorIntensityChange('vibrant')}
-              className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+              className={`px-2 py-1 rounded text-xs transition-all ${
                 colorIntensity === 'vibrant'
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-gray-200 text-gray-900 font-medium'
+                  : 'bg-transparent text-gray-500 hover:bg-gray-100'
               }`}
             >
               Vibrant

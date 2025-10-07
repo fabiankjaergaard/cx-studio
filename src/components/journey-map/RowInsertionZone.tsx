@@ -3,6 +3,7 @@
 import { useDrop } from 'react-dnd'
 import { useState, useEffect } from 'react'
 import { useDragContext } from '@/components/journey/DragDropProvider'
+import { PlusIcon } from 'lucide-react'
 
 interface DroppedItem {
   rowType: string
@@ -16,13 +17,15 @@ interface RowInsertionZoneProps {
   insertIndex: number
   stageCount: number
   showAlways?: boolean
+  onClickAdd?: () => void
 }
 
 export function RowInsertionZone({
   onDropBlock,
   insertIndex,
   stageCount,
-  showAlways = false
+  showAlways = false,
+  onClickAdd
 }: RowInsertionZoneProps) {
   const { isDragging } = useDragContext()
 
@@ -65,36 +68,44 @@ export function RowInsertionZone({
   }
 
   return (
-    <tr className="h-8 group relative">
+    <tr className="h-8 group/insertion relative">
       <td
         ref={drop as any}
         colSpan={stageCount + 2}
-        className={`
-          p-2 transition-all duration-200 relative cursor-pointer border-2 border-dashed rounded-lg mx-2
-          ${isActive
-            ? 'bg-slate-100 border-slate-400 shadow-sm'
-            : 'bg-slate-50/30 border-slate-200/60 hover:bg-slate-50/50 hover:border-slate-300/80'
-          }
-        `}
-        title={`Drop your block here (position ${insertIndex})`}
+        className="p-0 relative"
       >
-        {/* Drop indicator */}
-        <div className="flex items-center justify-center space-x-2">
-          {isActive && (
-            <>
-              <div className="w-2 h-2 bg-slate-600 rounded-full animate-pulse" />
-              <span className="text-xs font-medium text-slate-700">Drop here to add row</span>
-              <div className="w-2 h-2 bg-slate-600 rounded-full animate-pulse" />
-            </>
-          )}
-          {!isActive && (
-            <>
-              <div className="w-1 h-1 bg-slate-300 rounded-full" />
-              <span className="text-xs text-slate-500">Drop zone</span>
-              <div className="w-1 h-1 bg-slate-300 rounded-full" />
-            </>
-          )}
+        {/* Plus button - visible on hover */}
+        <div
+          onClick={(e) => {
+            if (onClickAdd) {
+              e.stopPropagation()
+              onClickAdd()
+            }
+          }}
+          className={`
+            absolute inset-x-0 h-full flex items-center justify-center cursor-pointer transition-opacity duration-200
+            ${isActive ? 'opacity-100' : 'opacity-0 group-hover/insertion:opacity-100'}
+          `}
+        >
+          <div className={`
+            border-2 border-dashed rounded-full p-1.5 shadow-md transition-all
+            ${isActive
+              ? 'bg-slate-100 border-slate-400'
+              : 'bg-white border-gray-300 hover:border-slate-400 hover:bg-slate-50'
+            }
+          `}>
+            <PlusIcon className="w-4 h-4 text-gray-500" />
+          </div>
         </div>
+
+        {/* Drop indicator text - only when dragging */}
+        {isActive && (
+          <div className="absolute inset-x-0 top-full mt-1 flex items-center justify-center">
+            <span className="text-xs font-medium text-slate-700 bg-white px-2 py-1 rounded shadow-sm">
+              Drop here to add row
+            </span>
+          </div>
+        )}
       </td>
     </tr>
   )
