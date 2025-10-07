@@ -23,6 +23,7 @@ interface RowTypeBlockProps {
     description: string
   }
   color?: string
+  colorIntensity?: 'subtle' | 'vibrant'
 }
 
 // Icon mapping for each row type
@@ -51,10 +52,10 @@ const getRowTypeIcon = (type: string) => {
   }
 }
 
-export function RowTypeBlock({ rowType, color = 'bg-slate-50' }: RowTypeBlockProps) {
+export function RowTypeBlock({ rowType, color = 'bg-slate-50', colorIntensity = 'subtle' }: RowTypeBlockProps) {
   const { setIsDragging } = useDragContext()
 
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag({
     type: 'ROW_TYPE_BLOCK',
     item: {
       rowType: rowType.id,
@@ -65,7 +66,7 @@ export function RowTypeBlock({ rowType, color = 'bg-slate-50' }: RowTypeBlockPro
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  }), [rowType.id, rowType.name, rowType.description, color])
+  }, [rowType.id, rowType.name, rowType.description, color])
 
   useEffect(() => {
     console.log('Block drag state changed:', isDragging)
@@ -75,13 +76,47 @@ export function RowTypeBlock({ rowType, color = 'bg-slate-50' }: RowTypeBlockPro
   const IconComponent = getRowTypeIcon(rowType.id)
   const colorClass = ROW_COLORS.find(c => c.id === color)?.class || 'bg-slate-50'
 
+  // Get border color based on intensity
+  const getBorderColor = () => {
+    if (colorIntensity === 'vibrant') {
+      switch (color) {
+        case 'bg-slate-50': return 'border-slate-600'
+        case 'bg-blue-200': return 'border-blue-600'
+        case 'bg-indigo-200': return 'border-indigo-600'
+        case 'bg-slate-300': return 'border-slate-700'
+        case 'bg-emerald-200': return 'border-emerald-600'
+        case 'bg-rose-200': return 'border-rose-600'
+        case 'bg-amber-200': return 'border-amber-600'
+        case 'bg-violet-200': return 'border-violet-600'
+        case 'bg-pink-200': return 'border-pink-600'
+        case 'bg-cyan-200': return 'border-cyan-600'
+        default: return 'border-gray-400'
+      }
+    } else {
+      // Subtle
+      switch (color) {
+        case 'bg-slate-50': return 'border-slate-200'
+        case 'bg-blue-200': return 'border-blue-300'
+        case 'bg-indigo-200': return 'border-indigo-300'
+        case 'bg-slate-300': return 'border-slate-400'
+        case 'bg-emerald-200': return 'border-emerald-300'
+        case 'bg-rose-200': return 'border-rose-300'
+        case 'bg-amber-200': return 'border-amber-300'
+        case 'bg-violet-200': return 'border-violet-300'
+        case 'bg-pink-200': return 'border-pink-300'
+        case 'bg-cyan-200': return 'border-cyan-300'
+        default: return 'border-gray-200'
+      }
+    }
+  }
+
   return (
     <div
       ref={drag as any}
       className={`
-        cursor-grab active:cursor-grabbing p-3 rounded-lg border-2 border-gray-200 group
-        hover:border-slate-300 hover:shadow-md hover:scale-105 hover:-translate-y-1 transition-all duration-200 ease-out
-        ${colorClass} ${isDragging ? 'opacity-50 scale-95' : 'opacity-100'}
+        cursor-grab active:cursor-grabbing p-3 rounded-lg border-2 group
+        hover:shadow-md hover:scale-105 hover:-translate-y-1 transition-all duration-200 ease-out
+        ${colorClass} ${getBorderColor()} ${isDragging ? 'opacity-50 scale-95' : 'opacity-100'}
         select-none
       `}
       style={{ opacity: isDragging ? 0.5 : 1 }}

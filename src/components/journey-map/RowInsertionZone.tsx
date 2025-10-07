@@ -26,7 +26,7 @@ export function RowInsertionZone({
 }: RowInsertionZoneProps) {
   const { isDragging } = useDragContext()
 
-  const [{ isOver, canDrop }, drop] = useDrop(() => ({
+  const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'ROW_TYPE_BLOCK',
     drop: (item: DroppedItem) => {
       console.log('RowInsertionZone drop triggered:', item, 'at index:', insertIndex)
@@ -37,7 +37,7 @@ export function RowInsertionZone({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),
     }),
-  }), [insertIndex, onDropBlock])
+  }, [insertIndex, onDropBlock])
 
   const isActive = isOver && canDrop
   const shouldShow = showAlways || (isDragging && (isActive || isOver))

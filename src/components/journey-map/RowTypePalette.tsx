@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Palette } from 'lucide-react'
 import { RowTypeBlock } from './RowTypeBlock'
 import { ROW_TYPES, ROW_COLORS } from '@/types/journey-map'
@@ -15,6 +15,23 @@ export function RowTypePalette({
   'data-onboarding': dataOnboarding
 }: RowTypePaletteProps) {
   const [selectedColor, setSelectedColor] = useState('bg-slate-50')
+  const [colorIntensity, setColorIntensity] = useState<'subtle' | 'vibrant'>('subtle')
+
+  // Load color intensity preference
+  useEffect(() => {
+    const saved = localStorage.getItem('cx-app-color-intensity')
+    if (saved === 'vibrant' || saved === 'subtle') {
+      setColorIntensity(saved)
+    }
+  }, [])
+
+  // Save color intensity preference when changed
+  const handleColorIntensityChange = (intensity: 'subtle' | 'vibrant') => {
+    setColorIntensity(intensity)
+    localStorage.setItem('cx-app-color-intensity', intensity)
+    // Trigger a custom event so other components can react immediately
+    window.dispatchEvent(new CustomEvent('color-intensity-change', { detail: intensity }))
+  }
 
   // Group row types by category for better organization
   const basicTypes = ROW_TYPES.filter(type => ['text', 'number', 'status'].includes(type.id))
@@ -59,6 +76,37 @@ export function RowTypePalette({
         </div>
       </div>
 
+      {/* Color Intensity Toggle */}
+      <div className="px-4 py-2 border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-medium text-gray-700">
+            Intensity
+          </label>
+          <div className="flex space-x-1">
+            <button
+              onClick={() => handleColorIntensityChange('subtle')}
+              className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                colorIntensity === 'subtle'
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Subtle
+            </button>
+            <button
+              onClick={() => handleColorIntensityChange('vibrant')}
+              className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                colorIntensity === 'vibrant'
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Vibrant
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Content */}
       <div className="flex-1 overflow-y-auto scrollbar-hide p-4 space-y-4">
         {/* Basic Types */}
@@ -72,6 +120,7 @@ export function RowTypePalette({
                 key={rowType.id}
                 rowType={rowType}
                 color={selectedColor}
+                colorIntensity={colorIntensity}
               />
             ))}
           </div>
@@ -88,6 +137,7 @@ export function RowTypePalette({
                 key={rowType.id}
                 rowType={rowType}
                 color={selectedColor}
+                colorIntensity={colorIntensity}
               />
             ))}
           </div>
@@ -104,6 +154,7 @@ export function RowTypePalette({
                 key={rowType.id}
                 rowType={rowType}
                 color={selectedColor}
+                colorIntensity={colorIntensity}
               />
             ))}
           </div>

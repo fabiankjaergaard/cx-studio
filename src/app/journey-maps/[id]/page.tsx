@@ -1103,6 +1103,29 @@ export default function JourneyMapBuilderPage() {
   const [showGridLines, setShowGridLines] = useState(false)
   const [isAdvancedMode, setIsAdvancedMode] = useState(false)
   const [showTooltips, setShowTooltips] = useState(true)
+  const [colorIntensity, setColorIntensity] = useState<'subtle' | 'vibrant'>('subtle')
+
+  // Load color intensity preference and listen for changes
+  useEffect(() => {
+    const loadColorIntensity = () => {
+      const saved = localStorage.getItem('cx-app-color-intensity')
+      if (saved === 'vibrant' || saved === 'subtle') {
+        setColorIntensity(saved)
+      }
+    }
+
+    // Load initial value
+    loadColorIntensity()
+
+    // Listen for custom color intensity change events
+    const handleColorIntensityChange = (e: Event) => {
+      const customEvent = e as CustomEvent<'subtle' | 'vibrant'>
+      setColorIntensity(customEvent.detail)
+    }
+
+    window.addEventListener('color-intensity-change', handleColorIntensityChange)
+    return () => window.removeEventListener('color-intensity-change', handleColorIntensityChange)
+  }, [])
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -1674,7 +1697,11 @@ export default function JourneyMapBuilderPage() {
   }
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -3210,7 +3237,19 @@ export default function JourneyMapBuilderPage() {
                     <React.Fragment key={`row-section-${row.id}`}>
                       <tr key={row.id} className={`border-b-2 border-gray-200 ${isFirstRow ? 'sticky top-0 z-10 bg-white' : ''}`}>
                       <td
-                        className={`${isCompactView ? 'p-2' : 'p-4'} border-r border-gray-300 ${isFirstRow ? 'bg-white' : 'bg-slate-50'} group relative hover:bg-white transition-colors`}
+                        className={`${isCompactView ? 'p-2' : 'p-4'} border-r border-gray-300 border-l-4 ${
+                          row.color === 'bg-slate-50' ? (colorIntensity === 'vibrant' ? 'border-l-slate-600' : 'border-l-slate-200') :
+                          row.color === 'bg-blue-200' ? (colorIntensity === 'vibrant' ? 'border-l-blue-600' : 'border-l-blue-300') :
+                          row.color === 'bg-indigo-200' ? (colorIntensity === 'vibrant' ? 'border-l-indigo-600' : 'border-l-indigo-300') :
+                          row.color === 'bg-slate-300' ? (colorIntensity === 'vibrant' ? 'border-l-slate-700' : 'border-l-slate-400') :
+                          row.color === 'bg-emerald-200' ? (colorIntensity === 'vibrant' ? 'border-l-emerald-600' : 'border-l-emerald-300') :
+                          row.color === 'bg-rose-200' ? (colorIntensity === 'vibrant' ? 'border-l-rose-600' : 'border-l-rose-300') :
+                          row.color === 'bg-amber-200' ? (colorIntensity === 'vibrant' ? 'border-l-amber-600' : 'border-l-amber-300') :
+                          row.color === 'bg-violet-200' ? (colorIntensity === 'vibrant' ? 'border-l-violet-600' : 'border-l-violet-300') :
+                          row.color === 'bg-pink-200' ? (colorIntensity === 'vibrant' ? 'border-l-pink-600' : 'border-l-pink-300') :
+                          row.color === 'bg-cyan-200' ? (colorIntensity === 'vibrant' ? 'border-l-cyan-600' : 'border-l-cyan-300') :
+                          'border-l-gray-300'
+                        } ${isFirstRow ? 'bg-white' : 'bg-slate-50'} group relative hover:bg-white transition-colors`}
                         data-onboarding={rowIndex === 0 ? "categories" : undefined}
                         style={isFirstRow ? {backgroundColor: 'white'} : {}}
                       >
