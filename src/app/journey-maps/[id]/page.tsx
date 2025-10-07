@@ -1097,6 +1097,7 @@ export default function JourneyMapBuilderPage() {
   const [draggedStageId, setDraggedStageId] = useState<string | null>(null)
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null)
   const [isDraggingStage, setIsDraggingStage] = useState(false)
+  const [hoveredInsertIndex, setHoveredInsertIndex] = useState<number | null>(null)
   const [isDragDropMode, setIsDragDropMode] = useState(true) // true for drag-drop, false for plus-button mode
   const [isCompactView, setIsCompactView] = useState(false)
   const [showGridLines, setShowGridLines] = useState(false)
@@ -1450,6 +1451,48 @@ export default function JourneyMapBuilderPage() {
     }, 2000)
   }
 
+  const handleInsertRowAt = (index: number) => {
+    if (!journeyMap) return
+
+    const newRowId = `row-${Date.now()}`
+    const newRow: JourneyMapRow = {
+      id: newRowId,
+      category: 'New Category',
+      description: '',
+      type: 'text',
+      color: ROW_COLORS[0],
+      cells: journeyMap.stages.map((stage) => ({
+        id: `${newRowId}-${stage.id}`,
+        content: ''
+      }))
+    }
+
+    // Insert row at specific index
+    const updatedRows = [
+      ...journeyMap.rows.slice(0, index),
+      newRow,
+      ...journeyMap.rows.slice(index)
+    ]
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: updatedRows,
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+      })
+    }, 2000)
+  }
+
   const handleToggleExpand = (rowId: string) => {
     if (!journeyMap) return
 
@@ -1766,6 +1809,51 @@ export default function JourneyMapBuilderPage() {
       })),
       updatedAt: new Date().toISOString()
     })
+  }
+
+  const handleInsertStageAt = (index: number) => {
+    if (!journeyMap) return
+
+    const newStageId = `stage-${Date.now()}`
+    const newStage: JourneyMapStage = {
+      id: newStageId,
+      name: `Stage ${index + 1}`,
+      description: '',
+      phaseId: journeyMap.stages[index]?.phaseId || journeyMap.stages[index - 1]?.phaseId || 'after'
+    }
+
+    // Insert stage at specific index
+    const updatedStages = [
+      ...journeyMap.stages.slice(0, index),
+      newStage,
+      ...journeyMap.stages.slice(index)
+    ]
+
+    // Insert cell at specific index for each row
+    const updatedRows = journeyMap.rows.map(row => {
+      const newCell = {
+        id: `${row.id}-${newStageId}`,
+        content: ''
+      }
+      return {
+        ...row,
+        cells: [
+          ...row.cells.slice(0, index),
+          newCell,
+          ...row.cells.slice(index)
+        ]
+      }
+    })
+
+    setJourneyMap({
+      ...journeyMap,
+      stages: updatedStages,
+      rows: updatedRows,
+      updatedAt: new Date().toISOString()
+    })
+
+    // Clear hovered insert index
+    setHoveredInsertIndex(null)
   }
 
   const handleStageDragStart = (e: React.DragEvent, stageId: string) => {
@@ -2755,6 +2843,8 @@ export default function JourneyMapBuilderPage() {
 
             <div className="flex-1 overflow-auto" style={{background: 'transparent'}}>
             <div className={isCompactView ? "p-3 pb-3" : "p-6 pb-6"}>
+            <div className="overflow-x-auto">
+              <div style={{minWidth: 'fit-content'}}>
             {/* Persona Section */}
             <div className="mb-6" data-onboarding="persona">
               <Card
@@ -2827,7 +2917,7 @@ export default function JourneyMapBuilderPage() {
             {/* Journey Map Grid */}
             <Card className="journey-map-content rounded-t-none border-t-0" data-export="journey-map">
               <CardContent className="p-0 border-b-2 border-gray-200">
-                <div className="overflow-x-auto scrollbar-hide" style={{maxHeight: '70vh', overflowY: 'auto', overflow: 'visible'}}>
+                <div className="overflow-x-auto scrollbar-hide" style={{maxHeight: '70vh', overflowY: 'auto'}}>
                   <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -2845,7 +2935,7 @@ export default function JourneyMapBuilderPage() {
                     onMouseUp={handlePhaseResizeEnd}
                     onMouseLeave={handlePhaseResizeEnd}
                   >
-                    <th className={`w-48 p-2 text-left text-xs font-semibold text-gray-600 border-r border-gray-300`}>
+                    <th className={`w-48 p-2 text-left text-xs font-semibold text-gray-600 border border-gray-300`}>
                       Phases
                     </th>
                     {journeyMap.phases.map((phase, phaseIndex) => {
@@ -2858,7 +2948,7 @@ export default function JourneyMapBuilderPage() {
                       return (
                         <th
                           key={phase.id}
-                          className={`relative p-2 text-center text-sm font-semibold text-gray-700 border-r border-gray-300 ${phase.color} ${stagesInPhase === 0 ? 'min-w-32' : ''} group`}
+                          className={`relative p-2 text-center text-sm font-semibold text-gray-700 border border-gray-300 ${phase.color} ${stagesInPhase === 0 ? 'min-w-32' : ''} group`}
                           colSpan={colSpan}
                         >
                           <InlineEdit
@@ -2946,7 +3036,7 @@ export default function JourneyMapBuilderPage() {
                         </th>
                       )
                     })}
-                    <th className="w-12 p-2">
+                    <th className="w-12 p-2 border border-gray-300">
                       <Button
                         variant="outline"
                         size="sm"
@@ -2961,27 +3051,41 @@ export default function JourneyMapBuilderPage() {
                   
                   {/* Stages Header Row */}
                   <tr className="border-b-2 border-gray-200" data-onboarding="stages" style={{background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)'}}>
-                    <th className={`w-48 ${isCompactView ? 'p-2' : 'p-4'} text-left text-sm font-medium text-gray-900 border-r border-gray-300 hover:bg-white transition-colors`}>
+                    <th className={`w-48 ${isCompactView ? 'p-2' : 'p-4'} text-left text-sm font-medium text-gray-900 border border-gray-300 border-b-2 hover:bg-white transition-colors`}>
                       Journey Kategorier
                     </th>
                     {journeyMap.stages.map((stage, index) => (
-                      <th
-                        key={stage.id}
-                        className={`min-w-64 ${isCompactView ? 'p-2' : 'p-4'} text-left border-r border-gray-300 relative group hover:bg-white transition-colors cursor-move ${
-                          draggedStageId === stage.id ? 'bg-slate-50 shadow-lg' : ''
-                        }`}
-                        draggable={true}
-                        onDragStart={(e) => handleStageDragStart(e, stage.id)}
-                        onDragEnd={handleStageDragEnd}
-                        onDragOver={(e) => handleStageHover(e, index)}
-                        onDrop={(e) => {
-                          const rect = e.currentTarget.getBoundingClientRect()
-                          const mouseX = e.clientX - rect.left
-                          const stageWidth = rect.width
-                          const dropIndex = mouseX < stageWidth / 2 ? index : index + 1
-                          handleStageDrop(e, dropIndex)
-                        }}
-                      >
+                      <React.Fragment key={stage.id}>
+                        <th
+                          className={`min-w-64 ${isCompactView ? 'p-2' : 'p-4'} text-left border border-gray-300 border-b-2 relative group hover:bg-white transition-all duration-200 cursor-move ${
+                            draggedStageId === stage.id ? 'bg-slate-50 shadow-lg' : ''
+                          } ${hoveredInsertIndex === index + 1 ? 'pr-8' : ''} ${hoveredInsertIndex === index ? 'pl-8' : ''}`}
+                          draggable={true}
+                          onDragStart={(e) => handleStageDragStart(e, stage.id)}
+                          onDragEnd={handleStageDragEnd}
+                          onDragOver={(e) => handleStageHover(e, index)}
+                          onDrop={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect()
+                            const mouseX = e.clientX - rect.left
+                            const stageWidth = rect.width
+                            const dropIndex = mouseX < stageWidth / 2 ? index : index + 1
+                            handleStageDrop(e, dropIndex)
+                          }}
+                        >
+                        {/* Insert zone overlay - absolute positioned on right edge, only in Plus Button mode */}
+                        {!isDragDropMode && index < journeyMap.stages.length - 1 && (
+                          <div
+                            className="absolute -right-6 top-0 w-12 h-full bg-transparent cursor-pointer group/insert flex items-center justify-center z-30 transition-all duration-200"
+                            onMouseEnter={() => setHoveredInsertIndex(index + 1)}
+                            onMouseLeave={() => setHoveredInsertIndex(null)}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleInsertStageAt(index + 1)
+                            }}
+                          >
+                            <PlusIcon className="w-5 h-5 text-slate-600 opacity-0 group-hover/insert:opacity-100 transition-opacity duration-200" />
+                          </div>
+                        )}
                         {/* Drop indicator lines */}
                         {isDraggingStage && draggedStageId !== stage.id && (
                           <>
@@ -3069,8 +3173,9 @@ export default function JourneyMapBuilderPage() {
                           variant="description"
                         />
                       </th>
+                      </React.Fragment>
                     ))}
-                    <th className={`w-12 ${isCompactView ? 'p-2' : 'p-4'} bg-slate-50`}>
+                    <th className={`w-12 ${isCompactView ? 'p-2' : 'p-4'} bg-slate-50 align-middle border border-gray-300 border-b-2`} rowSpan={journeyMap.rows.length + 1}>
                       <Button
                         variant="outline"
                         size="sm"
@@ -3270,9 +3375,9 @@ export default function JourneyMapBuilderPage() {
                             if (isSkipped) return null
 
                             return (
-                          <td
-                            key={cell.id}
-                            className={`${isCompactView ? 'p-1' : 'p-2'} align-middle group relative ${isFirstRow ? 'bg-white' : ''}`}
+                          <React.Fragment key={cell.id}>
+                            <td
+                              className={`${isCompactView ? 'p-1' : 'p-2'} align-middle group relative transition-all duration-200 ${isFirstRow ? 'bg-white' : ''} ${hoveredInsertIndex === cellIndex + 1 ? 'pr-8' : ''} ${hoveredInsertIndex === cellIndex ? 'pl-8' : ''}`}
                             data-onboarding={rowIndex === 0 && cellIndex === 0 ? "cells" : undefined}
                             colSpan={cell.colSpan || 1}
                             style={isFirstRow ? {backgroundColor: 'white'} : {}}
@@ -3285,6 +3390,20 @@ export default function JourneyMapBuilderPage() {
                               handleStageDrop(e, dropIndex)
                             }}
                           >
+                            {/* Insert zone overlay - absolute positioned on right edge, only in Plus Button mode */}
+                            {!isDragDropMode && cellIndex < journeyMap.stages.length - 1 && (
+                              <div
+                                className="absolute -right-6 top-0 w-12 h-full bg-transparent cursor-pointer group/insert flex items-center justify-center z-30 transition-all duration-200"
+                                onMouseEnter={() => setHoveredInsertIndex(cellIndex + 1)}
+                                onMouseLeave={() => setHoveredInsertIndex(null)}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleInsertStageAt(cellIndex + 1)
+                                }}
+                              >
+                                <PlusIcon className="w-5 h-5 text-slate-600 opacity-0 group-hover/insert:opacity-100 transition-opacity duration-200" />
+                              </div>
+                            )}
                             {/* Drop indicator lines for cells */}
                             {isDraggingStage && (
                               <>
@@ -3311,6 +3430,7 @@ export default function JourneyMapBuilderPage() {
                               onColSpanChange={(colSpan) => handleCellColSpanChange(row.id, cell.id, colSpan)}
                               isDraggable={true}
                               position={cell.position}
+                              showEmptyState={!cell.content}
                             />
 
                             {/* Cell actions dropdown - appears on hover */}
@@ -3358,11 +3478,11 @@ export default function JourneyMapBuilderPage() {
                             </div>
                             )}
                           </td>
+                          </React.Fragment>
                             )
                           })}
                         </SortableContext>
                       )}
-                        <td className={`${isCompactView ? 'p-2' : 'p-4'} bg-slate-50`}></td>
                       </tr>
 
                       {/* Sublanes (when expanded) */}
@@ -3474,6 +3594,8 @@ export default function JourneyMapBuilderPage() {
             )}
           </CardContent>
           </Card>
+              </div>
+            </div>
         </div>
       </div>
         </div>

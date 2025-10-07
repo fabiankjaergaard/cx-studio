@@ -51,6 +51,7 @@ interface JourneyMapCellProps {
   onColSpanChange?: (colSpan: number) => void
   isDraggable?: boolean
   position?: number
+  showEmptyState?: boolean
 }
 
 // Actions icons - CX-optimized ordering with most relevant icons first
@@ -192,7 +193,8 @@ export function JourneyMapCell({
   colSpan = 1,
   onColSpanChange,
   isDraggable = false,
-  position
+  position,
+  showEmptyState = false
 }: JourneyMapCellProps) {
   const [isStatusPickerOpen, setIsStatusPickerOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -811,6 +813,30 @@ export function JourneyMapCell({
 
       {/* Add the modal - this needs to be outside the switch but inside the component */}
   }
+  }
+
+  // Show empty state with plus button if showEmptyState is true
+  if (showEmptyState && !isEditing) {
+    return (
+      <div className="w-full h-full min-h-[80px] flex items-center justify-center group">
+        <button
+          onClick={() => {
+            setIsEditing(true)
+            // Focus the input after a short delay to ensure it's rendered
+            setTimeout(() => {
+              if (type === 'text' && textareaRef.current) {
+                textareaRef.current.focus()
+              } else if (inputRef.current) {
+                inputRef.current.focus()
+              }
+            }, 10)
+          }}
+          className="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 border-2 border-dashed border-gray-200 hover:border-gray-400 rounded-lg"
+        >
+          <PlusIcon className="w-5 h-5" />
+        </button>
+      </div>
+    )
   }
 
   return (
