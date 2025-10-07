@@ -25,7 +25,9 @@ import {
   RocketIcon, SparklesIcon, GiftIcon, BadgeIcon,
   Angry as AngryFaceIcon, Laugh as LaughFaceIcon,
   // Resize & drag icons
-  ChevronLeftIcon, ChevronRightIcon
+  ChevronLeftIcon, ChevronRightIcon,
+  // Checkbox icon
+  Check
 } from 'lucide-react'
 import { EmotionCurve } from './EmotionCurve'
 import { PainPointsVisualization } from './PainPointsVisualization'
@@ -1013,17 +1015,24 @@ export function JourneyMapCell({
 
           {/* High Importance Toggle */}
           <div className="mb-2">
-            <label className="flex items-center space-x-2 cursor-pointer hover:bg-orange-50/50 p-2 rounded-lg transition-all border border-transparent hover:border-orange-200">
-              <input
-                type="checkbox"
-                checked={isCritical}
-                onChange={(e) => {
+            <label className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-all border border-transparent hover:border-gray-200">
+              <div
+                onClick={(e) => {
+                  e.preventDefault()
                   if (onCriticalChange) {
-                    onCriticalChange(e.target.checked)
+                    onCriticalChange(!isCritical)
                   }
                 }}
-                className="w-4 h-4 text-orange-600 bg-white border-gray-300 rounded focus:ring-orange-500 focus:ring-2 transition-all"
-              />
+                className={`
+                  w-4 h-4 rounded border-2 flex items-center justify-center cursor-pointer transition-all
+                  ${isCritical
+                    ? 'bg-slate-500 border-slate-500'
+                    : 'bg-white border-gray-300 hover:border-slate-400'
+                  }
+                `}
+              >
+                {isCritical && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+              </div>
               <span className="text-sm font-medium text-gray-700">Mark as high importance</span>
             </label>
           </div>
@@ -1055,7 +1064,7 @@ export function JourneyMapCell({
             </button>
             <button
               onClick={() => setIsEditing(false)}
-              className="px-4 py-2 text-sm font-medium text-white bg-slate-700 hover:bg-slate-800 rounded-lg transition-all shadow-sm"
+              className="px-4 py-2 text-sm font-medium text-white bg-slate-500 hover:bg-slate-600 rounded-lg transition-all shadow-sm"
             >
               Save
             </button>
