@@ -1513,6 +1513,39 @@ export default function JourneyMapBuilderPage() {
     }, 2000) // Auto-save after 2 seconds of inactivity
   }
 
+  const handleCriticalChange = (rowId: string, cellId: string, isCritical: boolean) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId
+          ? {
+              ...row,
+              cells: row.cells.map(cell =>
+                cell.id === cellId
+                  ? { ...cell, isCritical }
+                  : cell
+              )
+            }
+          : row
+      ),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Trigger auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+    autoSaveTimeoutRef.current = setTimeout(async () => {
+      await saveJourneyMap(updatedJourneyMap).catch((error) => {
+        console.error('Auto-save failed after critical change:', error)
+      })
+    }, 2000)
+  }
+
   const handleCellColSpanChange = (rowId: string, cellId: string, colSpan: number) => {
     if (!journeyMap) return
 
@@ -1722,6 +1755,44 @@ export default function JourneyMapBuilderPage() {
               updatedCells[cellIndex] = {
                 ...updatedCells[cellIndex],
                 content
+              }
+              return { ...sublane, cells: updatedCells }
+            }
+            return sublane
+          })
+          return { ...row, sublanes: updatedSublanes }
+        }
+        return row
+      }),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+      })
+    }, 2000)
+  }
+
+  const handleSublaneCriticalChange = (rowId: string, sublaneId: string, cellIndex: number, isCritical: boolean) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row => {
+        if (row.id === rowId) {
+          const updatedSublanes = (row.sublanes || []).map(sublane => {
+            if (sublane.id === sublaneId) {
+              const updatedCells = [...(sublane.cells || [])]
+              updatedCells[cellIndex] = {
+                ...updatedCells[cellIndex],
+                isCritical
               }
               return { ...sublane, cells: updatedCells }
             }
@@ -3601,6 +3672,8 @@ export default function JourneyMapBuilderPage() {
                               isDraggable={true}
                               position={cell.position}
                               showEmptyState={!cell.content}
+                              isCritical={cell.isCritical}
+                              onCriticalChange={(isCritical) => handleCriticalChange(row.id, cell.id, isCritical)}
                             />
 
                             {/* Cell actions dropdown - appears on hover */}
@@ -3712,6 +3785,8 @@ export default function JourneyMapBuilderPage() {
                                   backgroundColor={cell.backgroundColor || sublane.color}
                                   placeholder="Add content..."
                                   stageCount={journeyMap.stages.length}
+                                  isCritical={cell.isCritical}
+                                  onCriticalChange={(isCritical) => handleSublaneCriticalChange(row.id, sublane.id, cellIndex, isCritical)}
                                 />
                               </td>
                             )

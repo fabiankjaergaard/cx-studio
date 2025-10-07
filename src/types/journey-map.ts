@@ -6,6 +6,7 @@ export interface JourneyMapCell {
   isEditing?: boolean
   colSpan?: number  // How many columns this cell spans
   position?: number // Position within the row (for drag & drop)
+  isCritical?: boolean // Mark cell as critical/important touchpoint
 }
 
 export interface JourneyMapRow {

@@ -52,6 +52,8 @@ interface JourneyMapCellProps {
   isDraggable?: boolean
   position?: number
   showEmptyState?: boolean
+  isCritical?: boolean
+  onCriticalChange?: (isCritical: boolean) => void
 }
 
 // Actions icons - CX-optimized ordering with most relevant icons first
@@ -194,7 +196,9 @@ export function JourneyMapCell({
   onColSpanChange,
   isDraggable = false,
   position,
-  showEmptyState = false
+  showEmptyState = false,
+  isCritical = false,
+  onCriticalChange
 }: JourneyMapCellProps) {
   const [isStatusPickerOpen, setIsStatusPickerOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -203,6 +207,7 @@ export function JourneyMapCell({
   const [toolbarPosition, setToolbarPosition] = useState({ left: '50%', transform: 'translateX(-50%)', top: '0px' })
   const [recentlyUsedIcons, setRecentlyUsedIcons] = useState<string[]>([])
   const [iconSearchQuery, setIconSearchQuery] = useState<string>('')
+  const [colorIntensity, setColorIntensity] = useState<'subtle' | 'vibrant'>('subtle')
 
   // Load recently used icons from localStorage on mount
   useEffect(() => {
@@ -219,6 +224,28 @@ export function JourneyMapCell({
     }
 
     loadRecentIcons()
+  }, [])
+
+  // Load and listen for color intensity changes
+  useEffect(() => {
+    const loadColorIntensity = () => {
+      const saved = localStorage.getItem('cx-app-color-intensity')
+      if (saved === 'vibrant' || saved === 'subtle') {
+        setColorIntensity(saved)
+      }
+    }
+
+    const handleColorIntensityChange = (event: Event) => {
+      const customEvent = event as CustomEvent<'subtle' | 'vibrant'>
+      setColorIntensity(customEvent.detail)
+    }
+
+    loadColorIntensity()
+    window.addEventListener('color-intensity-change', handleColorIntensityChange)
+
+    return () => {
+      window.removeEventListener('color-intensity-change', handleColorIntensityChange)
+    }
   }, [])
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -365,7 +392,7 @@ export function JourneyMapCell({
 
     const cellRect = cellRef.current.getBoundingClientRect()
     const toolbarWidth = 500 // Much wider toolbar
-    const toolbarHeight = 140 // Even shorter height
+    const toolbarHeight = 180 // Increased height for high importance section
     const viewportWidth = window.innerWidth
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop
 
@@ -373,7 +400,7 @@ export function JourneyMapCell({
     const cellCenterX = cellRect.left + cellRect.width / 2
     const toolbarLeft = cellCenterX - toolbarWidth / 2
     // Same spacing for both number and text cells - positioned above the cell
-    const toolbarTop = cellRect.top - 330
+    const toolbarTop = cellRect.top - 370
 
     // Check if toolbar would be clipped on the right
     if (toolbarLeft + toolbarWidth > viewportWidth - 20) {
@@ -482,6 +509,27 @@ export function JourneyMapCell({
     if (!iconData) return null
     const IconComponent = iconData.icon
     return <IconComponent className="h-5 w-5 text-slate-600" />
+  }
+
+  // Convert background color based on intensity
+  const getAdjustedBackgroundColor = (bgColor: string | undefined) => {
+    if (!bgColor || bgColor === 'bg-white' || bgColor === '') return 'bg-white'
+
+    // Map subtle colors to vibrant colors
+    const colorMap: Record<string, string> = {
+      'bg-slate-50': colorIntensity === 'vibrant' ? 'bg-slate-200' : 'bg-slate-50',
+      'bg-blue-200': colorIntensity === 'vibrant' ? 'bg-blue-300' : 'bg-blue-200',
+      'bg-indigo-200': colorIntensity === 'vibrant' ? 'bg-indigo-300' : 'bg-indigo-200',
+      'bg-slate-300': colorIntensity === 'vibrant' ? 'bg-slate-400' : 'bg-slate-300',
+      'bg-emerald-200': colorIntensity === 'vibrant' ? 'bg-emerald-300' : 'bg-emerald-200',
+      'bg-rose-200': colorIntensity === 'vibrant' ? 'bg-rose-300' : 'bg-rose-200',
+      'bg-amber-200': colorIntensity === 'vibrant' ? 'bg-amber-300' : 'bg-amber-200',
+      'bg-violet-200': colorIntensity === 'vibrant' ? 'bg-violet-300' : 'bg-violet-200',
+      'bg-pink-200': colorIntensity === 'vibrant' ? 'bg-pink-300' : 'bg-pink-200',
+      'bg-cyan-200': colorIntensity === 'vibrant' ? 'bg-cyan-300' : 'bg-cyan-200',
+    }
+
+    return colorMap[bgColor] || bgColor
   }
 
   const getFilteredIcons = () => {
@@ -624,7 +672,7 @@ export function JourneyMapCell({
       return (
         <div ref={cellRef} className="relative">
 
-          <div className={`w-full min-h-20 border border-gray-200 rounded transition-all duration-200 relative ${backgroundColor || 'bg-white'} ${isEditing ? 'ring-2 ring-blue-500' : ''}`}>
+          <div className={`w-full min-h-20 border rounded-xl transition-all duration-300 relative ${getAdjustedBackgroundColor(backgroundColor)} ${isEditing ? 'ring-2 ring-blue-500 ring-offset-1' : ''} ${isCritical ? 'border-2 border-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.15)] ring-1 ring-orange-400/20' : 'border border-gray-200'}`}>
             {(currentIcon || selectedIcon) && (
               <div
                 className="absolute top-1 right-1 z-10 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
@@ -667,7 +715,7 @@ export function JourneyMapCell({
     case 'rating':
       const currentRating = parseInt(content) || 0
       return (
-        <div className={`w-full min-h-20 p-2 border border-gray-200 rounded flex items-center justify-center hover:border-slate-300 hover:shadow-sm transition-all duration-200 ${backgroundColor || 'bg-white'}`}>
+        <div className={`w-full min-h-20 p-2 border border-gray-200 rounded flex items-center justify-center hover:border-slate-300 hover:shadow-sm transition-all duration-200 ${getAdjustedBackgroundColor(backgroundColor)}`}>
           <div className="flex space-x-1">
             {[1, 2, 3, 4, 5].map((star) => (
               <StarIcon
@@ -688,7 +736,7 @@ export function JourneyMapCell({
       return (
         <div className="relative">
           <div
-            className={`w-full min-h-20 p-2 text-sm border border-gray-200 rounded cursor-pointer hover:border-slate-400 hover:shadow-sm hover:scale-[1.02] transition-all duration-200 flex items-center justify-center ${backgroundColor || 'bg-white'}`}
+            className={`w-full min-h-20 p-2 text-sm border border-gray-200 rounded cursor-pointer hover:border-slate-400 hover:shadow-sm hover:scale-[1.02] transition-all duration-200 flex items-center justify-center ${getAdjustedBackgroundColor(backgroundColor)}`}
             onClick={() => setIsStatusPickerOpen(!isStatusPickerOpen)}
           >
             {content ? getStatusDisplay(content) : <span className="text-gray-400">Select status</span>}
@@ -761,7 +809,7 @@ export function JourneyMapCell({
         >
 
 
-          <div className={`w-full h-20 border border-gray-200 rounded transition-all duration-200 ${backgroundColor || 'bg-white'} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} ${isEditing ? 'ring-2 ring-blue-500' : ''} relative group`}>
+          <div className={`w-full h-20 border rounded-xl transition-all duration-300 ${getAdjustedBackgroundColor(backgroundColor)} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} ${isEditing ? 'ring-2 ring-blue-500 ring-offset-1' : ''} ${isCritical ? 'border-2 border-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.15)] ring-1 ring-orange-400/20' : 'border border-gray-200'} relative group`}>
             {(currentIcon || selectedIcon) && (
               <div
                 className="absolute top-1 right-1 z-10 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
@@ -961,6 +1009,23 @@ export function JourneyMapCell({
                 />
               ))}
             </div>
+          </div>
+
+          {/* High Importance Toggle */}
+          <div className="mb-2">
+            <label className="flex items-center space-x-2 cursor-pointer hover:bg-orange-50/50 p-2 rounded-lg transition-all border border-transparent hover:border-orange-200">
+              <input
+                type="checkbox"
+                checked={isCritical}
+                onChange={(e) => {
+                  if (onCriticalChange) {
+                    onCriticalChange(e.target.checked)
+                  }
+                }}
+                className="w-4 h-4 text-orange-600 bg-white border-gray-300 rounded focus:ring-orange-500 focus:ring-2 transition-all"
+              />
+              <span className="text-sm font-medium text-gray-700">Mark as high importance</span>
+            </label>
           </div>
 
           {/* Action buttons */}
