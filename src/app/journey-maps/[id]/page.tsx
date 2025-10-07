@@ -41,7 +41,11 @@ import {
   ImageIcon,
   LayersIcon,
   ChevronDownIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  RotateCcw
 } from 'lucide-react'
 import Link from 'next/link'
 import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, JourneyMapSublane, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES, ROW_TYPES } from '@/types/journey-map'
@@ -1104,6 +1108,119 @@ export default function JourneyMapBuilderPage() {
   const [isAdvancedMode, setIsAdvancedMode] = useState(false)
   const [showTooltips, setShowTooltips] = useState(true)
   const [colorIntensity, setColorIntensity] = useState<'subtle' | 'vibrant'>('subtle')
+
+  // Zoom and pan state
+  const [zoom, setZoom] = useState(100)
+  const [pan, setPan] = useState({ x: 0, y: 0 })
+  const [isPanning, setIsPanning] = useState(false)
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 })
+  const containerRef = useRef<HTMLDivElement>(null)
+  const scrollAccumulator = useRef(0)
+  const [showZoomIndicator, setShowZoomIndicator] = useState(false)
+  const zoomIndicatorTimeout = useRef<NodeJS.Timeout | null>(null)
+
+  // Zoom functions
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(prev + 10, 200))
+  }
+
+  const handleZoomOut = () => {
+    setZoom(prev => Math.max(prev - 10, 50))
+  }
+
+  const handleResetZoom = () => {
+    setZoom(100)
+    setPan({ x: 0, y: 0 })
+  }
+
+  const handleFitToScreen = () => {
+    setZoom(90)
+    setPan({ x: 0, y: 0 })
+  }
+
+  // Mouse wheel and trackpad zoom
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      // Only zoom if Ctrl/Cmd is pressed (pinch-to-zoom or Ctrl+scroll)
+      // This allows normal scrolling without modifiers
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault()
+
+        // Accumulate scroll delta
+        scrollAccumulator.current += e.deltaY
+
+        // Only zoom when accumulated scroll reaches threshold (balanced resistance)
+        const threshold = 20 // Lower = easier to zoom, higher = harder to zoom
+
+        if (Math.abs(scrollAccumulator.current) >= threshold) {
+          const direction = scrollAccumulator.current > 0 ? -10 : 10
+
+          setZoom(prev => {
+            const newZoom = Math.max(50, Math.min(200, prev + direction))
+            return newZoom
+          })
+
+          // Show zoom indicator
+          setShowZoomIndicator(true)
+
+          // Clear existing timeout
+          if (zoomIndicatorTimeout.current) {
+            clearTimeout(zoomIndicatorTimeout.current)
+          }
+
+          // Hide after 1.5 seconds
+          zoomIndicatorTimeout.current = setTimeout(() => {
+            setShowZoomIndicator(false)
+          }, 1500)
+
+          // Reset accumulator
+          scrollAccumulator.current = 0
+        }
+      }
+    }
+
+    // Wait for container to be mounted
+    const timer = setTimeout(() => {
+      const container = containerRef.current
+      console.log('Setting up wheel listener on container:', container)
+
+      if (container) {
+        container.addEventListener('wheel', handleWheel, { passive: false })
+      }
+    }, 100)
+
+    return () => {
+      clearTimeout(timer)
+      const container = containerRef.current
+      if (container) {
+        console.log('Removing wheel listener')
+        container.removeEventListener('wheel', handleWheel)
+      }
+    }
+  }, [journeyMap])
+
+  // Pan handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Only pan with space + mouse or middle mouse button
+    if (e.button === 1 || (e.button === 0 && (e.metaKey || e.ctrlKey))) {
+      e.preventDefault()
+      setIsPanning(true)
+      setPanStart({ x: e.clientX - pan.x, y: e.clientY - pan.y })
+    }
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isPanning) {
+      setPan({
+        x: e.clientX - panStart.x,
+        y: e.clientY - panStart.y
+      })
+    }
+  }
+
+  const handleMouseUp = () => {
+    setIsPanning(false)
+  }
 
   // Load color intensity preference and listen for changes
   useEffect(() => {
@@ -2868,10 +2985,25 @@ export default function JourneyMapBuilderPage() {
               />
             )}
 
-            <div className="flex-1 overflow-auto" style={{background: 'transparent'}}>
+            <div
+              ref={containerRef}
+              className="flex-1 overflow-auto journey-map-container"
+              style={{background: 'transparent', cursor: isPanning ? 'grabbing' : 'default'}}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+            >
             <div className={isCompactView ? "p-3 pb-3" : "p-6 pb-6"}>
             <div className="overflow-x-auto">
-              <div style={{minWidth: 'fit-content'}}>
+              <div
+                style={{
+                  minWidth: 'fit-content',
+                  transform: `scale(${zoom / 100}) translate(${pan.x}px, ${pan.y}px)`,
+                  transformOrigin: 'top left',
+                  transition: isPanning ? 'none' : 'transform 0.1s ease-out'
+                }}
+              >
             {/* Persona Section */}
             <div className="mb-6" data-onboarding="persona">
               <Card
@@ -3718,6 +3850,15 @@ export default function JourneyMapBuilderPage() {
     <>
       {finalContent}
 
+      {/* Zoom Indicator */}
+      {showZoomIndicator && (
+        <div className="fixed bottom-6 right-6 bg-white border border-gray-200 text-gray-900 px-4 py-2 rounded-lg shadow-lg z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+          <div className="flex items-center space-x-2">
+            <ZoomIn className="w-4 h-4 text-gray-600" />
+            <span className="text-lg font-medium">{zoom}%</span>
+          </div>
+        </div>
+      )}
 
 {/* Toast Notification */}
       <Toast
