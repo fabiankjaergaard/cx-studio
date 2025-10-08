@@ -82,10 +82,11 @@ export function RowWithSublanes({
       parentRowId: row.id,
       name: newSublaneName,
       type: 'text',
-      color: 'bg-gray-50',
+      color: '', // NO default color - cells will get ghost color conditionally
       cells: Array(stageCount).fill(null).map((_, i) => ({
         id: `sublane-${Date.now()}-cell-${i}`,
-        content: ''
+        content: '',
+        backgroundColor: '' // Explicitly no background
       }))
     }
 
@@ -224,12 +225,16 @@ export function RowWithSublanes({
       </div>
 
       {/* Sublanes (when expanded) */}
-      {isExpanded && sublanes.map((sublane) => (
+      {isExpanded && sublanes.map((sublane, sublaneIndex) => (
         <SublaneRow
           key={sublane.id}
           sublane={sublane}
           stageCount={stageCount}
           backgroundColor="bg-gray-50"
+          parentColor={row.color}
+          parentCells={row.cells}
+          isFirstSublane={sublaneIndex === 0}
+          isLastSublane={sublaneIndex === sublanes.length - 1}
           onCellChange={handleSublaneCellChange}
           onCellIconChange={(sublaneId, cellIndex, icon) => {
             const updatedSublanes = sublanes.map(s => {
