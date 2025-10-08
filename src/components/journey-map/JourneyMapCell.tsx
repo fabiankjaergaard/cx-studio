@@ -63,6 +63,7 @@ interface JourneyMapCellProps {
   onInsightRemove?: (insightId: string) => void
   onInsightClick?: (insightId: string, rowId: string, cellId: string) => void
   rowId?: string
+  disableColorConversion?: boolean
 }
 
 // Actions icons - CX-optimized ordering with most relevant icons first
@@ -213,7 +214,8 @@ export function JourneyMapCell({
   onInsightAttach,
   onInsightRemove,
   onInsightClick,
-  rowId
+  rowId,
+  disableColorConversion = false
 }: JourneyMapCellProps) {
   const [isStatusPickerOpen, setIsStatusPickerOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -544,6 +546,9 @@ export function JourneyMapCell({
   const getAdjustedBackgroundColor = (bgColor: string | undefined) => {
     if (!bgColor || bgColor === 'bg-white' || bgColor === '') return 'bg-white'
 
+    // If color conversion is disabled (for sublanes), return original color
+    if (disableColorConversion) return bgColor
+
     // Map subtle colors to vibrant colors
     const colorMap: Record<string, string> = {
       'bg-slate-50': colorIntensity === 'vibrant' ? 'bg-slate-200' : 'bg-slate-50',
@@ -551,10 +556,12 @@ export function JourneyMapCell({
       'bg-indigo-200': colorIntensity === 'vibrant' ? 'bg-indigo-300' : 'bg-indigo-200',
       'bg-slate-300': colorIntensity === 'vibrant' ? 'bg-slate-400' : 'bg-slate-300',
       'bg-emerald-200': colorIntensity === 'vibrant' ? 'bg-emerald-300' : 'bg-emerald-200',
-      'bg-rose-200': colorIntensity === 'vibrant' ? 'bg-rose-300' : 'bg-rose-200',
+      'bg-rose-100': colorIntensity === 'vibrant' ? 'bg-rose-200' : 'bg-rose-100',
+      'bg-rose-200': colorIntensity === 'vibrant' ? 'bg-rose-400' : 'bg-rose-300',
       'bg-amber-200': colorIntensity === 'vibrant' ? 'bg-amber-300' : 'bg-amber-200',
       'bg-violet-200': colorIntensity === 'vibrant' ? 'bg-violet-300' : 'bg-violet-200',
-      'bg-pink-200': colorIntensity === 'vibrant' ? 'bg-pink-300' : 'bg-pink-200',
+      'bg-pink-100': colorIntensity === 'vibrant' ? 'bg-pink-200' : 'bg-pink-100',
+      'bg-pink-200': colorIntensity === 'vibrant' ? 'bg-pink-400' : 'bg-pink-300',
       'bg-cyan-200': colorIntensity === 'vibrant' ? 'bg-cyan-300' : 'bg-cyan-200',
     }
 
@@ -677,22 +684,19 @@ export function JourneyMapCell({
 
     case 'number':
       if (!content && !isEditing && !selectedIcon) {
+        // Determine if we should show background color
+        const hasBackgroundColor = backgroundColor && backgroundColor.trim() && backgroundColor !== '' && backgroundColor !== 'bg-white'
+
         return (
           <div
             ref={cellRef}
-            className={`w-full min-h-20 group cursor-pointer transition-all duration-200 relative border border-gray-200 rounded ${backgroundColor || 'bg-white'} hover:border-slate-300 hover:shadow-sm`}
+            className={`w-full h-20 group/cell cursor-pointer transition-all duration-200 relative flex items-center justify-center ${
+              hasBackgroundColor ? `${backgroundColor} border border-gray-200 rounded-xl` : ''
+            }`}
             onClick={handlePlusClick}
           >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div
-                className="opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer p-2"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePlusClick();
-                }}
-              >
-                <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90 pointer-events-none" />
-              </div>
+            <div className="w-10 h-10 flex items-center justify-center opacity-0 group-hover/cell:opacity-100 transition-opacity duration-200 border-2 border-dashed border-gray-200 hover:border-gray-400 rounded-lg">
+              <PlusIcon className="w-5 h-5 text-gray-400" />
             </div>
           </div>
         )
@@ -838,28 +842,19 @@ export function JourneyMapCell({
 
     default: // 'text'
       if (!content && !isEditing && !selectedIcon) {
+        // Determine if we should show background color
+        const hasBackgroundColor = backgroundColor && backgroundColor.trim() && backgroundColor !== '' && backgroundColor !== 'bg-white'
+
         return (
           <div
-            className={`w-full group cursor-pointer transition-all duration-200 relative ${
-              backgroundColor && backgroundColor.trim() && backgroundColor !== '' && backgroundColor !== 'bg-white'
-                ? backgroundColor + ' h-20 rounded border border-gray-200'
-                : ''
+            ref={cellRef}
+            className={`w-full h-20 group/cell cursor-pointer transition-all duration-200 relative flex items-center justify-center ${
+              hasBackgroundColor ? `${backgroundColor} border border-gray-200 rounded-xl` : ''
             }`}
-            style={{
-              minHeight: backgroundColor && backgroundColor.trim() && backgroundColor !== '' && backgroundColor !== 'bg-white' ? '80px' : '80px'
-            }}
             onClick={handlePlusClick}
           >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div
-                className="opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer p-2"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePlusClick();
-                }}
-              >
-                <PlusIcon className="h-6 w-6 text-gray-400 group-hover:text-slate-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-90 pointer-events-none" />
-              </div>
+            <div className="w-10 h-10 flex items-center justify-center opacity-0 group-hover/cell:opacity-100 transition-opacity duration-200 border-2 border-dashed border-gray-200 hover:border-gray-400 rounded-lg">
+              <PlusIcon className="w-5 h-5 text-gray-400" />
             </div>
           </div>
         )

@@ -60,6 +60,7 @@ import { RowInsertionZone } from '@/components/journey-map/RowInsertionZone'
 import { InlineEdit } from '@/components/ui/InlineEdit'
 import { Toast } from '@/components/ui/Toast'
 import { InsightDetailsDrawer } from '@/components/journey-map/InsightDetailsDrawer'
+import { createNewSublane, updateSublanesColorFromParent, getSublaneCardColor, getLighterColorVariant } from '@/utils/sublaneHelpers'
 
 interface Persona {
   id: string
@@ -1563,31 +1564,51 @@ export default function JourneyMapBuilderPage() {
 
     const updatedJourneyMap = {
       ...journeyMap,
-      rows: journeyMap.rows.map(row =>
-        row.id === rowId
-          ? {
-              ...row,
-              cells: row.cells.map(cell => {
-                if (cell.id === cellId) {
-                  // Debug: Log what we're preserving
-                  console.log('handleColorChange - preserving cell data:', cell)
-                  console.log('handleColorChange - adding backgroundColor:', backgroundColor)
+      rows: journeyMap.rows.map(row => {
+        if (row.id === rowId) {
+          // Find which cell index was changed
+          const changedCellIndex = row.cells.findIndex(cell => cell.id === cellId)
 
-                  // Explicitly preserve all existing properties, especially icon
-                  const updatedCell = {
-                    ...cell,
-                    backgroundColor: backgroundColor === '' ? undefined : backgroundColor,
-                    // Explicitly preserve icon if it exists
-                    ...(cell.icon && { icon: cell.icon })
-                  }
-                  console.log('handleColorChange - final cell:', updatedCell)
-                  return updatedCell
-                }
-                return cell
-              })
+          // Update the parent row's cell
+          const updatedCells = row.cells.map(cell => {
+            if (cell.id === cellId) {
+              // Explicitly preserve all existing properties, especially icon
+              const updatedCell = {
+                ...cell,
+                backgroundColor: backgroundColor === '' ? undefined : backgroundColor,
+                // Explicitly preserve icon if it exists
+                ...(cell.icon && { icon: cell.icon })
+              }
+              return updatedCell
             }
-          : row
-      ),
+            return cell
+          })
+
+          // Update sublanes to sync their card colors with the parent (using color variant based on intensity)
+          const updatedSublanes = (row.sublanes || []).map(sublane => ({
+            ...sublane,
+            cells: sublane.cells.map((cell, index) => {
+              // If this is the same cell index as the changed parent cell
+              if (index === changedCellIndex) {
+                // Update sublane cell's backgroundColor to a variant of parent color based on color intensity
+                const sublaneColor = backgroundColor === '' ? undefined : getLighterColorVariant(backgroundColor, colorIntensity === 'vibrant')
+                return {
+                  ...cell,
+                  backgroundColor: sublaneColor
+                }
+              }
+              return cell
+            })
+          }))
+
+          return {
+            ...row,
+            cells: updatedCells,
+            sublanes: updatedSublanes
+          }
+        }
+        return row
+      }),
       updatedAt: new Date().toISOString()
     }
 
@@ -1671,51 +1692,6 @@ export default function JourneyMapBuilderPage() {
     }, 2000)
   }
 
-  // Sublane functionality
-  const handleAddSublane = (rowId: string) => {
-    if (!journeyMap) return
-
-    const row = journeyMap.rows.find(r => r.id === rowId)
-    if (!row) return
-
-    const newSublane: JourneyMapSublane = {
-      id: `sublane-${Date.now()}`,
-      parentRowId: rowId,
-      name: 'New sublane',
-      type: 'text',
-      color: 'bg-gray-50',
-      cells: journeyMap.stages.map((_, i) => ({
-        id: `sublane-${Date.now()}-cell-${i}`,
-        content: ''
-      }))
-    }
-
-    const updatedJourneyMap = {
-      ...journeyMap,
-      rows: journeyMap.rows.map(r =>
-        r.id === rowId
-          ? {
-              ...r,
-              sublanes: [...(r.sublanes || []), newSublane],
-              isExpanded: true // Auto-expand when adding sublane
-            }
-          : r
-      ),
-      updatedAt: new Date().toISOString()
-    }
-
-    setJourneyMap(updatedJourneyMap)
-
-    // Auto-save
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current)
-    }
-    autoSaveTimeoutRef.current = setTimeout(() => {
-      saveJourneyMap(updatedJourneyMap).catch(error => {
-        console.error('Auto-save failed:', error)
-      })
-    }, 2000)
-  }
 
   const handleInsertRowAt = (index: number) => {
     if (!journeyMap) return
@@ -1759,20 +1735,44 @@ export default function JourneyMapBuilderPage() {
     }, 2000)
   }
 
-  const handleToggleExpand = (rowId: string) => {
+  // ============================================================================
+  // SUBLANE HANDLERS
+  // ============================================================================
+
+  const handleAddSublane = (rowId: string) => {
     if (!journeyMap) return
+
+    const row = journeyMap.rows.find(r => r.id === rowId)
+    if (!row) return
+
+    // Create new sublane using helper function with current color intensity mode
+    const newSublane = createNewSublane(row, journeyMap.stages.length, colorIntensity === 'vibrant')
 
     const updatedJourneyMap = {
       ...journeyMap,
-      rows: journeyMap.rows.map(row =>
-        row.id === rowId
-          ? { ...row, isExpanded: !row.isExpanded }
-          : row
+      rows: journeyMap.rows.map(r =>
+        r.id === rowId
+          ? {
+              ...r,
+              sublanes: [...(r.sublanes || []), newSublane],
+              isExpanded: true // Auto-expand when adding sublane
+            }
+          : r
       ),
       updatedAt: new Date().toISOString()
     }
 
     setJourneyMap(updatedJourneyMap)
+
+    // Auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+      })
+    }, 2000)
   }
 
   const handleDeleteSublane = (rowId: string, sublaneId: string) => {
@@ -1788,6 +1788,88 @@ export default function JourneyMapBuilderPage() {
             }
           : row
       ),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+      })
+    }, 2000)
+  }
+
+  const handleSublaneCellChange = (rowId: string, sublaneId: string, cellIndex: number, content: string) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row => {
+        if (row.id === rowId) {
+          const updatedSublanes = (row.sublanes || []).map(sublane => {
+            if (sublane.id === sublaneId) {
+              const updatedCells = [...(sublane.cells || [])]
+
+              updatedCells[cellIndex] = {
+                ...updatedCells[cellIndex],
+                content,
+                // Keep existing backgroundColor - don't recalculate it
+                // This preserves the lighter color for sublanes
+              }
+              return { ...sublane, cells: updatedCells }
+            }
+            return sublane
+          })
+          return { ...row, sublanes: updatedSublanes }
+        }
+        return row
+      }),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      saveJourneyMap(updatedJourneyMap).catch(error => {
+        console.error('Auto-save failed:', error)
+      })
+    }, 2000)
+  }
+
+  const handleSublaneCellIconChange = (rowId: string, sublaneId: string, cellIndex: number, icon: string) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row => {
+        if (row.id === rowId) {
+          const updatedSublanes = (row.sublanes || []).map(sublane => {
+            if (sublane.id === sublaneId) {
+              const updatedCells = [...(sublane.cells || [])]
+
+              updatedCells[cellIndex] = {
+                ...updatedCells[cellIndex],
+                icon,
+                // Keep existing backgroundColor - don't recalculate it
+                // This preserves the lighter color for sublanes
+              }
+              return { ...sublane, cells: updatedCells }
+            }
+            return sublane
+          })
+          return { ...row, sublanes: updatedSublanes }
+        }
+        return row
+      }),
       updatedAt: new Date().toISOString()
     }
 
@@ -1835,81 +1917,26 @@ export default function JourneyMapBuilderPage() {
     }, 2000)
   }
 
-  const handleSublaneCellChange = (rowId: string, sublaneId: string, cellIndex: number, content: string) => {
+  const handleToggleExpanded = (rowId: string) => {
     if (!journeyMap) return
 
     const updatedJourneyMap = {
       ...journeyMap,
-      rows: journeyMap.rows.map(row => {
-        if (row.id === rowId) {
-          const updatedSublanes = (row.sublanes || []).map(sublane => {
-            if (sublane.id === sublaneId) {
-              const updatedCells = [...(sublane.cells || [])]
-              updatedCells[cellIndex] = {
-                ...updatedCells[cellIndex],
-                content
-              }
-              return { ...sublane, cells: updatedCells }
-            }
-            return sublane
-          })
-          return { ...row, sublanes: updatedSublanes }
-        }
-        return row
-      }),
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId
+          ? { ...row, isExpanded: !row.isExpanded }
+          : row
+      ),
       updatedAt: new Date().toISOString()
     }
 
     setJourneyMap(updatedJourneyMap)
-
-    // Auto-save
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current)
-    }
-    autoSaveTimeoutRef.current = setTimeout(() => {
-      saveJourneyMap(updatedJourneyMap).catch(error => {
-        console.error('Auto-save failed:', error)
-      })
-    }, 2000)
   }
 
-  const handleSublaneCriticalChange = (rowId: string, sublaneId: string, cellIndex: number, isCritical: boolean) => {
-    if (!journeyMap) return
+  // ============================================================================
+  // END SUBLANE HANDLERS
+  // ============================================================================
 
-    const updatedJourneyMap = {
-      ...journeyMap,
-      rows: journeyMap.rows.map(row => {
-        if (row.id === rowId) {
-          const updatedSublanes = (row.sublanes || []).map(sublane => {
-            if (sublane.id === sublaneId) {
-              const updatedCells = [...(sublane.cells || [])]
-              updatedCells[cellIndex] = {
-                ...updatedCells[cellIndex],
-                isCritical
-              }
-              return { ...sublane, cells: updatedCells }
-            }
-            return sublane
-          })
-          return { ...row, sublanes: updatedSublanes }
-        }
-        return row
-      }),
-      updatedAt: new Date().toISOString()
-    }
-
-    setJourneyMap(updatedJourneyMap)
-
-    // Auto-save
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current)
-    }
-    autoSaveTimeoutRef.current = setTimeout(() => {
-      saveJourneyMap(updatedJourneyMap).catch(error => {
-        console.error('Auto-save failed:', error)
-      })
-    }, 2000)
-  }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -3552,14 +3579,14 @@ export default function JourneyMapBuilderPage() {
                         style={isFirstRow ? {backgroundColor: 'white'} : {}}
                       >
                         <div className="flex items-start space-x-2">
-                          {/* Expand/Collapse button - only show if row has sublanes */}
-                          {(row.sublanes && row.sublanes.length > 0) && (
+                          {/* Expand/collapse button for sublanes */}
+                          {row.sublanes && row.sublanes.length > 0 && (
                             <button
-                              onClick={() => handleToggleExpand(row.id)}
-                              className="p-1 hover:bg-gray-200 rounded transition-colors mt-1 flex-shrink-0"
-                              title={row.isExpanded ? "Collapse sublanes" : "Expand sublanes"}
+                              onClick={() => handleToggleExpanded(row.id)}
+                              className="p-1 hover:bg-gray-200 rounded transition-colors flex-shrink-0 mt-1"
+                              title={row.isExpanded !== false ? "Collapse sublanes" : "Expand sublanes"}
                             >
-                              {row.isExpanded ? (
+                              {row.isExpanded !== false ? (
                                 <ChevronDownIcon className="h-4 w-4 text-gray-600" />
                               ) : (
                                 <ChevronRightIcon className="h-4 w-4 text-gray-600" />
@@ -3830,24 +3857,28 @@ export default function JourneyMapBuilderPage() {
                       )}
                       </tr>
 
-                      {/* Sublanes (when expanded) */}
-                      {row.isExpanded && row.sublanes && row.sublanes.map((sublane) => (
-                        <tr key={sublane.id} className="border-b border-gray-200 bg-gray-50 hover:bg-gray-100 group">
+                      {/* Sublanes - render if row has sublanes and is expanded */}
+                      {row.sublanes && row.sublanes.length > 0 && row.isExpanded !== false && row.sublanes.map((sublane) => (
+                        <tr key={sublane.id} className="bg-white border-b border-gray-100 hover:bg-gray-50 transition-colors group/sublane">
+                          {/* Sublane header cell */}
                           <td className={`${isCompactView ? 'p-2' : 'p-3'} border-r border-gray-300`}>
                             <div className="flex items-center space-x-2 ml-8">
-                              <div className="w-1 h-4 bg-blue-300 rounded-sm"></div>
-                              <div className="flex-1">
-                                <input
-                                  type="text"
-                                  value={sublane.name}
-                                  onChange={(e) => handleSublaneNameChange(row.id, sublane.id, e.target.value)}
-                                  className="text-sm text-gray-700 bg-transparent border-none outline-none hover:bg-white focus:bg-white rounded px-1 py-0.5 w-full"
-                                  placeholder="Sublane name"
-                                />
-                              </div>
+                              {/* Visual hierarchy indicator */}
+                              <div className="w-1 h-4 bg-blue-300 rounded-sm flex-shrink-0"></div>
+
+                              {/* Sublane name - editable */}
+                              <input
+                                type="text"
+                                value={sublane.name}
+                                onChange={(e) => handleSublaneNameChange(row.id, sublane.id, e.target.value)}
+                                className="text-sm text-gray-700 bg-transparent border-none outline-none hover:bg-white focus:bg-white rounded px-1 py-0.5 flex-1 min-w-0"
+                                placeholder="Sublane name"
+                              />
+
+                              {/* Delete button */}
                               <button
                                 onClick={() => handleDeleteSublane(row.id, sublane.id)}
-                                className="p-1 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all"
+                                className="p-1 text-gray-400 hover:text-red-600 opacity-0 group-hover/sublane:opacity-100 transition-all"
                                 title="Delete sublane"
                               >
                                 <TrashIcon className="h-3 w-3" />
@@ -3855,58 +3886,50 @@ export default function JourneyMapBuilderPage() {
                             </div>
                           </td>
 
-                          {/* Sublane cells */}
-                          {(sublane.cells || []).map((cell, cellIndex) => {
-                            // Check if this cell should be skipped due to previous colSpan
-                            let isSkipped = false
-                            for (let i = 0; i < cellIndex; i++) {
-                              const prevCell = sublane.cells?.[i]
-                              if (prevCell) {
-                                const prevColSpan = prevCell.colSpan || 1
-                                if (i + prevColSpan > cellIndex) {
-                                  isSkipped = true
-                                  break
-                                }
-                              }
-                            }
+                          {/* Sublane cells - only show cards where parent row has content OR backgroundColor */}
+                          {sublane.cells.map((cell, cellIndex) => {
+                            const parentCell = row.cells[cellIndex]
 
-                            if (isSkipped) return null
+                            // DEBUG: Log parent cell state
+                            console.log(`[RENDER] Cell ${cellIndex}:`, {
+                              hasContent: !!parentCell?.content,
+                              hasBgColor: !!parentCell?.backgroundColor,
+                              bgColor: parentCell?.backgroundColor,
+                              sublaneBgColor: cell.backgroundColor
+                            })
+
+                            const shouldShowCard = Boolean(parentCell?.content || parentCell?.backgroundColor)
+                            // Use cell's saved backgroundColor if it exists, otherwise calculate from parent
+                            const cardColor = cell.backgroundColor || getSublaneCardColor(row, cellIndex, colorIntensity === 'vibrant')
 
                             return (
                               <td
                                 key={cell.id || `${sublane.id}-cell-${cellIndex}`}
-                                className={`${isCompactView ? 'p-1' : 'p-2'}`}
-                                colSpan={cell.colSpan || 1}
+                                className={`${isCompactView ? 'p-1' : 'p-2'} ${isFirstRow ? 'bg-white' : ''}`}
+                                style={isFirstRow ? {backgroundColor: 'white'} : {}}
                               >
-                                <JourneyMapCellComponent
-                                  id={cell.id || `${sublane.id}-cell-${cellIndex}`}
-                                  content={cell.content}
-                                  type={sublane.type}
-                                  onChange={(content) => handleSublaneCellChange(row.id, sublane.id, cellIndex, content)}
-                                  selectedIcon={cell.icon}
-                                  backgroundColor={cell.backgroundColor || sublane.color}
-                                  placeholder="Add content..."
-                                  stageCount={journeyMap.stages.length}
-                                  isCritical={cell.isCritical}
-                                  onCriticalChange={(isCritical) => handleSublaneCriticalChange(row.id, sublane.id, cellIndex, isCritical)}
-                                />
+                                {shouldShowCard ? (
+                                  <JourneyMapCellComponent
+                                    id={cell.id || `${sublane.id}-cell-${cellIndex}`}
+                                    content={cell.content}
+                                    type={row.type}
+                                    onChange={(content) => handleSublaneCellChange(row.id, sublane.id, cellIndex, content)}
+                                    selectedIcon={cell.icon}
+                                    onIconChange={(icon) => handleSublaneCellIconChange(row.id, sublane.id, cellIndex, icon)}
+                                    backgroundColor={cell.backgroundColor}
+                                    placeholder="Add details..."
+                                    stageCount={journeyMap.stages.length}
+                                    disableColorConversion={true}
+                                  />
+                                ) : (
+                                  // Empty cell - no card shown
+                                  <div className="h-full min-h-[40px]"></div>
+                                )}
                               </td>
                             )
                           })}
                         </tr>
                       ))}
-
-                      {/* Show sublane count when collapsed */}
-                      {!row.isExpanded && row.sublanes && row.sublanes.length > 0 && (
-                        <tr>
-                          <td colSpan={journeyMap.stages.length + 1} className="px-4 py-1 text-xs text-gray-400 bg-gray-50 border-b border-gray-100">
-                            <div className="flex items-center space-x-1 ml-8">
-                              <LayersIcon className="h-3 w-3" />
-                              <span>{row.sublanes.length} sublane{row.sublanes.length !== 1 ? 's' : ''} (click to expand)</span>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
 
                       {/* Insertion zone after each row - drag & drop mode only */}
                       {/* Don't show if it's the last row (final drop zone handles that) */}

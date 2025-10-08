@@ -5,16 +5,11 @@ import { JourneyMapRow, JourneyMapSublane } from '@/types/journey-map'
 import { JourneyMapCell } from './JourneyMapCell'
 import { SublaneRow } from './SublaneRow'
 import {
-  ChevronDownIcon,
-  ChevronRightIcon,
-  PlusIcon,
-  LayersIcon,
   TrashIcon,
   EditIcon,
-  MoreVertical,
-  Copy,
-  Move,
-  Trash2
+  ChevronDownIcon,
+  ChevronRightIcon,
+  PlusIcon
 } from 'lucide-react'
 
 interface RowWithSublanesProps {
@@ -32,11 +27,15 @@ interface RowWithSublanesProps {
   onRowMove?: (rowId: string, rowIndex: number) => void
   onRowCategoryChange?: (rowId: string, category: string) => void
   onRowDescriptionChange?: (rowId: string, description: string) => void
-  onSublanesChange: (rowId: string, sublanes: JourneyMapSublane[]) => void
-  onToggleExpand: (rowId: string) => void
   activeDropdown?: string | null
   setActiveDropdown?: (dropdown: string | null) => void
   showTooltips?: boolean
+  onAddSublane?: (rowId: string) => void
+  onDeleteSublane?: (rowId: string, sublaneId: string) => void
+  onSublaneCellChange?: (rowId: string, sublaneId: string, cellIndex: number, content: string) => void
+  onSublaneCellIconChange?: (rowId: string, sublaneId: string, cellIndex: number, icon: string) => void
+  onSublaneNameChange?: (rowId: string, sublaneId: string, name: string) => void
+  onToggleExpanded?: (rowId: string) => void
 }
 
 export function RowWithSublanes({
@@ -47,16 +46,13 @@ export function RowWithSublanes({
   onCellColorChange,
   onRowDelete,
   onRowEdit,
-  onSublanesChange,
-  onToggleExpand
+  onAddSublane,
+  onDeleteSublane,
+  onSublaneCellChange,
+  onSublaneCellIconChange,
+  onSublaneNameChange,
+  onToggleExpanded
 }: RowWithSublanesProps) {
-  const [showSublaneButton, setShowSublaneButton] = useState(false)
-  const [isAddingSublane, setIsAddingSublane] = useState(false)
-  const [newSublaneName, setNewSublaneName] = useState('')
-
-  const sublanes = row.sublanes || []
-  const isExpanded = row.isExpanded || false
-  const hasSublanes = sublanes.length > 0
 
   // Ensure we have cells for all stages
   const cells = React.useMemo(() => {
@@ -74,74 +70,21 @@ export function RowWithSublanes({
     return cellsArray
   }, [row.cells, row.id, stageCount])
 
-  const handleAddSublane = () => {
-    if (!newSublaneName.trim()) return
-
-    const newSublane: JourneyMapSublane = {
-      id: `sublane-${Date.now()}`,
-      parentRowId: row.id,
-      name: newSublaneName,
-      type: 'text',
-      color: '', // NO default color - cells will get ghost color conditionally
-      cells: Array(stageCount).fill(null).map((_, i) => ({
-        id: `sublane-${Date.now()}-cell-${i}`,
-        content: '',
-        backgroundColor: '' // Explicitly no background
-      }))
-    }
-
-    onSublanesChange(row.id, [...sublanes, newSublane])
-    setNewSublaneName('')
-    setIsAddingSublane(false)
-
-    // Auto-expand when adding first sublane
-    if (!isExpanded && sublanes.length === 0) {
-      onToggleExpand(row.id)
-    }
-  }
-
-  const handleDeleteSublane = (sublaneId: string) => {
-    onSublanesChange(row.id, sublanes.filter(s => s.id !== sublaneId))
-  }
-
-  const handleSublaneCellChange = (sublaneId: string, cellIndex: number, content: string) => {
-    const updatedSublanes = sublanes.map(sublane => {
-      if (sublane.id === sublaneId) {
-        const updatedCells = [...(sublane.cells || [])]
-        updatedCells[cellIndex] = {
-          ...updatedCells[cellIndex],
-          content
-        }
-        return { ...sublane, cells: updatedCells }
-      }
-      return sublane
-    })
-    onSublanesChange(row.id, updatedSublanes)
-  }
-
-  const handleSublaneNameChange = (sublaneId: string, name: string) => {
-    const updatedSublanes = sublanes.map(sublane =>
-      sublane.id === sublaneId ? { ...sublane, name } : sublane
-    )
-    onSublanesChange(row.id, updatedSublanes)
-  }
+  const sublanes = row.sublanes || []
+  const hasSublanes = sublanes.length > 0
+  const isExpanded = row.isExpanded ?? true
 
   return (
     <>
-      {/* Main row */}
-      <div
-        className={`flex items-stretch border-b border-gray-200 group transition-all ${row.color || 'bg-white'}`}
-        onMouseEnter={() => setShowSublaneButton(true)}
-        onMouseLeave={() => setShowSublaneButton(false)}
-      >
+      <div className={`flex items-stretch border-b border-gray-200 group transition-all ${row.color || 'bg-white'}`}>
         {/* Row header */}
         <div className="w-56 px-4 py-3 border-r border-gray-200 flex items-center justify-between relative">
           <div className="flex items-center space-x-2 flex-1">
-            {/* Expand/Collapse button */}
-            {hasSublanes && (
+            {/* Expand/collapse button for sublanes */}
+            {hasSublanes && onToggleExpanded && (
               <button
-                onClick={() => onToggleExpand(row.id)}
-                className="p-1 hover:bg-gray-200 rounded transition-colors"
+                onClick={() => onToggleExpanded(row.id)}
+                className="p-1 hover:bg-gray-200 rounded transition-colors flex-shrink-0"
                 title={isExpanded ? "Collapse sublanes" : "Expand sublanes"}
               >
                 {isExpanded ? (
@@ -157,16 +100,20 @@ export function RowWithSublanes({
               {row.description && (
                 <div className="text-xs text-gray-500 mt-0.5">{row.description}</div>
               )}
-              {hasSublanes && !isExpanded && (
-                <div className="text-xs text-gray-400 mt-1">
-                  {sublanes.length} sublane{sublanes.length !== 1 ? 's' : ''}
-                </div>
-              )}
             </div>
           </div>
 
           {/* Actions */}
           <div className="flex items-center space-x-1">
+            {onAddSublane && (
+              <button
+                onClick={() => onAddSublane(row.id)}
+                className="p-1 text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-all"
+                title="Add sublane"
+              >
+                <PlusIcon className="h-3 w-3" />
+              </button>
+            )}
             {onRowEdit && (
               <button
                 onClick={() => onRowEdit(row.id)}
@@ -186,20 +133,6 @@ export function RowWithSublanes({
               </button>
             )}
           </div>
-
-          {/* Sublane button - positioned absolutely */}
-          {(showSublaneButton || hasSublanes) && (
-            <button
-              onClick={() => setIsAddingSublane(true)}
-              className={`absolute -bottom-3 left-4 z-10 px-2 py-1 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 hover:shadow-md transition-all flex items-center space-x-1 text-xs ${
-                showSublaneButton || hasSublanes ? 'opacity-100' : 'opacity-0'
-              }`}
-              title="Add sublane"
-            >
-              <LayersIcon className="h-3 w-3 text-gray-600" />
-              <span className="text-gray-700">Add sublane</span>
-            </button>
-          )}
         </div>
 
         {/* Main row cells */}
@@ -224,83 +157,23 @@ export function RowWithSublanes({
         </div>
       </div>
 
-      {/* Sublanes (when expanded) */}
-      {isExpanded && sublanes.map((sublane, sublaneIndex) => (
+      {/* Sublanes - only show when expanded */}
+      {hasSublanes && isExpanded && sublanes.map((sublane) => (
         <SublaneRow
           key={sublane.id}
           sublane={sublane}
+          parentRow={row}
           stageCount={stageCount}
-          backgroundColor="bg-gray-50"
-          parentColor={row.color}
-          parentCells={row.cells}
-          isFirstSublane={sublaneIndex === 0}
-          isLastSublane={sublaneIndex === sublanes.length - 1}
-          onCellChange={handleSublaneCellChange}
-          onCellIconChange={(sublaneId, cellIndex, icon) => {
-            const updatedSublanes = sublanes.map(s => {
-              if (s.id === sublaneId) {
-                const updatedCells = [...(s.cells || [])]
-                updatedCells[cellIndex] = { ...updatedCells[cellIndex], icon }
-                return { ...s, cells: updatedCells }
-              }
-              return s
-            })
-            onSublanesChange(row.id, updatedSublanes)
-          }}
-          onCellColorChange={(sublaneId, cellIndex, color) => {
-            const updatedSublanes = sublanes.map(s => {
-              if (s.id === sublaneId) {
-                const updatedCells = [...(s.cells || [])]
-                updatedCells[cellIndex] = { ...updatedCells[cellIndex], backgroundColor: color }
-                return { ...s, cells: updatedCells }
-              }
-              return s
-            })
-            onSublanesChange(row.id, updatedSublanes)
-          }}
-          onDelete={handleDeleteSublane}
-          onNameChange={handleSublaneNameChange}
+          onCellChange={(sublaneId, cellIndex, content) =>
+            onSublaneCellChange?.(row.id, sublaneId, cellIndex, content)
+          }
+          onCellIconChange={(sublaneId, cellIndex, icon) =>
+            onSublaneCellIconChange?.(row.id, sublaneId, cellIndex, icon)
+          }
+          onDelete={(sublaneId) => onDeleteSublane?.(row.id, sublaneId)}
+          onNameChange={(sublaneId, name) => onSublaneNameChange?.(row.id, sublaneId, name)}
         />
       ))}
-
-      {/* Add sublane form (when adding) */}
-      {isExpanded && isAddingSublane && (
-        <div className="flex items-center px-4 py-3 bg-blue-50 border-b border-gray-200">
-          <div className="w-56 flex items-center space-x-2">
-            <LayersIcon className="h-4 w-4 text-blue-600 ml-10" />
-            <input
-              type="text"
-              value={newSublaneName}
-              onChange={(e) => setNewSublaneName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleAddSublane()
-                if (e.key === 'Escape') {
-                  setNewSublaneName('')
-                  setIsAddingSublane(false)
-                }
-              }}
-              placeholder="Enter sublane name..."
-              className="flex-1 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              autoFocus
-            />
-            <button
-              onClick={handleAddSublane}
-              className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-            >
-              Add
-            </button>
-            <button
-              onClick={() => {
-                setNewSublaneName('')
-                setIsAddingSublane(false)
-              }}
-              className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
     </>
   )
 }

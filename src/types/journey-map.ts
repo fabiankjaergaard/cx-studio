@@ -10,6 +10,13 @@ export interface JourneyMapCell {
   insightIds?: string[] // IDs of insights attached to this cell
 }
 
+export interface JourneyMapSublane {
+  id: string
+  parentRowId: string
+  name: string
+  cells: JourneyMapCell[]
+}
+
 export interface JourneyMapRow {
   id: string
   category: string
@@ -17,6 +24,8 @@ export interface JourneyMapRow {
   type: 'text' | 'emoji' | 'number' | 'rating' | 'status' | 'pain-points' | 'opportunities' | 'metrics' | 'channels'
   color: string
   cells: JourneyMapCell[]
+  sublanes?: JourneyMapSublane[]
+  isExpanded?: boolean
 }
 
 export interface JourneyMapPhase {
