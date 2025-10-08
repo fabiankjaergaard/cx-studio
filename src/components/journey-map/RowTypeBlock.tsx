@@ -1,7 +1,6 @@
 'use client'
 
 import { useDrag } from 'react-dnd'
-import { useEffect } from 'react'
 import {
   Type,
   Smile,
@@ -55,23 +54,26 @@ const getRowTypeIcon = (type: string) => {
 export function RowTypeBlock({ rowType, color = 'bg-slate-50', colorIntensity = 'subtle' }: RowTypeBlockProps) {
   const { setIsDragging } = useDragContext()
 
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: 'ROW_TYPE_BLOCK',
-    item: {
-      rowType: rowType.id,
-      name: rowType.name,
-      description: rowType.description,
-      color: color
+    item: () => {
+      console.log('Drag started immediately')
+      setIsDragging(true)
+      return {
+        rowType: rowType.id,
+        name: rowType.name,
+        description: rowType.description,
+        color: color
+      }
+    },
+    end: () => {
+      console.log('Drag ended immediately')
+      setIsDragging(false)
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  }, [rowType.id, rowType.name, rowType.description, color])
-
-  useEffect(() => {
-    console.log('Block drag state changed:', isDragging)
-    setIsDragging(isDragging)
-  }, [isDragging, setIsDragging])
+  }), [rowType.id, rowType.name, rowType.description, color, setIsDragging])
 
   const IconComponent = getRowTypeIcon(rowType.id)
   const colorClass = ROW_COLORS.find(c => c.id === color)?.class || 'bg-slate-50'

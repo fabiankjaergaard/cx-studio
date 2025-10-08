@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { useDrop } from 'react-dnd'
 import {
   StarIcon, CheckCircleIcon, AlertCircleIcon, XCircleIcon, RefreshCwIcon, PauseCircleIcon, PlusIcon,
   CloudIcon, HeartIcon, LightbulbIcon, ShoppingCartIcon, MessageCircleIcon, UserIcon,
@@ -34,7 +35,7 @@ import { PainPointsVisualization } from './PainPointsVisualization'
 import { OpportunitiesVisualization } from './OpportunitiesVisualization'
 import { MetricsVisualization } from './MetricsVisualization'
 import { ChannelsVisualization } from './ChannelsVisualization'
-import { ROW_COLORS } from '@/types/journey-map'
+import { ROW_COLORS, Insight } from '@/types/journey-map'
 
 interface JourneyMapCellProps {
   id: string
@@ -56,6 +57,12 @@ interface JourneyMapCellProps {
   showEmptyState?: boolean
   isCritical?: boolean
   onCriticalChange?: (isCritical: boolean) => void
+  insightIds?: string[]
+  insights?: Insight[]
+  onInsightAttach?: (insightId: string) => void
+  onInsightRemove?: (insightId: string) => void
+  onInsightClick?: (insightId: string, rowId: string, cellId: string) => void
+  rowId?: string
 }
 
 // Actions icons - CX-optimized ordering with most relevant icons first
@@ -200,7 +207,13 @@ export function JourneyMapCell({
   position,
   showEmptyState = false,
   isCritical = false,
-  onCriticalChange
+  onCriticalChange,
+  insightIds = [],
+  insights = [],
+  onInsightAttach,
+  onInsightRemove,
+  onInsightClick,
+  rowId
 }: JourneyMapCellProps) {
   const [isStatusPickerOpen, setIsStatusPickerOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -210,6 +223,19 @@ export function JourneyMapCell({
   const [recentlyUsedIcons, setRecentlyUsedIcons] = useState<string[]>([])
   const [iconSearchQuery, setIconSearchQuery] = useState<string>('')
   const [colorIntensity, setColorIntensity] = useState<'subtle' | 'vibrant'>('subtle')
+
+  // Drop handling for insights
+  const [{ isOver }, drop] = useDrop({
+    accept: 'INSIGHT',
+    drop: (item: { insight: Insight }) => {
+      if (onInsightAttach) {
+        onInsightAttach(item.insight.id)
+      }
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  })
 
   // Load recently used icons from localStorage on mount
   useEffect(() => {
@@ -394,41 +420,42 @@ export function JourneyMapCell({
 
     const cellRect = cellRef.current.getBoundingClientRect()
     const toolbarWidth = 500 // Much wider toolbar
-    const toolbarHeight = 180 // Increased height for high importance section
     const viewportWidth = window.innerWidth
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+    const viewportHeight = window.innerHeight
 
-    // Calculate ideal center position above the cell with enough space to see the whole cell
+    // Calculate ideal center position
     const cellCenterX = cellRect.left + cellRect.width / 2
     const toolbarLeft = cellCenterX - toolbarWidth / 2
-    // Same spacing for both number and text cells - positioned above the cell
-    const toolbarTop = cellRect.top - 370
+
+    // Position toolbar directly above the cell with minimal gap
+    // Using transform: translateY(-100%) to position it right above
+    const toolbarTop = cellRect.top - 5
 
     // Check if toolbar would be clipped on the right
     if (toolbarLeft + toolbarWidth > viewportWidth - 20) {
-      // Position toolbar so it's 20px from right edge but still above the cell
+      // Position toolbar so it's 20px from right edge
       const adjustedLeft = viewportWidth - toolbarWidth - 20
       return {
         left: `${adjustedLeft}px`,
-        transform: 'none',
+        transform: 'translateY(-100%)',
         top: `${toolbarTop}px`
       }
     }
 
     // Check if toolbar would be clipped on the left
     if (toolbarLeft < 20) {
-      // Position toolbar 20px from left edge but still above the cell
+      // Position toolbar 20px from left edge
       return {
         left: '20px',
-        transform: 'none',
+        transform: 'translateY(-100%)',
         top: `${toolbarTop}px`
       }
     }
 
-    // Default centered position above the cell with enough space
+    // Default centered position - translate both X (center) and Y (above)
     return {
       left: `${cellCenterX}px`,
-      transform: 'translateX(-50%)',
+      transform: 'translateX(-50%) translateY(-100%)',
       top: `${toolbarTop}px`
     }
   }
@@ -672,9 +699,47 @@ export function JourneyMapCell({
       }
 
       return (
-        <div ref={cellRef} className="relative">
+        <div ref={(el) => { cellRef.current = el; drop(el); }} className="relative">
 
-          <div className={`w-full min-h-20 border rounded-xl transition-all duration-300 relative ${getAdjustedBackgroundColor(backgroundColor)} ${isEditing ? 'ring-2 ring-blue-500 ring-offset-1' : ''} ${isCritical ? 'border-2 border-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.15)] ring-1 ring-orange-400/20' : 'border border-gray-200'}`}>
+          <div className={`w-full min-h-20 border rounded-xl transition-all duration-300 relative ${getAdjustedBackgroundColor(backgroundColor)} ${isEditing ? 'ring-2 ring-blue-500 ring-offset-1' : ''} ${isOver ? 'ring-2 ring-purple-500 ring-offset-1' : ''} ${isCritical ? 'border-2 border-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.15)] ring-1 ring-orange-400/20' : 'border border-gray-200'}`}>
+            {/* Insight badges - positioned at bottom */}
+            {insightIds.length > 0 && (
+              <div className="absolute bottom-1 left-1 right-1 z-10 flex gap-1">
+                {insightIds.slice(0, 3).map((insightId) => {
+                  const insight = insights.find(i => i.id === insightId)
+                  if (!insight) return null
+
+                  // Subtle color scheme based on severity
+                  const severityStyle = insight.severity >= 4
+                    ? 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100'
+                    : insight.severity === 3
+                    ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100'
+                    : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100'
+
+                  return (
+                    <div
+                      key={insightId}
+                      className={`flex items-center gap-1 px-1.5 py-0.5 ${severityStyle} rounded text-[10px] font-medium cursor-pointer transition-colors`}
+                      title={insight.title}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (onInsightClick && rowId) {
+                          onInsightClick(insightId, rowId, id)
+                        }
+                      }}
+                    >
+                      <LightbulbIcon className="w-2.5 h-2.5" />
+                      <span className="text-[9px]">{insight.severity}</span>
+                    </div>
+                  )
+                })}
+                {insightIds.length > 3 && (
+                  <div className="px-1.5 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[10px] font-medium">
+                    +{insightIds.length - 3}
+                  </div>
+                )}
+              </div>
+            )}
             {(currentIcon || selectedIcon) && (
               <div
                 className="absolute top-1 right-1 z-10 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
@@ -805,13 +870,52 @@ export function JourneyMapCell({
           ref={(el) => {
             setNodeRef(el)
             cellRef.current = el
+            drop(el)
           }}
           style={style}
           className={`relative ${isDragging ? 'z-50' : ''} ${isDragging ? 'opacity-75' : ''}`}
         >
 
 
-          <div className={`w-full h-20 border rounded-xl transition-all duration-300 ${getAdjustedBackgroundColor(backgroundColor)} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} ${isEditing ? 'ring-2 ring-blue-500 ring-offset-1' : ''} ${isCritical ? 'border-2 border-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.15)] ring-1 ring-orange-400/20' : 'border border-gray-200'} relative group`}>
+          <div className={`w-full h-20 border rounded-xl transition-all duration-300 ${getAdjustedBackgroundColor(backgroundColor)} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} ${isEditing ? 'ring-2 ring-blue-500 ring-offset-1' : ''} ${isOver ? 'ring-2 ring-purple-500 ring-offset-1' : ''} ${isCritical ? 'border-2 border-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.15)] ring-1 ring-orange-400/20' : 'border border-gray-200'} relative group`}>
+            {/* Insight badges - positioned at bottom */}
+            {insightIds.length > 0 && (
+              <div className="absolute bottom-1 left-1 right-1 z-10 flex gap-1">
+                {insightIds.slice(0, 3).map((insightId) => {
+                  const insight = insights.find(i => i.id === insightId)
+                  if (!insight) return null
+
+                  // Subtle color scheme based on severity
+                  const severityStyle = insight.severity >= 4
+                    ? 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100'
+                    : insight.severity === 3
+                    ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100'
+                    : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100'
+
+                  return (
+                    <div
+                      key={insightId}
+                      className={`flex items-center gap-1 px-1.5 py-0.5 ${severityStyle} rounded text-[10px] font-medium cursor-pointer transition-colors`}
+                      title={insight.title}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (onInsightClick && rowId) {
+                          onInsightClick(insightId, rowId, id)
+                        }
+                      }}
+                    >
+                      <LightbulbIcon className="w-2.5 h-2.5" />
+                      <span className="text-[9px]">{insight.severity}</span>
+                    </div>
+                  )
+                })}
+                {insightIds.length > 3 && (
+                  <div className="px-1.5 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[10px] font-medium">
+                    +{insightIds.length - 3}
+                  </div>
+                )}
+              </div>
+            )}
             {(currentIcon || selectedIcon) && (
               <div
                 className="absolute top-1 right-1 z-10 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"

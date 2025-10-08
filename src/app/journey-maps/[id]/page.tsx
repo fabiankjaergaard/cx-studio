@@ -48,7 +48,7 @@ import {
   RotateCcw
 } from 'lucide-react'
 import Link from 'next/link'
-import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, JourneyMapSublane, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES, ROW_TYPES } from '@/types/journey-map'
+import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, JourneyMapSublane, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES, ROW_TYPES, Insight } from '@/types/journey-map'
 import { saveJourneyMap, getJourneyMapById } from '@/services/journeyMapStorage'
 import { JourneyMapCell as JourneyMapCellComponent } from '@/components/journey-map/JourneyMapCell'
 import { RowEditor } from '@/components/journey-map/RowEditor'
@@ -59,6 +59,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { RowInsertionZone } from '@/components/journey-map/RowInsertionZone'
 import { InlineEdit } from '@/components/ui/InlineEdit'
 import { Toast } from '@/components/ui/Toast'
+import { InsightDetailsDrawer } from '@/components/journey-map/InsightDetailsDrawer'
 
 interface Persona {
   id: string
@@ -1084,7 +1085,95 @@ export default function JourneyMapBuilderPage() {
   const journeyMapId = params.id as string
 
   const [journeyMap, setJourneyMap] = useState<JourneyMapData | null>(null)
+  const [insights, setInsights] = useState<Insight[]>([])
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false)
+
+  // Handle creating new insight
+  const handleCreateInsight = (insightData: Omit<Insight, 'id' | 'created_at'>) => {
+    const newInsight: Insight = {
+      ...insightData,
+      id: `insight-${Date.now()}`,
+      created_at: new Date().toISOString(),
+    }
+    setInsights(prev => [...prev, newInsight])
+  }
+
+  // Handle attaching insight to cell
+  const handleInsightAttach = (rowId: string, cellId: string, insightId: string) => {
+    if (!journeyMap) return
+
+    setJourneyMap(prevMap => {
+      if (!prevMap) return prevMap
+
+      return {
+        ...prevMap,
+        rows: prevMap.rows.map(row => {
+          if (row.id === rowId) {
+            return {
+              ...row,
+              cells: row.cells.map(cell => {
+                if (cell.id === cellId) {
+                  const currentInsightIds = cell.insightIds || []
+                  // Don't add duplicate insights
+                  if (currentInsightIds.includes(insightId)) {
+                    return cell
+                  }
+                  return {
+                    ...cell,
+                    insightIds: [...currentInsightIds, insightId]
+                  }
+                }
+                return cell
+              })
+            }
+          }
+          return row
+        })
+      }
+    })
+  }
+
+  // Handle removing insight from cell
+  const handleInsightRemove = (rowId: string, cellId: string, insightId: string) => {
+    if (!journeyMap) return
+
+    setJourneyMap(prevMap => {
+      if (!prevMap) return prevMap
+
+      return {
+        ...prevMap,
+        rows: prevMap.rows.map(row => {
+          if (row.id === rowId) {
+            return {
+              ...row,
+              cells: row.cells.map(cell => {
+                if (cell.id === cellId) {
+                  return {
+                    ...cell,
+                    insightIds: (cell.insightIds || []).filter(id => id !== insightId)
+                  }
+                }
+                return cell
+              })
+            }
+          }
+          return row
+        })
+      }
+    })
+  }
+
+  // Handle clicking on an insight badge
+  const handleInsightClick = (insightId: string, rowId: string, cellId: string) => {
+    const insight = insights.find(i => i.id === insightId)
+    if (insight) {
+      setSelectedInsight(insight)
+      setSelectedInsightRowId(rowId)
+      setSelectedInsightCellId(cellId)
+      setIsInsightDrawerOpen(true)
+    }
+  }
+
   const [isRowEditorOpen, setIsRowEditorOpen] = useState(false)
   const [editingRow, setEditingRow] = useState<JourneyMapRow | null>(null)
   const [isSaving, setIsSaving] = useState(false)
@@ -1105,6 +1194,10 @@ export default function JourneyMapBuilderPage() {
   const [isDragDropMode, setIsDragDropMode] = useState(true) // true for drag-drop, false for plus-button mode
   const [isCompactView, setIsCompactView] = useState(false)
   const [showGridLines, setShowGridLines] = useState(false)
+  const [selectedInsight, setSelectedInsight] = useState<Insight | null>(null)
+  const [isInsightDrawerOpen, setIsInsightDrawerOpen] = useState(false)
+  const [selectedInsightCellId, setSelectedInsightCellId] = useState<string | null>(null)
+  const [selectedInsightRowId, setSelectedInsightRowId] = useState<string | null>(null)
   const [isAdvancedMode, setIsAdvancedMode] = useState(false)
   const [showTooltips, setShowTooltips] = useState(true)
   const [colorIntensity, setColorIntensity] = useState<'subtle' | 'vibrant'>('subtle')
@@ -3053,6 +3146,9 @@ export default function JourneyMapBuilderPage() {
             {isDragDropMode && (
               <RowTypePalette
                 data-onboarding="palette"
+                journeyId={journeyMapId}
+                insights={insights}
+                onCreateInsight={handleCreateInsight}
               />
             )}
 
@@ -3674,6 +3770,12 @@ export default function JourneyMapBuilderPage() {
                               showEmptyState={!cell.content}
                               isCritical={cell.isCritical}
                               onCriticalChange={(isCritical) => handleCriticalChange(row.id, cell.id, isCritical)}
+                              insightIds={cell.insightIds}
+                              insights={insights}
+                              onInsightAttach={(insightId) => handleInsightAttach(row.id, cell.id, insightId)}
+                              onInsightRemove={(insightId) => handleInsightRemove(row.id, cell.id, insightId)}
+                              onInsightClick={(insightId) => handleInsightClick(insightId, row.id, cell.id)}
+                              rowId={row.id}
                             />
 
                             {/* Cell actions dropdown - appears on hover */}
@@ -3807,7 +3909,8 @@ export default function JourneyMapBuilderPage() {
                       )}
 
                       {/* Insertion zone after each row - drag & drop mode only */}
-                      {isDragDropMode && (
+                      {/* Don't show if it's the last row (final drop zone handles that) */}
+                      {isDragDropMode && rowIndex < journeyMap.rows.length - 1 && (
                         <RowInsertionZone
                           key={`insertion-${rowIndex + 1}-${journeyMap.rows.length}`}
                           onDropBlock={handleDropBlockAtIndex}
@@ -3819,7 +3922,19 @@ export default function JourneyMapBuilderPage() {
                     </React.Fragment>
                   )
                   })}
-                  
+
+                  {/* Final drop zone at the bottom - visible only when dragging */}
+                  {isDragDropMode && (
+                    <RowInsertionZone
+                      key={`insertion-final-${journeyMap.rows.length}`}
+                      onDropBlock={handleDropBlockAtIndex}
+                      insertIndex={journeyMap.rows.length}
+                      stageCount={journeyMap.stages.length}
+                      showAlways={false}
+                      isLastZone={true}
+                    />
+                  )}
+
                 </tbody>
               </table>
                   </DndContext>
@@ -3918,11 +4033,11 @@ export default function JourneyMapBuilderPage() {
     </div>
   )
 
-  const finalContent = isDragDropMode ? <DragDropProvider>{content}</DragDropProvider> : content
-
   return (
     <>
-      {finalContent}
+      <DragDropProvider>
+        {content}
+      </DragDropProvider>
 
       {/* Zoom Indicator */}
       {showZoomIndicator && (
@@ -3934,7 +4049,28 @@ export default function JourneyMapBuilderPage() {
         </div>
       )}
 
-{/* Toast Notification */}
+      {/* Insight Details Drawer */}
+      <InsightDetailsDrawer
+        isOpen={isInsightDrawerOpen}
+        onClose={() => {
+          setIsInsightDrawerOpen(false)
+          setSelectedInsight(null)
+          setSelectedInsightCellId(null)
+          setSelectedInsightRowId(null)
+        }}
+        insight={selectedInsight}
+        onRemoveFromCell={() => {
+          if (selectedInsight && selectedInsightRowId && selectedInsightCellId) {
+            handleInsightRemove(selectedInsightRowId, selectedInsightCellId, selectedInsight.id)
+          }
+        }}
+        onEdit={() => {
+          // TODO: Implement edit functionality
+          console.log('Edit insight:', selectedInsight)
+        }}
+      />
+
+      {/* Toast Notification */}
       <Toast
         message={toastMessage}
         type={toastType}

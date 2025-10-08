@@ -38,85 +38,44 @@ export function JourneyMapDropZone({
   const isHighlighted = isActive || isOver
 
   return (
-    <tr className="border-b border-gray-200">
+    <tr className="border-b border-gray-200 h-16 group/dropzone">
       <td
         ref={drop as any}
-        className={`
-          p-4 border-r border-gray-200 transition-all duration-200 cursor-pointer
-          ${isHighlighted
-            ? 'bg-slate-50/30 border-slate-300'
-            : 'bg-gray-50/50 hover:bg-gray-100'
-          }
-          ${isActive
-            ? 'ring-1 ring-slate-300 ring-inset'
-            : ''
-          }
-        `}
+        colSpan={stageCount + 2}
+        className="p-0 relative cursor-pointer"
         onClick={onManualAdd}
       >
-        <div className="flex flex-col items-center justify-center text-center space-y-2">
-          {isHighlighted ? (
-            <>
-              <div className={`
-                w-10 h-10 rounded-full flex items-center justify-center transition-colors
-                ${isActive
-                  ? 'bg-slate-200 text-slate-700'
-                  : 'bg-slate-100 text-slate-600'
-                }
-              `}>
-                <MousePointer className="w-5 h-5" />
-              </div>
-              <div className="space-y-1">
-                <span className={`
-                  text-sm font-medium transition-colors
-                  ${isActive
-                    ? 'text-slate-800'
-                    : 'text-slate-700'
-                  }
-                `}>
-                  {isActive ? 'Drop to add row' : 'Drop block here'}
-                </span>
-                <p className="text-xs text-slate-600">
-                  Release to create new row
-                </p>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-300 hover:text-gray-700 transition-colors">
-                <PlusIcon className="w-5 h-5" />
-              </div>
-              <div className="space-y-1">
-                <span className="text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors">
-                  Add row
-                </span>
-                <p className="text-xs text-gray-400">
-                  Drag block here or click
-                </p>
-              </div>
-            </>
-          )}
+        {/* Drop zone indicator line - similar to RowInsertionZone */}
+        <div className={`
+          absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-out
+          ${isActive ? 'px-4' : 'px-8'}
+        `}>
+          <div className={`
+            relative w-full transition-all duration-300 ease-out
+            ${isActive
+              ? 'h-1 bg-slate-400/30 rounded-full'
+              : 'h-0.5 bg-gray-300/50 rounded-full opacity-0 group-hover/dropzone:opacity-100'
+            }
+          `}>
+            {/* Animated gradient overlay when active */}
+            {isActive && (
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-500/40 to-transparent rounded-full animate-pulse" />
+            )}
+          </div>
         </div>
 
-        {/* Drop indicator overlay */}
+        {/* Drop indicator text with better styling */}
         {isActive && (
-          <div className="absolute inset-0 border-2 border-dashed border-slate-400 rounded bg-slate-50 bg-opacity-20 pointer-events-none" />
+          <div className="absolute inset-x-0 top-full mt-2 flex items-center justify-center pointer-events-none">
+            <div className="relative">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold text-slate-800 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-slate-200/50">
+                <div className="w-1.5 h-1.5 bg-slate-600 rounded-full animate-pulse" />
+                Drop to insert row here
+              </span>
+            </div>
+          </div>
         )}
       </td>
-
-      {/* Empty cells for each stage */}
-      {Array.from({ length: stageCount }).map((_, index) => (
-        <td
-          key={`empty-${index}`}
-          className={`
-            p-2 border-r border-gray-200 transition-colors duration-200
-            ${isHighlighted ? 'bg-slate-50/20' : ''}
-          `}
-        />
-      ))}
-
-      {/* Empty cell for the last column */}
-      <td className={`p-4 transition-colors duration-200 ${isHighlighted ? 'bg-slate-50/20' : ''}`} />
     </tr>
   )
 }

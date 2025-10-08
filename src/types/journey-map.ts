@@ -7,6 +7,7 @@ export interface JourneyMapCell {
   colSpan?: number  // How many columns this cell spans
   position?: number // Position within the row (for drag & drop)
   isCritical?: boolean // Mark cell as critical/important touchpoint
+  insightIds?: string[] // IDs of insights attached to this cell
 }
 
 export interface JourneyMapRow {
@@ -191,3 +192,25 @@ export const DEFAULT_JOURNEY_STAGES = [
     phaseId: 'after'
   }
 ]
+
+// Evidence and Insights types
+export interface Evidence {
+  id: string
+  source: string // "NPS Q1 2025", "Support Tickets", "Manual observation"
+  type: 'verbatim' | 'metric' | 'observation'
+  text?: string // For verbatim comments
+  value?: number // For metrics (NPS score, drop-off rate, etc)
+  unit?: string // "ratio", "percentage", "count"
+  collected_at: string
+}
+
+export interface Insight {
+  id: string
+  journey_id: string
+  title: string
+  summary: string
+  severity: 1 | 2 | 3 | 4 | 5 // 1=low, 5=critical
+  evidence: Evidence[]
+  created_at: string
+  created_by?: string
+}

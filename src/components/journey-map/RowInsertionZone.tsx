@@ -18,6 +18,7 @@ interface RowInsertionZoneProps {
   stageCount: number
   showAlways?: boolean
   onClickAdd?: () => void
+  isLastZone?: boolean
 }
 
 export function RowInsertionZone({
@@ -25,7 +26,8 @@ export function RowInsertionZone({
   insertIndex,
   stageCount,
   showAlways = false,
-  onClickAdd
+  onClickAdd,
+  isLastZone = false
 }: RowInsertionZoneProps) {
   const { isDragging } = useDragContext()
 
@@ -45,12 +47,12 @@ export function RowInsertionZone({
   const isActive = isOver && canDrop
   const shouldShow = showAlways || (isDragging && (isActive || isOver))
 
-  // Debug logging
+  // Debug logging - enhanced for final drop zone
   useEffect(() => {
-    if (isOver || canDrop) {
-      console.log(`Zone ${insertIndex} - isOver: ${isOver}, canDrop: ${canDrop}, isDragging: ${isDragging}`)
+    if (isOver || canDrop || showAlways) {
+      console.log(`Zone ${insertIndex} (showAlways: ${showAlways}) - isOver: ${isOver}, canDrop: ${canDrop}, isDragging: ${isDragging}, isActive: ${isActive}`)
     }
-  }, [isOver, canDrop, isDragging, insertIndex])
+  }, [isOver, canDrop, isDragging, insertIndex, showAlways, isActive])
 
   // Invisible drop target when not dragging
   if (!shouldShow) {
@@ -68,42 +70,49 @@ export function RowInsertionZone({
   }
 
   return (
-    <tr className="h-8 group/insertion relative">
+    <tr className="h-10 group/insertion relative">
       <td
         ref={drop as any}
         colSpan={stageCount + 2}
-        className="p-0 relative"
+        className="p-0 relative cursor-pointer"
+        onClick={(e) => {
+          if (onClickAdd) {
+            e.stopPropagation()
+            onClickAdd()
+          }
+        }}
       >
-        {/* Plus button - visible on hover */}
-        <div
-          onClick={(e) => {
-            if (onClickAdd) {
-              e.stopPropagation()
-              onClickAdd()
-            }
-          }}
-          className={`
-            absolute inset-x-0 h-full flex items-center justify-center cursor-pointer transition-opacity duration-200
-            ${isActive ? 'opacity-100' : 'opacity-0 group-hover/insertion:opacity-100'}
-          `}
-        >
+        {/* Drop zone indicator line - expands on hover */}
+        <div className={`
+          absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-out
+          ${isActive ? 'px-4' : 'px-8'}
+        `}>
           <div className={`
-            border-2 border-dashed rounded-full p-1.5 shadow-md transition-all
+            relative w-full transition-all duration-300 ease-out
             ${isActive
-              ? 'bg-slate-100 border-slate-400'
-              : 'bg-white border-gray-300 hover:border-slate-400 hover:bg-slate-50'
+              ? 'h-1 bg-slate-400/30 rounded-full'
+              : 'h-0.5 bg-gray-300/50 rounded-full opacity-0 group-hover/insertion:opacity-100'
             }
           `}>
-            <PlusIcon className="w-4 h-4 text-gray-500" />
+            {/* Animated gradient overlay when active */}
+            {isActive && (
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-500/40 to-transparent rounded-full animate-pulse" />
+            )}
           </div>
         </div>
 
-        {/* Drop indicator text - only when dragging */}
+        {/* Drop indicator text with better styling */}
         {isActive && (
-          <div className="absolute inset-x-0 top-full mt-1 flex items-center justify-center">
-            <span className="text-xs font-medium text-slate-700 bg-white px-2 py-1 rounded shadow-sm">
-              Drop here to add row
-            </span>
+          <div className={`
+            absolute inset-x-0 flex items-center justify-center pointer-events-none
+            ${isLastZone ? 'bottom-full mb-2' : 'top-full mt-2'}
+          `}>
+            <div className="relative">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold text-slate-800 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-slate-200/50">
+                <div className="w-1.5 h-1.5 bg-slate-600 rounded-full animate-pulse" />
+                Drop to insert row here
+              </span>
+            </div>
           </div>
         )}
       </td>

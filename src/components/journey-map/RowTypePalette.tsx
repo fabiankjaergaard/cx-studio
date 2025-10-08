@@ -1,21 +1,30 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Palette } from 'lucide-react'
+import { Palette, Lightbulb, Plus } from 'lucide-react'
 import { RowTypeBlock } from './RowTypeBlock'
-import { ROW_TYPES, ROW_COLORS } from '@/types/journey-map'
+import { InsightBlock } from './InsightBlock'
+import { CreateInsightDrawer } from './CreateInsightDrawer'
+import { ROW_TYPES, ROW_COLORS, Insight } from '@/types/journey-map'
 
 interface RowTypePaletteProps {
   className?: string
   'data-onboarding'?: string
+  journeyId?: string
+  insights?: Insight[]
+  onCreateInsight?: (insight: Omit<Insight, 'id' | 'created_at'>) => void
 }
 
 export function RowTypePalette({
   className = '',
-  'data-onboarding': dataOnboarding
+  'data-onboarding': dataOnboarding,
+  journeyId,
+  insights = [],
+  onCreateInsight
 }: RowTypePaletteProps) {
   const [selectedColor, setSelectedColor] = useState('bg-slate-50')
   const [colorIntensity, setColorIntensity] = useState<'subtle' | 'vibrant'>('subtle')
+  const [showCreateDrawer, setShowCreateDrawer] = useState(false)
 
   // Load color intensity preference
   useEffect(() => {
@@ -160,7 +169,58 @@ export function RowTypePalette({
           </div>
         </div>
 
+        {/* Insights Section */}
+        <div className="pt-4 border-t border-gray-200">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Lightbulb className="w-4 h-4 text-gray-600" />
+              <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Insights
+              </h4>
+            </div>
+            {insights.length > 0 && (
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                {insights.length}
+              </span>
+            )}
+          </div>
+
+          {/* Insights list */}
+          {insights.length > 0 ? (
+            <div className="space-y-2 mb-3">
+              {insights.map((insight) => (
+                <InsightBlock key={insight.id} insight={insight} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-gray-500 mb-3 italic">
+              No insights yet. Create one to get started.
+            </p>
+          )}
+
+          {/* Action buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowCreateDrawer(true)}
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-all"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Create
+            </button>
+          </div>
+        </div>
+
       </div>
+
+      {/* Create Insight Drawer */}
+      {journeyId && onCreateInsight && (
+        <CreateInsightDrawer
+          isOpen={showCreateDrawer}
+          onClose={() => setShowCreateDrawer(false)}
+          onSave={onCreateInsight}
+          journeyId={journeyId}
+        />
+      )}
     </div>
   )
 }
