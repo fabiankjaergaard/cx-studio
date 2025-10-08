@@ -549,23 +549,33 @@ export function JourneyMapCell({
     // If color conversion is disabled (for sublanes), return original color
     if (disableColorConversion) return bgColor
 
-    // Map subtle colors to vibrant colors
+    // Extract base color (remove opacity if present)
+    // e.g., "bg-[#778DB0]/40" -> "bg-[#778DB0]"
+    const parts = bgColor.split('/')
+    const baseColor = parts[0]
+
+    // Map Kustra colors to correct intensity
+    // Vibrant: Main row = full original color
+    // Subtle: Main row = middle-ground hex color (between original and very light)
     const colorMap: Record<string, string> = {
-      'bg-slate-50': colorIntensity === 'vibrant' ? 'bg-slate-200' : 'bg-slate-50',
-      'bg-blue-200': colorIntensity === 'vibrant' ? 'bg-blue-300' : 'bg-blue-200',
-      'bg-indigo-200': colorIntensity === 'vibrant' ? 'bg-indigo-300' : 'bg-indigo-200',
-      'bg-slate-300': colorIntensity === 'vibrant' ? 'bg-slate-400' : 'bg-slate-300',
-      'bg-emerald-200': colorIntensity === 'vibrant' ? 'bg-emerald-300' : 'bg-emerald-200',
-      'bg-rose-100': colorIntensity === 'vibrant' ? 'bg-rose-200' : 'bg-rose-100',
-      'bg-rose-200': colorIntensity === 'vibrant' ? 'bg-rose-400' : 'bg-rose-300',
-      'bg-amber-200': colorIntensity === 'vibrant' ? 'bg-amber-300' : 'bg-amber-200',
-      'bg-violet-200': colorIntensity === 'vibrant' ? 'bg-violet-300' : 'bg-violet-200',
-      'bg-pink-100': colorIntensity === 'vibrant' ? 'bg-pink-200' : 'bg-pink-100',
-      'bg-pink-200': colorIntensity === 'vibrant' ? 'bg-pink-400' : 'bg-pink-300',
-      'bg-cyan-200': colorIntensity === 'vibrant' ? 'bg-cyan-300' : 'bg-cyan-200',
+      // 8 Kustra colors
+      'bg-[#F9FAFB]': colorIntensity === 'vibrant' ? 'bg-[#F9FAFB]' : 'bg-[#FBFCFC]',
+      'bg-[#778DB0]': colorIntensity === 'vibrant' ? 'bg-[#778DB0]' : 'bg-[#A3B2C9]',
+      'bg-[#77BB92]': colorIntensity === 'vibrant' ? 'bg-[#77BB92]' : 'bg-[#A3D2B7]',
+      'bg-[#F4C542]': colorIntensity === 'vibrant' ? 'bg-[#F4C542]' : 'bg-[#F7D976]',
+      'bg-[#ED6B5A]': colorIntensity === 'vibrant' ? 'bg-[#ED6B5A]' : 'bg-[#F39A8E]',
+      'bg-[#A67FB5]': colorIntensity === 'vibrant' ? 'bg-[#A67FB5]' : 'bg-[#BFA0CA]',
+      'bg-[#E89FAB]': colorIntensity === 'vibrant' ? 'bg-[#E89FAB]' : 'bg-[#EFBCC4]',
+      'bg-[#8A8A8A]': colorIntensity === 'vibrant' ? 'bg-[#8A8A8A]' : 'bg-[#B1B1B1]',
+      // Legacy color support (for backward compatibility)
+      'bg-slate-50': colorIntensity === 'vibrant' ? 'bg-[#F9FAFB]' : 'bg-[#FBFCFC]',
+      'bg-blue-200': colorIntensity === 'vibrant' ? 'bg-[#778DB0]' : 'bg-[#A3B2C9]',
+      'bg-rose-200': colorIntensity === 'vibrant' ? 'bg-[#ED6B5A]' : 'bg-[#F39A8E]',
+      'bg-emerald-200': colorIntensity === 'vibrant' ? 'bg-[#77BB92]' : 'bg-[#A3D2B7]',
     }
 
-    return colorMap[bgColor] || bgColor
+    // Use base color to look up in map, ignoring any existing opacity
+    return colorMap[baseColor] || bgColor
   }
 
   const getFilteredIcons = () => {

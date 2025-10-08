@@ -138,18 +138,16 @@ export const ROW_TYPES = [
   { id: 'channels', name: 'Channels', description: 'Visual channel/touchpoint icons' }
 ]
 
-// Available row colors
+// Available row colors - Kustra Color System (8 colors)
 export const ROW_COLORS = [
-  { id: 'bg-slate-50', name: 'Light Gray', class: 'bg-slate-50' },
-  { id: 'bg-blue-200', name: 'Blue', class: 'bg-blue-200' },
-  { id: 'bg-indigo-200', name: 'Indigo', class: 'bg-indigo-200' },
-  { id: 'bg-slate-300', name: 'Light Blue', class: 'bg-slate-300' },
-  { id: 'bg-emerald-200', name: 'Green', class: 'bg-emerald-200' },
-  { id: 'bg-rose-200', name: 'Rose', class: 'bg-rose-200' },
-  { id: 'bg-amber-200', name: 'Amber', class: 'bg-amber-200' },
-  { id: 'bg-violet-200', name: 'Violet', class: 'bg-violet-200' },
-  { id: 'bg-pink-200', name: 'Pink', class: 'bg-pink-200' },
-  { id: 'bg-cyan-200', name: 'Cyan', class: 'bg-cyan-200' }
+  { id: 'bg-[#F9FAFB]', name: 'Cloud White', class: 'bg-[#F9FAFB]' },
+  { id: 'bg-[#778DB0]', name: 'Calm Blue', class: 'bg-[#778DB0]' },
+  { id: 'bg-[#77BB92]', name: 'Mint Green', class: 'bg-[#77BB92]' },
+  { id: 'bg-[#F4C542]', name: 'Golden Sun', class: 'bg-[#F4C542]' },
+  { id: 'bg-[#ED6B5A]', name: 'Coral Orange', class: 'bg-[#ED6B5A]' },
+  { id: 'bg-[#A67FB5]', name: 'Soft Purple', class: 'bg-[#A67FB5]' },
+  { id: 'bg-[#E89FAB]', name: 'Rose Pink', class: 'bg-[#E89FAB]' },
+  { id: 'bg-[#8A8A8A]', name: 'Slate Gray', class: 'bg-[#8A8A8A]' }
 ]
 
 // Default phases for journey maps

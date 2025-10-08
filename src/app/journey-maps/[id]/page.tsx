@@ -1584,17 +1584,17 @@ export default function JourneyMapBuilderPage() {
             return cell
           })
 
-          // Update sublanes to sync their card colors with the parent (using color variant based on intensity)
+          // Update sublanes to store the SAME background color as parent
+          // Color conversion will happen at render time in SublaneRow component
           const updatedSublanes = (row.sublanes || []).map(sublane => ({
             ...sublane,
             cells: sublane.cells.map((cell, index) => {
               // If this is the same cell index as the changed parent cell
               if (index === changedCellIndex) {
-                // Update sublane cell's backgroundColor to a variant of parent color based on color intensity
-                const sublaneColor = backgroundColor === '' ? undefined : getLighterColorVariant(backgroundColor, colorIntensity === 'vibrant')
+                // Store the parent's backgroundColor directly - conversion happens at render time
                 return {
                   ...cell,
-                  backgroundColor: sublaneColor
+                  backgroundColor: backgroundColor === '' ? undefined : backgroundColor
                 }
               }
               return cell
@@ -3562,21 +3562,37 @@ export default function JourneyMapBuilderPage() {
                     <React.Fragment key={`row-section-${row.id}`}>
                       <tr key={row.id} className={`border-b-2 border-gray-200 ${isFirstRow ? 'sticky top-0 z-10 bg-white' : ''}`}>
                       <td
-                        className={`${isCompactView ? 'p-2' : 'p-4'} border-r border-gray-300 border-l-4 ${
-                          row.color === 'bg-slate-50' ? (colorIntensity === 'vibrant' ? 'border-l-slate-600' : 'border-l-slate-200') :
-                          row.color === 'bg-blue-200' ? (colorIntensity === 'vibrant' ? 'border-l-blue-600' : 'border-l-blue-300') :
-                          row.color === 'bg-indigo-200' ? (colorIntensity === 'vibrant' ? 'border-l-indigo-600' : 'border-l-indigo-300') :
-                          row.color === 'bg-slate-300' ? (colorIntensity === 'vibrant' ? 'border-l-slate-700' : 'border-l-slate-400') :
-                          row.color === 'bg-emerald-200' ? (colorIntensity === 'vibrant' ? 'border-l-emerald-600' : 'border-l-emerald-300') :
-                          row.color === 'bg-rose-200' ? (colorIntensity === 'vibrant' ? 'border-l-rose-600' : 'border-l-rose-300') :
-                          row.color === 'bg-amber-200' ? (colorIntensity === 'vibrant' ? 'border-l-amber-600' : 'border-l-amber-300') :
-                          row.color === 'bg-violet-200' ? (colorIntensity === 'vibrant' ? 'border-l-violet-600' : 'border-l-violet-300') :
-                          row.color === 'bg-pink-200' ? (colorIntensity === 'vibrant' ? 'border-l-pink-600' : 'border-l-pink-300') :
-                          row.color === 'bg-cyan-200' ? (colorIntensity === 'vibrant' ? 'border-l-cyan-600' : 'border-l-cyan-300') :
-                          'border-l-gray-300'
-                        } ${isFirstRow ? 'bg-white' : 'bg-slate-50'} group relative hover:bg-white transition-colors`}
+                        className={`${isCompactView ? 'p-2' : 'p-4'} border-r border-gray-300 border-l-4 ${isFirstRow ? 'bg-white' : 'bg-slate-50'} group relative hover:bg-white transition-colors`}
+                        style={{
+                          ...(isFirstRow ? { backgroundColor: 'white' } : {}),
+                          borderLeftColor: (() => {
+                            // Get the base color without opacity
+                            const parts = row.color.split('/')
+                            const baseColor = parts[0]
+
+                            // Map Kustra colors to border colors based on intensity mode
+                            const borderColorMap: Record<string, { vibrant: string; subtle: string }> = {
+                              // 8 Kustra colors
+                              'bg-[#F9FAFB]': { vibrant: '#F9FAFB', subtle: '#FBFCFC' },
+                              'bg-[#778DB0]': { vibrant: '#778DB0', subtle: '#A3B2C9' },
+                              'bg-[#77BB92]': { vibrant: '#77BB92', subtle: '#A3D2B7' },
+                              'bg-[#F4C542]': { vibrant: '#F4C542', subtle: '#F7D976' },
+                              'bg-[#ED6B5A]': { vibrant: '#ED6B5A', subtle: '#F39A8E' },
+                              'bg-[#A67FB5]': { vibrant: '#A67FB5', subtle: '#BFA0CA' },
+                              'bg-[#E89FAB]': { vibrant: '#E89FAB', subtle: '#EFBCC4' },
+                              'bg-[#8A8A8A]': { vibrant: '#8A8A8A', subtle: '#B1B1B1' }
+                            }
+
+                            if (borderColorMap[baseColor]) {
+                              return colorIntensity === 'vibrant'
+                                ? borderColorMap[baseColor].vibrant
+                                : borderColorMap[baseColor].subtle
+                            }
+
+                            return '#D1D5DB' // gray-300 fallback
+                          })()
+                        }}
                         data-onboarding={rowIndex === 0 ? "categories" : undefined}
-                        style={isFirstRow ? {backgroundColor: 'white'} : {}}
                       >
                         <div className="flex items-start space-x-2">
                           {/* Expand/collapse button for sublanes */}
@@ -3899,8 +3915,9 @@ export default function JourneyMapBuilderPage() {
                             })
 
                             const shouldShowCard = Boolean(parentCell?.content || parentCell?.backgroundColor)
-                            // Use cell's saved backgroundColor if it exists, otherwise calculate from parent
-                            const cardColor = cell.backgroundColor || getSublaneCardColor(row, cellIndex, colorIntensity === 'vibrant')
+                            // ALWAYS calculate backgroundColor from parent at render time
+                            // This ensures correct color in both subtle and vibrant modes
+                            const cardColor = getSublaneCardColor(row, cellIndex, colorIntensity === 'vibrant')
 
                             return (
                               <td
@@ -3916,7 +3933,7 @@ export default function JourneyMapBuilderPage() {
                                     onChange={(content) => handleSublaneCellChange(row.id, sublane.id, cellIndex, content)}
                                     selectedIcon={cell.icon}
                                     onIconChange={(icon) => handleSublaneCellIconChange(row.id, sublane.id, cellIndex, icon)}
-                                    backgroundColor={cell.backgroundColor}
+                                    backgroundColor={cardColor}
                                     placeholder="Add details..."
                                     stageCount={journeyMap.stages.length}
                                     disableColorConversion={true}

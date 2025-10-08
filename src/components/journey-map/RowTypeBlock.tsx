@@ -51,7 +51,7 @@ const getRowTypeIcon = (type: string) => {
   }
 }
 
-export function RowTypeBlock({ rowType, color = 'bg-slate-50', colorIntensity = 'subtle' }: RowTypeBlockProps) {
+export function RowTypeBlock({ rowType, color = 'bg-[#F9FAFB]', colorIntensity = 'subtle' }: RowTypeBlockProps) {
   const { setIsDragging } = useDragContext()
 
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -76,40 +76,42 @@ export function RowTypeBlock({ rowType, color = 'bg-slate-50', colorIntensity = 
   }), [rowType.id, rowType.name, rowType.description, color, setIsDragging])
 
   const IconComponent = getRowTypeIcon(rowType.id)
-  const colorClass = ROW_COLORS.find(c => c.id === color)?.class || 'bg-slate-50'
+
+  // Get adjusted color based on intensity
+  const getAdjustedColor = () => {
+    const colorMap: Record<string, { vibrant: string; subtle: string }> = {
+      'bg-[#F9FAFB]': { vibrant: 'bg-[#F9FAFB]', subtle: 'bg-[#FBFCFC]' },
+      'bg-[#778DB0]': { vibrant: 'bg-[#778DB0]', subtle: 'bg-[#A3B2C9]' },
+      'bg-[#77BB92]': { vibrant: 'bg-[#77BB92]', subtle: 'bg-[#A3D2B7]' },
+      'bg-[#F4C542]': { vibrant: 'bg-[#F4C542]', subtle: 'bg-[#F7D976]' },
+      'bg-[#ED6B5A]': { vibrant: 'bg-[#ED6B5A]', subtle: 'bg-[#F39A8E]' },
+      'bg-[#A67FB5]': { vibrant: 'bg-[#A67FB5]', subtle: 'bg-[#BFA0CA]' },
+      'bg-[#E89FAB]': { vibrant: 'bg-[#E89FAB]', subtle: 'bg-[#EFBCC4]' },
+      'bg-[#8A8A8A]': { vibrant: 'bg-[#8A8A8A]', subtle: 'bg-[#B1B1B1]' }
+    }
+
+    if (colorMap[color]) {
+      return colorIntensity === 'vibrant' ? colorMap[color].vibrant : colorMap[color].subtle
+    }
+    return color
+  }
 
   // Get border color based on intensity
   const getBorderColor = () => {
-    if (colorIntensity === 'vibrant') {
-      switch (color) {
-        case 'bg-slate-50': return 'border-slate-600'
-        case 'bg-blue-200': return 'border-blue-600'
-        case 'bg-indigo-200': return 'border-indigo-600'
-        case 'bg-slate-300': return 'border-slate-700'
-        case 'bg-emerald-200': return 'border-emerald-600'
-        case 'bg-rose-200': return 'border-rose-600'
-        case 'bg-amber-200': return 'border-amber-600'
-        case 'bg-violet-200': return 'border-violet-600'
-        case 'bg-pink-200': return 'border-pink-600'
-        case 'bg-cyan-200': return 'border-cyan-600'
-        default: return 'border-gray-400'
-      }
-    } else {
-      // Subtle
-      switch (color) {
-        case 'bg-slate-50': return 'border-slate-200'
-        case 'bg-blue-200': return 'border-blue-300'
-        case 'bg-indigo-200': return 'border-indigo-300'
-        case 'bg-slate-300': return 'border-slate-400'
-        case 'bg-emerald-200': return 'border-emerald-300'
-        case 'bg-rose-200': return 'border-rose-300'
-        case 'bg-amber-200': return 'border-amber-300'
-        case 'bg-violet-200': return 'border-violet-300'
-        case 'bg-pink-200': return 'border-pink-300'
-        case 'bg-cyan-200': return 'border-cyan-300'
-        default: return 'border-gray-200'
-      }
+    const borderMap: Record<string, { vibrant: string; subtle: string }> = {
+      'bg-[#F9FAFB]': { vibrant: '#F9FAFB', subtle: '#FBFCFC' },
+      'bg-[#778DB0]': { vibrant: '#778DB0', subtle: '#A3B2C9' },
+      'bg-[#77BB92]': { vibrant: '#77BB92', subtle: '#A3D2B7' },
+      'bg-[#F4C542]': { vibrant: '#F4C542', subtle: '#F7D976' },
+      'bg-[#ED6B5A]': { vibrant: '#ED6B5A', subtle: '#F39A8E' },
+      'bg-[#A67FB5]': { vibrant: '#A67FB5', subtle: '#BFA0CA' },
+      'bg-[#E89FAB]': { vibrant: '#E89FAB', subtle: '#EFBCC4' },
+      'bg-[#8A8A8A]': { vibrant: '#8A8A8A', subtle: '#B1B1B1' }
     }
+
+    return borderMap[color] ?
+      (colorIntensity === 'vibrant' ? borderMap[color].vibrant : borderMap[color].subtle) :
+      '#D1D5DB'
   }
 
   return (
@@ -118,10 +120,13 @@ export function RowTypeBlock({ rowType, color = 'bg-slate-50', colorIntensity = 
       className={`
         cursor-grab active:cursor-grabbing p-3 rounded-lg border-2 group
         hover:shadow-md hover:scale-105 hover:-translate-y-1 transition-all duration-200 ease-out
-        ${colorClass} ${getBorderColor()} ${isDragging ? 'opacity-50 scale-95' : 'opacity-100'}
+        ${getAdjustedColor()} ${isDragging ? 'opacity-50 scale-95' : 'opacity-100'}
         select-none
       `}
-      style={{ opacity: isDragging ? 0.5 : 1 }}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        borderColor: getBorderColor()
+      }}
     >
       <div className="flex items-start space-x-3">
         <div className="w-8 h-8 bg-white rounded-lg border border-gray-200 flex items-center justify-center flex-shrink-0 group-hover:border-slate-300 group-hover:shadow-sm transition-all duration-200">

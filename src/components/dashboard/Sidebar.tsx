@@ -302,7 +302,7 @@ function SidebarContent() {
           {!isCollapsed ? (
             <Link href="/" className="cursor-pointer">
               <img
-                src="/Kustra.png"
+                src="/sdsaadsadf.png"
                 alt="Kustra"
                 className="h-24 w-auto object-contain max-w-[300px] hover:opacity-80 transition-opacity"
               />
@@ -310,7 +310,7 @@ function SidebarContent() {
           ) : (
             <Link href="/" className="cursor-pointer">
               <img
-                src="/nava small.png"
+                src="/Frame 1618872991.png"
                 alt="Nava Small"
                 className="h-16 w-12 object-contain hover:opacity-80 transition-opacity"
               />
@@ -365,8 +365,8 @@ function SidebarContent() {
                             'flex items-center rounded-lg text-sm font-medium transition-colors w-full',
                             isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
                             pathname === item.href || pathname.startsWith(item.href + '?')
-                              ? 'bg-slate-100 text-slate-700'
-                              : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                              ? 'bg-[#AFC2D9]/30 text-[#778DB0]'
+                              : 'text-[#5C6E8B] hover:bg-[#F9FAFB] hover:text-[#778DB0]'
                           )}
                           aria-label={isCollapsed ? item.name : undefined}
                           aria-current={pathname === item.href || pathname.startsWith(item.href + '?') ? 'page' : undefined}
@@ -378,8 +378,8 @@ function SidebarContent() {
                               'h-5 w-5 transition-all duration-300 ease-out',
                               isCollapsed ? 'mx-auto' : 'mr-3',
                               pathname === item.href || pathname.startsWith(item.href + '?')
-                                ? 'text-slate-600 scale-110 rotate-12'
-                                : 'text-gray-500'
+                                ? 'text-[#778DB0] scale-110 rotate-12'
+                                : 'text-[#8A8A8A]'
                             )}
                           />
                           {!isCollapsed && (
@@ -414,8 +414,8 @@ function SidebarContent() {
                             'flex items-center rounded-l-lg text-sm font-medium transition-colors flex-1',
                             isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
                             pathname === item.href || pathname.startsWith(item.href + '?')
-                              ? 'bg-slate-100 text-slate-700'
-                              : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                              ? 'bg-[#AFC2D9]/30 text-[#778DB0]'
+                              : 'text-[#5C6E8B] hover:bg-[#F9FAFB] hover:text-[#778DB0]'
                           )}
                           aria-label={isCollapsed ? item.name : undefined}
                           aria-current={pathname === item.href || pathname.startsWith(item.href + '?') ? 'page' : undefined}
@@ -425,8 +425,8 @@ function SidebarContent() {
                               'h-5 w-5 transition-all duration-300 ease-out',
                               isCollapsed ? 'mx-auto' : 'mr-3',
                               pathname === item.href || pathname.startsWith(item.href + '?')
-                                ? 'text-slate-600 scale-110 rotate-12'
-                                : 'text-gray-500'
+                                ? 'text-[#778DB0] scale-110 rotate-12'
+                                : 'text-[#8A8A8A]'
                             )}
                           />
                           {!isCollapsed && (
@@ -514,16 +514,16 @@ function SidebarContent() {
                               className={cn(
                                 'group flex items-center rounded-lg text-sm font-medium transition-colors px-3 py-2',
                                 isSubActive
-                                  ? 'bg-slate-100 text-slate-700'
-                                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                  ? 'bg-[#AFC2D9]/30 text-[#778DB0]'
+                                  : 'text-[#5C6E8B] hover:bg-[#F9FAFB] hover:text-[#778DB0]'
                               )}
                             >
                               <category.icon
                                 className={cn(
                                   'h-4 w-4 transition-colors mr-3',
                                   isSubActive
-                                    ? 'text-slate-600'
-                                    : 'text-gray-400 group-hover:text-gray-500'
+                                    ? 'text-[#778DB0]'
+                                    : 'text-[#8A8A8A] group-hover:text-[#5C6E8B]'
                                 )}
                               />
                               {category.name}
@@ -541,8 +541,8 @@ function SidebarContent() {
                               className={cn(
                                 'group flex items-center rounded-lg text-sm font-medium transition-colors px-3 py-2',
                                 isSubActive
-                                  ? 'bg-slate-100 text-slate-700'
-                                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                  ? 'bg-[#AFC2D9]/30 text-[#778DB0]'
+                                  : 'text-[#5C6E8B] hover:bg-[#F9FAFB] hover:text-[#778DB0]'
                               )}
                             >
                               {category.name}
@@ -562,8 +562,8 @@ function SidebarContent() {
                               className={cn(
                                 "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors",
                                 isCategoryExpanded
-                                  ? "bg-slate-100 text-slate-700 border border-slate-200"
-                                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                  ? "bg-[#AFC2D9]/30 text-[#778DB0] border border-[#778DB0]/30"
+                                  : "text-[#5C6E8B] hover:bg-[#F9FAFB] hover:text-[#778DB0]"
                               )}
                             >
                               <span className="flex-1 text-left">{category.name}</span>
@@ -800,8 +800,8 @@ function SidebarContent() {
                       'group flex items-center rounded-lg text-sm font-medium transition-colors',
                       isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
                       isActive
-                        ? 'bg-slate-100 text-slate-700'
-                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-[#AFC2D9]/30 text-[#778DB0]'
+                        : 'text-[#5C6E8B] hover:bg-[#F9FAFB] hover:text-[#778DB0]'
                     )}
                     title={isCollapsed ? item.name : undefined}
                   >
@@ -826,8 +826,8 @@ function SidebarContent() {
                         </div>
                         {isBetaTester && !hasBetaTesterBeenClicked && (
                           <div className="absolute -top-1 -right-1 flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-600 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-600"></span>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#778DB0] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#778DB0]"></span>
                           </div>
                         )}
                       </div>

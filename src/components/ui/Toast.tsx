@@ -35,33 +35,33 @@ export const Toast: React.FC<ToastProps> = ({
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return <CheckIcon className="h-5 w-5 text-slate-600" />
+        return <CheckIcon className="h-5 w-5 text-white" />
       case 'error':
-        return <XIcon className="h-5 w-5 text-red-600" />
+        return <XIcon className="h-5 w-5 text-[#C45A49]" />
       case 'warning':
-        return <AlertTriangleIcon className="h-5 w-5 text-yellow-600" />
+        return <AlertTriangleIcon className="h-5 w-5 text-[#ED6B5A]" />
     }
   }
 
   const getBackgroundColor = () => {
     switch (type) {
       case 'success':
-        return 'bg-white border-slate-200'
+        return 'bg-[#77BB92] border-[#77BB92]'
       case 'error':
-        return 'bg-red-50 border-red-200'
+        return 'bg-[#C45A49]/10 border-[#C45A49]'
       case 'warning':
-        return 'bg-yellow-50 border-yellow-200'
+        return 'bg-[#ED6B5A]/10 border-[#ED6B5A]'
     }
   }
 
   const getTextColor = () => {
     switch (type) {
       case 'success':
-        return 'text-slate-700'
+        return 'text-white'
       case 'error':
-        return 'text-red-800'
+        return 'text-[#C45A49]'
       case 'warning':
-        return 'text-yellow-800'
+        return 'text-[#ED6B5A]'
     }
   }
 
@@ -85,8 +85,8 @@ export const Toast: React.FC<ToastProps> = ({
         <button
           onClick={onClose}
           className={`
-            ml-2 p-1 rounded-full hover:bg-slate-100
-            ${type === 'success' ? 'text-slate-500 hover:text-slate-700' : type === 'error' ? 'text-red-600' : 'text-yellow-600'}
+            ml-2 p-1 rounded-full
+            ${type === 'success' ? 'text-white hover:bg-white/20' : type === 'error' ? 'text-[#C45A49] hover:bg-[#F9FAFB]' : 'text-[#ED6B5A] hover:bg-[#F9FAFB]'}
           `}
         >
           <XIcon className="h-4 w-4" />

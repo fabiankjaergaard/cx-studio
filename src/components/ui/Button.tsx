@@ -12,13 +12,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         className={cn(
-          "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed",
+          "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#778DB0] disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed",
           {
-            "bg-gray-900 text-white hover:bg-gray-800": variant === "default",
-            "bg-slate-500 text-white hover:bg-slate-600": variant === "primary",
-            "bg-gray-100 text-gray-900 hover:bg-gray-200": variant === "secondary",
-            "border border-gray-300 bg-white text-gray-900 hover:bg-gray-50": variant === "outline",
-            "text-gray-900 hover:bg-gray-100": variant === "ghost",
+            "bg-[#2E2E2E] text-white hover:bg-[#2E2E2E]/90": variant === "default",
+            "bg-[#778DB0] text-white hover:bg-[#AFC2D9]": variant === "primary",
+            "bg-[#F9FAFB] text-[#2E2E2E] hover:bg-[#AFC2D9]/20": variant === "secondary",
+            "border border-[#8A8A8A]/30 bg-white text-[#2E2E2E] hover:bg-[#F9FAFB]": variant === "outline",
+            "text-[#2E2E2E] hover:bg-[#F9FAFB]": variant === "ghost",
           },
           {
             "h-8 px-3 text-sm": size === "sm",

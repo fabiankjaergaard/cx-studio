@@ -29,21 +29,21 @@ export function ConfirmDialog({
   const variantConfig = {
     danger: {
       icon: Trash2Icon,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
-      buttonClass: 'bg-red-600 hover:bg-red-700 text-white',
+      iconBg: 'bg-[#C45A49]/10',
+      iconColor: 'text-[#C45A49]',
+      buttonClass: 'bg-[#C45A49] hover:bg-[#C45A49]/90 text-white',
     },
     warning: {
       icon: AlertTriangleIcon,
-      iconBg: 'bg-warning-100',
-      iconColor: 'text-warning-600',
-      buttonClass: 'bg-warning-600 hover:bg-warning-700 text-white',
+      iconBg: 'bg-[#ED6B5A]/10',
+      iconColor: 'text-[#ED6B5A]',
+      buttonClass: 'bg-[#ED6B5A] hover:bg-[#ED6B5A]/90 text-white',
     },
     info: {
       icon: InfoIcon,
-      iconBg: 'bg-primary-100',
-      iconColor: 'text-primary-600',
-      buttonClass: 'bg-slate-600 hover:bg-slate-700 text-white',
+      iconBg: 'bg-[#778DB0]/10',
+      iconColor: 'text-[#778DB0]',
+      buttonClass: 'bg-[#778DB0] hover:bg-[#AFC2D9] text-white',
     },
   }
 

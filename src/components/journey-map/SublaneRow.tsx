@@ -39,23 +39,51 @@ export function SublaneRow({
   onNameChange,
   isCompactView = false
 }: SublaneRowProps) {
+  // Track color intensity mode
+  const [colorIntensity, setColorIntensity] = React.useState<'subtle' | 'vibrant'>('subtle')
+
+  // Load and listen for color intensity changes
+  React.useEffect(() => {
+    const loadColorIntensity = () => {
+      const saved = localStorage.getItem('cx-app-color-intensity')
+      if (saved === 'vibrant' || saved === 'subtle') {
+        setColorIntensity(saved)
+      }
+    }
+
+    const handleColorIntensityChange = (event: Event) => {
+      const customEvent = event as CustomEvent<'subtle' | 'vibrant'>
+      setColorIntensity(customEvent.detail)
+    }
+
+    loadColorIntensity()
+    window.addEventListener('color-intensity-change', handleColorIntensityChange)
+
+    return () => {
+      window.removeEventListener('color-intensity-change', handleColorIntensityChange)
+    }
+  }, [])
+
   // Ensure we have cells for all stages - always use fresh data from parent
   const cells = React.useMemo(() => {
     const existingCells = sublane.cells || []
     const cellsArray = []
+    const isVibrant = colorIntensity === 'vibrant'
 
     for (let i = 0; i < stageCount; i++) {
       const existingCell = existingCells[i]
       const parentCell = parentRow.cells[i]
 
-      // Always recalculate backgroundColor from parent to ensure sync
-      const parentColor = getSublaneCardColor(parentRow, i)
+      // ALWAYS recalculate backgroundColor from parent cell at render time
+      // This ensures color changes when switching between subtle/vibrant
+      const parentColor = getSublaneCardColor(parentRow, i, isVibrant)
 
       if (existingCell) {
         cellsArray.push({
           ...existingCell,
-          // Always use fresh backgroundColor from parent (if available)
-          backgroundColor: parentColor || existingCell.backgroundColor
+          // ALWAYS use fresh backgroundColor calculated from parent
+          // Never trust saved backgroundColor as it may be from wrong mode
+          backgroundColor: parentColor
         })
       } else {
         cellsArray.push({
@@ -72,6 +100,7 @@ export function SublaneRow({
     sublane.id,
     stageCount,
     parentRow.cells,
+    colorIntensity,
     // Force re-render when any parent cell's backgroundColor changes
     JSON.stringify(parentRow.cells.map(c => ({ bg: c?.backgroundColor, content: c?.content })))
   ])

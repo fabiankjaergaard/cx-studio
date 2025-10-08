@@ -27,7 +27,40 @@ import { JourneyMapSublane, JourneyMapCell, JourneyMapRow } from '@/types/journe
 export function getLighterColorVariant(colorClass: string | undefined, isVibrant: boolean = false): string | undefined {
   if (!colorClass) return undefined
 
-  // Extract color name and intensity
+  // Kustra Color System - sublanes always get very light colors
+  // Both vibrant and subtle mode: Use very light hex colors (almost white)
+  const kustraSublaneMap: Record<string, string> = {
+    // 8 main Kustra colors - vibrant to sublane
+    'bg-[#F9FAFB]': 'bg-[#FCFCFD]',  // Cloud White → very light
+    'bg-[#778DB0]': 'bg-[#CED6E2]',  // Calm Blue → very light
+    'bg-[#77BB92]': 'bg-[#CEE8DB]',  // Mint Green → very light
+    'bg-[#F4C542]': 'bg-[#FDF3C8]',  // Golden Sun → very light
+    'bg-[#ED6B5A]': 'bg-[#F8C8C1]',  // Coral Orange → very light
+    'bg-[#A67FB5]': 'bg-[#DDD0E6]',  // Soft Purple → very light
+    'bg-[#E89FAB]': 'bg-[#F5D8DE]',  // Rose Pink → very light
+    'bg-[#8A8A8A]': 'bg-[#D7D7D7]',  // Slate Gray → very light
+    // Map middle-ground (subtle) colors to very light
+    'bg-[#FBFCFC]': 'bg-[#FCFCFD]',
+    'bg-[#A3B2C9]': 'bg-[#CED6E2]',
+    'bg-[#A3D2B7]': 'bg-[#CEE8DB]',
+    'bg-[#F7D976]': 'bg-[#FDF3C8]',
+    'bg-[#F39A8E]': 'bg-[#F8C8C1]',
+    'bg-[#BFA0CA]': 'bg-[#DDD0E6]',
+    'bg-[#EFBCC4]': 'bg-[#F5D8DE]',
+    'bg-[#B1B1B1]': 'bg-[#D7D7D7]'
+  }
+
+  // Check if it's a Kustra color
+  // Split to extract base color (ignore opacity)
+  const parts = colorClass.split('/')
+  const baseColor = parts[0]
+
+  // Always return very light color for sublanes
+  if (kustraSublaneMap[baseColor]) {
+    return kustraSublaneMap[baseColor]
+  }
+
+  // Extract color name and intensity for legacy colors
   const regex = /bg-(\w+)-(\d+)/
   const match = colorClass.match(regex)
 
@@ -36,11 +69,8 @@ export function getLighterColorVariant(colorClass: string | undefined, isVibrant
   const [, colorName, intensity] = match
   const currentIntensity = parseInt(intensity)
 
-  // For rose/pink colors, return a lighter variant
-  // Parent shows as 300, so sublane should be 200 (but not converted further)
+  // Legacy support for old color system
   if (colorName === 'rose' || colorName === 'pink') {
-    // Return 200 for sublanes - this will NOT be converted by getAdjustedBackgroundColor
-    // because we use disableColorConversion={true}
     return `bg-${colorName}-200`
   }
 
@@ -65,9 +95,12 @@ export function getLighterColorVariant(colorClass: string | undefined, isVibrant
  * Creates a new sublane for a parent row
  * The sublane will have cells that match the parent row's structure
  *
+ * NOTE: Background colors are NOT set here - they are calculated at render time
+ * in SublaneRow component based on the current color intensity mode.
+ *
  * @param parentRow - The parent row
  * @param stageCount - Number of stages in the journey map
- * @param isVibrant - Whether vibrant mode is enabled (optional, defaults to false)
+ * @param isVibrant - Deprecated parameter, kept for API compatibility but not used
  */
 export function createNewSublane(
   parentRow: JourneyMapRow,
@@ -77,17 +110,15 @@ export function createNewSublane(
   const sublaneId = `sublane-${Date.now()}`
 
   // Create cells that match parent row structure
+  // Do NOT set backgroundColor here - it will be calculated at render time
   const cells: JourneyMapCell[] = []
 
   for (let i = 0; i < stageCount; i++) {
-    const parentCell = parentRow.cells[i]
-    const parentColor = (parentCell?.content || parentCell?.backgroundColor) ? (parentCell.backgroundColor || parentRow.color) : undefined
-
     cells.push({
       id: `${sublaneId}-cell-${i}`,
       content: '',
-      // Set backgroundColor if parent cell has content OR backgroundColor
-      backgroundColor: getLighterColorVariant(parentColor, isVibrant),
+      // backgroundColor is intentionally undefined - calculated at render time
+      backgroundColor: undefined,
       icon: undefined
     })
   }
@@ -118,16 +149,22 @@ export function shouldShowSublaneCard(
  *
  * @param parentRow - The parent row
  * @param cellIndex - The cell index
- * @param isVibrant - Whether vibrant mode is enabled (optional, defaults to false)
+ * @param isVibrant - Whether vibrant mode is enabled (optional, auto-detect from localStorage)
  */
 export function getSublaneCardColor(
   parentRow: JourneyMapRow,
   cellIndex: number,
-  isVibrant: boolean = false
+  isVibrant?: boolean
 ): string | undefined {
   const parentCell = parentRow.cells[cellIndex]
 
   if (parentCell?.content || parentCell?.backgroundColor) {
+    // Auto-detect vibrant mode from localStorage if not provided
+    if (isVibrant === undefined) {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('cx-app-color-intensity') : null
+      isVibrant = saved === 'vibrant'
+    }
+
     // Use cell's backgroundColor if it exists, otherwise fall back to row color
     const parentColor = parentCell.backgroundColor || parentRow.color
     // Return a variant based on color intensity mode for visual hierarchy
@@ -140,33 +177,30 @@ export function getSublaneCardColor(
 /**
  * Updates sublane cells when parent row changes
  * This ensures sublane cards always match the parent row's structure
+ *
+ * NOTE: Background colors are NOT set here - they are calculated at render time
  */
 export function syncSublaneWithParentRow(
   sublane: JourneyMapSublane,
   parentRow: JourneyMapRow,
   stageCount: number
 ): JourneyMapSublane {
-  const updatedCells = sublane.cells.map((cell, index) => {
-    const parentCell = parentRow.cells[index]
-    const parentColor = (parentCell?.content || parentCell?.backgroundColor) ? (parentCell.backgroundColor || parentRow.color) : undefined
-
+  const updatedCells = sublane.cells.map((cell) => {
     return {
       ...cell,
-      // Update background color based on parent cell content OR backgroundColor
-      backgroundColor: getLighterColorVariant(parentColor)
+      // backgroundColor is intentionally not set - calculated at render time
     }
   })
 
   // Ensure we have the right number of cells
   while (updatedCells.length < stageCount) {
     const index = updatedCells.length
-    const parentCell = parentRow.cells[index]
-    const parentColor = (parentCell?.content || parentCell?.backgroundColor) ? (parentCell.backgroundColor || parentRow.color) : undefined
 
     updatedCells.push({
       id: `${sublane.id}-cell-${index}`,
       content: '',
-      backgroundColor: getLighterColorVariant(parentColor)
+      // backgroundColor is intentionally undefined - calculated at render time
+      backgroundColor: undefined
     })
   }
 
@@ -178,21 +212,21 @@ export function syncSublaneWithParentRow(
 
 /**
  * Updates all sublanes when parent row color changes
+ *
+ * NOTE: This function is deprecated and should not be used.
+ * Background colors are calculated at render time in SublaneRow component.
  */
 export function updateSublanesColorFromParent(
   sublanes: JourneyMapSublane[],
   parentRow: JourneyMapRow
 ): JourneyMapSublane[] {
+  // Simply return sublanes without modifying backgroundColor
+  // Color calculation happens at render time
   return sublanes.map(sublane => ({
     ...sublane,
-    cells: sublane.cells.map((cell, index) => {
-      const parentCell = parentRow.cells[index]
-      const parentColor = parentCell?.content ? (parentCell.backgroundColor || parentRow.color) : undefined
-
-      return {
-        ...cell,
-        backgroundColor: getLighterColorVariant(parentColor)
-      }
-    })
+    cells: sublane.cells.map((cell) => ({
+      ...cell,
+      // backgroundColor is intentionally not modified - calculated at render time
+    }))
   }))
 }

@@ -305,7 +305,7 @@ export default function JourneyMapsPage() {
                               openDeleteConfirm(journeyMap)
                             }
                           }}
-                          className="w-full px-3 py-2 text-left hover:bg-gray-50 text-sm flex items-center text-red-600 hover:text-red-700"
+                          className="w-full px-3 py-2 text-left hover:bg-gray-50 text-sm flex items-center text-[#C45A49] hover:text-[#C45A49]/90"
                           role="menuitem"
                         >
                           <TrashIcon className="h-4 w-4 mr-2" />

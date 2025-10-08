@@ -2,8 +2,16 @@
 @import "driver.js/dist/driver.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* 🎨 Kustra Color System */
+  --primary: #778DB0; /* Calm Blue */
+  --primary-light: #AFC2D9; /* Mist Blue */
+  --primary-dark: #5C6E8B; /* Deep Slate */
+  --background: #F9FAFB; /* Cloud White */
+  --foreground: #2E2E2E; /* Charcoal Gray */
+  --text-secondary: #8A8A8A; /* Slate Gray */
+  --accent: #77BB92; /* Mint Insight */
+  --highlight: #ED6B5A; /* Bittersweet */
+  --error: #C45A49; /* Deep Terracotta */
 }
 
 @theme inline {
@@ -14,8 +22,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #f9fafb;
-    --foreground: #171717;
+    --background: #F9FAFB;
+    --foreground: #2E2E2E;
   }
 }
 
@@ -61,7 +69,7 @@ body {
 }
 
 .driver-popover-title {
-  color: #111827 !important;
+  color: #2E2E2E !important;
   font-size: 16px !important;
   font-weight: 600 !important;
   margin-bottom: 8px !important;
@@ -69,14 +77,14 @@ body {
 }
 
 .driver-popover-description {
-  color: #374151 !important;
+  color: #5C6E8B !important;
   font-size: 14px !important;
   line-height: 1.5 !important;
   margin-bottom: 16px !important;
 }
 
 .driver-popover-progress-text {
-  color: #6b7280 !important;
+  color: #8A8A8A !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   text-align: center !important;
@@ -107,22 +115,22 @@ body {
 }
 
 .driver-popover-next-btn {
-  background: #4b5563 !important;
+  background: #778DB0 !important;
   color: white !important;
 }
 
 .driver-popover-next-btn:hover {
-  background: #374151 !important;
+  background: #AFC2D9 !important;
 }
 
 .driver-popover-prev-btn {
-  background: #f3f4f6 !important;
-  color: #374151 !important;
-  border: 1px solid #d1d5db !important;
+  background: #F9FAFB !important;
+  color: #5C6E8B !important;
+  border: 1px solid #8A8A8A !important;
 }
 
 .driver-popover-prev-btn:hover {
-  background: #e5e7eb !important;
+  background: #AFC2D9 !important;
 }
 
 .driver-popover-close-btn {
@@ -162,8 +170,8 @@ body {
 
 /* Dot Pattern Background */
 .grid-background {
-  background-color: #f9fafb;
-  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.3) 1.5px, transparent 1.5px);
+  background-color: #F9FAFB;
+  background-image: radial-gradient(circle, rgba(119, 141, 176, 0.15) 1.5px, transparent 1.5px);
   background-size: 60px 60px;
   position: relative;
 }
