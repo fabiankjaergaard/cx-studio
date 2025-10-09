@@ -302,16 +302,16 @@ function SidebarContent() {
           {!isCollapsed ? (
             <Link href="/" className="cursor-pointer">
               <img
-                src="/Nava blue text.png"
-                alt="Nava"
+                src="/icon-512x512.png"
+                alt="Kustra"
                 className="h-24 w-auto object-contain max-w-[300px] hover:opacity-80 transition-opacity"
               />
             </Link>
           ) : (
             <Link href="/" className="cursor-pointer">
               <img
-                src="/nava small.png"
-                alt="Nava Small"
+                src="/kustra-icon-small.png"
+                alt="Kustra Small"
                 className="h-16 w-12 object-contain hover:opacity-80 transition-opacity"
               />
             </Link>
