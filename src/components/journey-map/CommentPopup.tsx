@@ -92,8 +92,8 @@ export const CommentPopup: React.FC<CommentPopupProps> = ({
             </div>
           )}
           <div>
-            <div className="text-sm font-medium text-gray-900">{comment.author.name}</div>
-            <div className="text-xs text-gray-500">{formatDate(comment.createdAt)}</div>
+            <div className="text-sm font-medium text-[#2E2E2E]">{comment.author.name}</div>
+            <div className="text-xs text-[#8A8A8A]">{formatDate(comment.createdAt)}</div>
           </div>
         </div>
         <button
@@ -106,7 +106,7 @@ export const CommentPopup: React.FC<CommentPopupProps> = ({
 
       {/* Comment text */}
       <div className="p-3">
-        <p className="text-sm text-gray-700 whitespace-pre-wrap">{comment.text}</p>
+        <p className="text-sm text-[#2E2E2E] whitespace-pre-wrap">{comment.text}</p>
 
         {comment.resolved && (
           <div className="flex items-center space-x-1 text-xs text-[#77BB92] bg-[#77BB92]/10 rounded px-2 py-1 mt-2 w-fit">
@@ -138,10 +138,10 @@ export const CommentPopup: React.FC<CommentPopupProps> = ({
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-gray-900">{reply.author.name}</span>
-                    <span className="text-[10px] text-gray-500">{formatDate(reply.createdAt)}</span>
+                    <span className="text-xs font-medium text-[#2E2E2E]">{reply.author.name}</span>
+                    <span className="text-[10px] text-[#8A8A8A]">{formatDate(reply.createdAt)}</span>
                   </div>
-                  <p className="text-xs text-gray-700 mt-0.5 whitespace-pre-wrap">{reply.text}</p>
+                  <p className="text-xs text-[#2E2E2E] mt-0.5 whitespace-pre-wrap">{reply.text}</p>
                 </div>
               </div>
             </div>
@@ -168,7 +168,7 @@ export const CommentPopup: React.FC<CommentPopupProps> = ({
                   setShowReplyInput(false)
                   setReplyText('')
                 }}
-                className="px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-3 py-1.5 text-xs text-[#8A8A8A] hover:bg-gray-100 rounded-lg transition-colors"
               >
                 Cancel
               </button>
@@ -185,7 +185,7 @@ export const CommentPopup: React.FC<CommentPopupProps> = ({
         ) : (
           <button
             onClick={() => setShowReplyInput(true)}
-            className="w-full px-3 py-2 text-sm text-gray-600 hover:bg-[#F9FAFB] rounded-lg transition-colors text-left"
+            className="w-full px-3 py-2 text-sm text-[#8A8A8A] hover:bg-[#F9FAFB] rounded-lg transition-colors text-left"
           >
             Reply...
           </button>
@@ -197,7 +197,7 @@ export const CommentPopup: React.FC<CommentPopupProps> = ({
         {!comment.resolved && (
           <button
             onClick={() => onResolve(comment.id)}
-            className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-[#F9FAFB] rounded-lg transition-colors"
+            className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-[#2E2E2E] hover:bg-[#F9FAFB] rounded-lg transition-colors"
           >
             <Check className="w-4 h-4" />
             <span>Mark as Resolved</span>

@@ -656,7 +656,7 @@ export function JourneyMapCell({
     return (
       <div className="flex items-center space-x-2">
         <Icon className={`h-4 w-4 ${status.color}`} />
-        <span className="text-gray-900">{status.label}</span>
+        <span className="text-[#2E2E2E]">{status.label}</span>
       </div>
     )
   }
@@ -829,7 +829,7 @@ export function JourneyMapCell({
               placeholder={placeholder}
               readOnly={isCommentMode}
               tabIndex={isCommentMode ? -1 : 0}
-              className={`w-full min-h-20 p-2 ${selectedIcon && !isEditing ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded text-center focus:outline-none transition-all duration-200 ${isCommentMode ? 'pointer-events-none' : ''}`}
+              className={`w-full min-h-20 p-2 ${selectedIcon && !isEditing ? 'pr-10' : ''} text-sm text-[#2E2E2E] placeholder-[#8A8A8A] bg-transparent border-0 rounded text-center focus:outline-none transition-all duration-200 ${isCommentMode ? 'pointer-events-none' : ''}`}
             />
           </div>
         </div>
@@ -875,7 +875,7 @@ export function JourneyMapCell({
                     className="w-full px-3 py-2 text-left hover:bg-slate-50 hover:scale-[1.02] transition-all duration-200 text-sm flex items-center space-x-2"
                   >
                     <Icon className={`h-4 w-4 ${status.color}`} />
-                    <span className="text-gray-900 font-medium">{status.label}</span>
+                    <span className="text-[#2E2E2E] font-medium">{status.label}</span>
                   </button>
                 )
               })}
@@ -1007,7 +1007,7 @@ export function JourneyMapCell({
               placeholder={placeholder}
               readOnly={isCommentMode}
               tabIndex={isCommentMode ? -1 : 0}
-              className={`w-full h-full p-2 ${selectedIcon && !isEditing ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded resize-none focus:outline-none transition-all duration-200 ${isCommentMode ? 'pointer-events-none' : ''}`}
+              className={`w-full h-full p-2 ${selectedIcon && !isEditing ? 'pr-10' : ''} text-sm text-[#2E2E2E] placeholder-[#8A8A8A] bg-transparent border-0 rounded resize-none focus:outline-none transition-all duration-200 ${isCommentMode ? 'pointer-events-none' : ''}`}
               {...(isDraggable && !isEditing ? { ...attributes, ...listeners } : {})}
             />
           </div>
@@ -1072,7 +1072,7 @@ export function JourneyMapCell({
           {/* Icons */}
           <div className="mb-2">
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">Icons</label>
+              <label className="block text-sm font-medium text-[#2E2E2E]">Icons</label>
               <input
                 type="text"
                 value={iconSearchQuery}
@@ -1153,7 +1153,7 @@ export function JourneyMapCell({
 
           {/* Colors */}
           <div className="mb-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Background color</label>
+            <label className="block text-sm font-medium text-[#2E2E2E] mb-2">Background color</label>
             <div className="grid grid-cols-12 gap-1.5">
               <button
                 onClick={() => handleColorSelect('')}
@@ -1197,7 +1197,7 @@ export function JourneyMapCell({
               >
                 {isCritical && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
               </div>
-              <span className="text-sm font-medium text-gray-700">Mark as high importance</span>
+              <span className="text-sm font-medium text-[#2E2E2E]">Mark as high importance</span>
             </label>
           </div>
 
@@ -1221,7 +1221,7 @@ export function JourneyMapCell({
               >
                 {isLocked && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
               </div>
-              <span className="text-sm font-medium text-gray-700">Lock position</span>
+              <span className="text-sm font-medium text-[#2E2E2E]">Lock position</span>
             </label>
           </div>
 

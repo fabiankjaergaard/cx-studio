@@ -114,7 +114,7 @@ export const CommentInput: React.FC<CommentInputProps> = ({
           onFocus={() => setIsFocused(true)}
           onBlur={handleBlur}
           placeholder="Add a comment. Use @ to mention."
-          className="flex-1 px-4 py-3 text-sm text-gray-700 placeholder-gray-400 bg-transparent border-0 rounded-l-full focus:outline-none"
+          className="flex-1 px-4 py-3 text-sm text-[#2E2E2E] placeholder-[#8A8A8A] bg-transparent border-0 rounded-l-full focus:outline-none"
         />
 
         {/* Emoji button */}
