@@ -108,7 +108,7 @@ export function RowWithSublanes({
             {onAddSublane && (
               <button
                 onClick={() => onAddSublane(row.id)}
-                className="p-1 text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-all"
+                className="p-1 text-gray-400 hover:text-[#778DB0] opacity-0 group-hover:opacity-100 transition-all"
                 title="Add sublane"
               >
                 <PlusIcon className="h-3 w-3" />
@@ -126,7 +126,7 @@ export function RowWithSublanes({
             {onRowDelete && (
               <button
                 onClick={() => onRowDelete(row.id)}
-                className="p-1 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all"
+                className="p-1 text-gray-400 hover:text-[#ED6B5A] opacity-0 group-hover:opacity-100 transition-all"
                 title="Delete row"
               >
                 <TrashIcon className="h-3 w-3" />

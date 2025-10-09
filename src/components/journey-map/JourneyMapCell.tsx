@@ -744,7 +744,7 @@ export function JourneyMapCell({
       return (
         <div ref={(el) => { cellRef.current = el; drop(el); }} className="relative">
 
-          <div className={`w-full min-h-20 border rounded-xl transition-all duration-300 relative ${getAdjustedBackgroundColor(backgroundColor)} ${isEditing ? 'ring-2 ring-blue-500 ring-offset-1' : ''} ${isOver ? 'ring-2 ring-purple-500 ring-offset-1' : ''} ${isCritical ? 'border-2 border-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.15)] ring-1 ring-orange-400/20' : 'border border-gray-200'}`}>
+          <div className={`w-full min-h-20 border rounded-xl transition-all duration-300 relative ${getAdjustedBackgroundColor(backgroundColor)} ${isEditing ? 'ring-2 ring-[#778DB0] ring-offset-1' : ''} ${isOver ? 'ring-2 ring-purple-500 ring-offset-1' : ''} ${isCritical ? 'border-2 border-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.15)] ring-1 ring-orange-400/20' : 'border border-gray-200'}`}>
             {/* Lock indicator - centered at top, overlapping the cell border */}
             {isLocked && (
               <div className="absolute left-1/2 -translate-x-1/2 -top-1.5 z-20 p-1 bg-white rounded-full shadow-sm ring-2 ring-slate-300" title="Position locked">
@@ -882,7 +882,7 @@ export function JourneyMapCell({
               <div className="border-t mx-2 pt-1">
                 <button
                   onClick={() => onChange('')}
-                  className="text-xs text-red-600 hover:text-red-800 px-1"
+                  className="text-xs text-[#ED6B5A] hover:text-[#E5574A] px-1"
                 >
                   Clear
                 </button>
@@ -923,7 +923,7 @@ export function JourneyMapCell({
           className={`relative ${isDragging ? 'z-50' : ''} ${isDragging ? 'opacity-75' : ''}`}
         >
 
-          <div className={`w-full h-20 border rounded-xl transition-all duration-300 ${getAdjustedBackgroundColor(backgroundColor)} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} ${isEditing ? 'ring-2 ring-blue-500 ring-offset-1' : ''} ${isOver ? 'ring-2 ring-purple-500 ring-offset-1' : ''} ${isCritical ? 'border-2 border-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.15)] ring-1 ring-orange-400/20' : 'border border-gray-200'} relative group`}>
+          <div className={`w-full h-20 border rounded-xl transition-all duration-300 ${getAdjustedBackgroundColor(backgroundColor)} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} ${isEditing ? 'ring-2 ring-[#778DB0] ring-offset-1' : ''} ${isOver ? 'ring-2 ring-purple-500 ring-offset-1' : ''} ${isCritical ? 'border-2 border-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.15)] ring-1 ring-orange-400/20' : 'border border-gray-200'} relative group`}>
             {/* Lock indicator - centered at top, overlapping the cell border */}
             {isLocked && (
               <div className="absolute left-1/2 -translate-x-1/2 -top-1.5 z-20 p-1 bg-white rounded-full shadow-sm ring-2 ring-slate-300" title="Position locked">
@@ -1097,7 +1097,7 @@ export function JourneyMapCell({
                         onClick={() => handleIconSelect(iconName)}
                         className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-all shadow-sm ${
                           (currentIcon || selectedIcon) === iconName
-                            ? 'bg-blue-500 border-blue-500 text-white'
+                            ? 'bg-[#778DB0] border-[#778DB0] text-white'
                             : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
                         }`}
                         title={iconName}
@@ -1133,7 +1133,7 @@ export function JourneyMapCell({
                       onClick={() => handleIconSelect(iconData.name)}
                       className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-all shadow-sm ${
                         (currentIcon || selectedIcon) === iconData.name
-                          ? 'bg-blue-500 border-blue-500 text-white'
+                          ? 'bg-[#778DB0] border-[#778DB0] text-white'
                           : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-100 hover:border-gray-400'
                       }`}
                       title={iconData.name}
@@ -1246,7 +1246,7 @@ export function JourneyMapCell({
                 }
                 setIsEditing(false)
               }}
-              className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-300 hover:border-red-400 rounded-lg transition-all shadow-sm"
+              className="px-4 py-2 text-sm font-medium text-[#ED6B5A] hover:text-[#E5574A] hover:bg-[#ED6B5A]/10 border border-[#ED6B5A]/30 hover:border-[#ED6B5A]/50 rounded-lg transition-all shadow-sm"
             >
               Delete
             </button>
