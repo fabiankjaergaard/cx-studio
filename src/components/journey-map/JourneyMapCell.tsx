@@ -57,6 +57,8 @@ interface JourneyMapCellProps {
   showEmptyState?: boolean
   isCritical?: boolean
   onCriticalChange?: (isCritical: boolean) => void
+  isLocked?: boolean
+  onLockedChange?: (isLocked: boolean) => void
   insightIds?: string[]
   insights?: Insight[]
   onInsightAttach?: (insightId: string) => void
@@ -209,6 +211,8 @@ export function JourneyMapCell({
   showEmptyState = false,
   isCritical = false,
   onCriticalChange,
+  isLocked = false,
+  onLockedChange,
   insightIds = [],
   insights = [],
   onInsightAttach,
@@ -292,7 +296,7 @@ export function JourneyMapCell({
     isDragging,
   } = useSortable({
     id: id,
-    disabled: !isDraggable || isEditing
+    disabled: !isDraggable || isEditing || isLocked // Disable drag if locked
   })
 
   const style = {
@@ -578,6 +582,20 @@ export function JourneyMapCell({
     return colorMap[baseColor] || bgColor
   }
 
+  // Extract hex color from Tailwind class for inline styles
+  const getHexColorFromBg = (bgColor: string | undefined): string => {
+    if (!bgColor || bgColor === 'bg-white' || bgColor === '') return '#e5e7eb' // gray-200 fallback
+
+    // Extract hex from bg-[#HEXCODE] format
+    const match = bgColor.match(/bg-\[#([0-9A-Fa-f]{6})\]/)
+    if (match) {
+      return `#${match[1]}`
+    }
+
+    // Fallback to gray if no hex found
+    return '#e5e7eb'
+  }
+
   const getFilteredIcons = () => {
     if (!iconSearchQuery.trim()) return AVAILABLE_ICONS
 
@@ -716,6 +734,12 @@ export function JourneyMapCell({
         <div ref={(el) => { cellRef.current = el; drop(el); }} className="relative">
 
           <div className={`w-full min-h-20 border rounded-xl transition-all duration-300 relative ${getAdjustedBackgroundColor(backgroundColor)} ${isEditing ? 'ring-2 ring-blue-500 ring-offset-1' : ''} ${isOver ? 'ring-2 ring-purple-500 ring-offset-1' : ''} ${isCritical ? 'border-2 border-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.15)] ring-1 ring-orange-400/20' : 'border border-gray-200'}`}>
+            {/* Lock indicator - centered at top, overlapping the cell border */}
+            {isLocked && (
+              <div className="absolute left-1/2 -translate-x-1/2 -top-1.5 z-20 p-1 bg-white rounded-full shadow-sm ring-2 ring-slate-300" title="Position locked">
+                <LockIcon className="w-2.5 h-2.5 text-slate-500" />
+              </div>
+            )}
             {/* Insight badges - positioned at bottom */}
             {insightIds.length > 0 && (
               <div className="absolute bottom-1 left-1 right-1 z-10 flex gap-1">
@@ -756,7 +780,10 @@ export function JourneyMapCell({
             )}
             {(currentIcon || selectedIcon) && (
               <div
-                className="absolute top-1 right-1 z-10 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
+                className="absolute -top-2 -right-2 z-10 p-1.5 cursor-pointer bg-white rounded-full shadow-sm border-2 transition-all"
+                style={{
+                  borderColor: getHexColorFromBg(getAdjustedBackgroundColor(backgroundColor))
+                }}
                 onClick={(e) => {
                   e.stopPropagation()
                   e.preventDefault()
@@ -881,8 +908,13 @@ export function JourneyMapCell({
           className={`relative ${isDragging ? 'z-50' : ''} ${isDragging ? 'opacity-75' : ''}`}
         >
 
-
           <div className={`w-full h-20 border rounded-xl transition-all duration-300 ${getAdjustedBackgroundColor(backgroundColor)} ${isDragging ? 'shadow-lg' : ''} ${isResizing ? 'shadow-lg border-slate-400' : ''} ${isEditing ? 'ring-2 ring-blue-500 ring-offset-1' : ''} ${isOver ? 'ring-2 ring-purple-500 ring-offset-1' : ''} ${isCritical ? 'border-2 border-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.15)] ring-1 ring-orange-400/20' : 'border border-gray-200'} relative group`}>
+            {/* Lock indicator - centered at top, overlapping the cell border */}
+            {isLocked && (
+              <div className="absolute left-1/2 -translate-x-1/2 -top-1.5 z-20 p-1 bg-white rounded-full shadow-sm ring-2 ring-slate-300" title="Position locked">
+                <LockIcon className="w-2.5 h-2.5 text-slate-500" />
+              </div>
+            )}
             {/* Insight badges - positioned at bottom */}
             {insightIds.length > 0 && (
               <div className="absolute bottom-1 left-1 right-1 z-10 flex gap-1">
@@ -923,7 +955,10 @@ export function JourneyMapCell({
             )}
             {(currentIcon || selectedIcon) && (
               <div
-                className="absolute top-1 right-1 z-10 p-1 cursor-pointer hover:bg-gray-100 rounded transition-colors"
+                className="absolute -top-2 -right-2 z-10 p-1.5 cursor-pointer bg-white rounded-full shadow-sm border-2 transition-all"
+                style={{
+                  borderColor: getHexColorFromBg(getAdjustedBackgroundColor(backgroundColor))
+                }}
                 onClick={(e) => {
                   e.stopPropagation()
                   e.preventDefault()
@@ -1143,6 +1178,30 @@ export function JourneyMapCell({
                 {isCritical && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
               </div>
               <span className="text-sm font-medium text-gray-700">Mark as high importance</span>
+            </label>
+          </div>
+
+          {/* Lock Position Toggle */}
+          <div className="mb-2">
+            <label className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-all border border-transparent hover:border-gray-200">
+              <div
+                onClick={(e) => {
+                  e.preventDefault()
+                  if (onLockedChange) {
+                    onLockedChange(!isLocked)
+                  }
+                }}
+                className={`
+                  w-4 h-4 rounded border-2 flex items-center justify-center cursor-pointer transition-all
+                  ${isLocked
+                    ? 'bg-slate-500 border-slate-500'
+                    : 'bg-white border-gray-300 hover:border-slate-400'
+                  }
+                `}
+              >
+                {isLocked && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+              </div>
+              <span className="text-sm font-medium text-gray-700">Lock position</span>
             </label>
           </div>
 

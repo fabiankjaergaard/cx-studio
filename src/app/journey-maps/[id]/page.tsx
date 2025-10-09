@@ -1660,6 +1660,39 @@ export default function JourneyMapBuilderPage() {
     }, 2000)
   }
 
+  const handleLockedChange = (rowId: string, cellId: string, isLocked: boolean) => {
+    if (!journeyMap) return
+
+    const updatedJourneyMap = {
+      ...journeyMap,
+      rows: journeyMap.rows.map(row =>
+        row.id === rowId
+          ? {
+              ...row,
+              cells: row.cells.map(cell =>
+                cell.id === cellId
+                  ? { ...cell, isLocked }
+                  : cell
+              )
+            }
+          : row
+      ),
+      updatedAt: new Date().toISOString()
+    }
+
+    setJourneyMap(updatedJourneyMap)
+
+    // Trigger auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+    autoSaveTimeoutRef.current = setTimeout(async () => {
+      await saveJourneyMap(updatedJourneyMap).catch((error) => {
+        console.error('Auto-save failed after locked change:', error)
+      })
+    }, 2000)
+  }
+
   const handleCellColSpanChange = (rowId: string, cellId: string, colSpan: number) => {
     if (!journeyMap) return
 
@@ -3813,6 +3846,8 @@ export default function JourneyMapBuilderPage() {
                               showEmptyState={!cell.content}
                               isCritical={cell.isCritical}
                               onCriticalChange={(isCritical) => handleCriticalChange(row.id, cell.id, isCritical)}
+                              isLocked={cell.isLocked}
+                              onLockedChange={(isLocked) => handleLockedChange(row.id, cell.id, isLocked)}
                               insightIds={cell.insightIds}
                               insights={insights}
                               onInsightAttach={(insightId) => handleInsightAttach(row.id, cell.id, insightId)}

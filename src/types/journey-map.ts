@@ -7,6 +7,7 @@ export interface JourneyMapCell {
   colSpan?: number  // How many columns this cell spans
   position?: number // Position within the row (for drag & drop)
   isCritical?: boolean // Mark cell as critical/important touchpoint
+  isLocked?: boolean // Lock cell position to prevent dragging/moving
   insightIds?: string[] // IDs of insights attached to this cell
 }
 
