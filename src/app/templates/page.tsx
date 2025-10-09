@@ -51,68 +51,68 @@ const getTemplateIcon = (iconName: string) => {
   return iconMap[iconName] || BookTemplateIcon
 }
 
-// Get category-specific colors
+// Get category-specific colors using Kustra Color System
 const getCategoryColors = (industry: string) => {
-  const colorMap: { [key: string]: { gradient: string, badge: string, icon: string } } = {
+  const colorMap: { [key: string]: { bg: string, badge: string, icon: string } } = {
     'E-commerce': {
-      gradient: 'linear-gradient(135deg, #FEF3E2 0%, #F0E4D0 100%)',
-      badge: 'bg-orange-100 text-orange-700',
-      icon: 'text-orange-600'
+      bg: 'bg-[#F4C542]', // Golden Sun
+      badge: 'bg-[#F4C542]/10 text-[#F4C542]',
+      icon: 'text-slate-700'
     },
     'Technology': {
-      gradient: 'linear-gradient(135deg, #E0F2FE 0%, #BFDBFE 100%)',
-      badge: 'bg-blue-100 text-blue-700',
-      icon: 'text-blue-600'
+      bg: 'bg-[#778DB0]', // Calm Blue
+      badge: 'bg-[#778DB0]/10 text-[#778DB0]',
+      icon: 'text-white'
     },
     'Service': {
-      gradient: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)',
-      badge: 'bg-green-100 text-green-700',
-      icon: 'text-green-600'
+      bg: 'bg-[#77BB92]', // Mint Green
+      badge: 'bg-[#77BB92]/10 text-[#77BB92]',
+      icon: 'text-white'
     },
     'Restaurant': {
-      gradient: 'linear-gradient(135deg, #FEF7F0 0%, #FDE8D0 100%)',
-      badge: 'bg-amber-100 text-amber-700',
-      icon: 'text-amber-600'
+      bg: 'bg-[#ED6B5A]', // Coral Orange
+      badge: 'bg-[#ED6B5A]/10 text-[#ED6B5A]',
+      icon: 'text-white'
     },
     'Finance': {
-      gradient: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)',
-      badge: 'bg-cyan-100 text-cyan-700',
-      icon: 'text-cyan-600'
+      bg: 'bg-[#778DB0]', // Calm Blue
+      badge: 'bg-[#778DB0]/10 text-[#778DB0]',
+      icon: 'text-white'
     },
     'Healthcare': {
-      gradient: 'linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%)',
-      badge: 'bg-pink-100 text-pink-700',
-      icon: 'text-pink-600'
+      bg: 'bg-[#E89FAB]', // Rose Pink
+      badge: 'bg-[#E89FAB]/10 text-[#E89FAB]',
+      icon: 'text-white'
     },
     'B2B': {
-      gradient: 'linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%)',
-      badge: 'bg-gray-100 text-gray-700',
-      icon: 'text-gray-600'
+      bg: 'bg-[#8A8A8A]', // Slate Gray
+      badge: 'bg-[#8A8A8A]/10 text-[#8A8A8A]',
+      icon: 'text-white'
     },
     'Education': {
-      gradient: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
-      badge: 'bg-yellow-100 text-yellow-700',
-      icon: 'text-yellow-600'
+      bg: 'bg-[#F4C542]', // Golden Sun
+      badge: 'bg-[#F4C542]/10 text-[#F4C542]',
+      icon: 'text-slate-700'
     },
     'Events': {
-      gradient: 'linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%)',
-      badge: 'bg-purple-100 text-purple-700',
-      icon: 'text-purple-600'
+      bg: 'bg-[#A67FB5]', // Soft Purple
+      badge: 'bg-[#A67FB5]/10 text-[#A67FB5]',
+      icon: 'text-white'
     },
     'HR': {
-      gradient: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)',
-      badge: 'bg-emerald-100 text-emerald-700',
-      icon: 'text-emerald-600'
+      bg: 'bg-[#77BB92]', // Mint Green
+      badge: 'bg-[#77BB92]/10 text-[#77BB92]',
+      icon: 'text-white'
     },
     'Insurance': {
-      gradient: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
-      badge: 'bg-indigo-100 text-indigo-700',
-      icon: 'text-indigo-600'
+      bg: 'bg-[#778DB0]', // Calm Blue
+      badge: 'bg-[#778DB0]/10 text-[#778DB0]',
+      icon: 'text-white'
     }
   }
 
   return colorMap[industry] || {
-    gradient: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)',
+    bg: 'bg-[#F9FAFB]', // Cloud White
     badge: 'bg-slate-100 text-slate-700',
     icon: 'text-slate-600'
   }
@@ -238,7 +238,7 @@ export default function TemplatesPage() {
             <Card key={template.id} className="hover:-translate-y-2 transition-all duration-500 ease-out cursor-pointer group bg-white rounded-2xl border-gray-200 shadow-card hover:shadow-card-hover">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between mb-3">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 ease-out" style={{background: categoryColors.gradient}}>
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 ease-out ${categoryColors.bg}`}>
                     {React.createElement(getTemplateIcon(template.icon), {
                       className: `h-6 w-6 ${categoryColors.icon} group-hover:scale-110 transition-all duration-200`
                     })}

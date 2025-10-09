@@ -66,6 +66,7 @@ interface JourneyMapCellProps {
   onInsightClick?: (insightId: string, rowId: string, cellId: string) => void
   rowId?: string
   disableColorConversion?: boolean
+  isCommentMode?: boolean
 }
 
 // Actions icons - CX-optimized ordering with most relevant icons first
@@ -219,7 +220,8 @@ export function JourneyMapCell({
   onInsightRemove,
   onInsightClick,
   rowId,
-  disableColorConversion = false
+  disableColorConversion = false,
+  isCommentMode = false
 }: JourneyMapCellProps) {
   const [isStatusPickerOpen, setIsStatusPickerOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -385,6 +387,13 @@ export function JourneyMapCell({
     }
   }, [isEditing])
 
+  // Close editing mode when comment mode is activated
+  useEffect(() => {
+    if (isCommentMode && isEditing) {
+      setIsEditing(false)
+    }
+  }, [isCommentMode, isEditing])
+
   // Close toolbar when clicking outside and save changes
   useEffect(() => {
     if (!isEditing) return
@@ -417,6 +426,7 @@ export function JourneyMapCell({
   }, [isEditing])
 
   const handleStartEditing = () => {
+    if (isCommentMode) return  // Prevent editing in comment mode
     setIsEditing(true)
   }
 
@@ -467,6 +477,7 @@ export function JourneyMapCell({
   }
 
   const handlePlusClick = (e?: React.MouseEvent) => {
+    if (isCommentMode) return  // Prevent editing in comment mode
     setIsEditing(true)
 
     // Refresh recent icons when starting to edit
@@ -787,6 +798,7 @@ export function JourneyMapCell({
                 onClick={(e) => {
                   e.stopPropagation()
                   e.preventDefault()
+                  if (isCommentMode) return  // Prevent editing in comment mode
                   setIsEditing(true)
                   setTimeout(() => setToolbarPosition(calculateToolbarPosition()), 0)
                 }}
@@ -801,6 +813,7 @@ export function JourneyMapCell({
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
               onFocus={() => {
+                if (isCommentMode) return  // Prevent editing in comment mode
                 setIsEditing(true)
                 setTimeout(() => setToolbarPosition(calculateToolbarPosition()), 0)
               }}
@@ -814,7 +827,9 @@ export function JourneyMapCell({
                 // setTimeout(() => setIsEditing(false), 100)
               }}
               placeholder={placeholder}
-              className={`w-full min-h-20 p-2 ${selectedIcon && !isEditing ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded text-center focus:outline-none transition-all duration-200`}
+              readOnly={isCommentMode}
+              tabIndex={isCommentMode ? -1 : 0}
+              className={`w-full min-h-20 p-2 ${selectedIcon && !isEditing ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded text-center focus:outline-none transition-all duration-200 ${isCommentMode ? 'pointer-events-none' : ''}`}
             />
           </div>
         </div>
@@ -962,6 +977,7 @@ export function JourneyMapCell({
                 onClick={(e) => {
                   e.stopPropagation()
                   e.preventDefault()
+                  if (isCommentMode) return  // Prevent editing in comment mode
                   setIsEditing(true)
                   setTimeout(() => setToolbarPosition(calculateToolbarPosition()), 0)
                 }}
@@ -975,6 +991,7 @@ export function JourneyMapCell({
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
               onFocus={() => {
+                if (isCommentMode) return  // Prevent editing in comment mode
                 setIsEditing(true)
                 setTimeout(() => setToolbarPosition(calculateToolbarPosition()), 0)
               }}
@@ -988,7 +1005,9 @@ export function JourneyMapCell({
                 // setTimeout(() => setIsEditing(false), 100)
               }}
               placeholder={placeholder}
-              className={`w-full h-full p-2 ${selectedIcon && !isEditing ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded resize-none focus:outline-none transition-all duration-200`}
+              readOnly={isCommentMode}
+              tabIndex={isCommentMode ? -1 : 0}
+              className={`w-full h-full p-2 ${selectedIcon && !isEditing ? 'pr-10' : ''} text-sm text-gray-900 placeholder-gray-400 bg-transparent border-0 rounded resize-none focus:outline-none transition-all duration-200 ${isCommentMode ? 'pointer-events-none' : ''}`}
               {...(isDraggable && !isEditing ? { ...attributes, ...listeners } : {})}
             />
           </div>
@@ -1015,6 +1034,7 @@ export function JourneyMapCell({
       <div className="w-full h-full min-h-[80px] flex items-center justify-center group">
         <button
           onClick={() => {
+            if (isCommentMode) return  // Prevent editing in comment mode
             setIsEditing(true)
             // Focus the input after a short delay to ensure it's rendered
             setTimeout(() => {

@@ -58,6 +58,7 @@ export interface JourneyMapData {
   phases: JourneyMapPhase[]
   stages: JourneyMapStage[]
   rows: JourneyMapRow[]
+  comments?: Comment[] // Comments placed on the journey map
   createdAt: string
   updatedAt: string
   createdBy: string
@@ -221,4 +222,40 @@ export interface Insight {
   evidence: Evidence[]
   created_at: string
   created_by?: string
+}
+
+// Comment system types
+export interface CommentPosition {
+  x: number // X coordinate in pixels
+  y: number // Y coordinate in pixels
+}
+
+export interface CommentReply {
+  id: string
+  commentId: string
+  text: string
+  author: {
+    id: string
+    name: string
+    avatar?: string
+  }
+  createdAt: string
+  updatedAt?: string
+}
+
+export interface Comment {
+  id: string
+  journeyMapId: string
+  text: string
+  position: CommentPosition
+  author: {
+    id: string
+    name: string
+    avatar?: string
+  }
+  replies: CommentReply[]
+  resolved: boolean
+  createdAt: string
+  updatedAt?: string
+  color?: string // For the marker color
 }

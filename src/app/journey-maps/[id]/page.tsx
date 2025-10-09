@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import {
   DndContext,
@@ -45,10 +46,11 @@ import {
   ZoomIn,
   ZoomOut,
   Maximize2,
-  RotateCcw
+  RotateCcw,
+  MessageCircle
 } from 'lucide-react'
 import Link from 'next/link'
-import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, JourneyMapSublane, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES, ROW_TYPES, Insight } from '@/types/journey-map'
+import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, JourneyMapSublane, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES, ROW_TYPES, Insight, Comment } from '@/types/journey-map'
 import { saveJourneyMap, getJourneyMapById } from '@/services/journeyMapStorage'
 import { JourneyMapCell as JourneyMapCellComponent } from '@/components/journey-map/JourneyMapCell'
 import { RowEditor } from '@/components/journey-map/RowEditor'
@@ -61,6 +63,11 @@ import { InlineEdit } from '@/components/ui/InlineEdit'
 import { Toast } from '@/components/ui/Toast'
 import { InsightDetailsDrawer } from '@/components/journey-map/InsightDetailsDrawer'
 import { createNewSublane, updateSublanesColorFromParent, getSublaneCardColor, getLighterColorVariant } from '@/utils/sublaneHelpers'
+import { CommentMarker } from '@/components/journey-map/CommentMarker'
+import { CommentDrawer } from '@/components/journey-map/CommentDrawer'
+import { CommentInput } from '@/components/journey-map/CommentInput'
+import { CommentPopup } from '@/components/journey-map/CommentPopup'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface Persona {
   id: string
@@ -1080,6 +1087,7 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
 
 export default function JourneyMapBuilderPage() {
   const { t } = useLanguage()
+  const { user } = useAuth()
   const params = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -1088,6 +1096,16 @@ export default function JourneyMapBuilderPage() {
   const [journeyMap, setJourneyMap] = useState<JourneyMapData | null>(null)
   const [insights, setInsights] = useState<Insight[]>([])
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false)
+
+  // Comment system state
+  const [isCommentMode, setIsCommentMode] = useState(false)
+  const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false)
+  const [selectedComment, setSelectedComment] = useState<Comment | null>(null)
+  const [pendingCommentPosition, setPendingCommentPosition] = useState<{ x: number; y: number } | null>(null)
+  const [showComments, setShowComments] = useState(true)
+  const [showCommentInput, setShowCommentInput] = useState(false)
+  const [showCommentPopup, setShowCommentPopup] = useState(false)
+  const canvasRef = useRef<HTMLDivElement>(null)
 
   // Handle creating new insight
   const handleCreateInsight = (insightData: Omit<Insight, 'id' | 'created_at'>) => {
@@ -1173,6 +1191,182 @@ export default function JourneyMapBuilderPage() {
       setSelectedInsightCellId(cellId)
       setIsInsightDrawerOpen(true)
     }
+  }
+
+  // Keyboard shortcut: Press 'C' to toggle comment mode
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check if we're typing in an input or textarea
+      const target = e.target as HTMLElement
+      const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA'
+
+      // Only trigger if not typing and 'C' key is pressed
+      if (!isTyping && (e.key === 'c' || e.key === 'C')) {
+        setIsCommentMode(prev => !prev)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  // Global click handler for comment mode
+  useEffect(() => {
+    if (!isCommentMode) return
+
+    const handleDocumentClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+
+      // Don't place comments when clicking on truly interactive elements:
+      // - Buttons (including the Comment toggle button)
+      // - Inputs/textareas that are being edited
+      // - Cell editing toolbars
+      // - Comment drawer
+      // - Comment markers
+      // - Links
+      // - Select dropdowns
+      const isInteractiveElement =
+        target.closest('button') ||
+        target.closest('a') ||
+        target.closest('select') ||
+        target.closest('[data-toolbar]') ||
+        target.closest('[data-comment-drawer]') ||
+        target.closest('[data-comment-marker]') ||
+        target.closest('[role="button"]') ||
+        // Only prevent if actively editing (has focus)
+        (target.tagName === 'TEXTAREA' && target === document.activeElement) ||
+        (target.tagName === 'INPUT' && target === document.activeElement)
+
+      if (isInteractiveElement) {
+        return
+      }
+
+      // Get click position relative to the page (including scroll)
+      const x = e.clientX + window.scrollX
+      const y = e.clientY + window.scrollY
+
+      // Set pending position and show inline comment input
+      setPendingCommentPosition({ x, y })
+      setSelectedComment(null)
+      setShowCommentInput(true)
+    }
+
+    document.addEventListener('click', handleDocumentClick)
+
+    return () => {
+      document.removeEventListener('click', handleDocumentClick)
+    }
+  }, [isCommentMode])
+
+  const handleCommentMarkerClick = (comment: Comment) => {
+    setSelectedComment(comment)
+    setPendingCommentPosition(null)
+    setShowCommentInput(false)
+    setShowCommentPopup(true)
+  }
+
+  const handleSaveComment = (text: string) => {
+    if (!journeyMap || !user) return
+
+    if (pendingCommentPosition) {
+      // Create new comment
+      const newComment: Comment = {
+        id: `comment-${Date.now()}`,
+        journeyMapId: journeyMap.id,
+        text,
+        position: pendingCommentPosition,
+        author: {
+          id: user.id,
+          name: user.user_metadata?.name || user.email || 'Anonymous',
+          avatar: user.user_metadata?.avatar_url
+        },
+        replies: [],
+        resolved: false,
+        createdAt: new Date().toISOString(),
+        color: '#778DB0' // Default Calm Blue color
+      }
+
+      setJourneyMap(prev => {
+        if (!prev) return prev
+        return {
+          ...prev,
+          comments: [...(prev.comments || []), newComment]
+        }
+      })
+
+      setPendingCommentPosition(null)
+      setShowCommentInput(false)
+    }
+  }
+
+  const handleCancelComment = () => {
+    setPendingCommentPosition(null)
+    setShowCommentInput(false)
+  }
+
+  const handleReplyToComment = (commentId: string, text: string) => {
+    if (!journeyMap || !user) return
+
+    setJourneyMap(prev => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        comments: (prev.comments || []).map(comment => {
+          if (comment.id === commentId) {
+            return {
+              ...comment,
+              replies: [
+                ...comment.replies,
+                {
+                  id: `reply-${Date.now()}`,
+                  commentId,
+                  text,
+                  author: {
+                    id: user.id,
+                    name: user.user_metadata?.name || user.email || 'Anonymous',
+                    avatar: user.user_metadata?.avatar_url
+                  },
+                  createdAt: new Date().toISOString()
+                }
+              ]
+            }
+          }
+          return comment
+        })
+      }
+    })
+  }
+
+  const handleResolveComment = (commentId: string) => {
+    if (!journeyMap) return
+
+    setJourneyMap(prev => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        comments: (prev.comments || []).map(comment => {
+          if (comment.id === commentId) {
+            return {
+              ...comment,
+              resolved: !comment.resolved
+            }
+          }
+          return comment
+        })
+      }
+    })
+  }
+
+  const handleDeleteComment = (commentId: string) => {
+    if (!journeyMap) return
+
+    setJourneyMap(prev => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        comments: (prev.comments || []).filter(c => c.id !== commentId)
+      }
+    })
   }
 
   const [isRowEditorOpen, setIsRowEditorOpen] = useState(false)
@@ -3113,6 +3307,18 @@ export default function JourneyMapBuilderPage() {
               </div>
             </div>
 
+            {/* Comment Mode Toggle */}
+            <Button
+              variant={isCommentMode ? "primary" : "outline"}
+              size="sm"
+              onClick={() => setIsCommentMode(!isCommentMode)}
+              className="flex items-center"
+              title={isCommentMode ? "Exit comment mode" : "Enter comment mode - Click anywhere to add comments"}
+            >
+              <MessageCircle className="mr-2 h-4 w-4" />
+              {isCommentMode ? 'Commenting' : 'Comment'}
+            </Button>
+
             <Button
               variant="primary"
               size="sm"
@@ -3215,7 +3421,7 @@ export default function JourneyMapBuilderPage() {
             <div
               ref={containerRef}
               className="flex-1 overflow-auto journey-map-container"
-              style={{background: 'transparent', cursor: isPanning ? 'grabbing' : 'default'}}
+              style={{background: 'transparent', cursor: isPanning ? 'grabbing' : (isCommentMode ? 'crosshair' : 'default')}}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
@@ -3224,11 +3430,13 @@ export default function JourneyMapBuilderPage() {
             <div className={isCompactView ? "p-3 pb-3" : "p-6 pb-6"}>
             <div className="overflow-x-auto">
               <div
+                ref={canvasRef}
                 style={{
                   minWidth: 'fit-content',
                   transform: `scale(${zoom / 100}) translate(${pan.x}px, ${pan.y}px)`,
                   transformOrigin: 'top left',
-                  transition: isPanning ? 'none' : 'transform 0.1s ease-out'
+                  transition: isPanning ? 'none' : 'transform 0.1s ease-out',
+                  position: 'relative'
                 }}
               >
             {/* Persona Section */}
@@ -3739,6 +3947,7 @@ export default function JourneyMapBuilderPage() {
                             content={row.cells.map(c => c.content).join(',')}
                             type={row.type}
                             backgroundColor={row.color}
+                            isCommentMode={isCommentMode}
                             onChange={(content) => {
                               const emotions = content.split(',').map(e => e.trim())
                               
@@ -3854,6 +4063,7 @@ export default function JourneyMapBuilderPage() {
                               onInsightRemove={(insightId) => handleInsightRemove(row.id, cell.id, insightId)}
                               onInsightClick={(insightId) => handleInsightClick(insightId, row.id, cell.id)}
                               rowId={row.id}
+                              isCommentMode={isCommentMode}
                             />
 
                             {/* Cell actions dropdown - appears on hover */}
@@ -3972,6 +4182,7 @@ export default function JourneyMapBuilderPage() {
                                     placeholder="Add details..."
                                     stageCount={journeyMap.stages.length}
                                     disableColorConversion={true}
+                                    isCommentMode={isCommentMode}
                                   />
                                 ) : (
                                   // Empty cell - no card shown
@@ -4029,6 +4240,21 @@ export default function JourneyMapBuilderPage() {
             )}
           </CardContent>
           </Card>
+
+          {/* Comment Markers - Rendered at document.body level */}
+          {showComments && journeyMap.comments && journeyMap.comments.length > 0 && typeof document !== 'undefined' && createPortal(
+            <div className="comment-markers-layer fixed inset-0 pointer-events-none" style={{ zIndex: 45 }}>
+              {journeyMap.comments.map((comment) => (
+                <CommentMarker
+                  key={comment.id}
+                  comment={comment}
+                  onClick={() => handleCommentMarkerClick(comment)}
+                  isActive={selectedComment?.id === comment.id}
+                />
+              ))}
+            </div>,
+            document.body
+          )}
               </div>
             </div>
         </div>
@@ -4143,6 +4369,47 @@ export default function JourneyMapBuilderPage() {
           // TODO: Implement edit functionality
           console.log('Edit insight:', selectedInsight)
         }}
+      />
+
+      {/* Inline Comment Input - shown when creating new comment */}
+      {showCommentInput && pendingCommentPosition && typeof document !== 'undefined' && createPortal(
+        <CommentInput
+          position={pendingCommentPosition}
+          onSave={handleSaveComment}
+          onCancel={handleCancelComment}
+        />,
+        document.body
+      )}
+
+      {/* Comment Popup - shown when clicking on existing comment marker */}
+      {showCommentPopup && selectedComment && typeof document !== 'undefined' && createPortal(
+        <CommentPopup
+          comment={selectedComment}
+          position={selectedComment.position}
+          onClose={() => {
+            setShowCommentPopup(false)
+            setSelectedComment(null)
+          }}
+          onReply={handleReplyToComment}
+          onResolve={handleResolveComment}
+          onDelete={handleDeleteComment}
+        />,
+        document.body
+      )}
+
+      {/* Comment Drawer - kept for future use if needed */}
+      <CommentDrawer
+        comment={selectedComment}
+        isOpen={isCommentDrawerOpen}
+        onClose={() => {
+          setIsCommentDrawerOpen(false)
+          setSelectedComment(null)
+        }}
+        onSave={handleSaveComment}
+        onReply={handleReplyToComment}
+        onResolve={handleResolveComment}
+        onDelete={handleDeleteComment}
+        isNewComment={false}
       />
 
       {/* Toast Notification */}
