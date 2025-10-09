@@ -132,7 +132,7 @@ export const CommentPopup: React.FC<CommentPopupProps> = ({
                     className="w-5 h-5 rounded-full mt-0.5"
                   />
                 ) : (
-                  <div className="w-5 h-5 rounded-full bg-[#A67FB5] flex items-center justify-center text-white text-[10px] font-medium mt-0.5">
+                  <div className="w-5 h-5 rounded-full bg-[#AFC2D9] flex items-center justify-center text-white text-[10px] font-medium mt-0.5">
                     {reply.author.name.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -210,7 +210,7 @@ export const CommentPopup: React.FC<CommentPopupProps> = ({
               onClose()
             }
           }}
-          className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-[#ED6B5A] hover:bg-[#ED6B5A]/10 rounded-lg transition-colors"
+          className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-[#C45A49] hover:bg-[#C45A49]/10 rounded-lg transition-colors"
         >
           <Trash2 className="w-4 h-4" />
           <span>Delete</span>

@@ -882,7 +882,7 @@ export function JourneyMapCell({
               <div className="border-t mx-2 pt-1">
                 <button
                   onClick={() => onChange('')}
-                  className="text-xs text-[#ED6B5A] hover:text-[#E5574A] px-1"
+                  className="text-xs text-[#C45A49] hover:text-[#B04A3A] px-1"
                 >
                   Clear
                 </button>
@@ -1246,7 +1246,7 @@ export function JourneyMapCell({
                 }
                 setIsEditing(false)
               }}
-              className="px-4 py-2 text-sm font-medium text-[#ED6B5A] hover:text-[#E5574A] hover:bg-[#ED6B5A]/10 border border-[#ED6B5A]/30 hover:border-[#ED6B5A]/50 rounded-lg transition-all shadow-sm"
+              className="px-4 py-2 text-sm font-medium text-[#C45A49] hover:text-[#B04A3A] hover:bg-[#C45A49]/10 border border-[#C45A49]/30 hover:border-[#C45A49]/50 rounded-lg transition-all shadow-sm"
             >
               Delete
             </button>

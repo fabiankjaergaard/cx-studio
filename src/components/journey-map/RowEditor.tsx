@@ -131,7 +131,7 @@ export function RowEditor({ isOpen, onClose, row, onSave, onDelete, isNewRow = f
               <Button
                 variant="outline"
                 onClick={handleDelete}
-                className="text-[#ED6B5A] border-[#ED6B5A]/30 hover:bg-[#ED6B5A]/10 hover:border-[#ED6B5A]/50 transition-all duration-200"
+                className="text-[#C45A49] border-[#C45A49]/30 hover:bg-[#C45A49]/10 hover:border-[#C45A49]/50 transition-all duration-200"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

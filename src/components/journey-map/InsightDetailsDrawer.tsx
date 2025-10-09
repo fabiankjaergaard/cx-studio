@@ -28,9 +28,9 @@ export function InsightDetailsDrawer({
         label: 'Critical',
         description: 'High priority - requires immediate attention',
         icon: AlertTriangle,
-        color: 'text-[#ED6B5A]',
-        bgColor: 'bg-[#ED6B5A]/10',
-        borderColor: 'border-[#ED6B5A]/30'
+        color: 'text-[#C45A49]',
+        bgColor: 'bg-[#C45A49]/10',
+        borderColor: 'border-[#C45A49]/30'
       }
     }
     if (severity === 3) {
@@ -209,7 +209,7 @@ export function InsightDetailsDrawer({
                   onRemoveFromCell()
                   onClose()
                 }}
-                className="flex items-center justify-center gap-2 text-[#ED6B5A] hover:text-[#E5574A] hover:bg-[#ED6B5A]/10 border-[#ED6B5A]/30 hover:border-[#ED6B5A]/50 font-medium px-4"
+                className="flex items-center justify-center gap-2 text-[#C45A49] hover:text-[#B04A3A] hover:bg-[#C45A49]/10 border-[#C45A49]/30 hover:border-[#C45A49]/50 font-medium px-4"
               >
                 <Trash2 className="w-4 h-4" />
                 Remove from Cell

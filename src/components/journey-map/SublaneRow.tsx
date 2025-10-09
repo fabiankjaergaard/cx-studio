@@ -127,7 +127,7 @@ export function SublaneRow({
         {onDelete && (
           <button
             onClick={() => onDelete(sublane.id)}
-            className="p-1 text-gray-400 hover:text-[#ED6B5A] opacity-0 group-hover/sublane:opacity-100 transition-all"
+            className="p-1 text-gray-400 hover:text-[#C45A49] opacity-0 group-hover/sublane:opacity-100 transition-all"
             title="Delete sublane"
           >
             <TrashIcon className="h-3 w-3" />
