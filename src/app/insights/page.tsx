@@ -125,7 +125,7 @@ const getTools = (t: (key: string) => string) => [
     title: t('insights.insightsLibrary.title'),
     description: t('insights.insightsLibrary.description'),
     action: t('insights.insightsLibrary.action'),
-    href: '/insights/library'
+    href: '/analytics/insights'
   }
 ]
 

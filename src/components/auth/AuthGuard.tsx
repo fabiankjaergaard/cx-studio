@@ -75,7 +75,7 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <img 
-            src="/Kustra.png" 
+            src="/Kustra-logo.png" 
             alt="Kustra" 
             className="h-16 w-auto mx-auto mb-4"
           />
@@ -91,7 +91,7 @@ export function AuthGuard({ children, redirectTo = '/auth/login' }: AuthGuardPro
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <img 
-            src="/Kustra.png" 
+            src="/Kustra-logo.png" 
             alt="Kustra" 
             className="h-16 w-auto mx-auto mb-4"
           />

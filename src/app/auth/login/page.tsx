@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
 import { EyeIcon, EyeOffIcon, Zap, SparklesIcon } from 'lucide-react'
 import { saveBetaTesterLogin } from '@/services/betaTracking'
-import { SimpleDots } from '@/components/ui/simple-dots'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 export default function LoginPage() {
@@ -40,7 +39,7 @@ export default function LoginPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <img
-            src="/Kustra.png"
+            src="/Kustra-logo.png"
             alt="Kustra"
             className="h-16 w-auto mx-auto mb-4"
           />
@@ -145,11 +144,6 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative bg-white overflow-hidden">
-      {/* Animated dot pattern on white background */}
-      <div className="absolute inset-0" style={{ zIndex: 1 }}>
-        <SimpleDots />
-      </div>
-
       {/* White background with orange flowing wave */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 2 }}>
         {/* Large orange flowing wave - bottom, full width */}
@@ -182,9 +176,9 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center">
           <img
-            src="/Kustra.png"
+            src="/Kustra-logo.png"
             alt="Kustra"
-            className="h-36 w-auto mx-auto mb-6"
+            className="h-64 w-auto mx-auto -mb-10"
           />
           <h2 className="text-3xl font-light text-gray-900">
             Sign in to your account
@@ -319,12 +313,12 @@ export default function LoginPage() {
           <div className="space-y-6 p-2">
             <div className="text-center">
               <div className="flex justify-center mb-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 rounded-2xl flex items-center justify-center shadow-lg">
-                  <SparklesIcon className="h-10 w-10 text-slate-700" />
+                <div className="w-20 h-20 bg-[#778DB0] rounded-2xl flex items-center justify-center shadow-lg">
+                  <SparklesIcon className="h-10 w-10 text-white" />
                 </div>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Welcome, Beta Tester!</h3>
-              <p className="text-gray-600">Please enter your details to continue</p>
+              <h3 className="text-2xl font-bold text-[#2E2E2E] mb-2">Welcome, Beta Tester!</h3>
+              <p className="text-[#8A8A8A]">Please enter your details to continue</p>
             </div>
 
             <div className="space-y-5 px-2">

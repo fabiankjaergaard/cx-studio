@@ -6,25 +6,26 @@ import { Lightbulb } from 'lucide-react'
 
 interface InsightBlockProps {
   insight: Insight
+  onClick?: () => void
 }
 
-// Get severity color
+// Get severity color using Kustra color system
 const getSeverityColor = (severity: 1 | 2 | 3 | 4 | 5) => {
   switch (severity) {
     case 5:
     case 4:
-      return 'bg-red-500'
+      return 'bg-[#ED6B5A]' // Coral Orange - Critical
     case 3:
-      return 'bg-yellow-500'
+      return 'bg-[#F4C542]' // Golden Sun - Medium
     case 2:
     case 1:
-      return 'bg-green-500'
+      return 'bg-[#778DB0]' // Calm Blue - Low
     default:
-      return 'bg-gray-500'
+      return 'bg-[#8A8A8A]' // Slate Gray
   }
 }
 
-export function InsightBlock({ insight }: InsightBlockProps) {
+export function InsightBlock({ insight, onClick }: InsightBlockProps) {
   const [{ isDragging }, drag] = useDrag({
     type: 'INSIGHT',
     item: { insight },
@@ -33,9 +34,18 @@ export function InsightBlock({ insight }: InsightBlockProps) {
     }),
   })
 
+  const handleClick = (e: React.MouseEvent) => {
+    // Only trigger onClick if we're not dragging
+    if (!isDragging && onClick) {
+      e.stopPropagation()
+      onClick()
+    }
+  }
+
   return (
     <div
       ref={drag as any}
+      onClick={handleClick}
       className={`
         cursor-grab active:cursor-grabbing p-3 rounded-lg border-2 group
         hover:shadow-md hover:scale-105 hover:-translate-y-1 transition-all duration-200 ease-out

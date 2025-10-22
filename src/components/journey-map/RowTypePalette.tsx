@@ -5,22 +5,26 @@ import { Palette, Lightbulb, Plus } from 'lucide-react'
 import { RowTypeBlock } from './RowTypeBlock'
 import { InsightBlock } from './InsightBlock'
 import { CreateInsightDrawer } from './CreateInsightDrawer'
-import { ROW_TYPES, ROW_COLORS, Insight } from '@/types/journey-map'
+import { ROW_TYPES, ROW_COLORS, Insight, JourneyMapData } from '@/types/journey-map'
 
 interface RowTypePaletteProps {
   className?: string
   'data-onboarding'?: string
   journeyId?: string
+  journeyMap?: JourneyMapData
   insights?: Insight[]
   onCreateInsight?: (insight: Omit<Insight, 'id' | 'created_at'>) => void
+  onInsightClick?: (insight: Insight) => void
 }
 
 export function RowTypePalette({
   className = '',
   'data-onboarding': dataOnboarding,
   journeyId,
+  journeyMap,
   insights = [],
-  onCreateInsight
+  onCreateInsight,
+  onInsightClick
 }: RowTypePaletteProps) {
   const [selectedColor, setSelectedColor] = useState('bg-slate-50')
   const [colorIntensity, setColorIntensity] = useState<'subtle' | 'vibrant'>('subtle')
@@ -189,7 +193,11 @@ export function RowTypePalette({
           {insights.length > 0 ? (
             <div className="space-y-2 mb-3">
               {insights.map((insight) => (
-                <InsightBlock key={insight.id} insight={insight} />
+                <InsightBlock
+                  key={insight.id}
+                  insight={insight}
+                  onClick={() => onInsightClick?.(insight)}
+                />
               ))}
             </div>
           ) : (
@@ -198,16 +206,14 @@ export function RowTypePalette({
             </p>
           )}
 
-          {/* Action buttons */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowCreateDrawer(true)}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-all"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Create
-            </button>
-          </div>
+          {/* Action button */}
+          <button
+            onClick={() => setShowCreateDrawer(true)}
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-all"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Create Insight
+          </button>
         </div>
 
       </div>

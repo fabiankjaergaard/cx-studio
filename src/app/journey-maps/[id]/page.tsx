@@ -27,6 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
+import { useToast } from '@/contexts/ToastContext'
 import {
   SaveIcon,
   PlusIcon,
@@ -47,7 +48,8 @@ import {
   ZoomOut,
   Maximize2,
   RotateCcw,
-  MessageCircle
+  MessageCircle,
+  Upload
 } from 'lucide-react'
 import Link from 'next/link'
 import { JourneyMapData, JourneyMapCell, JourneyMapRow, JourneyMapStage, JourneyMapPhase, JourneyMapSublane, DEFAULT_JOURNEY_CATEGORIES, DEFAULT_JOURNEY_STAGES, DEFAULT_JOURNEY_PHASES, ROW_TYPES, Insight, Comment } from '@/types/journey-map'
@@ -68,6 +70,12 @@ import { CommentDrawer } from '@/components/journey-map/CommentDrawer'
 import { CommentInput } from '@/components/journey-map/CommentInput'
 import { CommentPopup } from '@/components/journey-map/CommentPopup'
 import { useAuth } from '@/contexts/AuthContext'
+import { InsightImportWizard } from '@/components/insights/InsightImportWizard'
+import { GeneratedInsight, ImportableResearchData } from '@/types/insight-import'
+import { useJourneyMapHistory } from '@/hooks/useJourneyMapHistory'
+import { useUndoRedo } from '@/hooks/useUndoRedo'
+import { UndoRedoToolbar } from '@/components/journey-map/UndoRedoToolbar'
+import { loadAvailableResearchData } from '@/services/researchDataConverter'
 
 interface Persona {
   id: string
@@ -1088,14 +1096,31 @@ const getTemplateContent = (templateId: string, categoryId: string, stageId: str
 export default function JourneyMapBuilderPage() {
   const { t } = useLanguage()
   const { user } = useAuth()
+  const toast = useToast()
   const params = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
   const journeyMapId = params.id as string
 
-  const [journeyMap, setJourneyMap] = useState<JourneyMapData | null>(null)
+  const [journeyMap, setJourneyMap, history] = useJourneyMapHistory(null)
   const [insights, setInsights] = useState<Insight[]>([])
+
+  // Enable undo/redo keyboard shortcuts
+  useUndoRedo(history.undo, history.redo, history.canUndo, history.canRedo)
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false)
+
+  // Insight import wizard state
+  const [isImportWizardOpen, setIsImportWizardOpen] = useState(false)
+  const [availableResearchData, setAvailableResearchData] = useState<ImportableResearchData[]>([])
+
+  // Load available research data when wizard opens
+  useEffect(() => {
+    if (isImportWizardOpen) {
+      const researchData = loadAvailableResearchData()
+      setAvailableResearchData(researchData)
+      console.log('📊 Loaded research data:', researchData.length, 'items')
+    }
+  }, [isImportWizardOpen])
 
   // Comment system state
   const [isCommentMode, setIsCommentMode] = useState(false)
@@ -1191,6 +1216,86 @@ export default function JourneyMapBuilderPage() {
       setSelectedInsightCellId(cellId)
       setIsInsightDrawerOpen(true)
     }
+  }
+
+  // Handle importing insights from wizard
+  const handleImportInsights = (generatedInsights: GeneratedInsight[]) => {
+    if (!journeyMap) return
+
+    console.log('🔍 [handleImportInsights] Starting import with', generatedInsights.length, 'insights')
+
+    // Convert GeneratedInsights to Insights and add to state
+    const newInsights: Insight[] = generatedInsights.map(gi => ({
+      id: `insight-${Date.now()}-${Math.random()}`,
+      journey_id: gi.journey_id,
+      title: gi.title,
+      summary: gi.summary,
+      severity: gi.severity,
+      evidence: gi.evidence,
+      created_at: new Date().toISOString(),
+      source: gi.source,
+      autoPlaced: true
+    }))
+
+    console.log('✅ [handleImportInsights] Created', newInsights.length, 'new insight objects:', newInsights.map(i => ({ id: i.id, title: i.title })))
+
+    setInsights(prev => {
+      const updated = [...prev, ...newInsights]
+      console.log('📊 [handleImportInsights] Updated insights state, total count:', updated.length)
+      return updated
+    })
+
+    // Auto-attach insights to suggested cells
+    const updatedMap = { ...journeyMap }
+    let attachedCount = 0
+
+    for (let i = 0; i < generatedInsights.length; i++) {
+      const generatedInsight = generatedInsights[i]
+      const newInsight = newInsights[i]
+      const topSuggestion = generatedInsight.suggestedPlacements?.[0]
+
+      if (topSuggestion) {
+        console.log(`📍 [handleImportInsights] Attaching insight "${newInsight.title}" to cell ${topSuggestion.cellId} (confidence: ${topSuggestion.confidence})`)
+
+        // Find the row and cell
+        updatedMap.rows = updatedMap.rows.map(row => {
+          if (row.id === topSuggestion.rowId) {
+            return {
+              ...row,
+              cells: row.cells.map(cell => {
+                if (cell.id === topSuggestion.cellId) {
+                  const currentInsightIds = cell.insightIds || []
+                  attachedCount++
+                  return {
+                    ...cell,
+                    insightIds: [...currentInsightIds, newInsight.id]
+                  }
+                }
+                return cell
+              })
+            }
+          }
+          return row
+        })
+      } else {
+        console.log(`⚠️ [handleImportInsights] No placement suggestion for insight "${newInsight.title}"`)
+      }
+    }
+
+    console.log(`🎯 [handleImportInsights] Attached ${attachedCount} insights to cells`)
+
+    // Include insights in the updated map before saving
+    const mapWithInsights = {
+      ...updatedMap,
+      insights: [...insights, ...newInsights]
+    }
+
+    setJourneyMap(mapWithInsights)
+    saveJourneyMap(mapWithInsights)
+
+    // Show success toast
+    toast.success(`Successfully imported ${newInsights.length} insight${newInsights.length !== 1 ? 's' : ''}`)
+    console.log('✨ [handleImportInsights] Import complete!')
   }
 
   // Keyboard shortcut: Press 'C' to toggle comment mode
@@ -1656,7 +1761,13 @@ export default function JourneyMapBuilderPage() {
       try {
         const savedJourneyMap = getJourneyMapById(journeyMapId)
         if (savedJourneyMap) {
+          // Reset history when loading a saved journey map
+          history.reset(savedJourneyMap)
           setJourneyMap(savedJourneyMap)
+          // Load insights if they exist
+          if (savedJourneyMap.insights) {
+            setInsights(savedJourneyMap.insights)
+          }
         } else {
           // Journey map not found, redirect to journey maps list or show error
           console.error('Journey map not found:', journeyMapId)
@@ -3319,6 +3430,27 @@ export default function JourneyMapBuilderPage() {
               {isCommentMode ? 'Commenting' : 'Comment'}
             </Button>
 
+            {/* Undo/Redo Toolbar */}
+            <UndoRedoToolbar
+              undo={history.undo}
+              redo={history.redo}
+              canUndo={history.canUndo}
+              canRedo={history.canRedo}
+              historyLength={history.historyLength}
+            />
+
+            {/* Import Insights Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsImportWizardOpen(true)}
+              className="flex items-center"
+              title="Import insights from research data"
+            >
+              <Upload className="mr-2 h-4 w-4" />
+              Import Insights
+            </Button>
+
             <Button
               variant="primary"
               size="sm"
@@ -3413,8 +3545,16 @@ export default function JourneyMapBuilderPage() {
               <RowTypePalette
                 data-onboarding="palette"
                 journeyId={journeyMapId}
+                journeyMap={journeyMap || undefined}
                 insights={insights}
                 onCreateInsight={handleCreateInsight}
+                onInsightClick={(insight) => {
+                  console.log('[Journey Map] Opening insight from sidebar:', insight)
+                  setSelectedInsight(insight)
+                  setIsInsightDrawerOpen(true)
+                  setSelectedInsightCellId(null)
+                  setSelectedInsightRowId(null)
+                }}
               />
             )}
 
@@ -3769,16 +3909,18 @@ export default function JourneyMapBuilderPage() {
                       </th>
                       </React.Fragment>
                     ))}
-                    <th className={`w-12 ${isCompactView ? 'p-2' : 'p-4'} bg-slate-50 align-middle border border-gray-300 border-b-2`} rowSpan={journeyMap.rows.length + 1}>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleAddStage}
-                        className="w-8 h-8 p-0"
-                        title={showTooltips ? "Lägg till steg" : undefined}
-                      >
-                        <PlusIcon className="h-4 w-4" />
-                      </Button>
+                    <th className={`w-12 ${isCompactView ? 'p-2' : 'p-4'} bg-slate-50 align-bottom border border-gray-300 border-b-2 sticky right-0`} rowSpan={journeyMap.rows.length + 1}>
+                      <div className="flex items-end h-full pb-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleAddStage}
+                          className="w-8 h-8 p-0"
+                          title={showTooltips ? "Lägg till steg" : undefined}
+                        >
+                          <PlusIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </th>
                   </tr>
                 </thead>
@@ -4225,21 +4367,22 @@ export default function JourneyMapBuilderPage() {
               </table>
                   </DndContext>
             </div>
-
-            {/* Plus Button inside Card - only in plus button mode */}
-            {!isDragDropMode && (
-              <div
-                onClick={() => {
-                  setEditingRow(null)
-                  setIsRowEditorOpen(true)
-                }}
-                className="m-4 border-2 border-dashed border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-all duration-200 rounded-lg p-4 flex justify-center cursor-pointer"
-              >
-                <PlusIcon className="h-5 w-5 text-gray-400" />
-              </div>
-            )}
           </CardContent>
+
           </Card>
+
+          {/* Plus Button at bottom - only in plus button mode */}
+          {!isDragDropMode && (
+            <div
+              onClick={() => {
+                setEditingRow(null)
+                setIsRowEditorOpen(true)
+              }}
+              className="mt-4 border-2 border-dashed border-gray-300 bg-gray-50 hover:border-[#778DB0] hover:bg-[#778DB0]/5 transition-all duration-200 rounded-lg p-4 flex justify-center cursor-pointer"
+            >
+              <PlusIcon className="h-5 w-5 text-gray-400" />
+            </div>
+          )}
 
           {/* Comment Markers - Rendered at document.body level */}
           {showComments && journeyMap.comments && journeyMap.comments.length > 0 && typeof document !== 'undefined' && createPortal(
@@ -4370,6 +4513,17 @@ export default function JourneyMapBuilderPage() {
           console.log('Edit insight:', selectedInsight)
         }}
       />
+
+      {/* Insight Import Wizard */}
+      {journeyMap && (
+        <InsightImportWizard
+          isOpen={isImportWizardOpen}
+          onClose={() => setIsImportWizardOpen(false)}
+          journeyMap={journeyMap}
+          onImportComplete={handleImportInsights}
+          availableResearchData={availableResearchData}
+        />
+      )}
 
       {/* Inline Comment Input - shown when creating new comment */}
       {showCommentInput && pendingCommentPosition && typeof document !== 'undefined' && createPortal(

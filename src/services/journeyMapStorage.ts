@@ -44,6 +44,12 @@ export const saveJourneyMap = async (journeyMap: JourneyMapData): Promise<void> 
       console.log('Journey map saved successfully:', journeyMap.name)
       console.log('Total maps in storage now:', existingMaps.length)
       console.log('Saved map data:', updatedMap)
+
+      // Dispatch custom event to notify other components (e.g., Insights Library)
+      window.dispatchEvent(new CustomEvent('journey-maps-updated', {
+        detail: { action: 'save', journeyMapId: journeyMap.id }
+      }))
+
       resolve()
     } catch (error) {
       console.error('Error saving journey map to storage:', error)
@@ -67,6 +73,11 @@ export const deleteJourneyMap = (id: string): void => {
     const filteredMaps = existingMaps.filter(map => map.id !== id)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredMaps))
     console.log('Journey map deleted successfully:', id)
+
+    // Dispatch custom event to notify other components (e.g., Insights Library)
+    window.dispatchEvent(new CustomEvent('journey-maps-updated', {
+      detail: { action: 'delete', journeyMapId: id }
+    }))
   } catch (error) {
     console.error('Error deleting journey map from storage:', error)
     throw new Error('Failed to delete journey map')

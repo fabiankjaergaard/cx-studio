@@ -54,7 +54,7 @@ export default function AuthCallback() {
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="text-center">
         <img
-          src="/Kustra.png"
+          src="/Kustra-logo.png"
           alt="Kustra"
           className="h-16 w-auto mx-auto mb-6"
         />

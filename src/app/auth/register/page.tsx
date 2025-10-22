@@ -103,7 +103,7 @@ export default function RegisterPage() {
         <div className="max-w-md w-full space-y-4">
           <div className="text-center">
             <img
-              src="/Kustra.png"
+              src="/Kustra-logo.png"
               alt="Kustra"
               className="h-36 w-auto mx-auto mb-6"
             />
@@ -133,7 +133,7 @@ export default function RegisterPage() {
         {/* Logo */}
         <div className="text-center">
           <img
-            src="/Kustra.png"
+            src="/Kustra-logo.png"
             alt="Kustra"
             className="h-36 w-auto mx-auto mb-6"
           />

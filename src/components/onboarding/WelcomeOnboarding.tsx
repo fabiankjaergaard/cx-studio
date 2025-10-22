@@ -37,7 +37,7 @@ export function WelcomeOnboarding({ isOpen, onClose, onStartTour, userName }: We
           {/* Logo & Title */}
           <div className="text-center mb-6">
             <img
-              src="/Kustra.png"
+              src="/Kustra-logo.png"
               alt="Kustra"
               className="h-40 w-auto mx-auto -mb-6"
             />

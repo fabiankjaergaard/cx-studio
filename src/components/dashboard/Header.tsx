@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { BellIcon, PlusIcon, CheckIcon, ClockIcon } from 'lucide-react'
+import { BellIcon, PlusIcon, CheckIcon, ClockIcon, Sparkles, ExternalLink, MapIcon, LightbulbIcon, BarChart3Icon, UserPlusIcon, X, ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Tooltip } from '@/components/ui/Tooltip'
+import { Modal } from '@/components/ui/Modal'
+import Link from 'next/link'
 
 interface HeaderProps {
   title: string
@@ -25,9 +27,18 @@ interface Notification {
 export function Header({ title, description, actions }: HeaderProps) {
   const { t } = useLanguage()
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
+  const [isAIFeaturesModalOpen, setIsAIFeaturesModalOpen] = useState(false)
 
   // Updated notifications with translation keys
   const notifications: Notification[] = [
+    {
+      id: 'ai-features',
+      title: 'New AI Features Available! ✨',
+      message: 'Discover 5 new AI-powered tools to enhance your customer experience work',
+      time: 'New',
+      read: false,
+      type: 'info'
+    },
     {
       id: '1',
       title: t('notifications.journeyUpdated'),
@@ -56,6 +67,61 @@ export function Header({ title, description, actions }: HeaderProps) {
 
   const unreadCount = notifications.filter(n => !n.read).length
 
+  // AI Features with detailed descriptions
+  const aiFeatures = [
+    {
+      id: '1',
+      title: 'Import Insights to Journey Maps',
+      shortDescription: 'Import AI-generated insights from your research data directly into journey maps',
+      fullDescription: 'Import insights from customer research directly into your journey maps. AI automatically links them to relevant touchpoints.',
+      link: '/journey-maps',
+      icon: MapIcon,
+      category: 'Journey Maps',
+      benefits: ['Auto-link to journey stages', 'Save hours of work']
+    },
+    {
+      id: '2',
+      title: 'Insights Panel',
+      shortDescription: 'View and manage AI-generated insights in the sidebar with severity ratings and evidence points',
+      fullDescription: 'View all journey map insights in one sidebar panel with severity ratings (1-5) and evidence counts.',
+      link: '/journey-maps',
+      icon: LightbulbIcon,
+      category: 'Journey Maps',
+      benefits: ['Severity indicators', 'Evidence tracking']
+    },
+    {
+      id: '3',
+      title: 'Insights Library',
+      shortDescription: 'Centralized insights library with automatic aggregation, filtering, status tracking, and severity levels',
+      fullDescription: 'Central hub for all insights across projects. Filter by severity, status, and category. Track progress from "To Do" to "Done".',
+      link: '/analytics/insights',
+      icon: BarChart3Icon,
+      category: 'Analytics',
+      benefits: ['Cross-project view', 'Advanced filtering', 'Progress tracking']
+    },
+    {
+      id: '4',
+      title: 'Create Custom Insights',
+      shortDescription: 'Create and customize your own insights manually with full control over severity and evidence',
+      fullDescription: 'Create custom insights manually with full control over severity levels, evidence points, and categories.',
+      link: '/journey-maps',
+      icon: Sparkles,
+      category: 'Journey Maps',
+      benefits: ['Full customization', 'Manual severity control']
+    },
+    {
+      id: '5',
+      title: 'AI-Powered Persona Import',
+      shortDescription: 'Import personas from CSV and API integrations with smart field mapping',
+      fullDescription: 'Import personas from CSV or API with smart field mapping and duplicate detection. No manual data entry needed.',
+      link: '/personas/import',
+      icon: UserPlusIcon,
+      category: 'Personas',
+      benefits: ['Smart field mapping', 'Duplicate detection'],
+      comingSoon: true
+    }
+  ]
+
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'success': return <CheckIcon className="w-4 h-4 text-green-600" />
@@ -68,7 +134,7 @@ export function Header({ title, description, actions }: HeaderProps) {
     <header className="bg-white border-b border-gray-200 px-6 h-20">
       <div className="flex items-center justify-between h-full">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+          <h1 className="text-2xl font-bold text-[#778DB0]">{title}</h1>
           {description && (
             <p className="mt-1 text-sm text-gray-600">{description}</p>
           )}
@@ -155,21 +221,36 @@ export function Header({ title, description, actions }: HeaderProps) {
                             <div
                               key={notification.id}
                               className="p-4 hover:bg-gray-50 cursor-pointer hover:scale-[1.02] transition-all duration-200 ease-out hover:shadow-sm"
+                              onClick={() => {
+                                if (notification.id === 'ai-features') {
+                                  setIsNotificationOpen(false)
+                                  setIsAIFeaturesModalOpen(true)
+                                }
+                              }}
                             >
                               <div className="flex items-start space-x-3">
                                 <div className="flex-shrink-0 mt-1">
-                                  {getNotificationIcon(notification.type)}
+                                  {notification.id === 'ai-features' ? (
+                                    <Sparkles className="w-4 h-4 text-[#778DB0]" />
+                                  ) : (
+                                    getNotificationIcon(notification.type)
+                                  )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-gray-900 truncate">
+                                  <p className="text-sm font-medium text-gray-900">
                                     {notification.title}
                                   </p>
                                   <p className="text-sm text-gray-600 mt-1">
                                     {notification.message}
                                   </p>
-                                  <p className="text-xs text-gray-400 mt-2">
+                                  <p className="text-xs text-[#778DB0] font-medium mt-2">
                                     {notification.time}
                                   </p>
+                                  {notification.id === 'ai-features' && (
+                                    <button className="text-xs text-[#778DB0] hover:text-[#9BA8C4] font-medium mt-2 flex items-center gap-1">
+                                      Click to explore <ArrowRight className="w-3 h-3" />
+                                    </button>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -193,6 +274,100 @@ export function Header({ title, description, actions }: HeaderProps) {
           {actions}
         </div>
       </div>
+
+      {/* AI Features Modal */}
+      <Modal
+        isOpen={isAIFeaturesModalOpen}
+        onClose={() => setIsAIFeaturesModalOpen(false)}
+        title=""
+        maxWidth="4xl"
+      >
+        <div className="p-6">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#778DB0] to-[#9BA8C4] rounded-2xl mb-4">
+              <Sparkles className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">New AI Features!</h2>
+            <p className="text-gray-600">Discover the latest AI-powered tools added to Kustra</p>
+          </div>
+
+          {/* Features Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[600px] overflow-y-auto px-2">
+            {aiFeatures.map((feature) => {
+              const IconComponent = feature.icon
+              return (
+                <div
+                  key={feature.id}
+                  className="border border-gray-200 rounded-xl p-6 hover:border-[#778DB0] hover:shadow-lg transition-all duration-200 bg-gradient-to-br from-white to-gray-50"
+                >
+                  {/* Icon & Category */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-12 h-12 bg-[#778DB0]/10 rounded-xl flex items-center justify-center">
+                      <IconComponent className="w-6 h-6 text-[#778DB0]" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium text-[#778DB0] bg-[#778DB0]/10 px-3 py-1 rounded-full">
+                        {feature.category}
+                      </span>
+                      {feature.comingSoon && (
+                        <span className="text-xs font-medium text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
+                          Coming Soon
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">
+                    {feature.title}
+                  </h3>
+
+                  {/* Full Description */}
+                  <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                    {feature.fullDescription}
+                  </p>
+
+                  {/* Benefits */}
+                  <div className="space-y-2 mb-4">
+                    {feature.benefits.map((benefit, index) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <CheckIcon className="w-4 h-4 text-[#778DB0] mt-0.5 flex-shrink-0" />
+                        <span className="text-xs text-gray-700">{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Action Button */}
+                  <Link href={feature.link} onClick={() => setIsAIFeaturesModalOpen(false)}>
+                    <Button
+                      variant={feature.comingSoon ? "outline" : "primary"}
+                      className="w-full"
+                      disabled={feature.comingSoon}
+                    >
+                      {feature.comingSoon ? 'Coming Soon' : (
+                        <>
+                          Try it now <ArrowRight className="w-4 h-4 ml-2" />
+                        </>
+                      )}
+                    </Button>
+                  </Link>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Footer */}
+          <div className="mt-8 text-center">
+            <button
+              onClick={() => setIsAIFeaturesModalOpen(false)}
+              className="text-sm text-gray-600 hover:text-gray-900 font-medium"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </Modal>
     </header>
   )
 }

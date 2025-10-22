@@ -404,6 +404,53 @@ const getPersonaIcon = (iconName: string) => {
   return iconMap[iconName] || UserIcon
 }
 
+// Get category-specific colors using Kustra Color System
+const getCategoryColors = (category: string) => {
+  const colorMap: { [key: string]: { bg: string, badge: string, icon: string } } = {
+    'E-commerce': {
+      bg: 'bg-[#F4C542]', // Golden Sun
+      badge: 'bg-[#F4C542]/10 text-[#F4C542]',
+      icon: 'text-slate-700'
+    },
+    'SaaS': {
+      bg: 'bg-[#778DB0]', // Calm Blue
+      badge: 'bg-[#778DB0]/10 text-[#778DB0]',
+      icon: 'text-white'
+    },
+    'Education': {
+      bg: 'bg-[#A67FB5]', // Soft Purple
+      badge: 'bg-[#A67FB5]/10 text-[#A67FB5]',
+      icon: 'text-white'
+    },
+    'Healthcare': {
+      bg: 'bg-[#77BB92]', // Fresh Green
+      badge: 'bg-[#77BB92]/10 text-[#77BB92]',
+      icon: 'text-white'
+    },
+    'Finance': {
+      bg: 'bg-[#778DB0]', // Calm Blue
+      badge: 'bg-[#778DB0]/10 text-[#778DB0]',
+      icon: 'text-white'
+    },
+    'Travel': {
+      bg: 'bg-[#E89FAB]', // Warm Pink
+      badge: 'bg-[#E89FAB]/10 text-[#E89FAB]',
+      icon: 'text-white'
+    },
+    'Food & Beverage': {
+      bg: 'bg-[#ED6B5A]', // Vibrant Coral
+      badge: 'bg-[#ED6B5A]/10 text-[#ED6B5A]',
+      icon: 'text-white'
+    }
+  }
+
+  return colorMap[category] || {
+    bg: 'bg-slate-100',
+    badge: 'bg-slate-100 text-slate-700',
+    icon: 'text-slate-600'
+  }
+}
+
 export default function PersonaTemplatesPage() {
   const { t } = useLanguage()
   const router = useRouter()
@@ -463,17 +510,19 @@ export default function PersonaTemplatesPage() {
 
         {/* Templates Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTemplates.map((template) => (
+          {filteredTemplates.map((template) => {
+            const categoryColors = getCategoryColors(template.category)
+            return (
             <Card key={template.id} className="border-0 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out hover:bg-white/80 cursor-pointer group">
               <CardContent className="p-6">
                 {/* Icon and category */}
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center group-hover:bg-slate-200 group-hover:scale-110 transition-all duration-300 ease-out">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 ease-out ${categoryColors.bg}`}>
                     {React.createElement(getPersonaIcon(template.icon), {
-                      className: "h-6 w-6 text-slate-600 group-hover:text-slate-700 transition-colors duration-200"
+                      className: `h-6 w-6 ${categoryColors.icon} group-hover:scale-110 transition-all duration-200`
                     })}
                   </div>
-                  <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded">
+                  <span className={`text-xs px-2 py-1 rounded ${categoryColors.badge}`}>
                     {template.category}
                   </span>
                 </div>
@@ -517,7 +566,8 @@ export default function PersonaTemplatesPage() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+          )
+          })}
 
           {/* Custom Template Card */}
           <Card className="border-2 border-dashed border-gray-300 shadow-none hover:border-slate-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer group hover:bg-slate-50/30" onClick={() => router.push('/personas/create')}>

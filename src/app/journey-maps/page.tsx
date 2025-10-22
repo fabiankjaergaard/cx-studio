@@ -232,64 +232,39 @@ export default function JourneyMapsPage() {
           </div>
         ) : journeyMaps.length > 0 ? (
           /* Journey Maps Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {journeyMaps.map((journeyMap) => (
-            <Card key={journeyMap.id} className="hover:-translate-y-2 transition-all duration-500 ease-out h-96 group cursor-pointer bg-white rounded-2xl border-gray-200 shadow-card hover:shadow-card-hover">
+            <Card key={journeyMap.id} className="border-2 border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-80 group cursor-pointer bg-white">
               <CardContent className="pt-6 h-full flex flex-col">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <h3 className="text-lg font-medium text-gray-900">{journeyMap.name}</h3>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[journeyMap.status]}`}>
-                        {statusLabels[journeyMap.status]}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 line-clamp-2">{journeyMap.description}</p>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-lg font-medium text-gray-900">{journeyMap.name}</h3>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[journeyMap.status]}`}>
+                      {statusLabels[journeyMap.status]}
+                    </span>
                   </div>
-                  <div className="relative ml-2">
-                    <Tooltip content="More actions" position="left">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setActiveDropdown(activeDropdown === journeyMap.id ? null : journeyMap.id)
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Escape') {
-                            setActiveDropdown(null)
-                          }
-                        }}
-                        className="p-2"
-                        aria-label="More actions"
-                        aria-haspopup="true"
-                        aria-expanded={activeDropdown === journeyMap.id}
-                      >
-                        <MoreVerticalIcon className="h-3 w-3" />
-                      </Button>
-                    </Tooltip>
+                  <div className="relative">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setActiveDropdown(activeDropdown === journeyMap.id ? null : journeyMap.id)
+                      }}
+                      className="p-1.5"
+                    >
+                      <MoreVerticalIcon className="h-4 w-4" />
+                    </Button>
 
                     {activeDropdown === journeyMap.id && (
-                      <div
-                        className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10"
-                        role="menu"
-                        aria-label="Journey map actions"
-                      >
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
                             handleDuplicateJourneyMap(journeyMap)
                             setActiveDropdown(null)
                           }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault()
-                              handleDuplicateJourneyMap(journeyMap)
-                              setActiveDropdown(null)
-                            }
-                          }}
                           className="w-full px-3 py-2 text-left hover:bg-gray-50 text-sm flex items-center"
-                          role="menuitem"
                         >
                           <CopyIcon className="h-4 w-4 mr-2" />
                           {t('journeyMaps.actions.duplicate')}
@@ -299,14 +274,7 @@ export default function JourneyMapsPage() {
                             e.stopPropagation()
                             openDeleteConfirm(journeyMap)
                           }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault()
-                              openDeleteConfirm(journeyMap)
-                            }
-                          }}
-                          className="w-full px-3 py-2 text-left hover:bg-gray-50 text-sm flex items-center text-[#C45A49] hover:text-[#C45A49]/90"
-                          role="menuitem"
+                          className="w-full px-3 py-2 text-left hover:bg-gray-50 text-sm flex items-center text-[#C45A49]"
                         >
                           <TrashIcon className="h-4 w-4 mr-2" />
                           {t('journeyMaps.actions.delete')}
@@ -316,96 +284,58 @@ export default function JourneyMapsPage() {
                   </div>
                 </div>
 
-                <div className="space-y-3 flex-1">
-                  {journeyMap.persona && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <UserIcon className="h-4 w-4 mr-2" />
-                      {journeyMap.persona}
-                    </div>
-                  )}
+                <p className="text-sm text-gray-600 mb-4 line-clamp-2">{journeyMap.description}</p>
 
-                  <div className="text-sm">
-                    <div className="font-medium text-gray-700 mb-1">Senast ändrad</div>
-                    <div className="space-y-1 text-gray-500">
-                      <div className="flex items-center">
-                        <CalendarIcon className="h-3 w-3 mr-1" />
-                        {new Date(journeyMap.lastModified).toLocaleDateString(language === 'sv' ? 'sv-SE' : 'en-US')}
-                      </div>
-                      <div className="flex items-center">
-                        <ClockIcon className="h-3 w-3 mr-1" />
-                        {new Date(journeyMap.lastModified).toLocaleTimeString(language === 'sv' ? 'sv-SE' : 'en-US', {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </div>
-                      <div className="flex items-center">
-                        <UserIcon className="h-3 w-3 mr-1" />
-                        {journeyMap.createdBy}
-                      </div>
+                <div className="space-y-3 flex-1">
+                  <div className="text-sm text-gray-500">
+                    <div className="flex items-center mb-2">
+                      <CalendarIcon className="h-4 w-4 mr-2" />
+                      {new Date(journeyMap.lastModified).toLocaleDateString(language === 'sv' ? 'sv-SE' : 'en-US')} • {new Date(journeyMap.lastModified).toLocaleTimeString(language === 'sv' ? 'sv-SE' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                    <div className="flex items-center">
+                      <UserIcon className="h-4 w-4 mr-2" />
+                      {journeyMap.createdBy}
                     </div>
                   </div>
 
-                  {/* Collaborators Section */}
                   {journeyMap.collaborators && journeyMap.collaborators.length > 0 && (
                     <div className="text-sm">
                       <div className="font-medium text-gray-700 mb-2 flex items-center">
-                        <UsersIcon className="h-3 w-3 mr-1" />
+                        <UsersIcon className="h-4 w-4 mr-2" />
                         Team ({journeyMap.collaborators.length})
                       </div>
                       <div className="flex items-center">
-                        {journeyMap.collaborators.slice(0, 4).map((collaborator, index) => (
+                        {journeyMap.collaborators.slice(0, 3).map((collaborator, index) => (
                           <div
                             key={collaborator.id}
-                            className="relative group"
-                            style={{ zIndex: journeyMap.collaborators!.length - index }}
+                            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium ${
+                              collaborator.role === 'owner' ? 'bg-slate-700' : collaborator.role === 'editor' ? 'bg-slate-500' : 'bg-gray-400'
+                            } text-white ${index > 0 ? '-ml-2' : ''} border-2 border-white`}
+                            title={collaborator.name}
                           >
-                            <div
-                              className={`
-                                w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium
-                                ${collaborator.role === 'owner'
-                                  ? 'bg-slate-700 text-white'
-                                  : collaborator.role === 'editor'
-                                  ? 'bg-slate-500 text-white'
-                                  : 'bg-gray-400 text-white'
-                                }
-                                ${index > 0 ? '-ml-2' : ''}
-                                border-2 border-white
-                                hover:z-10 hover:scale-110 transition-transform cursor-pointer
-                              `}
-                              title={`${collaborator.name} (${collaborator.role})`}
-                            >
-                              {collaborator.avatar}
-                            </div>
+                            {collaborator.avatar}
                           </div>
                         ))}
-                        {journeyMap.collaborators.length > 4 && (
-                          <div
-                            className="w-7 h-7 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-xs font-medium -ml-2 border-2 border-white cursor-pointer hover:bg-gray-300 transition-colors"
-                            title={`+${journeyMap.collaborators.length - 4} more collaborators`}
-                          >
-                            +{journeyMap.collaborators.length - 4}
-                          </div>
-                        )}
                       </div>
                     </div>
                   )}
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4 pt-4">
                   <span>{journeyMap.stages} {t('journeyMaps.stages')}</span>
-                  <span>Owner: {journeyMap.createdBy}</span>
+                  <span className="text-xs">Owner: {journeyMap.createdBy}</span>
                 </div>
 
                 <div className="flex space-x-2 pt-4 border-t border-gray-100">
                   <Link href={`/journey-maps/${journeyMap.id}`} className="flex-1">
-                    <Button variant="primary" size="sm" className="w-full transform hover:scale-105 transition-all duration-200 ease-out">
-                      <EditIcon className="h-3 w-3 mr-1" />
+                    <Button variant="primary" size="sm" className="w-full">
+                      <EditIcon className="h-4 w-4 mr-2" />
                       {t('journeyMaps.actions.edit')}
                     </Button>
                   </Link>
                   <Link href={`/journey-maps/${journeyMap.id}/view`}>
-                    <Button variant="outline" size="sm" className="transform hover:scale-105 transition-all duration-200 ease-out">
-                      <ExternalLinkIcon className="h-3 w-3" />
+                    <Button variant="outline" size="sm">
+                      <ExternalLinkIcon className="h-4 w-4" />
                     </Button>
                   </Link>
                 </div>
@@ -415,16 +345,16 @@ export default function JourneyMapsPage() {
 
             {/* Add New Journey Map Card */}
             <Link href="/journey-maps/new">
-              <Card className="border-2 border-dashed border-gray-200 hover:-translate-y-2 transition-all duration-500 ease-out h-96 cursor-pointer group bg-white rounded-2xl shadow-subtle hover:shadow-card">
+              <Card className="border-2 border-dashed border-gray-200 shadow-none hover:border-gray-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-80 cursor-pointer group bg-white hover:bg-slate-50">
                 <CardContent className="pt-6 h-full flex flex-col">
                   <div className="text-center py-12 flex-1 flex flex-col justify-center">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-500 ease-out bg-gradient-to-br from-primary-50 to-primary-200">
-                      <PlusIcon className="w-8 h-8 text-gray-600 group-hover:text-slate-600 group-hover:rotate-90 transition-all duration-300 ease-out" />
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-110 transition-all duration-300 ease-out">
+                      <PlusIcon className="w-8 h-8 text-gray-400 group-hover:text-slate-600 group-hover:rotate-90 transition-all duration-300 ease-out" />
                     </div>
                     <h3 className="text-lg font-medium text-gray-500 mb-2 group-hover:text-slate-700 transition-colors duration-200">
                       {t('journeyMaps.createNewCard.title')}
                     </h3>
-                    <p className="text-sm text-gray-600 group-hover:text-slate-600 transition-colors duration-200">
+                    <p className="text-sm text-gray-400 group-hover:text-slate-600 transition-colors duration-200">
                       {t('journeyMaps.createNewCard.description')}
                     </p>
                   </div>

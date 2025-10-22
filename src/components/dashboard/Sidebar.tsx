@@ -64,7 +64,19 @@ function SidebarContent() {
   { name: t('nav.dashboard'), href: '/', icon: HomeIcon, tourId: 'dashboard' },
   { name: t('nav.journeyMaps'), href: '/journey-maps', icon: RouteIcon, tourId: 'journey-maps' },
   { name: t('nav.templates'), href: '/templates', icon: BookTemplateIcon, tourId: 'templates' },
-  { name: t('nav.analytics'), href: '/analytics', icon: BarChart3Icon, tourId: 'analytics', comingSoon: true },
+  {
+    name: t('nav.analytics'),
+    href: '/analytics',
+    icon: BarChart3Icon,
+    tourId: 'analytics',
+    isExpandable: true,
+    children: [
+      { name: 'Insights', href: '/analytics/insights', icon: LightbulbIcon },
+      { name: 'Journey Analytics', href: '/analytics/journeys', icon: RouteIcon, comingSoon: true },
+      { name: 'KPIs', href: '/analytics/kpis', icon: TrendingUpIcon, comingSoon: true },
+      { name: 'Reports', href: '/analytics/reports', icon: FileTextIcon, comingSoon: true }
+    ]
+  },
   {
     name: t('nav.personas'),
     icon: UsersIcon,
@@ -79,13 +91,12 @@ function SidebarContent() {
     ]
   },
   {
-    name: t('nav.insights'),
-    href: '/insights',
-    icon: ClipboardIcon,
-    tourId: 'insights',
+    name: t('nav.research'),
+    href: '/research',
+    icon: FolderIcon,
+    tourId: 'research',
     isExpandable: true,
     children: [
-      { name: t('nav.research'), href: '/research', icon: FolderIcon },
       {
         name: t('nav.surveys'),
         href: '/insights/survey-builder',
@@ -145,7 +156,6 @@ function SidebarContent() {
   const [expandedSubItems, setExpandedSubItems] = useState<{[key: string]: boolean}>({})
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [hoveredSection, setHoveredSection] = useState<string | null>(null)
-  const [showInsightsPopup, setShowInsightsPopup] = useState(false)
   const [hasBetaTesterBeenClicked, setHasBetaTesterBeenClicked] = useState(false)
 
   const toggleSection = (sectionName: string) => {
@@ -302,17 +312,17 @@ function SidebarContent() {
           {!isCollapsed ? (
             <Link href="/" className="cursor-pointer">
               <img
-                src="/icon-512x512.png"
+                src="/Kustra logo small.svg"
                 alt="Kustra"
-                className="h-24 w-auto object-contain max-w-[300px] hover:opacity-80 transition-opacity"
+                className="h-12 w-auto object-contain max-w-[300px] hover:opacity-80 transition-opacity"
               />
             </Link>
           ) : (
             <Link href="/" className="cursor-pointer">
               <img
-                src="/kustra-icon-small.png"
-                alt="Kustra Small"
-                className="h-16 w-12 object-contain hover:opacity-80 transition-opacity"
+                src="/Kustra-new.png"
+                alt="Kustra"
+                className="h-12 w-auto object-contain hover:opacity-80 transition-opacity"
               />
             </Link>
           )}
@@ -354,111 +364,62 @@ function SidebarContent() {
                       onMouseEnter={() => setHoveredSection(item.name)}
                       onMouseLeave={() => setHoveredSection(null)}
                     >
-                      {item.name === t('nav.insights') ? (
+                      <Link
+                        href={item.href}
+                        data-tour={item.tourId}
+                        className={cn(
+                          'flex items-center rounded-l-lg text-sm font-medium transition-colors flex-1',
+                          isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
+                          pathname === item.href || pathname.startsWith(item.href + '?')
+                            ? 'bg-[#AFC2D9]/30 text-[#778DB0]'
+                            : 'text-[#5C6E8B] hover:bg-[#F9FAFB] hover:text-[#778DB0]'
+                        )}
+                        aria-label={isCollapsed ? item.name : undefined}
+                        aria-current={pathname === item.href || pathname.startsWith(item.href + '?') ? 'page' : undefined}
+                      >
+                        <item.icon
+                          className={cn(
+                            'h-5 w-5 transition-all duration-300 ease-out',
+                            isCollapsed ? 'mx-auto' : 'mr-3',
+                            pathname === item.href || pathname.startsWith(item.href + '?')
+                              ? 'text-[#778DB0] scale-110 rotate-12'
+                              : 'text-[#5C6E8B]'
+                          )}
+                        />
+                        {!isCollapsed && <span>{item.name}</span>}
+                      </Link>
+                      {!isCollapsed && (
                         <button
-                          onClick={() => {
-                            setShowInsightsPopup(true)
-                            toggleSection(item.name)
-                          }}
-                          data-tour={item.tourId}
-                          className={cn(
-                            'flex items-center rounded-lg text-sm font-medium transition-colors w-full',
-                            isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
-                            pathname === item.href || pathname.startsWith(item.href + '?')
-                              ? 'bg-[#AFC2D9]/30 text-[#778DB0]'
-                              : 'text-[#5C6E8B] hover:bg-[#F9FAFB] hover:text-[#778DB0]'
-                          )}
-                          aria-label={isCollapsed ? item.name : undefined}
-                          aria-current={pathname === item.href || pathname.startsWith(item.href + '?') ? 'page' : undefined}
-                          aria-expanded={isExpanded}
-                          aria-controls={`${item.name}-submenu`}
+                          onClick={() => toggleSection(item.name)}
+                          className="px-2 py-2 hover:bg-[#F9FAFB] rounded-r-lg"
                         >
-                          <item.icon
-                            className={cn(
-                              'h-5 w-5 transition-all duration-300 ease-out',
-                              isCollapsed ? 'mx-auto' : 'mr-3',
-                              pathname === item.href || pathname.startsWith(item.href + '?')
-                                ? 'text-[#778DB0] scale-110 rotate-12'
-                                : 'text-[#8A8A8A]'
+                          <div className="w-4 h-4 flex items-center justify-center">
+                            {isExpanded ? (
+                              <ChevronUpIcon className={cn(
+                                "h-4 w-4 text-gray-400 transition-opacity",
+                                hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                              )} />
+                            ) : (
+                              <ChevronDownIcon className={cn(
+                                "h-4 w-4 text-gray-400 transition-opacity",
+                                hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                              )} />
                             )}
-                          />
-                          {!isCollapsed && (
-                            <div className="flex items-center justify-between flex-1">
-                              <div className="flex items-center space-x-2">
-                                <span>{item.name}</span>
-                                <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full" aria-label="Work in Progress">
-                                  {t('ui.wip')}
-                                </span>
-                              </div>
-                              <div className="w-4 h-4 flex items-center justify-center">
-                                {isExpanded ? (
-                                  <ChevronUpIcon className={cn(
-                                    "h-4 w-4 text-gray-400 transition-opacity",
-                                    hoveredSection === item.name ? "opacity-100" : "opacity-0"
-                                  )} />
-                                ) : (
-                                  <ChevronDownIcon className={cn(
-                                    "h-4 w-4 text-gray-400 transition-opacity",
-                                    hoveredSection === item.name ? "opacity-100" : "opacity-0"
-                                  )} />
-                                )}
-                              </div>
-                            </div>
-                          )}
+                          </div>
                         </button>
-                      ) : (
-                        <Link
-                          href={item.href}
-                          data-tour={item.tourId}
-                          className={cn(
-                            'flex items-center rounded-l-lg text-sm font-medium transition-colors flex-1',
-                            isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
-                            pathname === item.href || pathname.startsWith(item.href + '?')
-                              ? 'bg-[#AFC2D9]/30 text-[#778DB0]'
-                              : 'text-[#5C6E8B] hover:bg-[#F9FAFB] hover:text-[#778DB0]'
-                          )}
-                          aria-label={isCollapsed ? item.name : undefined}
-                          aria-current={pathname === item.href || pathname.startsWith(item.href + '?') ? 'page' : undefined}
-                        >
-                          <item.icon
-                            className={cn(
-                              'h-5 w-5 transition-all duration-300 ease-out',
-                              isCollapsed ? 'mx-auto' : 'mr-3',
-                              pathname === item.href || pathname.startsWith(item.href + '?')
-                                ? 'text-[#778DB0] scale-110 rotate-12'
-                                : 'text-[#8A8A8A]'
-                            )}
-                          />
-                          {!isCollapsed && (
-                            <div className="flex items-center justify-between flex-1">
-                              <span>{item.name}</span>
-                              {item.name === t('nav.insights') && (
-                                <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full" aria-label="Work in Progress">
-                                  {t('ui.wip')}
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </Link>
                       )}
                     </div>
                   ) : (
                     // If no href, render as button only
                     <button
-                      onClick={() => {
-                        if (item.name === t('nav.insights')) {
-                          setShowInsightsPopup(true)
-                        } else {
-                          toggleSection(item.name)
-                        }
-                      }}
+                      onClick={() => toggleSection(item.name)}
                       onMouseEnter={() => setHoveredSection(item.name)}
                       onMouseLeave={() => setHoveredSection(null)}
                       data-tour={item.tourId}
                       className={cn(
                         'w-full flex items-center rounded-lg text-sm font-medium transition-colors',
                         isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
-                        'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                        'text-[#5C6E8B] hover:bg-[#F9FAFB] hover:text-[#778DB0]'
                       )}
                       aria-label={isCollapsed ? item.name : undefined}
                       aria-expanded={isExpanded}
@@ -468,32 +429,25 @@ function SidebarContent() {
                         className={cn(
                           'h-5 w-5 transition-all duration-300 ease-out',
                           isCollapsed ? 'mx-auto' : 'mr-3',
-                          'text-gray-500',
-                          isExpanded && 'scale-110 text-slate-500 rotate-12'
+                          'text-[#5C6E8B]',
+                          isExpanded && 'scale-110 text-[#778DB0] rotate-12'
                         )}
                       />
                       {!isCollapsed && (
                         <>
                           <span className="flex-1 text-left">{item.name}</span>
-                          <div className="flex items-center justify-end space-x-2">
-                            {item.name === t('nav.insights') && (
-                              <span className="px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
-                                {t('ui.wip')}
-                              </span>
+                          <div className="w-4 h-4 flex items-center justify-center">
+                            {isExpanded ? (
+                              <ChevronUpIcon className={cn(
+                                "h-4 w-4 text-gray-400 transition-opacity",
+                                hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                              )} />
+                            ) : (
+                              <ChevronDownIcon className={cn(
+                                "h-4 w-4 text-gray-400 transition-opacity",
+                                hoveredSection === item.name ? "opacity-100" : "opacity-0"
+                              )} />
                             )}
-                            <div className="w-4 h-4 flex items-center justify-center">
-                                {isExpanded ? (
-                                  <ChevronUpIcon className={cn(
-                                    "h-4 w-4 text-gray-400 transition-opacity",
-                                    hoveredSection === item.name ? "opacity-100" : "opacity-0"
-                                  )} />
-                                ) : (
-                                  <ChevronDownIcon className={cn(
-                                    "h-4 w-4 text-gray-400 transition-opacity",
-                                    hoveredSection === item.name ? "opacity-100" : "opacity-0"
-                                  )} />
-                                )}
-                              </div>
                           </div>
                         </>
                       )}
@@ -523,7 +477,7 @@ function SidebarContent() {
                                   'h-4 w-4 transition-colors mr-3',
                                   isSubActive
                                     ? 'text-[#778DB0]'
-                                    : 'text-[#8A8A8A] group-hover:text-[#5C6E8B]'
+                                    : 'text-[#5C6E8B] group-hover:text-[#778DB0]'
                                 )}
                               />
                               {category.name}
@@ -531,8 +485,8 @@ function SidebarContent() {
                           )
                         }
 
-                        // Special handling for Research Projects - render as direct link
-                        if (category.name === t('nav.research') && category.href) {
+                        // Check if category has direct link (like Analytics children or Personas)
+                        if (category.href && (!category.children || category.children.length === 0)) {
                           const isSubActive = pathname === category.href || pathname.startsWith(category.href + '?')
                           return (
                             <Link
@@ -545,7 +499,22 @@ function SidebarContent() {
                                   : 'text-[#5C6E8B] hover:bg-[#F9FAFB] hover:text-[#778DB0]'
                               )}
                             >
+                              {category.icon && (
+                                <category.icon
+                                  className={cn(
+                                    'h-4 w-4 transition-colors mr-3',
+                                    isSubActive
+                                      ? 'text-[#778DB0]'
+                                      : 'text-[#5C6E8B] group-hover:text-[#778DB0]'
+                                  )}
+                                />
+                              )}
                               {category.name}
+                              {category.comingSoon && (
+                                <span className="ml-2 px-1.5 py-0.5 border border-gray-400 text-gray-600 text-[10px] font-medium rounded-full">
+                                  {t('ui.comingSoon')}
+                                </span>
+                              )}
                             </Link>
                           )
                         }
@@ -810,8 +779,8 @@ function SidebarContent() {
                         'h-5 w-5 transition-all duration-300 ease-out',
                         isCollapsed ? 'mx-auto' : 'mr-3',
                         isActive
-                          ? 'text-slate-600 scale-110 rotate-12'
-                          : 'text-gray-500'
+                          ? 'text-[#778DB0] scale-110 rotate-12'
+                          : 'text-[#5C6E8B]'
                       )}
                     />
                     {!isCollapsed && (
@@ -840,7 +809,7 @@ function SidebarContent() {
                     className={cn(
                       'group flex items-center rounded-lg text-sm font-medium transition-colors',
                       isCollapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2',
-                      'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                      'text-[#5C6E8B] hover:bg-[#F9FAFB] hover:text-[#778DB0]'
                     )}
                     title={isCollapsed ? item.name : undefined}
                   >
@@ -848,7 +817,7 @@ function SidebarContent() {
                       className={cn(
                         'h-5 w-5 transition-all duration-300 ease-out',
                         isCollapsed ? 'mx-auto' : 'mr-3',
-                        'text-gray-500'
+                        'text-[#5C6E8B]'
                       )}
                     />
                     {!isCollapsed && <span>{item.name}</span>}
@@ -935,78 +904,6 @@ function SidebarContent() {
           </Link>
         )}
       </div>
-
-      {/* Insights Beta Modal */}
-      <Modal
-        isOpen={showInsightsPopup}
-        onClose={() => setShowInsightsPopup(false)}
-        title=""
-        maxWidth="2xl"
-      >
-        <div className="space-y-8">
-          <div className="text-center">
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center">
-                <ClipboardIcon className="h-8 w-8 text-gray-600" />
-              </div>
-            </div>
-            <div className="flex items-center justify-center space-x-3 mb-2">
-              <h3 className="text-2xl font-bold text-gray-900">Insights</h3>
-              <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-semibold rounded-full">
-                WIP
-              </span>
-            </div>
-            <p className="text-lg text-gray-600">{t('ui.workInProgress')}</p>
-          </div>
-
-          <div className="space-y-6 max-w-2xl mx-auto">
-            <div className="text-center space-y-4">
-              <h4 className="text-lg font-semibold text-gray-900">{t('ui.developmentTitle')}</h4>
-              <p className="text-gray-700 leading-relaxed">
-                {t('ui.developmentDescription')}
-              </p>
-            </div>
-
-            <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-              <div className="flex items-start space-x-3">
-                <LightbulbIcon className="h-6 w-6 text-gray-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <h5 className="font-semibold text-gray-900 mb-2">{t('ui.expectationsTitle')}</h5>
-                  <ul className="text-gray-700 text-sm space-y-1">
-                    <li>{t('ui.expectation1')}</li>
-                    <li>{t('ui.expectation2')}</li>
-                    <li>{t('ui.expectation3')}</li>
-                    <li>{t('ui.expectation4')}</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-center space-x-4 pt-6 border-t border-gray-200">
-            <Button
-              variant="outline"
-              onClick={() => setShowInsightsPopup(false)}
-              size="lg"
-            >
-              {t('ui.notNow')}
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => {
-                setShowInsightsPopup(false)
-                setExpandedSections(prev => ({
-                  ...prev,
-                  [t('nav.insights')]: true
-                }))
-              }}
-              size="lg"
-            >
-              {t('ui.exploreAnyway')}
-            </Button>
-          </div>
-        </div>
-      </Modal>
 
     </div>
   )

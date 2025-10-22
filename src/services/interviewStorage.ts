@@ -31,7 +31,7 @@ export function saveCompletedInterview(interview: CompletedInterview): void {
       const researchItem = {
         id: interview.id,
         type: 'interview' as const,
-        title: `Intervju med ${interview.participant}`,
+        title: `Interview with ${interview.participant}`,
         participant: interview.participant,
         date: interview.date,
         duration: interview.duration,

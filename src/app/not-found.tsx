@@ -10,7 +10,7 @@ export default function NotFound() {
       <div className="max-w-2xl w-full text-center">
         <div className="mb-8">
           <img
-            src="/Kustra.png"
+            src="/Kustra-logo.png"
             alt="Kustra"
             className="h-24 w-auto mx-auto mb-8"
           />

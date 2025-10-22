@@ -40,6 +40,7 @@ import {
 import { getCompletedInterviews, type CompletedInterview } from '@/services/interviewStorage'
 import { getSavedResearchProjects, getSavedResearchItems, saveResearchProject, type ResearchProject } from '@/services/researchProjectStorage'
 import Link from 'next/link'
+import { LoadDemoDataButton } from '@/components/research/LoadDemoDataButton'
 
 interface ResearchFolder {
   id: string
@@ -371,13 +372,16 @@ export default function ResearchPage() {
                 />
               </div>
 
-              <Button
-                variant="primary"
-                onClick={() => setIsNewFolderModalOpen(true)}
-              >
-                <FolderPlusIcon className="mr-2 h-4 w-4" />
-                {t('research.newProject')}
-              </Button>
+              <div className="flex items-center gap-3">
+                <LoadDemoDataButton />
+                <Button
+                  variant="primary"
+                  onClick={() => setIsNewFolderModalOpen(true)}
+                >
+                  <FolderPlusIcon className="mr-2 h-4 w-4" />
+                  {t('research.newProject')}
+                </Button>
+              </div>
             </div>
           )}
 
@@ -392,13 +396,16 @@ export default function ResearchPage() {
                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
                   {t('research.organizeResearch')}
                 </p>
-                <Button
-                  variant="primary"
-                  onClick={() => setIsNewFolderModalOpen(true)}
-                >
-                  <FolderPlusIcon className="mr-2 h-4 w-4" />
-                  {t('research.createProject')}
-                </Button>
+                <div className="flex flex-col items-center gap-3">
+                  <Button
+                    variant="primary"
+                    onClick={() => setIsNewFolderModalOpen(true)}
+                  >
+                    <FolderPlusIcon className="mr-2 h-4 w-4" />
+                    {t('research.createProject')}
+                  </Button>
+                  <LoadDemoDataButton />
+                </div>
               </div>
             </div>
           ) : (

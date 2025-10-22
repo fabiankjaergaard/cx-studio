@@ -1,8 +1,10 @@
 'use client'
 
-import { X, Lightbulb, AlertTriangle, AlertCircle, CheckCircle, Trash2, Edit } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { X, Lightbulb, AlertTriangle, AlertCircle, CheckCircle, Trash2, Edit, Zap, Clock, Target, TrendingUp, Timer } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Insight } from '@/types/journey-map'
+import { ActionSuggestion, generateActionSuggestions, getFallbackActionSuggestions } from '@/services/actionSuggestionGenerator'
 
 interface InsightDetailsDrawerProps {
   isOpen: boolean
@@ -12,6 +14,8 @@ interface InsightDetailsDrawerProps {
   onEdit?: () => void
 }
 
+type TabType = 'details' | 'actions' | 'activity'
+
 export function InsightDetailsDrawer({
   isOpen,
   onClose,
@@ -19,18 +23,121 @@ export function InsightDetailsDrawer({
   onRemoveFromCell,
   onEdit
 }: InsightDetailsDrawerProps) {
+  const [activeTab, setActiveTab] = useState<TabType>('details')
+  const [actionSuggestions, setActionSuggestions] = useState<ActionSuggestion[]>([])
+  const [isLoadingActions, setIsLoadingActions] = useState(false)
+  const [actionsError, setActionsError] = useState<string | null>(null)
+  const [insightStatus, setInsightStatus] = useState<'todo' | 'in-progress' | 'done' | undefined>(insight?.status)
+
+  // Sync insightStatus when insight prop changes
+  useEffect(() => {
+    setInsightStatus(insight?.status)
+  }, [insight])
+
+  // Listen for localStorage updates from other components (bi-directional sync)
+  useEffect(() => {
+    if (!insight) return
+
+    const handleStorageUpdate = () => {
+      // Re-fetch the latest insight data from localStorage
+      if (typeof window !== 'undefined') {
+        const savedMaps = localStorage.getItem('cx-app-journey-maps')
+        if (savedMaps) {
+          const maps = JSON.parse(savedMaps)
+          if (Array.isArray(maps)) {
+            const mapWithInsight = maps.find((m: any) => m.id === insight.journey_id)
+            if (mapWithInsight && mapWithInsight.insights) {
+              const updatedInsight = mapWithInsight.insights.find((i: Insight) => i.id === insight.id)
+              if (updatedInsight) {
+                setInsightStatus(updatedInsight.status)
+                console.log('[InsightDetailsDrawer] Synced status from localStorage:', updatedInsight.status)
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Listen to our custom event from journeyMapStorage
+    window.addEventListener('journey-maps-updated', handleStorageUpdate)
+
+    return () => {
+      window.removeEventListener('journey-maps-updated', handleStorageUpdate)
+    }
+  }, [insight])
+
+  // Fetch action suggestions when Actions tab is opened
+  useEffect(() => {
+    if (activeTab === 'actions' && insight && actionSuggestions.length === 0 && !isLoadingActions) {
+      fetchActionSuggestions()
+    }
+  }, [activeTab, insight])
+
+  const fetchActionSuggestions = async () => {
+    if (!insight) return
+
+    setIsLoadingActions(true)
+    setActionsError(null)
+
+    try {
+      const suggestions = await generateActionSuggestions(insight)
+      setActionSuggestions(suggestions)
+    } catch (error) {
+      console.error('Failed to generate action suggestions:', error)
+      setActionsError('Failed to generate AI suggestions. Using fallback recommendations.')
+      // Use fallback suggestions if AI fails
+      setActionSuggestions(getFallbackActionSuggestions(insight))
+    } finally {
+      setIsLoadingActions(false)
+    }
+  }
+
+  const handleStatusChange = (newStatus: 'todo' | 'in-progress' | 'done') => {
+    if (!insight) return
+
+    setInsightStatus(newStatus)
+
+    // Update insight in localStorage (using correct key and array structure)
+    if (typeof window !== 'undefined') {
+      const savedMaps = localStorage.getItem('cx-app-journey-maps')
+      if (savedMaps) {
+        const maps = JSON.parse(savedMaps)
+
+        // Maps is an array, find the map containing this insight
+        if (Array.isArray(maps)) {
+          const mapWithInsight = maps.find((m: any) => m.id === insight.journey_id)
+
+          if (mapWithInsight && mapWithInsight.insights) {
+            // Find and update the insight
+            const insightIndex = mapWithInsight.insights.findIndex((i: Insight) => i.id === insight.id)
+            if (insightIndex !== -1) {
+              mapWithInsight.insights[insightIndex].status = newStatus
+              localStorage.setItem('cx-app-journey-maps', JSON.stringify(maps))
+              console.log(`✅ Updated insight status to: ${newStatus}`)
+
+              // Dispatch custom event to notify other components
+              window.dispatchEvent(new CustomEvent('journey-maps-updated', {
+                detail: { action: 'update-insight', journeyMapId: insight.journey_id, insightId: insight.id }
+              }))
+            }
+          }
+        }
+      }
+    }
+  }
+
   if (!isOpen || !insight) return null
 
-  // Get severity info
+  // Get severity info - Using Kustra color system
   const getSeverityInfo = (severity: 1 | 2 | 3 | 4 | 5) => {
     if (severity >= 4) {
       return {
         label: 'Critical',
         description: 'High priority - requires immediate attention',
         icon: AlertTriangle,
-        color: 'text-[#C45A49]',
-        bgColor: 'bg-[#C45A49]/10',
-        borderColor: 'border-[#C45A49]/30'
+        color: 'text-[#ED6B5A]',
+        bgColor: 'bg-[#ED6B5A]/10',
+        borderColor: 'border-[#ED6B5A]/30'
       }
     }
     if (severity === 3) {
@@ -38,18 +145,18 @@ export function InsightDetailsDrawer({
         label: 'Medium',
         description: 'Should be addressed',
         icon: AlertCircle,
-        color: 'text-amber-700',
-        bgColor: 'bg-amber-50',
-        borderColor: 'border-amber-200'
+        color: 'text-[#F4C542]',
+        bgColor: 'bg-[#F4C542]/10',
+        borderColor: 'border-[#F4C542]/30'
       }
     }
     return {
       label: 'Low',
       description: 'Minor issue',
       icon: CheckCircle,
-      color: 'text-slate-700',
-      bgColor: 'bg-slate-50',
-      borderColor: 'border-slate-200'
+        color: 'text-[#778DB0]',
+        bgColor: 'bg-[#778DB0]/10',
+        borderColor: 'border-[#778DB0]/30'
     }
   }
 
@@ -67,21 +174,61 @@ export function InsightDetailsDrawer({
       {/* Drawer */}
       <div className="fixed right-0 top-0 h-full w-[500px] bg-white shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-[#F9FAFB]">
           <div className="flex items-center gap-2">
-            <Lightbulb className="w-5 h-5 text-slate-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Insight Details</h2>
+            <Lightbulb className="w-5 h-5 text-[#778DB0]" />
+            <h2 className="text-lg font-semibold text-[#2E2E2E]">Insight Details</h2>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-[#8A8A8A] hover:text-[#2E2E2E] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* Tab Navigation */}
+        <div className="border-b border-gray-200 px-6 bg-white">
+          <div className="flex gap-1">
+            <button
+              onClick={() => setActiveTab('details')}
+              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 ${
+                activeTab === 'details'
+                  ? 'border-[#778DB0] text-[#778DB0]'
+                  : 'border-transparent text-[#8A8A8A] hover:text-[#2E2E2E] hover:border-[#778DB0]/30'
+              }`}
+            >
+              <Lightbulb className="w-4 h-4" />
+              Details
+            </button>
+            <button
+              onClick={() => setActiveTab('actions')}
+              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 ${
+                activeTab === 'actions'
+                  ? 'border-[#778DB0] text-[#778DB0]'
+                  : 'border-transparent text-[#8A8A8A] hover:text-[#2E2E2E] hover:border-[#778DB0]/30'
+              }`}
+            >
+              <Zap className="w-4 h-4" />
+              Actions
+            </button>
+            <button
+              onClick={() => setActiveTab('activity')}
+              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 ${
+                activeTab === 'activity'
+                  ? 'border-[#778DB0] text-[#778DB0]'
+                  : 'border-transparent text-[#8A8A8A] hover:text-[#2E2E2E] hover:border-[#778DB0]/30'
+              }`}
+            >
+              <Clock className="w-4 h-4" />
+              Activity
+            </button>
+          </div>
+        </div>
+
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">{activeTab === 'details' && (
+          <>
           {/* Title */}
           <div>
             <h3 className="text-2xl font-bold text-gray-900 leading-tight">
@@ -114,14 +261,56 @@ export function InsightDetailsDrawer({
             </div>
           </div>
 
+          {/* Status */}
+          <div>
+            <label className="block text-xs font-semibold text-[#8A8A8A] uppercase tracking-wider mb-3">
+              Action Status
+            </label>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleStatusChange('todo')}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 transition-all ${
+                  (!insightStatus || insightStatus === 'todo')
+                    ? 'bg-[#778DB0]/10 border-[#778DB0] text-[#778DB0] shadow-sm'
+                    : 'bg-white border-gray-200 text-[#8A8A8A] hover:border-[#778DB0]/30'
+                }`}
+              >
+                <Lightbulb className="w-4 h-4" />
+                <span className="font-semibold text-sm">To Do</span>
+              </button>
+              <button
+                onClick={() => handleStatusChange('in-progress')}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 transition-all ${
+                  insightStatus === 'in-progress'
+                    ? 'bg-[#F4C542]/10 border-[#F4C542] text-[#F4C542] shadow-sm'
+                    : 'bg-white border-gray-200 text-[#8A8A8A] hover:border-[#F4C542]/30'
+                }`}
+              >
+                <AlertCircle className="w-4 h-4" />
+                <span className="font-semibold text-sm">In Progress</span>
+              </button>
+              <button
+                onClick={() => handleStatusChange('done')}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 transition-all ${
+                  insightStatus === 'done'
+                    ? 'bg-[#77BB92]/10 border-[#77BB92] text-[#77BB92] shadow-sm'
+                    : 'bg-white border-gray-200 text-[#8A8A8A] hover:border-[#77BB92]/30'
+                }`}
+              >
+                <CheckCircle className="w-4 h-4" />
+                <span className="font-semibold text-sm">Done</span>
+              </button>
+            </div>
+          </div>
+
           {/* Description */}
           {insight.summary && (
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+              <label className="block text-xs font-semibold text-[#8A8A8A] uppercase tracking-wider mb-3">
                 Description
               </label>
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                <p className="text-base text-gray-800 leading-relaxed whitespace-pre-wrap">
+              <div className="p-4 bg-[#F9FAFB] border border-gray-200 rounded-xl">
+                <p className="text-base text-[#2E2E2E] leading-relaxed whitespace-pre-wrap">
                   {insight.summary}
                 </p>
               </div>
@@ -131,37 +320,37 @@ export function InsightDetailsDrawer({
           {/* Evidence */}
           {insight.evidence && insight.evidence.length > 0 && (
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                Evidence <span className="ml-1 text-slate-400 font-normal">({insight.evidence.length})</span>
+              <label className="block text-xs font-semibold text-[#8A8A8A] uppercase tracking-wider mb-3">
+                Evidence <span className="ml-1 text-[#8A8A8A]/60 font-normal">({insight.evidence.length})</span>
               </label>
               <div className="space-y-3">
                 {insight.evidence.map((evidence) => (
                   <div
                     key={evidence.id}
-                    className="p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-300 hover:shadow-sm transition-all"
+                    className="p-4 bg-white border border-gray-200 rounded-xl hover:border-[#778DB0]/30 hover:shadow-sm transition-all"
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className="text-sm font-semibold text-[#2E2E2E]">
                         {evidence.source}
                       </span>
-                      <span className="text-xs text-slate-600 bg-slate-100 px-2 py-1 rounded-md font-medium uppercase tracking-wide">
+                      <span className="text-xs text-[#8A8A8A] bg-[#F9FAFB] px-2 py-1 rounded-md font-medium uppercase tracking-wide">
                         {evidence.type}
                       </span>
                     </div>
                     {evidence.text && (
-                      <p className="text-sm text-gray-700 mt-3 italic leading-relaxed border-l-2 border-slate-300 pl-3">
+                      <p className="text-sm text-[#2E2E2E] mt-3 italic leading-relaxed border-l-2 border-[#778DB0] pl-3">
                         "{evidence.text}"
                       </p>
                     )}
                     {evidence.value !== undefined && (
-                      <div className="text-sm text-gray-700 mt-3">
+                      <div className="text-sm text-[#2E2E2E] mt-3">
                         <span className="font-bold text-lg">{evidence.value}</span>
                         {evidence.unit && (
-                          <span className="text-gray-500 ml-1 font-medium">{evidence.unit}</span>
+                          <span className="text-[#8A8A8A] ml-1 font-medium">{evidence.unit}</span>
                         )}
                       </div>
                     )}
-                    <p className="text-xs text-gray-500 mt-3 pt-2 border-t border-slate-100">
+                    <p className="text-xs text-[#8A8A8A] mt-3 pt-2 border-t border-gray-100">
                       Collected: {new Date(evidence.collected_at).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
@@ -175,13 +364,13 @@ export function InsightDetailsDrawer({
           )}
 
           {/* Metadata */}
-          <div className="pt-6 border-t border-slate-200">
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+          <div className="pt-6 border-t border-gray-200">
+            <label className="block text-xs font-semibold text-[#8A8A8A] uppercase tracking-wider mb-2">
               Metadata
             </label>
-            <div className="text-sm text-gray-600 space-y-1 bg-slate-50 p-3 rounded-lg">
+            <div className="text-sm text-[#8A8A8A] space-y-1 bg-[#F9FAFB] p-3 rounded-lg">
               <p>
-                <span className="font-medium">Created:</span>{' '}
+                <span className="font-medium text-[#2E2E2E]">Created:</span>{' '}
                 {new Date(insight.created_at).toLocaleString('en-US', {
                   year: 'numeric',
                   month: 'long',
@@ -192,15 +381,151 @@ export function InsightDetailsDrawer({
               </p>
               {insight.created_by && (
                 <p>
-                  <span className="font-medium">Created by:</span> {insight.created_by}
+                  <span className="font-medium text-[#2E2E2E]">Created by:</span> {insight.created_by}
                 </p>
               )}
             </div>
           </div>
+          </>
+        )}
+
+        {/* Actions Tab */}
+        {activeTab === 'actions' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-[#2E2E2E]">Suggested Actions</h3>
+              <span className="text-xs bg-[#A67FB5]/10 text-[#A67FB5] px-2 py-1 rounded-full font-medium flex items-center gap-1 border border-[#A67FB5]/20">
+                <Zap className="w-3 h-3" />
+                AI-Powered
+              </span>
+            </div>
+            <p className="text-sm text-[#8A8A8A]">
+              AI-generated action recommendations to address this insight effectively.
+            </p>
+
+            {/* Error message */}
+            {actionsError && (
+              <div className="p-3 bg-[#F4C542]/10 border border-[#F4C542]/30 rounded-lg">
+                <p className="text-sm text-[#F4C542]">{actionsError}</p>
+              </div>
+            )}
+
+            {/* Loading state */}
+            {isLoadingActions && (
+              <div className="space-y-3 mt-6">
+                <div className="p-4 bg-[#F9FAFB] border border-gray-200 rounded-lg">
+                  <p className="text-sm text-[#8A8A8A] text-center py-8 flex items-center justify-center gap-2">
+                    <Zap className="w-4 h-4 animate-pulse text-[#778DB0]" />
+                    Generating AI-powered action suggestions...
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Action suggestions */}
+            {!isLoadingActions && actionSuggestions.length > 0 && (
+              <div className="space-y-3 mt-6">
+                {actionSuggestions.map((action, index) => {
+                  const priorityColors = {
+                    high: 'bg-[#ED6B5A]/10 text-[#ED6B5A] border-[#ED6B5A]/30',
+                    medium: 'bg-[#F4C542]/10 text-[#F4C542] border-[#F4C542]/30',
+                    low: 'bg-[#778DB0]/10 text-[#778DB0] border-[#778DB0]/30'
+                  }
+
+                  const effortColors = {
+                    low: 'text-[#77BB92]',
+                    medium: 'text-[#F4C542]',
+                    high: 'text-[#ED6B5A]'
+                  }
+
+                  const impactColors = {
+                    low: 'text-[#8A8A8A]',
+                    medium: 'text-[#778DB0]',
+                    high: 'text-[#A67FB5]'
+                  }
+
+                  return (
+                    <div
+                      key={action.id}
+                      className="p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-[#778DB0] hover:shadow-md transition-all"
+                    >
+                      {/* Header */}
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-sm font-bold text-[#8A8A8A]">#{index + 1}</span>
+                            <h4 className="text-base font-bold text-[#2E2E2E]">{action.title}</h4>
+                          </div>
+                          <p className="text-sm text-[#2E2E2E] leading-relaxed">{action.description}</p>
+                        </div>
+                        <span className={`px-2 py-1 rounded-md text-xs font-semibold uppercase border ${priorityColors[action.priority]}`}>
+                          {action.priority}
+                        </span>
+                      </div>
+
+                      {/* Metadata */}
+                      <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-100">
+                        <div className="flex items-center gap-2">
+                          <Target className={`w-4 h-4 ${impactColors[action.impact]}`} />
+                          <div>
+                            <p className="text-xs text-[#8A8A8A]">Impact</p>
+                            <p className={`text-sm font-semibold ${impactColors[action.impact]} capitalize`}>{action.impact}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <TrendingUp className={`w-4 h-4 ${effortColors[action.effort]}`} />
+                          <div>
+                            <p className="text-xs text-[#8A8A8A]">Effort</p>
+                            <p className={`text-sm font-semibold ${effortColors[action.effort]} capitalize`}>{action.effort}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Timer className="w-4 h-4 text-[#8A8A8A]" />
+                          <div>
+                            <p className="text-xs text-[#8A8A8A]">Timeframe</p>
+                            <p className="text-sm font-semibold text-[#2E2E2E]">{action.estimatedTimeframe}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 flex items-center justify-center">
+                            <span className="text-xs">🏷️</span>
+                          </div>
+                          <div>
+                            <p className="text-xs text-[#8A8A8A]">Category</p>
+                            <p className="text-sm font-semibold text-[#2E2E2E] capitalize">{action.category}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Activity Tab */}
+        {activeTab === 'activity' && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-[#2E2E2E]">Activity Timeline</h3>
+            <p className="text-sm text-[#8A8A8A]">
+              Track all changes, comments, and updates to this insight.
+            </p>
+
+            {/* Placeholder for activity */}
+            <div className="space-y-3 mt-6">
+              <div className="p-4 bg-[#F9FAFB] border border-gray-200 rounded-lg">
+                <p className="text-sm text-[#8A8A8A] text-center py-8">
+                  Activity tracking coming soon...
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         </div>
 
         {/* Footer */}
-        <div className="border-t border-slate-200 p-6 bg-slate-50 flex gap-3 justify-between">
+        <div className="border-t border-gray-200 p-6 bg-[#F9FAFB] flex gap-3 justify-between">
           <div className="flex gap-3">
             {onRemoveFromCell && (
               <Button
@@ -209,7 +534,7 @@ export function InsightDetailsDrawer({
                   onRemoveFromCell()
                   onClose()
                 }}
-                className="flex items-center justify-center gap-2 text-[#C45A49] hover:text-[#B04A3A] hover:bg-[#C45A49]/10 border-[#C45A49]/30 hover:border-[#C45A49]/50 font-medium px-4"
+                className="flex items-center justify-center gap-2 text-[#ED6B5A] hover:text-[#ED6B5A] hover:bg-[#ED6B5A]/10 border-[#ED6B5A]/30 hover:border-[#ED6B5A]/50 font-medium px-4"
               >
                 <Trash2 className="w-4 h-4" />
                 Remove from Cell
@@ -224,7 +549,7 @@ export function InsightDetailsDrawer({
                   onEdit()
                   onClose()
                 }}
-                className="flex items-center justify-center gap-2 font-medium px-4"
+                className="flex items-center justify-center gap-2 text-[#778DB0] hover:text-[#778DB0] hover:bg-[#778DB0]/10 border-[#778DB0]/30 hover:border-[#778DB0]/50 font-medium px-4"
               >
                 <Edit className="w-4 h-4" />
                 Edit
@@ -233,7 +558,7 @@ export function InsightDetailsDrawer({
             <Button
               variant="primary"
               onClick={onClose}
-              className="font-medium px-6"
+              className="font-medium px-6 bg-[#778DB0] hover:bg-[#778DB0]/90 text-white"
             >
               Close
             </Button>
