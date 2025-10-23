@@ -172,18 +172,18 @@ export default function LoginPage() {
 
 
       </div>
-      <div className="max-w-md w-full space-y-4 relative z-10">
+      <div className="max-w-md w-full space-y-3 relative z-10">
         {/* Logo */}
         <div className="text-center">
           <img
             src="/Kustra-logo.png"
             alt="Kustra"
-            className="h-64 w-auto mx-auto -mb-10"
+            className="h-48 w-auto mx-auto -mb-6"
           />
-          <h2 className="text-3xl font-light text-gray-900">
+          <h2 className="text-2xl font-light text-gray-900">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-1 text-sm text-gray-600">
             Or{' '}
             <Link href="/auth/register" className="font-medium text-slate-600 hover:text-slate-500">
               create a new account
@@ -191,8 +191,8 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="bg-white rounded-3xl p-8 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white rounded-3xl p-6 shadow-2xl">
+          <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
                   <strong>Error:</strong> {error}
@@ -283,7 +283,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4">
             <Button
               onClick={handleBetaTesterLogin}
               variant="outline"
@@ -292,7 +292,7 @@ export default function LoginPage() {
               <Zap className="w-4 h-4" />
               I'm a beta tester
             </Button>
-            <p className="mt-2 text-xs text-white font-medium drop-shadow-sm">
+            <p className="mt-1 text-xs text-white font-medium drop-shadow-sm">
               Skip registration and explore the platform
             </p>
           </div>
