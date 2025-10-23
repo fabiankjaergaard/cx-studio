@@ -125,9 +125,9 @@ export function CreateInsightDrawer({
                   className={`
                     w-10 h-10 rounded-full border-2 transition-all font-medium text-sm
                     ${severity === level
-                      ? level >= 4 ? 'bg-red-500 border-red-600 text-white'
-                        : level === 3 ? 'bg-yellow-500 border-yellow-600 text-white'
-                        : 'bg-green-500 border-green-600 text-white'
+                      ? level >= 4 ? 'bg-[#C45A49] border-[#C45A49] text-white'
+                        : level === 3 ? 'bg-[#ED6B5A] border-[#ED6B5A] text-white'
+                        : 'bg-[#778DB0] border-[#778DB0] text-white'
                       : 'bg-white border-gray-300 text-gray-600 hover:border-slate-400'
                     }
                   `}

@@ -760,10 +760,10 @@ export function JourneyMapCell({
 
                   // Subtle color scheme based on severity
                   const severityStyle = insight.severity >= 4
-                    ? 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100'
+                    ? 'bg-[#C45A49]/10 text-[#C45A49] border border-[#C45A49]/20 hover:bg-[#C45A49]/20'
                     : insight.severity === 3
-                    ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100'
-                    : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100'
+                    ? 'bg-[#ED6B5A]/10 text-[#ED6B5A] border border-[#ED6B5A]/20 hover:bg-[#ED6B5A]/20'
+                    : 'bg-[#778DB0]/10 text-[#778DB0] border border-[#778DB0]/20 hover:bg-[#778DB0]/20'
 
                   return (
                     <div
@@ -939,10 +939,10 @@ export function JourneyMapCell({
 
                   // Subtle color scheme based on severity
                   const severityStyle = insight.severity >= 4
-                    ? 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100'
+                    ? 'bg-[#C45A49]/10 text-[#C45A49] border border-[#C45A49]/20 hover:bg-[#C45A49]/20'
                     : insight.severity === 3
-                    ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100'
-                    : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100'
+                    ? 'bg-[#ED6B5A]/10 text-[#ED6B5A] border border-[#ED6B5A]/20 hover:bg-[#ED6B5A]/20'
+                    : 'bg-[#778DB0]/10 text-[#778DB0] border border-[#778DB0]/20 hover:bg-[#778DB0]/20'
 
                   return (
                     <div

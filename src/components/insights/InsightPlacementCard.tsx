@@ -72,8 +72,8 @@ export function InsightPlacementCard({
   // Severity badge color
   const getSeverityColor = () => {
     if (insight.severity >= 4) return 'bg-[#C45A49] text-white'
-    if (insight.severity === 3) return 'bg-amber-500 text-white'
-    return 'bg-gray-400 text-white'
+    if (insight.severity === 3) return 'bg-[#ED6B5A] text-white'
+    return 'bg-[#778DB0] text-white'
   }
 
   return (
