@@ -763,7 +763,7 @@ export function JourneyMapCell({
                     ? 'bg-[#C45A49]/10 text-[#C45A49] border border-[#C45A49]/20 hover:bg-[#C45A49]/20'
                     : insight.severity === 3
                     ? 'bg-[#ED6B5A]/10 text-[#ED6B5A] border border-[#ED6B5A]/20 hover:bg-[#ED6B5A]/20'
-                    : 'bg-[#778DB0]/10 text-[#778DB0] border border-[#778DB0]/20 hover:bg-[#778DB0]/20'
+                    : 'bg-[#77BB92]/10 text-[#77BB92] border border-[#77BB92]/20 hover:bg-[#77BB92]/20'
 
                   return (
                     <div
@@ -942,7 +942,7 @@ export function JourneyMapCell({
                     ? 'bg-[#C45A49]/10 text-[#C45A49] border border-[#C45A49]/20 hover:bg-[#C45A49]/20'
                     : insight.severity === 3
                     ? 'bg-[#ED6B5A]/10 text-[#ED6B5A] border border-[#ED6B5A]/20 hover:bg-[#ED6B5A]/20'
-                    : 'bg-[#778DB0]/10 text-[#778DB0] border border-[#778DB0]/20 hover:bg-[#778DB0]/20'
+                    : 'bg-[#77BB92]/10 text-[#77BB92] border border-[#77BB92]/20 hover:bg-[#77BB92]/20'
 
                   return (
                     <div
