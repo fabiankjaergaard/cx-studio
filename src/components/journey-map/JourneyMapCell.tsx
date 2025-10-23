@@ -758,17 +758,17 @@ export function JourneyMapCell({
                   const insight = insights.find(i => i.id === insightId)
                   if (!insight) return null
 
-                  // Subtle color scheme based on severity
+                  // Bold solid color badges for severity
                   const severityStyle = insight.severity >= 4
-                    ? 'bg-[#C45A49]/10 text-[#C45A49] border border-[#C45A49]/20 hover:bg-[#C45A49]/20'
+                    ? 'bg-[#C45A49]'
                     : insight.severity === 3
-                    ? 'bg-[#ED6B5A]/10 text-[#ED6B5A] border border-[#ED6B5A]/20 hover:bg-[#ED6B5A]/20'
-                    : 'bg-[#77BB92]/10 text-[#77BB92] border border-[#77BB92]/20 hover:bg-[#77BB92]/20'
+                    ? 'bg-[#ED6B5A]'
+                    : 'bg-[#77BB92]'
 
                   return (
                     <div
                       key={insightId}
-                      className={`flex items-center gap-1 px-1.5 py-0.5 ${severityStyle} rounded text-[10px] font-medium cursor-pointer transition-colors`}
+                      className={`flex items-center justify-center w-5 h-5 ${severityStyle} rounded-full text-white text-[10px] font-bold cursor-pointer transition-all hover:scale-110 shadow-sm`}
                       title={insight.title}
                       onClick={(e) => {
                         e.stopPropagation()
@@ -777,8 +777,7 @@ export function JourneyMapCell({
                         }
                       }}
                     >
-                      <LightbulbIcon className="w-2.5 h-2.5" />
-                      <span className="text-[9px]">{insight.severity}</span>
+                      {insight.severity}
                     </div>
                   )
                 })}
@@ -937,17 +936,17 @@ export function JourneyMapCell({
                   const insight = insights.find(i => i.id === insightId)
                   if (!insight) return null
 
-                  // Subtle color scheme based on severity
+                  // Bold solid color badges for severity
                   const severityStyle = insight.severity >= 4
-                    ? 'bg-[#C45A49]/10 text-[#C45A49] border border-[#C45A49]/20 hover:bg-[#C45A49]/20'
+                    ? 'bg-[#C45A49]'
                     : insight.severity === 3
-                    ? 'bg-[#ED6B5A]/10 text-[#ED6B5A] border border-[#ED6B5A]/20 hover:bg-[#ED6B5A]/20'
-                    : 'bg-[#77BB92]/10 text-[#77BB92] border border-[#77BB92]/20 hover:bg-[#77BB92]/20'
+                    ? 'bg-[#ED6B5A]'
+                    : 'bg-[#77BB92]'
 
                   return (
                     <div
                       key={insightId}
-                      className={`flex items-center gap-1 px-1.5 py-0.5 ${severityStyle} rounded text-[10px] font-medium cursor-pointer transition-colors`}
+                      className={`flex items-center justify-center w-5 h-5 ${severityStyle} rounded-full text-white text-[10px] font-bold cursor-pointer transition-all hover:scale-110 shadow-sm`}
                       title={insight.title}
                       onClick={(e) => {
                         e.stopPropagation()
@@ -956,8 +955,7 @@ export function JourneyMapCell({
                         }
                       }}
                     >
-                      <LightbulbIcon className="w-2.5 h-2.5" />
-                      <span className="text-[9px]">{insight.severity}</span>
+                      {insight.severity}
                     </div>
                   )
                 })}
