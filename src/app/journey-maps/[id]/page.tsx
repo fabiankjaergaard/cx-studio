@@ -48,6 +48,7 @@ import {
   ZoomOut,
   Maximize2,
   RotateCcw,
+  RotateCw,
   MessageCircle,
   Upload
 } from 'lucide-react'
@@ -74,7 +75,6 @@ import { InsightImportWizard } from '@/components/insights/InsightImportWizard'
 import { GeneratedInsight, ImportableResearchData } from '@/types/insight-import'
 import { useJourneyMapHistory } from '@/hooks/useJourneyMapHistory'
 import { useUndoRedo } from '@/hooks/useUndoRedo'
-import { UndoRedoToolbar } from '@/components/journey-map/UndoRedoToolbar'
 import { loadAvailableResearchData } from '@/services/researchDataConverter'
 
 interface Persona {
@@ -3430,15 +3430,6 @@ export default function JourneyMapBuilderPage() {
               {isCommentMode ? 'Commenting' : 'Comment'}
             </Button>
 
-            {/* Undo/Redo Toolbar */}
-            <UndoRedoToolbar
-              undo={history.undo}
-              redo={history.redo}
-              canUndo={history.canUndo}
-              canRedo={history.canRedo}
-              historyLength={history.historyLength}
-            />
-
             {/* Import Insights Button */}
             <Button
               variant="outline"
@@ -3475,6 +3466,31 @@ export default function JourneyMapBuilderPage() {
 
               {activeDropdown === 'more' && (
                 <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-36 z-20">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      history.undo()
+                      setActiveDropdown(null)
+                    }}
+                    disabled={!history.canUndo}
+                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-900 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <RotateCcw className="w-3 h-3 text-gray-700" />
+                    Undo
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      history.redo()
+                      setActiveDropdown(null)
+                    }}
+                    disabled={!history.canRedo}
+                    className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-900 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <RotateCw className="w-3 h-3 text-gray-700" />
+                    Redo
+                  </button>
+                  <div className="border-t border-gray-100 my-1"></div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation()

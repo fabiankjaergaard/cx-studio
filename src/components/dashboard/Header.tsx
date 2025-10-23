@@ -140,7 +140,7 @@ export function Header({ title, description, actions }: HeaderProps) {
           )}
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 mr-6">
           {/* Notifications Dropdown */}
           <div className="relative">
             <Tooltip content={t('header.notifications')} position="bottom">
@@ -152,7 +152,7 @@ export function Header({ title, description, actions }: HeaderProps) {
               >
                 <BellIcon className={`h-5 w-5 transition-transform duration-300 ${isNotificationOpen ? 'rotate-12 text-slate-600' : 'hover:rotate-6'}`} />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1 -right-1 bg-[#C45A49] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {unreadCount}
                   </span>
                 )}
