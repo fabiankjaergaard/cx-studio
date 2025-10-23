@@ -768,7 +768,7 @@ export function JourneyMapCell({
                   return (
                     <div
                       key={insightId}
-                      className={`flex items-center justify-center w-5 h-5 ${severityStyle} rounded-full text-white text-[10px] font-bold cursor-pointer transition-all hover:scale-110 shadow-sm`}
+                      className={`flex items-center justify-center w-4 h-4 ${severityStyle} rounded-full text-white text-[9px] font-bold cursor-pointer transition-all hover:scale-125 shadow-sm`}
                       title={insight.title}
                       onClick={(e) => {
                         e.stopPropagation()
@@ -946,7 +946,7 @@ export function JourneyMapCell({
                   return (
                     <div
                       key={insightId}
-                      className={`flex items-center justify-center w-5 h-5 ${severityStyle} rounded-full text-white text-[10px] font-bold cursor-pointer transition-all hover:scale-110 shadow-sm`}
+                      className={`flex items-center justify-center w-4 h-4 ${severityStyle} rounded-full text-white text-[9px] font-bold cursor-pointer transition-all hover:scale-125 shadow-sm`}
                       title={insight.title}
                       onClick={(e) => {
                         e.stopPropagation()
