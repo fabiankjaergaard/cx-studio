@@ -782,7 +782,17 @@ export function JourneyMapCell({
                   )
                 })}
                 {insightIds.length > 3 && (
-                  <div className="px-1.5 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[10px] font-medium">
+                  <div
+                    className="px-1.5 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[10px] font-medium cursor-pointer hover:bg-slate-200 transition-colors"
+                    title={`${insightIds.length - 3} more insights - click to view`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      // Open the first hidden insight (4th in the list)
+                      if (onInsightClick && rowId && insightIds[3]) {
+                        onInsightClick(insightIds[3], rowId, id)
+                      }
+                    }}
+                  >
                     +{insightIds.length - 3}
                   </div>
                 )}
@@ -960,7 +970,17 @@ export function JourneyMapCell({
                   )
                 })}
                 {insightIds.length > 3 && (
-                  <div className="px-1.5 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[10px] font-medium">
+                  <div
+                    className="px-1.5 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[10px] font-medium cursor-pointer hover:bg-slate-200 transition-colors"
+                    title={`${insightIds.length - 3} more insights - click to view`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      // Open the first hidden insight (4th in the list)
+                      if (onInsightClick && rowId && insightIds[3]) {
+                        onInsightClick(insightIds[3], rowId, id)
+                      }
+                    }}
+                  >
                     +{insightIds.length - 3}
                   </div>
                 )}
