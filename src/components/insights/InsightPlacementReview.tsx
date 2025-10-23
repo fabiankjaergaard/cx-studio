@@ -153,30 +153,30 @@ export function InsightPlacementReview({
 
         {/* Stats - Methods */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="p-3 bg-gradient-to-r from-amber-50 to-yellow-100/50 rounded-lg border border-amber-200/60">
+          <div className="p-3 bg-[#778DB0]/5 rounded-lg border border-[#778DB0]/20">
             <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-              <span className="text-xs font-semibold text-amber-900 uppercase tracking-wide">AI-Powered</span>
+              <Sparkles className="w-3.5 h-3.5 text-[#778DB0]" />
+              <span className="text-xs font-semibold text-[#778DB0] uppercase tracking-wide">AI-Powered</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-lg font-bold text-amber-700">{aiGeneratedCount}</span>
-              <span className="text-xs text-amber-600">insights</span>
+              <span className="text-lg font-bold text-[#778DB0]">{aiGeneratedCount}</span>
+              <span className="text-xs text-gray-600">insights</span>
               <span className="text-gray-400">•</span>
-              <span className="text-lg font-bold text-amber-700">{aiPlacementsCount}</span>
-              <span className="text-xs text-amber-600">placements</span>
+              <span className="text-lg font-bold text-[#778DB0]">{aiPlacementsCount}</span>
+              <span className="text-xs text-gray-600">placements</span>
             </div>
           </div>
-          <div className="p-3 bg-gradient-to-r from-slate-50 to-slate-100/50 rounded-lg border border-slate-200/60">
+          <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-center gap-2 mb-1">
-              <Hash className="w-3.5 h-3.5 text-slate-600" />
-              <span className="text-xs font-semibold text-slate-800 uppercase tracking-wide">Keyword-Based</span>
+              <Hash className="w-3.5 h-3.5 text-gray-600" />
+              <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Keyword-Based</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-lg font-bold text-slate-700">{keywordGeneratedCount}</span>
-              <span className="text-xs text-slate-600">insights</span>
+              <span className="text-lg font-bold text-gray-700">{keywordGeneratedCount}</span>
+              <span className="text-xs text-gray-600">insights</span>
               <span className="text-gray-400">•</span>
-              <span className="text-lg font-bold text-slate-700">{keywordPlacementsCount}</span>
-              <span className="text-xs text-slate-600">placements</span>
+              <span className="text-lg font-bold text-gray-700">{keywordPlacementsCount}</span>
+              <span className="text-xs text-gray-600">placements</span>
             </div>
           </div>
         </div>
