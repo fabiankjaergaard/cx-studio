@@ -135,9 +135,9 @@ export function InsightDetailsDrawer({
         label: 'Critical',
         description: 'High priority - requires immediate attention',
         icon: AlertTriangle,
-        color: 'text-[#ED6B5A]',
-        bgColor: 'bg-[#ED6B5A]/10',
-        borderColor: 'border-[#ED6B5A]/30'
+        color: 'text-[#C45A49]',
+        bgColor: 'bg-[#C45A49]/10',
+        borderColor: 'border-[#C45A49]/30'
       }
     }
     if (severity === 3) {
@@ -145,18 +145,18 @@ export function InsightDetailsDrawer({
         label: 'Medium',
         description: 'Should be addressed',
         icon: AlertCircle,
-        color: 'text-[#F4C542]',
-        bgColor: 'bg-[#F4C542]/10',
-        borderColor: 'border-[#F4C542]/30'
+        color: 'text-[#ED6B5A]',
+        bgColor: 'bg-[#ED6B5A]/10',
+        borderColor: 'border-[#ED6B5A]/30'
       }
     }
     return {
       label: 'Low',
       description: 'Minor issue',
       icon: CheckCircle,
-        color: 'text-[#778DB0]',
-        bgColor: 'bg-[#778DB0]/10',
-        borderColor: 'border-[#778DB0]/30'
+        color: 'text-[#77BB92]',
+        bgColor: 'bg-[#77BB92]/10',
+        borderColor: 'border-[#77BB92]/30'
     }
   }
 
@@ -282,8 +282,8 @@ export function InsightDetailsDrawer({
                 onClick={() => handleStatusChange('in-progress')}
                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 transition-all ${
                   insightStatus === 'in-progress'
-                    ? 'bg-[#F4C542]/10 border-[#F4C542] text-[#F4C542] shadow-sm'
-                    : 'bg-white border-gray-200 text-[#8A8A8A] hover:border-[#F4C542]/30'
+                    ? 'bg-[#ED6B5A]/10 border-[#ED6B5A] text-[#ED6B5A] shadow-sm'
+                    : 'bg-white border-gray-200 text-[#8A8A8A] hover:border-[#ED6B5A]/30'
                 }`}
               >
                 <AlertCircle className="w-4 h-4" />
@@ -394,7 +394,7 @@ export function InsightDetailsDrawer({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-[#2E2E2E]">Suggested Actions</h3>
-              <span className="text-xs bg-[#A67FB5]/10 text-[#A67FB5] px-2 py-1 rounded-full font-medium flex items-center gap-1 border border-[#A67FB5]/20">
+              <span className="text-xs bg-[#778DB0]/10 text-[#778DB0] px-2 py-1 rounded-full font-medium flex items-center gap-1 border border-[#778DB0]/20">
                 <Zap className="w-3 h-3" />
                 AI-Powered
               </span>
@@ -405,8 +405,8 @@ export function InsightDetailsDrawer({
 
             {/* Error message */}
             {actionsError && (
-              <div className="p-3 bg-[#F4C542]/10 border border-[#F4C542]/30 rounded-lg">
-                <p className="text-sm text-[#F4C542]">{actionsError}</p>
+              <div className="p-3 bg-[#ED6B5A]/10 border border-[#ED6B5A]/30 rounded-lg">
+                <p className="text-sm text-[#ED6B5A]">{actionsError}</p>
               </div>
             )}
 
@@ -427,21 +427,21 @@ export function InsightDetailsDrawer({
               <div className="space-y-3 mt-6">
                 {actionSuggestions.map((action, index) => {
                   const priorityColors = {
-                    high: 'bg-[#ED6B5A]/10 text-[#ED6B5A] border-[#ED6B5A]/30',
-                    medium: 'bg-[#F4C542]/10 text-[#F4C542] border-[#F4C542]/30',
-                    low: 'bg-[#778DB0]/10 text-[#778DB0] border-[#778DB0]/30'
+                    high: 'bg-[#C45A49]/10 text-[#C45A49] border-[#C45A49]/30',
+                    medium: 'bg-[#ED6B5A]/10 text-[#ED6B5A] border-[#ED6B5A]/30',
+                    low: 'bg-[#77BB92]/10 text-[#77BB92] border-[#77BB92]/30'
                   }
 
                   const effortColors = {
                     low: 'text-[#77BB92]',
-                    medium: 'text-[#F4C542]',
-                    high: 'text-[#ED6B5A]'
+                    medium: 'text-[#ED6B5A]',
+                    high: 'text-[#C45A49]'
                   }
 
                   const impactColors = {
                     low: 'text-[#8A8A8A]',
                     medium: 'text-[#778DB0]',
-                    high: 'text-[#A67FB5]'
+                    high: 'text-[#77BB92]'
                   }
 
                   return (
@@ -487,8 +487,10 @@ export function InsightDetailsDrawer({
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 flex items-center justify-center">
-                            <span className="text-xs">🏷️</span>
+                          <div className="w-4 h-4 flex items-center justify-center text-[#778DB0]">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                            </svg>
                           </div>
                           <div>
                             <p className="text-xs text-[#8A8A8A]">Category</p>
