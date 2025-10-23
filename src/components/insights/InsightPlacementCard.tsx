@@ -122,8 +122,8 @@ export function InsightPlacementCard({
                   {insight.generationMethod && (
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full flex items-center gap-1 ${
                       insight.generationMethod === 'ai'
-                        ? 'bg-purple-100 text-purple-700'
-                        : 'bg-blue-100 text-blue-700'
+                        ? 'bg-[#778DB0]/10 text-[#778DB0]'
+                        : 'bg-gray-100 text-gray-600'
                     }`}>
                       {insight.generationMethod === 'ai' ? (
                         <>
@@ -176,8 +176,8 @@ export function InsightPlacementCard({
                     {topSuggestion.method && (
                       <span className={`text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1 ${
                         topSuggestion.method === 'ai'
-                          ? 'bg-purple-100 text-purple-700'
-                          : 'bg-blue-100 text-blue-700'
+                          ? 'bg-[#778DB0]/10 text-[#778DB0]'
+                          : 'bg-gray-100 text-gray-600'
                       }`}>
                         {topSuggestion.method === 'ai' ? (
                           <>
@@ -298,8 +298,8 @@ export function InsightPlacementCard({
                       {suggestion.method && (
                         <span className={`text-[10px] px-1.5 py-0.5 rounded flex items-center gap-0.5 ${
                           suggestion.method === 'ai'
-                            ? 'bg-purple-50 text-purple-600'
-                            : 'bg-blue-50 text-blue-600'
+                            ? 'bg-[#778DB0]/10 text-[#778DB0]'
+                            : 'bg-gray-100 text-gray-600'
                         }`}>
                           {suggestion.method === 'ai' ? (
                             <>

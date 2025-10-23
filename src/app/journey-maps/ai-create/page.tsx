@@ -62,8 +62,8 @@ export default function AICreateJourneyMapPage() {
         <div className="max-w-2xl mx-auto">
           <Card className="border-0 shadow-sm">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-2xl flex items-center justify-center">
-                <SparklesIcon className="w-8 h-8 text-purple-600" />
+              <div className="w-16 h-16 mx-auto mb-4 bg-[#778DB0]/10 rounded-2xl flex items-center justify-center">
+                <SparklesIcon className="w-8 h-8 text-[#778DB0]" />
               </div>
               <CardTitle className="text-xl">
                 Let AI create your journey map
