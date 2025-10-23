@@ -1126,9 +1126,13 @@ function InterviewsContent() {
                               <span className="text-gray-900">{insight.theme}</span>
                             </div>
                             <div className="flex items-center space-x-2 flex-shrink-0">
-                              <span className="text-sm">
-                                {insight.sentiment === 'positive' ? '🙂' : insight.sentiment === 'negative' ? '🙁' : '😐'}
-                              </span>
+                              {insight.sentiment === 'positive' ? (
+                                <SmileIcon className="w-4 h-4 text-[#77BB92]" />
+                              ) : insight.sentiment === 'negative' ? (
+                                <FrownIcon className="w-4 h-4 text-[#C45A49]" />
+                              ) : (
+                                <MehIcon className="w-4 h-4 text-[#778DB0]" />
+                              )}
                               <button
                                 onClick={() => setManualInsights(manualInsights.filter((_, i) => i !== index))}
                                 className="text-slate-500 hover:text-slate-700 text-xs"
@@ -1487,9 +1491,9 @@ function InterviewsContent() {
                         id="new-insight-sentiment"
                         defaultValue="neutral"
                       >
-                        <option value="positive">🙂 Positiv</option>
-                        <option value="negative">🙁 Negativ</option>
-                        <option value="neutral">😐 Neutral</option>
+                        <option value="positive">Positiv</option>
+                        <option value="negative">Negativ</option>
+                        <option value="neutral">Neutral</option>
                       </select>
                       <input
                         type="number"
@@ -1561,12 +1565,19 @@ function InterviewsContent() {
                             </p>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              insight.sentiment === 'positive' ? 'bg-slate-100 text-slate-800' :
-                              insight.sentiment === 'negative' ? 'bg-slate-100 text-slate-800' :
-                              'bg-gray-100 text-gray-800'
+                            <div className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
+                              insight.sentiment === 'positive' ? 'bg-[#77BB92]/10 text-[#77BB92] border border-[#77BB92]/30' :
+                              insight.sentiment === 'negative' ? 'bg-[#C45A49]/10 text-[#C45A49] border border-[#C45A49]/30' :
+                              'bg-[#778DB0]/10 text-[#778DB0] border border-[#778DB0]/30'
                             }`}>
-                              {insight.sentiment === 'positive' ? '🙂' : insight.sentiment === 'negative' ? '🙁' : '😐'}
+                              {insight.sentiment === 'positive' ? (
+                                <SmileIcon className="w-3.5 h-3.5" />
+                              ) : insight.sentiment === 'negative' ? (
+                                <FrownIcon className="w-3.5 h-3.5" />
+                              ) : (
+                                <MehIcon className="w-3.5 h-3.5" />
+                              )}
+                              <span className="capitalize">{insight.sentiment === 'positive' ? 'Positiv' : insight.sentiment === 'negative' ? 'Negativ' : 'Neutral'}</span>
                             </div>
                             <button
                               onClick={() => {
